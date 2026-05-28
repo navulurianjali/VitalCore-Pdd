@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/context/ThemeContext";
@@ -14,7 +14,11 @@ export const metadata: Metadata = {
   title: "VitalCore | AI-Powered Preventive Wellness & Healthcare Platform",
   description: "Predict health shifts, identify invisible decline, simulate your digital twin version, and prevent burnout with custom AI Coaching.",
   keywords: ["Preventive Health", "AI Fitness Coach", "Digital Twin Health", "Fatigue Detection", "Burnout Prevention", "Smart Nutrition", "Sleep Circadian Rythms"],
-  viewport: "width=device-width, initial-scale=1",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({
