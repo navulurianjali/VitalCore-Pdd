@@ -31,7 +31,7 @@ export default function SignupPage() {
       if (error) {
         setErrorMsg(error.message);
       } else {
-        router.push("/dashboard");
+        router.push("/auth/onboarding");
       }
     } catch (err: any) {
       setErrorMsg(err.message || "An unexpected error occurred during secure sign-up.");

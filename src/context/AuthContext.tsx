@@ -146,19 +146,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       // Explicitly insert into profiles table to guarantee instant profile creation
       if (data.user) {
-        const { error: profileError } = await supabase.from("profiles").insert({
+        const newProfile = {
           id: data.user.id,
           email: email,
           full_name: fullName,
           username: username,
-          active_mode: "wellness",
+          active_mode: "wellness" as const,
           onboarding_completed: false,
           soreness_level: 0,
           biological_age: 28.5,
           stability_score: 95.0,
-        });
+        };
+        const { error: profileError } = await supabase.from("profiles").insert(newProfile);
         if (profileError) {
           console.error("Error creating user profile:", profileError);
+        } else {
+          setProfile(newProfile);
         }
       }
       
