@@ -39,49 +39,50 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex-1 flex items-center justify-center bg-background px-4 py-20 relative overflow-hidden">
+    <div className="flex-1 flex items-center justify-center bg-background px-4 py-20 relative overflow-hidden auth-page">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(139,92,246,0.05),transparent_60%)]" />
       
-      <div className="w-full max-w-md relative z-10 space-y-6">
+      <div className="w-full max-w-[440px] relative z-10 space-y-6">
         
         {/* Logo */}
         <div className="text-center space-y-2">
-          <Link href="/" className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-primary text-white shadow-lg shadow-primary/20">
-            <Activity className="h-6 w-6" />
+          <Link href="/" className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-primary text-white shadow-lg shadow-primary/20 hover:scale-105 transition-transform">
+            <Activity className="h-5 w-5" />
           </Link>
-          <h2 className="text-2xl font-extrabold tracking-tight">Access VitalCore Console</h2>
-          <p className="text-[11px] text-foreground/50 font-bold tracking-widest uppercase flex items-center gap-1 justify-center">
-            <ShieldCheck className="h-3.5 w-3.5 text-secondary" />
+          <h2 className="auth-subtitle tracking-tight text-center font-extrabold">Access VitalCore Console</h2>
+          <p className="auth-helper uppercase tracking-wider text-[12px] flex items-center gap-1 justify-center">
+            <ShieldCheck className="h-4 w-4 text-secondary/80" />
             Secure Session Gateway
           </p>
         </div>
 
-        <GlassCard glowColor="violet">
+        <GlassCard glowColor="violet" className="border border-foreground/10 shadow-xl">
           
           {isMockMode && (
-            <div className="mb-5 rounded-xl border border-secondary/15 bg-secondary/5 p-3.5 text-xs text-secondary leading-normal font-semibold">
-              💡 **Mock DB Mode active**: Enter any demo email and password to log in, or sign up a new local user instantly!
+            <div className="mb-4 rounded-xl border border-secondary/15 bg-secondary/5 px-4 py-3 text-[13px] text-secondary leading-relaxed font-medium">
+              💡 <strong>Mock DB active:</strong> Enter any demo email and password to log in, or sign up a new local user instantly!
             </div>
           )}
 
           {errorMsg && (
-            <div className="mb-4 rounded-xl border border-red-500/20 bg-red-500/5 px-3 py-2 text-xs text-red-500 font-bold">
-              ⚠ {errorMsg}
+            <div className="mb-4 rounded-xl border border-rose-500/20 bg-rose-500/10 px-4 py-3 text-[13px] text-rose-400 font-medium flex items-center gap-2">
+              <span className="shrink-0">⚠️</span>
+              <span>{errorMsg}</span>
             </div>
           )}
 
           <form onSubmit={handleLogin} className="space-y-4">
             
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-foreground">Registered Email</label>
+              <label className="auth-label">Registered Email</label>
               <div className="relative">
-                <Mail className="absolute left-3.5 top-3.5 h-4.5 w-4.5 text-foreground/40" />
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-foreground/30 pointer-events-none" />
                 <input
                   type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full text-xs pl-10.5 pr-4 py-3 rounded-xl border border-foreground/10 bg-foreground/5 text-foreground placeholder-foreground/45 focus:outline-none focus:border-primary/50"
+                  className="w-full text-foreground placeholder-foreground/35 focus:outline-none"
                   placeholder="name@company.com"
                 />
               </div>
@@ -89,25 +90,25 @@ export default function LoginPage() {
 
             <div className="space-y-1.5">
               <div className="flex justify-between items-center">
-                <label className="text-xs font-bold text-foreground">Encryption Key</label>
-                <Link href="/auth/forgot-password" className="text-[11px] font-bold text-primary hover:underline">
+                <label className="auth-label">Encryption Key</label>
+                <Link href="/auth/forgot-password" className="auth-link text-primary hover:underline">
                   Forgot Password?
                 </Link>
               </div>
               <div className="relative">
-                <Lock className="absolute left-3.5 top-3.5 h-4.5 w-4.5 text-foreground/40" />
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-foreground/30 pointer-events-none" />
                 <input
                   type="password"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full text-xs pl-10.5 pr-4 py-3 rounded-xl border border-foreground/10 bg-foreground/5 text-foreground placeholder-foreground/45 focus:outline-none focus:border-primary/50"
+                  className="w-full text-foreground placeholder-foreground/35 focus:outline-none"
                   placeholder="••••••••"
                 />
               </div>
             </div>
 
-            <Button variant="primary" type="submit" isLoading={loading} className="w-full py-3.5">
+            <Button variant="primary" type="submit" isLoading={loading} className="w-full mt-2 font-semibold">
               Validate and Enter Console
             </Button>
 
@@ -115,7 +116,7 @@ export default function LoginPage() {
 
           <div className="mt-5 border-t border-foreground/5 pt-4 text-center text-xs text-foreground/60 font-medium">
             New explorer?{" "}
-            <Link href="/auth/signup" className="font-bold text-primary hover:underline">
+            <Link href="/auth/signup" className="font-semibold text-primary hover:underline">
               Create secure profile
             </Link>
           </div>

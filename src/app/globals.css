@@ -271,3 +271,85 @@ input[type="range"]::-webkit-slider-thumb:hover {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* ==================== AUTH PAGE REBALANCING OVERRIDES ==================== */
+.auth-page {
+  font-size: 16px !important;
+}
+
+.auth-page h1, .auth-page .auth-title {
+  font-size: 34px !important;
+  font-weight: 800 !important;
+  line-height: 1.25 !important;
+  letter-spacing: -0.025em !important;
+}
+
+.auth-page h2, .auth-page .auth-subtitle {
+  font-size: 26px !important;
+  font-weight: 750 !important;
+  line-height: 1.3 !important;
+  letter-spacing: -0.020em !important;
+}
+
+.auth-page label, .auth-page .auth-label {
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  color: rgba(255, 255, 255, 0.8) !important;
+  margin-bottom: 0.45rem !important;
+  display: block;
+}
+
+.auth-page input[type="text"],
+.auth-page input[type="email"],
+.auth-page input[type="password"] {
+  min-height: 52px !important;
+  height: 52px !important;
+  font-size: 16px !important;
+  font-weight: 500 !important;
+  padding: 0 1.25rem 0 3.25rem !important; /* pl-13 equivalent (52px) for icons */
+  border-radius: 12px !important;
+  background-color: rgba(10, 11, 18, 0.7) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: none !important;
+}
+
+.auth-page input[type="text"]:focus,
+.auth-page input[type="email"]:focus,
+.auth-page input[type="password"]:focus {
+  border-color: hsl(263, 90%, 55%) !important;
+  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.15) !important;
+  background-color: rgba(6, 6, 12, 0.9) !important;
+}
+
+.auth-page input::placeholder {
+  font-size: 15px !important;
+  color: rgba(255, 255, 255, 0.35) !important;
+  font-weight: 400 !important;
+}
+
+.auth-page button, .auth-page .btn {
+  min-height: 52px !important;
+  height: 52px !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  border-radius: 12px !important;
+  padding: 0 1.5rem !important;
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.12) !important;
+}
+
+.auth-page .auth-helper {
+  font-size: 13px !important;
+  font-weight: 450 !important;
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+.auth-page p, .auth-page span, .auth-page li, .auth-page a {
+  font-size: 14px !important;
+  font-weight: 500 !important;
+}
+
+.auth-page a.auth-link {
+  font-size: 13px !important;
+  font-weight: 600 !important;
+}
+
