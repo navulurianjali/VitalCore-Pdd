@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import GlassCard from "@/components/ui/GlassCard";
 import Button from "@/components/ui/Button";
@@ -9,9 +9,126 @@ import {
   Droplets, Moon, Utensils, Activity, Plus,
   MessageCircle, Heart, Share2, Flame, UserPlus
 } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
+import { supabase } from "@/utils/supabase";
 
 export default function HealthyHabitsPage() {
+  const { profile } = useAuth();
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [loading, setLoading] = useState(false);
+  
+  // State for data
+  const [challenges, setChallenges] = useState<any[]>([]);
+  const [userChallenges, setUserChallenges] = useState<any[]>([]);
+  
+  // Form state
+  const [newTitle, setNewTitle] = useState("");
+  const [newDesc, setNewDesc] = useState("");
+  const [newDuration, setNewDuration] = useState("7");
+
+  useEffect(() => {
+    fetchChallenges();
+  }, [profile]);
+
+  const fetchChallenges = async () => {
+    if (!supabase) return;
+    try {
+      // 1. Fetch all public challenges
+      const { data: allC } = await supabase
+        .from("challenges")
+        .select("*")
+        .order("id", { ascending: false });
+      
+      if (allC) setChallenges(allC);
+
+      // 2. Fetch user's joined challenges
+      if (profile?.id) {
+        const { data: uc } = await supabase
+          .from("user_challenges")
+          .select("*, challenge:challenges(*)")
+          .eq("user_id", profile.id);
+        
+        if (uc) setUserChallenges(uc);
+      } else {
+        // Guest mode fallback
+        const guestUc = JSON.parse(localStorage.getItem("vitalcore_user_challenges") || "[]");
+        setUserChallenges(guestUc);
+      }
+    } catch (err) {
+      console.error("Error fetching challenges:", err);
+    }
+  };
+
+  const handleJoinChallenge = async (challengeId: string) => {
+    const userId = profile?.id;
+    if (!userId) {
+      // Guest local storage fallback
+      const guestUc = JSON.parse(localStorage.getItem("vitalcore_user_challenges") || "[]");
+      const challengeToJoin = challenges.find((c: any) => c.id === challengeId);
+      if (!guestUc.find((uc: any) => uc.challenge_id === challengeId)) {
+        guestUc.push({ challenge_id: challengeId, challenge: challengeToJoin, progress_percentage: 0 });
+        localStorage.setItem("vitalcore_user_challenges", JSON.stringify(guestUc));
+        setUserChallenges(guestUc);
+      }
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from("user_challenges")
+        .insert({ user_id: userId, challenge_id: challengeId, progress_percentage: 0 });
+      
+      if (!error) {
+        fetchChallenges(); // Refresh lists
+      }
+    } catch (err) {
+      console.error("Join error:", err);
+    }
+  };
+
+  const handleCreateChallenge = async () => {
+    if (!newTitle.trim() || !newDesc.trim()) return;
+    setLoading(true);
+    
+    const newChallenge = {
+      title: newTitle,
+      description: newDesc,
+      category: "Community",
+      difficulty: "Medium",
+      duration_days: parseInt(newDuration) || 7
+    };
+
+    try {
+      if (supabase && profile?.id) {
+        const { data, error } = await supabase.from("challenges").insert(newChallenge).select();
+        if (!error && data) {
+          // Auto-join the challenge you just created
+          await supabase.from("user_challenges").insert({
+            user_id: profile.id,
+            challenge_id: data[0].id,
+            progress_percentage: 0
+          });
+        }
+      } else {
+        // Guest fallback simulation
+        const fakeId = "mock-" + Date.now();
+        setChallenges([{...newChallenge, id: fakeId}, ...challenges]);
+      }
+    } catch (err) {
+      console.error("Create error:", err);
+    } finally {
+      setLoading(false);
+      setShowCreateModal(false);
+      setNewTitle("");
+      setNewDesc("");
+      fetchChallenges();
+    }
+  };
+
+  // Helper to check if joined
+  const hasJoined = (id: string) => {
+    return userChallenges.some((uc: any) => uc.challenge_id === id);
+  };
 
   return (
     <DashboardLayout>
@@ -78,189 +195,123 @@ export default function HealthyHabitsPage() {
             <Flame className="h-5 w-5 text-orange-500" />
             My Active Challenges
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <GlassCard className="p-5 flex items-center justify-between gap-4 border-l-4 border-l-orange-500">
-              <div className="space-y-1">
-                <h4 className="font-bold text-base">Daily Walking Challenge</h4>
-                <p className="text-sm text-foreground/60 font-medium">Day 6 of 14</p>
-                <div className="flex items-center gap-2 pt-2">
-                  <div className="w-24 bg-foreground/10 h-1.5 rounded-full overflow-hidden">
-                    <div className="bg-orange-500 h-full rounded-full" style={{ width: '42%' }} />
+          {userChallenges.length === 0 ? (
+            <div className="text-sm text-foreground/50 p-6 text-center border border-dashed rounded-2xl border-foreground/10">
+              You haven't joined any challenges yet. Pick one below to get started!
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {userChallenges.map((uc: any, idx: number) => (
+                <GlassCard key={idx} className="p-5 flex items-center justify-between gap-4 border-l-4 border-l-orange-500">
+                  <div className="space-y-1">
+                    <h4 className="font-bold text-base">{uc.challenge?.title || "Custom Challenge"}</h4>
+                    <p className="text-sm text-foreground/60 font-medium">In Progress</p>
+                    <div className="flex items-center gap-2 pt-2">
+                      <div className="w-24 bg-foreground/10 h-1.5 rounded-full overflow-hidden">
+                        <div className="bg-orange-500 h-full rounded-full" style={{ width: `${uc.progress_percentage || 5}%` }} />
+                      </div>
+                      <span className="text-xs font-bold text-foreground/50">{uc.progress_percentage || 5}%</span>
+                    </div>
                   </div>
-                  <span className="text-xs font-bold text-foreground/50">42%</span>
-                </div>
-              </div>
-              <Button variant="glass" size="sm" className="text-xs font-bold px-4">
-                View Details
-              </Button>
-            </GlassCard>
-
-            <GlassCard className="p-5 flex items-center justify-between gap-4 border-l-4 border-l-emerald-500">
-              <div className="space-y-1">
-                <h4 className="font-bold text-base">Drink Water Challenge</h4>
-                <p className="text-sm text-foreground/60 font-medium">Day 2 of 7</p>
-                <div className="flex items-center gap-2 pt-2">
-                  <div className="w-24 bg-foreground/10 h-1.5 rounded-full overflow-hidden">
-                    <div className="bg-emerald-500 h-full rounded-full" style={{ width: '28%' }} />
-                  </div>
-                  <span className="text-xs font-bold text-foreground/50">28%</span>
-                </div>
-              </div>
-              <Button variant="glass" size="sm" className="text-xs font-bold px-4">
-                View Details
-              </Button>
-            </GlassCard>
-          </div>
+                  <Button variant="glass" size="sm" className="text-xs font-bold px-4">
+                    View Details
+                  </Button>
+                </GlassCard>
+              ))}
+            </div>
+          )}
         </section>
 
-        {/* SECTION 2 - POPULAR CHALLENGES */}
+        {/* SECTION 2 - POPULAR / COMMUNITY CHALLENGES */}
         <section className="space-y-4">
-          <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
-            <Users className="h-5 w-5 text-violet-500" />
-            Popular Challenges
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            
-            {[
-              { title: "Drink Water Challenge", desc: "Drink enough water for 7 days.", icon: Droplets, color: "text-blue-500", bg: "bg-blue-500/10", joined: "1,240", duration: "7 days" },
-              { title: "Daily Walking Challenge", desc: "Reach your daily step goal for 14 days.", icon: Activity, color: "text-emerald-500", bg: "bg-emerald-500/10", joined: "3,800", duration: "14 days" },
-              { title: "Better Sleep Challenge", desc: "Sleep at least 7 hours for one week.", icon: Moon, color: "text-indigo-500", bg: "bg-indigo-500/10", joined: "850", duration: "7 days" },
-              { title: "Healthy Eating Challenge", desc: "Log healthy meals for 10 days.", icon: Utensils, color: "text-orange-500", bg: "bg-orange-500/10", joined: "2,100", duration: "10 days" },
-            ].map((ch, idx) => (
-              <GlassCard key={idx} className="p-5 space-y-4 flex flex-col justify-between hover:scale-[1.02] transition-transform duration-300">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
+              <Users className="h-5 w-5 text-violet-500" />
+              Community Challenges
+            </h2>
+            <Button onClick={() => setShowCreateModal(true)} variant="glass" size="sm" className="text-xs font-bold flex items-center gap-1.5 border-primary/20 hover:border-primary/40">
+              <Plus className="h-3.5 w-3.5" />
+              Create Challenge
+            </Button>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {challenges.length > 0 ? challenges.map((ch: any) => (
+              <GlassCard key={ch.id} className="p-5 space-y-4 flex flex-col justify-between hover:scale-[1.02] transition-transform duration-300">
                 <div className="space-y-3">
-                  <div className={`w-10 h-10 ${ch.bg} rounded-xl flex items-center justify-center`}>
-                    <ch.icon className={`h-5 w-5 ${ch.color}`} />
+                  <div className={`w-10 h-10 bg-violet-500/10 rounded-xl flex items-center justify-center`}>
+                    <Users className={`h-5 w-5 text-violet-500`} />
                   </div>
                   <div>
                     <h3 className="font-bold text-base">{ch.title}</h3>
-                    <p className="text-xs text-foreground/60 font-medium mt-1 leading-relaxed">{ch.desc}</p>
+                    <p className="text-xs text-foreground/60 font-medium mt-1 leading-relaxed">{ch.description}</p>
                   </div>
                 </div>
                 
                 <div className="space-y-3 pt-3 border-t border-foreground/5">
                   <div className="flex items-center justify-between text-xs font-bold text-foreground/50">
-                    <span className="flex items-center gap-1"><Users className="h-3 w-3" /> {ch.joined} joined</span>
-                    <span>{ch.duration}</span>
+                    <span className="flex items-center gap-1"><Users className="h-3 w-3" /> {Math.floor(Math.random() * 50) + 1} joined</span>
+                    <span>{ch.duration_days || 7} days</span>
                   </div>
-                  <Button variant="primary" className="w-full text-xs font-bold py-2">
-                    Join Challenge
-                  </Button>
+                  
+                  {hasJoined(ch.id) ? (
+                    <Button variant="secondary" className="w-full text-xs font-bold py-2 opacity-50 cursor-not-allowed">
+                      <CheckCircle className="h-3.5 w-3.5 mr-1 inline" /> Joined
+                    </Button>
+                  ) : (
+                    <Button onClick={() => handleJoinChallenge(ch.id)} variant="primary" className="w-full text-xs font-bold py-2">
+                      Join Challenge
+                    </Button>
+                  )}
                 </div>
               </GlassCard>
-            ))}
-
+            )) : (
+              <div className="col-span-full p-8 text-center text-sm font-bold text-foreground/50">
+                Loading community challenges...
+              </div>
+            )}
           </div>
         </section>
 
-        {/* SECTION 3 - COMMUNITY CHALLENGES & SECTION 4 - FRIENDS & GROUPS */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          
-          {/* Community Challenges */}
-          <section className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
-                <Users className="h-5 w-5 text-pink-500" />
-                Community Challenges
-              </h2>
-              <Button onClick={() => setShowCreateModal(true)} variant="glass" size="sm" className="text-xs font-bold flex items-center gap-1.5">
-                <Plus className="h-3.5 w-3.5" />
-                Create Challenge
-              </Button>
-            </div>
-            
-            <div className="space-y-3">
-              {[
-                { title: "Walk 10,000 Steps Daily", author: "Sarah M.", likes: 45, comments: 12 },
-                { title: "Drink 3 Liters Water", author: "Mike T.", likes: 112, comments: 8 },
-                { title: "Morning Yoga Club", author: "Elena R.", likes: 89, comments: 24 },
-                { title: "30-Day Weight Loss Journey", author: "David K.", likes: 230, comments: 45 },
-              ].map((c, i) => (
-                <GlassCard key={i} className="p-4 flex items-center justify-between hover:bg-foreground/[0.02] transition-colors">
-                  <div className="space-y-1">
-                    <h4 className="font-bold text-sm">{c.title}</h4>
-                    <p className="text-xs text-foreground/50 font-medium">Created by {c.author}</p>
-                  </div>
-                  <div className="flex items-center gap-4 text-foreground/40">
-                    <button className="flex items-center gap-1 hover:text-pink-500 transition-colors">
-                      <Heart className="h-4 w-4" />
-                      <span className="text-xs font-bold">{c.likes}</span>
-                    </button>
-                    <button className="flex items-center gap-1 hover:text-blue-500 transition-colors">
-                      <MessageCircle className="h-4 w-4" />
-                      <span className="text-xs font-bold">{c.comments}</span>
-                    </button>
-                    <button className="hover:text-emerald-500 transition-colors">
-                      <Share2 className="h-4 w-4" />
-                    </button>
-                  </div>
-                </GlassCard>
-              ))}
-            </div>
-          </section>
-
-          {/* Friends & Groups */}
-          <section className="space-y-4">
-            <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
-              <UserPlus className="h-5 w-5 text-teal-500" />
-              Friends & Groups
-            </h2>
-            
-            <div className="space-y-3">
-              {[
-                { name: "Office Fitness Group", members: "24 members", icon: "🏢" },
-                { name: "Healthy Eating Club", members: "128 members", icon: "🥗" },
-                { name: "Evening Walk Team", members: "52 members", icon: "🚶" },
-              ].map((g, i) => (
-                <GlassCard key={i} className="p-4 flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-foreground/5 flex items-center justify-center text-lg">
-                      {g.icon}
-                    </div>
-                    <div>
-                      <h4 className="font-bold text-sm">{g.name}</h4>
-                      <p className="text-xs text-foreground/50 font-medium">{g.members}</p>
-                    </div>
-                  </div>
-                  <Button variant="glass" size="sm" className="text-xs font-bold">
-                    Join Group
-                  </Button>
-                </GlassCard>
-              ))}
-              
-              <Button variant="glass" className="w-full mt-2 border-dashed border-2 py-4 text-sm font-bold text-foreground/60 hover:text-foreground">
-                <Share2 className="h-4 w-4 mr-2 inline" />
-                Invite Friends via Link
-              </Button>
-            </div>
-          </section>
-          
-        </div>
-
-        {/* SECTION 6 - ACHIEVEMENTS */}
+        {/* SECTION 4 - FRIENDS & GROUPS */}
         <section className="space-y-4">
           <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
-            <Award className="h-5 w-5 text-yellow-500" />
-            Recent Achievements
+            <UserPlus className="h-5 w-5 text-teal-500" />
+            Friends & Groups
           </h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          
+          <div className="space-y-3">
             {[
-              { title: "First Workout Completed", icon: "🏆", color: "from-yellow-500/20 to-yellow-500/5" },
-              { title: "7 Day Hydration Streak", icon: "💧", color: "from-blue-500/20 to-blue-500/5" },
-              { title: "Sleep Champion", icon: "😴", color: "from-indigo-500/20 to-indigo-500/5" },
-              { title: "100K Steps Milestone", icon: "🚶", color: "from-emerald-500/20 to-emerald-500/5" },
-            ].map((ach, idx) => (
-              <GlassCard key={idx} className={`p-5 text-center flex flex-col items-center justify-center gap-3 bg-gradient-to-b ${ach.color}`}>
-                <div className="text-3xl drop-shadow-md">{ach.icon}</div>
-                <h4 className="font-bold text-sm leading-tight max-w-[120px]">{ach.title}</h4>
+              { name: "Office Fitness Group", members: "24 members", icon: "🏢" },
+              { name: "Healthy Eating Club", members: "128 members", icon: "🥗" },
+              { name: "Evening Walk Team", members: "52 members", icon: "🚶" },
+            ].map((g, i) => (
+              <GlassCard key={i} className="p-4 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-foreground/5 flex items-center justify-center text-lg">
+                    {g.icon}
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-sm">{g.name}</h4>
+                    <p className="text-xs text-foreground/50 font-medium">{g.members}</p>
+                  </div>
+                </div>
+                <Button variant="glass" size="sm" className="text-xs font-bold">
+                  Join Group
+                </Button>
               </GlassCard>
             ))}
+            
+            <Button variant="glass" className="w-full mt-2 border-dashed border-2 py-4 text-sm font-bold text-foreground/60 hover:text-foreground">
+              <Share2 className="h-4 w-4 mr-2 inline" />
+              Invite Friends via Link
+            </Button>
           </div>
         </section>
 
       </div>
 
-      {/* Create Challenge Modal (Placeholder) */}
+      {/* Create Challenge Modal */}
       {showCreateModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm">
           <GlassCard className="w-full max-w-md p-6 space-y-5 animate-in zoom-in-95 duration-200">
@@ -272,16 +323,34 @@ export default function HealthyHabitsPage() {
             <div className="space-y-4">
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-foreground/70">Challenge Title</label>
-                <input type="text" placeholder="e.g. Morning Yoga Club" className="w-full p-2.5 rounded-xl border border-foreground/10 bg-foreground/5 text-sm outline-none focus:border-primary transition-colors" />
+                <input 
+                  type="text" 
+                  value={newTitle}
+                  onChange={(e) => setNewTitle(e.target.value)}
+                  placeholder="e.g. Morning Yoga Club" 
+                  className="w-full p-2.5 rounded-xl border border-foreground/10 bg-foreground/5 text-sm outline-none focus:border-primary transition-colors" 
+                />
               </div>
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-foreground/70">Description</label>
-                <textarea placeholder="What's the goal of this challenge?" rows={3} className="w-full p-2.5 rounded-xl border border-foreground/10 bg-foreground/5 text-sm outline-none focus:border-primary transition-colors resize-none" />
+                <textarea 
+                  value={newDesc}
+                  onChange={(e) => setNewDesc(e.target.value)}
+                  placeholder="What's the goal of this challenge?" 
+                  rows={3} 
+                  className="w-full p-2.5 rounded-xl border border-foreground/10 bg-foreground/5 text-sm outline-none focus:border-primary transition-colors resize-none" 
+                />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-foreground/70">Duration (Days)</label>
-                  <input type="number" placeholder="7" className="w-full p-2.5 rounded-xl border border-foreground/10 bg-foreground/5 text-sm outline-none focus:border-primary transition-colors" />
+                  <input 
+                    type="number" 
+                    value={newDuration}
+                    onChange={(e) => setNewDuration(e.target.value)}
+                    placeholder="7" 
+                    className="w-full p-2.5 rounded-xl border border-foreground/10 bg-foreground/5 text-sm outline-none focus:border-primary transition-colors" 
+                  />
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-foreground/70">Privacy</label>
@@ -295,7 +364,9 @@ export default function HealthyHabitsPage() {
             
             <div className="pt-2 flex gap-3">
               <Button onClick={() => setShowCreateModal(false)} variant="glass" className="flex-1 font-bold">Cancel</Button>
-              <Button variant="primary" className="flex-1 font-bold">Publish Challenge</Button>
+              <Button onClick={handleCreateChallenge} variant="primary" className="flex-1 font-bold">
+                {loading ? "Publishing..." : "Publish Challenge"}
+              </Button>
             </div>
           </GlassCard>
         </div>

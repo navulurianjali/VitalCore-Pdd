@@ -86,14 +86,14 @@ export default function AICoachPage() {
       });
 
       if (!response.ok) {
-        throw new Error("Simulator Mode active");
+        throw new Error("AI Coach API Error");
       }
 
       const resData = await response.json();
-      fullResponse = resData.reply;
+      fullResponse = resData.reply || resData.error;
     } catch (err) {
-      console.warn("AI Coach using local biometric simulator fallback:", err);
-      fullResponse = getAICoachReply(currentInput, metrics, profile);
+      console.error("AI Coach API failed:", err);
+      fullResponse = "I'm having trouble connecting to my neural core right now. Please check your network or API keys and try again.";
     }
 
     // Stream word-by-word

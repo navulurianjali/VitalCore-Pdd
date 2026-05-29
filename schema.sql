@@ -220,6 +220,25 @@ alter table public.challenges enable row level security;
 create policy "Anyone can read challenges." on public.challenges
     for select to authenticated using (true);
 
+create policy "Authenticated users can insert challenges" on public.challenges
+    for insert to authenticated with check (true);
+
+-- USER CHALLENGES (Tracking joined challenges & progress)
+create table public.user_challenges (
+    id uuid primary key default gen_random_uuid(),
+    user_id uuid references public.profiles(id) on delete cascade not null,
+    challenge_id uuid references public.challenges(id) on delete cascade not null,
+    joined_at timestamp with time zone default timezone('utc'::text, now()),
+    progress_percentage integer default 0 check (progress_percentage >= 0 and progress_percentage <= 100),
+    completed boolean default false,
+    unique(user_id, challenge_id)
+);
+
+alter table public.user_challenges enable row level security;
+
+create policy "Users can manage their joined challenges." on public.user_challenges
+    for all using (auth.uid() = user_id);
+
 -- HABITS TRACKER (Including AI excuse analyzer markers)
 create table public.habits (
     id uuid primary key default gen_random_uuid(),

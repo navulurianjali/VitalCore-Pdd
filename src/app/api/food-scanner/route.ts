@@ -104,8 +104,11 @@ DO NOT return any markdown code blocks, backticks, or text outside of the JSON. 
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      console.warn("Gemini vision endpoint failed, calling high-fidelity fallback...", errorData);
-      return NextResponse.json({ result: generateFallbackVisionScan() });
+      console.warn("Gemini vision endpoint failed", errorData);
+      return NextResponse.json(
+        { error: "AI Scanner failed to process this image. Please ensure the image is clear and try again.", details: errorData },
+        { status: 500 }
+      );
     }
 
     const data = await response.json();
@@ -116,8 +119,11 @@ DO NOT return any markdown code blocks, backticks, or text outside of the JSON. 
       const parsedResult = JSON.parse(replyText);
       return NextResponse.json({ result: parsedResult });
     } catch (parseError) {
-      console.warn("JSON parse error on Gemini reply, trying to salvage or fallback:", replyText);
-      return NextResponse.json({ result: generateFallbackVisionScan() });
+      console.warn("JSON parse error on Gemini reply:", replyText);
+      return NextResponse.json(
+        { error: "AI returned an invalid response format. Please try scanning the food again." },
+        { status: 500 }
+      );
     }
   } catch (err: any) {
     console.error("Food Scanner API Error:", err);
