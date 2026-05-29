@@ -93,16 +93,22 @@ export default function HealthyHabitsPage() {
       }
 
       // 2. Fetch user's joined challenges
+      const guestUc = JSON.parse(localStorage.getItem("vitalcore_user_challenges") || "[]");
+      
       if (profile?.id) {
         const { data: uc } = await supabase
           .from("user_challenges")
           .select("*, challenge:challenges(*)")
           .eq("user_id", profile.id);
         
-        if (uc) setUserChallenges(uc);
+        if (uc) {
+          // Merge local and DB challenges to ensure dummy challenges show up
+          setUserChallenges([...uc, ...guestUc]);
+        } else {
+          setUserChallenges(guestUc);
+        }
       } else {
         // Guest mode fallback
-        const guestUc = JSON.parse(localStorage.getItem("vitalcore_user_challenges") || "[]");
         setUserChallenges(guestUc);
       }
     } catch (err) {
@@ -112,14 +118,15 @@ export default function HealthyHabitsPage() {
 
   const handleJoinChallenge = async (challengeId: string) => {
     const userId = profile?.id;
-    if (!userId) {
-      // Guest local storage fallback
+    // If guest OR joining a dummy fallback challenge (c1, c2, etc.) that isn't in DB
+    if (!userId || challengeId.startsWith("c")) {
       const guestUc = JSON.parse(localStorage.getItem("vitalcore_user_challenges") || "[]");
       const challengeToJoin = challenges.find((c: any) => c.id === challengeId);
       if (!guestUc.find((uc: any) => uc.challenge_id === challengeId)) {
-        guestUc.push({ challenge_id: challengeId, challenge: challengeToJoin, progress_percentage: 0 });
+        const newLocalUc = { challenge_id: challengeId, challenge: challengeToJoin, progress_percentage: 0 };
+        guestUc.push(newLocalUc);
         localStorage.setItem("vitalcore_user_challenges", JSON.stringify(guestUc));
-        setUserChallenges(guestUc);
+        setUserChallenges(prev => [...prev, newLocalUc]);
       }
       return;
     }
@@ -188,7 +195,7 @@ export default function HealthyHabitsPage() {
     setSelectedChallenge(null);
 
     // Persist
-    if (profile?.id && supabase) {
+    if (profile?.id && supabase && !userChallenge.challenge_id.startsWith("c")) {
       try {
         await supabase
           .from("user_challenges")
@@ -199,7 +206,15 @@ export default function HealthyHabitsPage() {
         console.error("Error completing challenge", err);
       }
     } else {
-      localStorage.setItem("vitalcore_user_challenges", JSON.stringify(updatedUc));
+      // Update local storage for dummy/guest challenges
+      const guestUc = JSON.parse(localStorage.getItem("vitalcore_user_challenges") || "[]");
+      const updatedGuestUc = guestUc.map((uc: any) => {
+        if (uc.challenge_id === userChallenge.challenge_id) {
+          return { ...uc, progress_percentage: 100, completed: true };
+        }
+        return uc;
+      });
+      localStorage.setItem("vitalcore_user_challenges", JSON.stringify(updatedGuestUc));
     }
   };
 
