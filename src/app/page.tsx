@@ -66,51 +66,6 @@ export default function LandingPage() {
     }
   ];
 
-  const pricingPlans = [
-    {
-      name: "VitalCore Standard",
-      price: "0",
-      description: "Basic wellness logging and daily step tracking.",
-      features: [
-        "Interactive Daily Wellness Dashboard",
-        "Calorie & food logging",
-        "Sleep & water tracking",
-        "Simple health logs"
-      ],
-      cta: "Get Started Free",
-      highlighted: false
-    },
-    {
-      name: "VitalCore Professional",
-      price: "19",
-      description: "Complete daily energy predictions, stress insights, and smart weather recommendations.",
-      features: [
-        "All Standard capabilities",
-        "Smart daily predictions & trend alerts",
-        "Stress & fatigue tracking",
-        "Sleep schedule trends",
-        "Weather-smart recommendations",
-        "Elderly & beginner modes"
-      ],
-      cta: "Unlock Pro Features",
-      highlighted: true
-    },
-    {
-      name: "VitalCore Enterprise / Elite",
-      price: "49",
-      description: "Explore your future health patterns and build healthy habits with family and friends.",
-      features: [
-        "All Pro capabilities",
-        "Visual 3-6 month health forecasts",
-        "Body age estimates",
-        "Family & friends tracking circles",
-        "Secure developer API tools",
-        "Dedicated wellness coaching"
-      ],
-      cta: "Unlock Elite Features",
-      highlighted: false
-    }
-  ];
 
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
 
@@ -345,62 +300,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* 5. PRICING SOLUTIONS */}
-      <section className="py-20 bg-background relative border-t border-foreground/5">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto space-y-4 mb-16">
-            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Biomedical Plan Tiers</h2>
-            <p className="text-sm text-foreground/70 leading-relaxed font-medium">
-              Choose the depth of preventative health simulation that matches your lifestyle complexity.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
-            {pricingPlans.map((plan, index) => (
-              <GlassCard 
-                key={index} 
-                glowColor={plan.highlighted ? "violet" : "none"} 
-                className={`flex flex-col justify-between relative ${
-                  plan.highlighted ? "border-2 border-primary/50 shadow-2xl" : ""
-                }`}
-              >
-                {plan.highlighted && (
-                  <span className="absolute -top-3 right-6 rounded-full bg-primary px-3 py-1 text-[9px] font-bold text-white">
-                    Recommended AI Mode
-                  </span>
-                )}
-                
-                <div className="space-y-4">
-                  <h3 className="text-sm font-bold text-foreground">{plan.name}</h3>
-                  <div className="flex items-baseline gap-0.5 my-1">
-                    <span className="text-xl font-bold">$</span>
-                    <span className="text-3xl font-bold tracking-tight">{plan.price}</span>
-                    <span className="text-xs text-[var(--muted)] ml-1">/ month</span>
-                  </div>
-                  <p className="text-xs text-foreground/70 font-medium leading-relaxed">{plan.description}</p>
-                  
-                  <ul className="space-y-3 pt-4 border-t border-foreground/5 text-xs text-foreground/80 font-medium">
-                    {plan.features.map((feat, idx) => (
-                      <li key={idx} className="flex items-center gap-2">
-                        <Smile className="h-3.5 w-3.5 text-secondary shrink-0" />
-                        <span>{feat}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div className="pt-8">
-                  <Link href="/auth/signup">
-                    <Button variant={plan.highlighted ? "primary" : "glass"} className="w-full py-3">
-                      {plan.cta}
-                    </Button>
-                  </Link>
-                </div>
-              </GlassCard>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* 6. FAQ COLLAPSIBLE ACCORDION */}
       <section className="py-20 bg-background/30 relative border-t border-foreground/5">
