@@ -174,10 +174,6 @@ export default function TimelinePage() {
                 
                 <div className="space-y-1.5 mt-4">
                   <div className="flex justify-between text-xs">
-                    <span className="text-[var(--muted)]">Energy</span>
-                    <span className="font-bold text-secondary">{proj.energy}%</span>
-                  </div>
-                  <div className="flex justify-between text-xs">
                     <span className="text-[var(--muted)]">Vitality Age</span>
                     <span className="font-bold text-emerald-500">{proj.vitalityAge}</span>
                   </div>
@@ -325,40 +321,7 @@ export default function TimelinePage() {
               </div>
             </div>
 
-            {/* --- 7. HEALTH TREND REPLAY --- */}
-            <GlassCard glowColor="none" className="p-6 sm:p-8 rounded-[32px]">
-              <div className="flex justify-between items-center mb-6">
-                <div className="flex items-center gap-2">
-                  <PlayCircle className="h-5 w-5 text-secondary" />
-                  <h2 className="text-lg font-bold">Health Trend Replay</h2>
-                </div>
-                <span className="text-xs font-bold text-[var(--muted)]">Last Week vs This Week</span>
-              </div>
-              
-              <div className="space-y-6">
-                <div className="space-y-2">
-                  <div className="flex justify-between text-xs font-bold">
-                    <span className="text-[var(--foreground)]">Deep Sleep Consistency</span>
-                    <span className="text-emerald-500">+12% Improvement</span>
-                  </div>
-                  <div className="w-full h-2 bg-foreground/5 rounded-full overflow-hidden flex">
-                    <div className="h-full bg-[var(--muted)] w-[45%]" />
-                    <div className="h-full bg-emerald-500 w-[12%] animate-[pulse_2s_ease-in-out_infinite]" />
-                  </div>
-                </div>
 
-                <div className="space-y-2">
-                  <div className="flex justify-between text-xs font-bold">
-                    <span className="text-[var(--foreground)]">Hydration Target Hit</span>
-                    <span className="text-rose-500">-5% Decline</span>
-                  </div>
-                  <div className="w-full h-2 bg-foreground/5 rounded-full overflow-hidden flex">
-                    <div className="h-full bg-primary w-[80%]" />
-                  </div>
-                  <p className="text-[10px] text-[var(--muted)] font-medium">You were more hydrated last week. Grab a glass of water!</p>
-                </div>
-              </div>
-            </GlassCard>
 
           </div>
 
