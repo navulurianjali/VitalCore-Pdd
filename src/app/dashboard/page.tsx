@@ -270,15 +270,21 @@ export default function DashboardPage() {
             </div>
 
             {/* Hydration */}
-            <div className="bg-[var(--card-bg)] border border-[var(--border)] rounded-xl p-5 hover:border-primary/30 transition-colors">
-              <div className="mb-3">
-                <Droplet className="h-[18px] w-[18px] text-blue-500" />
+            <div className="bg-[var(--card-bg)] border border-blue-500/30 rounded-xl p-5 hover:border-blue-500/60 transition-colors shadow-sm shadow-blue-500/5 flex flex-col justify-between">
+              <div>
+                <div className="mb-3">
+                  <Droplet className="h-[18px] w-[18px] text-blue-500" />
+                </div>
+                <div className="flex items-baseline gap-2 mb-0.5">
+                  <div className="text-2xl font-bold text-[var(--foreground)]">{waterLogged}</div>
+                  <div className="text-[10px] text-[var(--muted)] font-medium uppercase">ml</div>
+                </div>
+                <div className="text-[11px] text-[var(--muted)] font-medium mb-3">Hydration Intake</div>
               </div>
-              <div className="flex items-baseline gap-2 mb-0.5">
-                <div className="text-2xl font-bold text-[var(--foreground)]">{waterLogged}</div>
-                <div className="text-[10px] text-[var(--muted)] font-medium uppercase">ml</div>
+              <div className="flex gap-2 mt-auto pt-2">
+                <button onClick={() => handleLogWater(250)} className="flex-1 text-[10px] font-bold text-blue-500 bg-blue-500/5 border border-blue-500/30 rounded-lg py-1.5 hover:bg-blue-500/15 transition-all active:scale-95 shadow-sm">+ 250ml</button>
+                <button onClick={() => handleLogWater(500)} className="flex-1 text-[10px] font-bold text-blue-500 bg-blue-500/5 border border-blue-500/30 rounded-lg py-1.5 hover:bg-blue-500/15 transition-all active:scale-95 shadow-sm">+ 500ml</button>
               </div>
-              <div className="text-[11px] text-[var(--muted)] font-medium">Hydration Intake</div>
             </div>
 
             {/* Sleep */}

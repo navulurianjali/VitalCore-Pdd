@@ -83,6 +83,7 @@ export interface EarlyWarning {
   message: string;
   severity: 'low' | 'medium' | 'high';
   type: string;
+  actionTrigger: string;
 }
 
 export function getEarlyWarnings(data: HealthDigitalTwin): EarlyWarning[] {
@@ -92,7 +93,8 @@ export function getEarlyWarnings(data: HealthDigitalTwin): EarlyWarning[] {
     warnings.push({
       type: 'Sleep',
       severity: 'high',
-      message: 'We noticed your sleep schedule has become less consistent this week, increasing your sleep debt.'
+      message: 'We noticed your sleep schedule has become less consistent this week, increasing your sleep debt.',
+      actionTrigger: 'Start Wind-down Routine'
     });
   }
 
@@ -100,7 +102,8 @@ export function getEarlyWarnings(data: HealthDigitalTwin): EarlyWarning[] {
     warnings.push({
       type: 'Burnout',
       severity: 'high',
-      message: 'Your stress and mental load are creating a rising burnout trend. Taking a step back today is recommended.'
+      message: 'Your stress and mental load are creating a rising burnout trend. Taking a step back today is recommended.',
+      actionTrigger: 'Begin Breathing Exercise'
     });
   }
 
@@ -108,7 +111,8 @@ export function getEarlyWarnings(data: HealthDigitalTwin): EarlyWarning[] {
     warnings.push({
       type: 'Recovery',
       severity: 'medium',
-      message: 'Your physical recovery is declining. Make sure you are stretching and hydrating properly.'
+      message: 'Your physical recovery is declining. Make sure you are stretching and hydrating properly.',
+      actionTrigger: 'Log Rest Day'
     });
   }
 
@@ -116,7 +120,8 @@ export function getEarlyWarnings(data: HealthDigitalTwin): EarlyWarning[] {
     warnings.push({
       type: 'Hydration',
       severity: 'low',
-      message: 'A poor hydration trend is forming. This will eventually impact your energy levels.'
+      message: 'A poor hydration trend is forming. This will eventually impact your energy levels.',
+      actionTrigger: 'Log Water Intake'
     });
   }
 

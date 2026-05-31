@@ -279,7 +279,7 @@ export default function FutureHealthLabPage() {
           <div className="lg:col-span-5 space-y-6">
             
             {/* 5. EARLY WARNING SYSTEM & 9. HEALTH RISK RADAR */}
-            <GlassCard className="p-8 space-y-6">
+            <GlassCard className="p-8 space-y-6 border border-rose-500/20 shadow-sm shadow-rose-500/5">
               <h2 className="text-[10px] font-bold text-[var(--muted)] uppercase tracking-widest flex items-center gap-2 mb-2">
                 <ShieldAlert className="h-4 w-4 text-rose-500" /> Early Warning System
               </h2>
@@ -290,12 +290,17 @@ export default function FutureHealthLabPage() {
               ) : (
                 <div className="space-y-4">
                   {earlyWarnings.map((w, i) => (
-                    <div key={i} className={`p-4 rounded-2xl border ${w.severity === 'high' ? 'bg-rose-500/5 border-rose-500/20' : 'bg-amber-500/5 border-amber-500/20'}`}>
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className={`h-2 w-2 rounded-full ${w.severity === 'high' ? 'bg-rose-500 animate-pulse' : 'bg-amber-500'}`} />
-                        <span className="text-xs font-bold uppercase tracking-wider">{w.type} Risk</span>
+                    <div key={i} className={`p-4 rounded-2xl border ${w.severity === 'high' ? 'bg-rose-500/5 border-rose-500/30 shadow-sm shadow-rose-500/10' : 'bg-amber-500/5 border-amber-500/30 shadow-sm shadow-amber-500/10'} flex flex-col justify-between`}>
+                      <div>
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className={`h-2 w-2 rounded-full ${w.severity === 'high' ? 'bg-rose-500 animate-pulse' : 'bg-amber-500'}`} />
+                          <span className="text-xs font-bold uppercase tracking-wider">{w.type} Risk</span>
+                        </div>
+                        <p className="text-sm font-medium leading-relaxed mb-4">{w.message}</p>
                       </div>
-                      <p className="text-sm font-medium leading-relaxed">{w.message}</p>
+                      <button onClick={() => alert(`${w.actionTrigger} initiated!`)} className={`w-full py-2 rounded-xl text-xs font-bold transition-all active:scale-95 border ${w.severity === 'high' ? 'bg-rose-500/10 text-rose-500 border-rose-500/30 hover:bg-rose-500/20' : 'bg-amber-500/10 text-amber-500 border-amber-500/30 hover:bg-amber-500/20'}`}>
+                        {w.actionTrigger || 'Acknowledge Risk'}
+                      </button>
                     </div>
                   ))}
                 </div>
