@@ -18,7 +18,10 @@ import {
   Sparkles,
   Milestone,
   Calendar,
-  Award
+  Award,
+  ArrowRight,
+  Scan,
+  Dumbbell
 } from "lucide-react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import GlassCard from "@/components/ui/GlassCard";
@@ -239,149 +242,75 @@ export default function DashboardPage() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-8 max-w-7xl mx-auto">
-
+      <div className="max-w-6xl mx-auto py-2">
         {/* Page Header Welcome */}
-        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
-          <div className="space-y-1">
-            <span className="text-[10px] font-bold text-primary uppercase tracking-widest block">Wellness Companion</span>
-            <h1 className="text-xl sm:text-2xl font-semibold text-[var(--foreground)] tracking-tight">
-              {greeting}{profile?.full_name ? `, ${profile.full_name.split(" ")[0]}` : ""} 👋
-            </h1>
-            <p className="text-xs sm:text-sm text-[var(--muted)] leading-relaxed max-w-lg">
-              {metrics.recoveryPercentage > 70 
-                ? "Your recovery looks excellent today. A great day to move and connect." 
-                : "Your body is in a gentle rest cycle. Focus on hydration and light mobility today."}
-            </p>
-          </div>
-          <Link href="/ai-coach">
-            <Button variant="primary" size="sm" className="gap-1.5 shadow-sm">
-              <Brain className="h-3.5 w-3.5" />
-              Coach Chat
-            </Button>
-          </Link>
+        <div className="mb-8">
+          <h1 className="text-2xl font-bold text-white tracking-tight">
+            {greeting}{profile?.full_name ? `, ${profile.full_name.split(" ")[0].toUpperCase()}` : ""} 👋
+          </h1>
+          <p className="text-sm text-gray-400 mt-1">
+            Here is your health overview today
+          </p>
         </div>
 
         {/* ======= COMMON FOCUS CARDS GRID ======= */}
         {activeMode !== "elderly" && (
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
 
             {/* Calories */}
-            <GlassCard glowColor="rose" className="p-5 flex flex-col justify-between min-h-[140px] hover:scale-[1.01]">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-[10px] font-semibold uppercase tracking-wider text-[var(--muted)]">Meals</span>
-                <div className="h-6 w-6 rounded-lg bg-rose-500/10 flex items-center justify-center">
-                  <Flame className="h-3.5 w-3.5 text-rose-500" />
-                </div>
+            <div className="bg-[#111827] border border-gray-800 rounded-xl p-5 hover:border-gray-700 transition-colors">
+              <div className="mb-3">
+                <Flame className="h-[18px] w-[18px] text-rose-500" />
               </div>
-              <div>
-                <div className="analytics-number text-[var(--foreground)]">{totalCalories}</div>
-                <div className="text-[10px] text-[var(--muted)] mt-0.5">/ {calorieTarget} kcal</div>
+              <div className="flex items-baseline gap-2 mb-0.5">
+                <div className="text-2xl font-bold text-white">{totalCalories}</div>
+                <div className="text-[10px] text-gray-500 font-medium uppercase">kcal</div>
               </div>
-              <div className="progress-bar mt-3">
-                <div className="progress-bar-fill bg-rose-500/80" style={{ width: `${caloriePct}%` }} />
-              </div>
-            </GlassCard>
+              <div className="text-[11px] text-gray-400 font-medium">Daily Meals Logged</div>
+            </div>
 
             {/* Hydration */}
-            <GlassCard glowColor="emerald" className="p-5 flex flex-col justify-between min-h-[160px] hover:scale-[1.01]">
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-[10px] font-semibold uppercase tracking-wider text-[var(--muted)]">Water</span>
-                <div className="h-6 w-6 rounded-lg bg-emerald-500/10 flex items-center justify-center">
-                  <Droplet className="h-3.5 w-3.5 text-emerald-500" />
-                </div>
+            <div className="bg-[#111827] border border-gray-800 rounded-xl p-5 hover:border-gray-700 transition-colors">
+              <div className="mb-3">
+                <Droplet className="h-[18px] w-[18px] text-blue-500" />
               </div>
-              <div>
-                <div className="analytics-number text-[var(--foreground)]">{waterLogged} ml</div>
-                <div className="text-[10px] text-[var(--muted)] mt-0.5">/ {metrics.hydrationTarget} ml goal</div>
+              <div className="flex items-baseline gap-2 mb-0.5">
+                <div className="text-2xl font-bold text-white">{waterLogged}</div>
+                <div className="text-[10px] text-gray-500 font-medium uppercase">ml</div>
               </div>
-              <div className="flex gap-1.5 mt-2">
-                <button
-                  onClick={(e) => { e.preventDefault(); handleLogWater(250); }}
-                  className="flex-1 py-1 rounded bg-emerald-500/10 border border-emerald-500/15 hover:bg-emerald-500/20 text-emerald-400 font-bold text-[9px] cursor-pointer"
-                >
-                  +250ml
-                </button>
-                <button
-                  onClick={(e) => { e.preventDefault(); handleLogWater(500); }}
-                  className="flex-1 py-1 rounded bg-emerald-500/10 border border-emerald-500/15 hover:bg-emerald-500/20 text-emerald-400 font-bold text-[9px] cursor-pointer"
-                >
-                  +500ml
-                </button>
-              </div>
-              <div className="progress-bar mt-3">
-                <div className="progress-bar-fill bg-emerald-500/80" style={{ width: `${hydrationPct}%` }} />
-              </div>
-            </GlassCard>
+              <div className="text-[11px] text-gray-400 font-medium">Hydration Intake</div>
+            </div>
 
             {/* Sleep */}
-            <GlassCard glowColor="violet" className="p-5 flex flex-col justify-between min-h-[160px] hover:scale-[1.01]">
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-[10px] font-semibold uppercase tracking-wider text-[var(--muted)]">Sleep</span>
-                <div className="h-6 w-6 rounded-lg bg-violet-500/10 flex items-center justify-center">
-                  <Moon className="h-3.5 w-3.5 text-violet-500" />
-                </div>
+            <div className="bg-[#111827] border border-gray-800 rounded-xl p-5 hover:border-gray-700 transition-colors">
+              <div className="mb-3">
+                <Moon className="h-[18px] w-[18px] text-violet-500" />
               </div>
-              <div>
-                <div className="analytics-number text-[var(--foreground)]">{sleepHrs > 0 ? `${sleepHrs}h` : "—"}</div>
-                <div className="text-[10px] text-[var(--muted)] mt-0.5">Quality: {metrics.sleepQuality}%</div>
+              <div className="flex items-baseline gap-2 mb-0.5">
+                <div className="text-2xl font-bold text-white">{sleepHrs > 0 ? sleepHrs : "0"}</div>
+                <div className="text-[10px] text-gray-500 font-medium uppercase">hrs</div>
               </div>
-              <div className="flex gap-1.5 mt-2">
-                <Link
-                  href="/sleep"
-                  className="flex-1 py-1 rounded bg-violet-500/10 border border-violet-500/15 hover:bg-violet-500/20 text-violet-400 font-bold text-[9px] cursor-pointer text-center block"
-                >
-                  Manage Sleep Data
-                </Link>
-              </div>
-              <div className="progress-bar mt-3">
-                <div className="progress-bar-fill bg-violet-500/80" style={{ width: `${sleepPct}%` }} />
-              </div>
-            </GlassCard>
+              <div className="text-[11px] text-gray-400 font-medium">Sleep Duration</div>
+            </div>
 
             {/* Steps */}
-            <GlassCard glowColor="amber" className={`p-5 flex flex-col justify-between min-h-[140px] hover:scale-[1.01] ${pedometer.isTracking ? 'ring-2 ring-amber-500/50 shadow-[0_0_15px_rgba(245,158,11,0.2)]' : ''}`}>
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-[10px] font-semibold uppercase tracking-wider text-[var(--muted)]">
-                  Steps {pedometer.isTracking && <span className="text-amber-500 animate-pulse ml-1">(Live)</span>}
-                </span>
-                <div className="h-6 w-6 rounded-lg bg-amber-500/10 flex items-center justify-center">
-                  <Footprints className={`h-3.5 w-3.5 text-amber-500 ${pedometer.isTracking ? 'animate-bounce' : ''}`} />
+            <div className="bg-[#111827] border border-gray-800 rounded-xl p-5 hover:border-gray-700 transition-colors relative overflow-hidden">
+              <div className="mb-3">
+                <Footprints className="h-[18px] w-[18px] text-amber-500" />
+              </div>
+              <div className="flex items-baseline gap-2 mb-0.5">
+                <div className="text-2xl font-bold text-white">{stepsLogged.toLocaleString()}</div>
+                <div className="text-[10px] text-gray-500 font-medium uppercase">steps</div>
+              </div>
+              <div className="text-[11px] text-gray-400 font-medium">Activity Tracker</div>
+              
+              {pedometer.isTracking && (
+                <div className="absolute top-5 right-5 flex items-center gap-1.5">
+                   <span className="h-2 w-2 rounded-full bg-amber-500 animate-pulse"></span>
+                   <span className="text-[9px] text-amber-500 font-bold uppercase tracking-widest">Live</span>
                 </div>
-              </div>
-              <div>
-                <div className="analytics-number text-[var(--foreground)]">{stepsLogged.toLocaleString()}</div>
-                <div className="text-[10px] text-[var(--muted)] mt-0.5">/ {metrics.stepsTarget.toLocaleString()} goal</div>
-              </div>
-              <div className="flex gap-1.5 mt-2">
-                {!pedometer.isTracking ? (
-                  <>
-                    <button
-                      onClick={(e) => { e.preventDefault(); handleLogSteps(1000); }}
-                      className="flex-1 py-1 rounded bg-amber-500/10 border border-amber-500/15 hover:bg-amber-500/20 text-amber-500 font-bold text-[9px] cursor-pointer"
-                    >
-                      +1k
-                    </button>
-                    <button
-                      onClick={(e) => { e.preventDefault(); pedometer.requestPermission(); }}
-                      className="flex-1 py-1 rounded bg-amber-500 text-white hover:bg-amber-600 font-bold text-[9px] cursor-pointer flex items-center justify-center gap-1 shadow-sm shadow-amber-500/20"
-                    >
-                      <Activity className="h-3 w-3" /> Live Track
-                    </button>
-                  </>
-                ) : (
-                  <button
-                    onClick={(e) => { e.preventDefault(); pedometer.stopTracking(); }}
-                    className="w-full py-1 rounded bg-red-500/10 border border-red-500/15 hover:bg-red-500/20 text-red-500 font-bold text-[9px] cursor-pointer flex items-center justify-center gap-1"
-                  >
-                    Stop Tracking ({pedometer.sessionSteps} steps this session)
-                  </button>
-                )}
-              </div>
-              <div className="progress-bar mt-3">
-                <div className="progress-bar-fill bg-amber-500/80 transition-all duration-300" style={{ width: `${stepsPct}%` }} />
-              </div>
-            </GlassCard>
+              )}
+            </div>
 
           </div>
         )}
@@ -585,201 +514,204 @@ export default function DashboardPage() {
 
         {/* ======= LIFESTYLE FORECASTS & TIMELINE ======= */}
         {predictions && (
-          <GlassCard glowColor="violet" className="p-6 space-y-6 rounded-[28px]">
-            {logStatus && (
-              <div className="p-3 bg-secondary/15 border border-secondary/20 rounded-2xl text-xs font-semibold text-secondary text-center animate-bounce shadow-md">
-                {logStatus}
-              </div>
-            )}
-            
-            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 pb-4 border-b border-[var(--border)]">
-              <div className="space-y-1">
-                <div className="flex items-center gap-1.5">
-                  <span className="h-2 w-2 rounded-full bg-primary animate-pulse" />
-                  <span className="text-[10px] font-bold text-primary uppercase tracking-widest">Future Health Prediction Engine</span>
-                </div>
-                <h3 className="text-base font-semibold text-[var(--foreground)] tracking-tight">Looking ahead at tomorrow's energy</h3>
-                <p className="text-xs text-[var(--muted)]">Calculated from your sleep regularity, water intake, and active neural stress logs.</p>
-              </div>
-              
-              <div className="flex gap-2">
-                <button
-                  onClick={() => setSimulating(!simulating)}
-                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all border cursor-pointer ${
-                    simulating 
-                      ? "bg-secondary text-white border-secondary shadow-md shadow-secondary/15" 
-                      : "bg-foreground/5 text-foreground/70 border-foreground/10 hover:border-secondary/30"
-                  }`}
-                >
-                  🔮 {simulating ? "Close Sandbox" : "Try Lifestyle Simulator"}
-                </button>
-              </div>
+          <div className="mb-8">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-[15px] font-bold text-white">Health Insights</h2>
+              <button
+                onClick={() => setSimulating(!simulating)}
+                className="text-[11px] font-semibold text-gray-400 hover:text-white transition-colors"
+              >
+                {simulating ? "Close Simulator" : "Try Simulator"}
+              </button>
             </div>
 
             {/* Simulated sliders panel */}
             {simulating && (
-              <div className="p-4 bg-secondary/5 rounded-2xl border border-secondary/15 space-y-4 animate-[fadeIn_0.3s_ease-out]">
-                <div className="flex justify-between items-center text-xs font-bold text-secondary">
-                  <span>🔮 Lifestyle Prediction Simulator Active</span>
-                  <span className="text-[10px] uppercase bg-secondary text-white px-2 py-0.5 rounded-full">Interactive Sandbox</span>
+              <div className="bg-[#111827] border border-gray-800 rounded-xl p-5 mb-4 animate-[fadeIn_0.3s_ease-out]">
+                <div className="flex justify-between items-center text-[11px] font-bold text-indigo-400 mb-4 uppercase tracking-wider">
+                  <span>Lifestyle Prediction Simulator</span>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
-                  <div className="space-y-1.5">
-                    <div className="flex justify-between font-bold">
-                      <span>Simulated Sleep Hours</span>
-                      <span className="text-primary font-black">{simSleep}h</span>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="space-y-2">
+                    <div className="flex justify-between font-medium text-xs text-gray-300">
+                      <span>Sleep</span>
+                      <span className="text-white">{simSleep}h</span>
                     </div>
                     <input
-                      type="range"
-                      min="4"
-                      max="10"
-                      step="0.5"
-                      value={simSleep}
+                      type="range" min="4" max="10" step="0.5" value={simSleep}
                       onChange={(e) => setSimSleep(Number(e.target.value))}
-                      className="w-full h-1 bg-foreground/10 rounded-lg appearance-none cursor-pointer accent-primary"
+                      className="w-full h-1 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-indigo-500"
                     />
                   </div>
-                  <div className="space-y-1.5">
-                    <div className="flex justify-between font-bold">
-                      <span>Simulated Water Target</span>
-                      <span className="text-secondary font-black">{simWater} ml</span>
+                  <div className="space-y-2">
+                    <div className="flex justify-between font-medium text-xs text-gray-300">
+                      <span>Water Target</span>
+                      <span className="text-white">{simWater} ml</span>
                     </div>
                     <input
-                      type="range"
-                      min="500"
-                      max="4000"
-                      step="250"
-                      value={simWater}
+                      type="range" min="500" max="4000" step="250" value={simWater}
                       onChange={(e) => setSimWater(Number(e.target.value))}
-                      className="w-full h-1 bg-foreground/10 rounded-lg appearance-none cursor-pointer accent-secondary"
+                      className="w-full h-1 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-blue-500"
                     />
                   </div>
-                  <div className="space-y-1.5">
-                    <div className="flex justify-between font-bold">
-                      <span>Simulated Daily Stress</span>
-                      <span className="text-rose-400 font-black">{simStress}%</span>
+                  <div className="space-y-2">
+                    <div className="flex justify-between font-medium text-xs text-gray-300">
+                      <span>Daily Stress</span>
+                      <span className="text-white">{simStress}%</span>
                     </div>
                     <input
-                      type="range"
-                      min="10"
-                      max="95"
-                      step="5"
-                      value={simStress}
+                      type="range" min="10" max="95" step="5" value={simStress}
                       onChange={(e) => setSimStress(Number(e.target.value))}
-                      className="w-full h-1 bg-foreground/10 rounded-lg appearance-none cursor-pointer accent-rose-500"
+                      className="w-full h-1 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-rose-500"
                     />
                   </div>
                 </div>
               </div>
             )}
 
-            {/* Rhythm Gauges Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
               
-              {/* Burnout Risk Indicator */}
-              <div className="bg-[var(--muted-bg)]/40 p-5 rounded-2xl border border-[var(--border)] space-y-2.5">
-                <div className="flex justify-between items-center text-xs font-semibold text-[var(--muted)]">
-                  <span>Energy balance</span>
-                  <span className={predictions.burnoutRisk > 60 ? "text-rose-500" : predictions.burnoutRisk > 35 ? "text-amber-600" : "text-primary"}>
+              {/* Energy Balance */}
+              <div className="bg-[#111827] border border-gray-800 rounded-xl p-5 hover:border-gray-700 transition-colors">
+                <div className="flex justify-between items-center mb-4">
+                  <div className="h-8 w-8 rounded-lg bg-green-500/10 flex items-center justify-center">
+                    <Zap className="h-4 w-4 text-green-500" />
+                  </div>
+                  <span className={`text-xl font-bold ${predictions.burnoutRisk > 60 ? "text-rose-500" : predictions.burnoutRisk > 35 ? "text-amber-500" : "text-green-500"}`}>
                     {100 - predictions.burnoutRisk}%
                   </span>
                 </div>
-                <div className="w-full bg-[var(--border)] h-1.5 rounded-full overflow-hidden">
-                  <div 
-                    className={`h-full rounded-full transition-all duration-500 ${
-                      predictions.burnoutRisk > 60 ? "bg-rose-500" : predictions.burnoutRisk > 35 ? "bg-amber-500" : "bg-primary"
-                    }`}
-                    style={{ width: `${100 - predictions.burnoutRisk}%` }} 
-                  />
-                </div>
-                <span className="text-[10px] text-[var(--muted)] block leading-normal">
-                  {predictions.burnoutRisk > 60 ? "⚠️ Focus on restorative periods today." : "Optimal energy reservoir."}
-                </span>
+                <h3 className="text-[13px] font-semibold text-white mb-1">Energy Balance</h3>
+                <p className="text-[11px] text-gray-400">
+                  {predictions.burnoutRisk > 60 ? "Focus on restorative periods today." : "Optimal energy reservoir."}
+                </p>
               </div>
 
-              {/* Central Nervous Strain (CNS) fatigue */}
-              <div className="bg-[var(--muted-bg)]/40 p-5 rounded-2xl border border-[var(--border)] space-y-2.5">
-                <div className="flex justify-between items-center text-xs font-semibold text-[var(--muted)]">
-                  <span>Rest profile</span>
-                  <span className={predictions.fatigueBuildup > 65 ? "text-rose-500" : predictions.fatigueBuildup > 40 ? "text-amber-600" : "text-primary"}>
+              {/* Rest Profile */}
+              <div className="bg-[#111827] border border-gray-800 rounded-xl p-5 hover:border-gray-700 transition-colors">
+                <div className="flex justify-between items-center mb-4">
+                  <div className="h-8 w-8 rounded-lg bg-indigo-500/10 flex items-center justify-center">
+                    <Moon className="h-4 w-4 text-indigo-500" />
+                  </div>
+                  <span className={`text-xl font-bold ${predictions.fatigueBuildup > 65 ? "text-rose-500" : predictions.fatigueBuildup > 40 ? "text-amber-500" : "text-indigo-400"}`}>
                     {100 - predictions.fatigueBuildup}%
                   </span>
                 </div>
-                <div className="w-full bg-[var(--border)] h-1.5 rounded-full overflow-hidden">
-                  <div 
-                    className={`h-full rounded-full transition-all duration-500 ${
-                      predictions.fatigueBuildup > 65 ? "bg-rose-500" : predictions.fatigueBuildup > 40 ? "bg-amber-500" : "bg-primary"
-                    }`}
-                    style={{ width: `${100 - predictions.fatigueBuildup}%` }} 
-                  />
-                </div>
-                <span className="text-[10px] text-[var(--muted)] block leading-normal">
-                  {predictions.fatigueBuildup > 65 ? "⚠️ Slight rest debt. Wind down early." : "Recovery battery charged."}
-                </span>
+                <h3 className="text-[13px] font-semibold text-white mb-1">Rest Profile</h3>
+                <p className="text-[11px] text-gray-400">
+                  {predictions.fatigueBuildup > 65 ? "Slight rest debt. Wind down early." : "Recovery battery fully charged."}
+                </p>
               </div>
 
-
+              {/* Recommendations */}
+              <div className="bg-[#111827] border border-gray-800 rounded-xl p-5 hover:border-gray-700 transition-colors flex flex-col justify-center">
+                <div className="flex items-center gap-2 mb-3">
+                  <ShieldAlert className="h-4 w-4 text-gray-400" />
+                  <h3 className="text-[13px] font-semibold text-white">Recommendations</h3>
+                </div>
+                <div className="space-y-2">
+                  {predictions.preventiveReminders.length > 0 ? (
+                    predictions.preventiveReminders.slice(0, 2).map((reminder, idx) => (
+                      <div key={idx} className="flex gap-2">
+                        <Sparkles className="h-3 w-3 text-indigo-400 shrink-0 mt-0.5" />
+                        <span className="text-[11px] text-gray-400 leading-snug">{reminder.replace("Circadian Debt Alert", "Rest Alert")}</span>
+                      </div>
+                    ))
+                  ) : (
+                    <span className="text-[11px] text-gray-400">Keep up the great work! No urgent alerts.</span>
+                  )}
+                </div>
+              </div>
 
             </div>
-
-            {/* Smart Proactive Notifications */}
-            {predictions.preventiveReminders.length > 0 && (
-              <div className="space-y-3 pt-4 border-t border-[var(--border)]">
-                <span className="text-[10px] font-bold text-secondary uppercase tracking-widest flex items-center gap-1.5">
-                  <ShieldAlert className="h-4 w-4" />
-                  Daily recommendations for you
-                </span>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-semibold text-[var(--foreground)]">
-                  {predictions.preventiveReminders.slice(0, 4).map((reminder, idx) => (
-                    <div key={idx} className="flex items-center gap-2 p-3 bg-secondary/5 rounded-2xl border border-secondary/10 hover:bg-secondary/8 transition-colors">
-                      <Sparkles className="h-3.5 w-3.5 text-secondary shrink-0" />
-                      <span className="leading-snug text-foreground/80">{reminder.replace("Circadian Debt Alert", "Rest Alert")}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </GlassCard>
+          </div>
         )}
 
         {/* ======= QUICK ACTIONS (all modes except elderly) ======= */}
         {activeMode !== "elderly" && (
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <Link href="/nutrition" className="block">
-              <div className="flex items-center gap-3.5 p-4 rounded-3xl border border-[var(--border)] bg-[var(--card-bg)] hover:border-primary/30 hover:bg-primary/3 transition-all group cursor-pointer shadow-sm hover:shadow-[0_4px_12px_rgba(0,0,0,0.02)]">
-                <div className="h-8 w-8 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary/15 transition-colors">
-                  <Flame className="h-4 w-4 text-primary" />
+          <div className="mb-8">
+            <h2 className="text-[15px] font-bold text-white mb-4">Quick Actions</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              
+              <Link href="/nutrition" className="bg-[#111827] border border-gray-800 rounded-xl p-4 flex items-center justify-between hover:border-gray-700 transition-colors group">
+                <div className="flex items-center gap-4">
+                  <div className="h-10 w-10 rounded-xl bg-blue-500 flex items-center justify-center shrink-0 shadow-sm shadow-blue-500/20">
+                    <Flame className="h-5 w-5 text-white" />
+                  </div>
+                  <div>
+                    <div className="text-[13px] font-semibold text-white mb-0.5">Log Meals</div>
+                    <div className="text-[11px] text-gray-400">Track your daily foods</div>
+                  </div>
                 </div>
-                <div className="space-y-0.5">
-                  <p className="text-xs font-semibold text-[var(--foreground)]">Log Meals</p>
-                  <p className="text-[10px] text-[var(--muted)]">Track your daily foods</p>
-                </div>
-              </div>
-            </Link>
+                <ArrowRight className="h-4 w-4 text-gray-600 group-hover:text-white transition-colors" />
+              </Link>
 
-            <Link href="/sleep" className="block">
-              <div className="flex items-center gap-3.5 p-4 rounded-3xl border border-[var(--border)] bg-[var(--card-bg)] hover:border-violet-500/30 hover:bg-violet-500/3 transition-all group cursor-pointer shadow-sm hover:shadow-[0_4px_12px_rgba(0,0,0,0.02)]">
-                <div className="h-8 w-8 rounded-2xl bg-violet-500/10 flex items-center justify-center shrink-0 group-hover:bg-violet-500/15 transition-colors">
-                  <Moon className="h-4 w-4 text-violet-500" />
+              <Link href="/sleep" className="bg-[#111827] border border-gray-800 rounded-xl p-4 flex items-center justify-between hover:border-gray-700 transition-colors group">
+                <div className="flex items-center gap-4">
+                  <div className="h-10 w-10 rounded-xl bg-[#0f766e] flex items-center justify-center shrink-0 shadow-sm shadow-teal-500/20">
+                    <Moon className="h-5 w-5 text-white" />
+                  </div>
+                  <div>
+                    <div className="text-[13px] font-semibold text-white mb-0.5">Log Sleep</div>
+                    <div className="text-[11px] text-gray-400">Note last night's rest</div>
+                  </div>
                 </div>
-                <div className="space-y-0.5">
-                  <p className="text-xs font-semibold text-[var(--foreground)]">Log Sleep</p>
-                  <p className="text-[10px] text-[var(--muted)]">Note last night's rest</p>
-                </div>
-              </div>
-            </Link>
+                <ArrowRight className="h-4 w-4 text-gray-600 group-hover:text-white transition-colors" />
+              </Link>
 
-            <Link href="/ai-coach" className="block">
-              <div className="flex items-center gap-3.5 p-4 rounded-3xl border border-[var(--border)] bg-[var(--card-bg)] hover:border-secondary/30 hover:bg-secondary/3 transition-all group cursor-pointer shadow-sm hover:shadow-[0_4px_12px_rgba(0,0,0,0.02)]">
-                <div className="h-8 w-8 rounded-2xl bg-secondary/10 flex items-center justify-center shrink-0 group-hover:bg-secondary/15 transition-colors">
-                  <Brain className="h-4 w-4 text-secondary" />
+              <Link href="/ai-coach" className="bg-[#111827] border border-gray-800 rounded-xl p-4 flex items-center justify-between hover:border-gray-700 transition-colors group">
+                <div className="flex items-center gap-4">
+                  <div className="h-10 w-10 rounded-xl bg-indigo-500 flex items-center justify-center shrink-0 shadow-sm shadow-indigo-500/20">
+                    <Brain className="h-5 w-5 text-white" />
+                  </div>
+                  <div>
+                    <div className="text-[13px] font-semibold text-white mb-0.5">Wellness Chat</div>
+                    <div className="text-[11px] text-gray-400">Speak with your AI companion</div>
+                  </div>
                 </div>
-                <div className="space-y-0.5">
-                  <p className="text-xs font-semibold text-[var(--foreground)]">Wellness Chat</p>
-                  <p className="text-[10px] text-[var(--muted)]">Speak with your companion</p>
+                <ArrowRight className="h-4 w-4 text-gray-600 group-hover:text-white transition-colors" />
+              </Link>
+
+              <Link href="/scanner" className="bg-[#111827] border border-gray-800 rounded-xl p-4 flex items-center justify-between hover:border-gray-700 transition-colors group">
+                <div className="flex items-center gap-4">
+                  <div className="h-10 w-10 rounded-xl bg-orange-500 flex items-center justify-center shrink-0 shadow-sm shadow-orange-500/20">
+                    <Scan className="h-5 w-5 text-white" />
+                  </div>
+                  <div>
+                    <div className="text-[13px] font-semibold text-white mb-0.5">Food Scanner</div>
+                    <div className="text-[11px] text-gray-400">Scan or search any ingredient</div>
+                  </div>
                 </div>
-              </div>
-            </Link>
+                <ArrowRight className="h-4 w-4 text-gray-600 group-hover:text-white transition-colors" />
+              </Link>
+
+              <Link href="/fitness" className="bg-[#111827] border border-gray-800 rounded-xl p-4 flex items-center justify-between hover:border-gray-700 transition-colors group">
+                <div className="flex items-center gap-4">
+                  <div className="h-10 w-10 rounded-xl bg-rose-500 flex items-center justify-center shrink-0 shadow-sm shadow-rose-500/20">
+                    <Dumbbell className="h-5 w-5 text-white" />
+                  </div>
+                  <div>
+                    <div className="text-[13px] font-semibold text-white mb-0.5">Fitness</div>
+                    <div className="text-[11px] text-gray-400">Track and log your workouts</div>
+                  </div>
+                </div>
+                <ArrowRight className="h-4 w-4 text-gray-600 group-hover:text-white transition-colors" />
+              </Link>
+
+              <Link href="/future-lab" className="bg-[#111827] border border-gray-800 rounded-xl p-4 flex items-center justify-between hover:border-gray-700 transition-colors group">
+                <div className="flex items-center gap-4">
+                  <div className="h-10 w-10 rounded-xl bg-fuchsia-500 flex items-center justify-center shrink-0 shadow-sm shadow-fuchsia-500/20">
+                    <Sparkles className="h-5 w-5 text-white" />
+                  </div>
+                  <div>
+                    <div className="text-[13px] font-semibold text-white mb-0.5">Future Health Lab</div>
+                    <div className="text-[11px] text-gray-400">Predict future health trends</div>
+                  </div>
+                </div>
+                <ArrowRight className="h-4 w-4 text-gray-600 group-hover:text-white transition-colors" />
+              </Link>
+
+            </div>
           </div>
         )}
 
