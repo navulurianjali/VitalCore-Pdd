@@ -141,27 +141,40 @@ export default function FutureHealthLabPage() {
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {timeline.map((t, i) => (
-              <GlassCard key={i} className="p-6 relative overflow-hidden group hover:border-primary/50 transition-colors">
+              <GlassCard key={i} className="p-6 relative overflow-hidden group hover:border-primary/50 transition-colors flex flex-col justify-between">
                 <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
                   <Clock className="w-24 h-24 text-[var(--foreground)]" />
                 </div>
-                <span className="text-xs font-black text-primary uppercase tracking-widest mb-4 block">{t.label} Project</span>
-                <div className="space-y-3 relative z-10">
-                  <div className="flex justify-between items-center text-sm">
-                    <span className="text-[var(--muted)] font-medium">Energy</span>
-                    <span className="font-bold">{t.energy}%</span>
+                <div>
+                  <span className="text-xs font-black text-primary uppercase tracking-widest mb-4 block">{t.label} Project</span>
+                  <div className="space-y-3 relative z-10">
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-[var(--muted)] font-medium">Energy</span>
+                      <span className="font-bold">{t.energy}%</span>
+                    </div>
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-[var(--muted)] font-medium">Recovery</span>
+                      <span className="font-bold">{t.recovery}%</span>
+                    </div>
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-[var(--muted)] font-medium">Sleep</span>
+                      <span className="font-bold">{t.sleep}/100</span>
+                    </div>
+                    <div className="flex justify-between items-center text-sm pt-2 border-t border-[var(--border)]">
+                      <span className="text-[var(--muted)] font-bold uppercase text-[10px]">Vitality Age</span>
+                      <span className="font-black text-emerald-500">{t.vitalityAge}</span>
+                    </div>
                   </div>
-                  <div className="flex justify-between items-center text-sm">
-                    <span className="text-[var(--muted)] font-medium">Recovery</span>
-                    <span className="font-bold">{t.recovery}%</span>
+                </div>
+                
+                <div className="mt-6 pt-4 border-t border-[var(--border)] space-y-3 relative z-10">
+                  <div>
+                    <span className="text-[9px] font-bold text-[var(--muted)] uppercase tracking-wider block mb-1">Evolution Preview</span>
+                    <p className="text-[11px] font-semibold text-[var(--foreground)] leading-snug">{t.predictionText}</p>
                   </div>
-                  <div className="flex justify-between items-center text-sm">
-                    <span className="text-[var(--muted)] font-medium">Sleep</span>
-                    <span className="font-bold">{t.sleep}/100</span>
-                  </div>
-                  <div className="flex justify-between items-center text-sm pt-2 border-t border-[var(--border)]">
-                    <span className="text-[var(--muted)] font-bold uppercase text-[10px]">Vitality Age</span>
-                    <span className="font-black text-emerald-500">{t.vitalityAge}</span>
+                  <div className="bg-amber-500/10 p-2.5 rounded-lg border border-amber-500/10">
+                    <span className="text-[9px] font-bold text-amber-500 uppercase tracking-wider block mb-1 flex items-center gap-1"><span className="animate-pulse">⚠️</span> Precautions</span>
+                    <p className="text-[10px] font-bold text-amber-600/90 leading-snug">{t.precautions}</p>
                   </div>
                 </div>
               </GlassCard>

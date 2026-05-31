@@ -98,7 +98,16 @@ Operational Coach Directives:
       console.error("Gemini API Error:", errorData);
       
       // Fallback for demo purposes if API key is invalid/missing
-      const fallbackReply = "Hello! My connection to the central neural core is currently limited due to an invalid API key, so I'm operating in offline mode. However, I've analyzed your recent vitals and they look quite stable today! Keep maintaining your current hydration and sleep patterns. How else can I help you fine-tune your routine?";
+      // Interpolate real-time data so the user gets actual feedback even offline.
+      const waterStatus = metrics?.hydrationMl >= (metrics?.hydrationTarget || 2500) 
+        ? "You're hitting your hydration targets beautifully." 
+        : `You've logged ${metrics?.hydrationMl || 0}ml of water, but you're still short of your ${(metrics?.hydrationTarget || 2500)}ml target. Please drink more water!`;
+        
+      const sleepStatus = metrics?.sleepHours >= (metrics?.sleepTarget || 8)
+        ? "Your sleep duration is optimal."
+        : `Your sleep of ${metrics?.sleepHours || 0} hours is below the target. This might increase your fatigue later.`;
+        
+      const fallbackReply = `Hello ${profile?.full_name?.split(" ")[0] || "there"}! My connection to the central neural core is currently limited due to an invalid API key, so I'm operating in offline mode. However, looking at your real-time data: ${waterStatus} ${sleepStatus} Keep up the great work! How else can I help you fine-tune your routine?`;
       
       return NextResponse.json({ reply: fallbackReply });
     }

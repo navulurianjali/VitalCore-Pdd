@@ -136,6 +136,8 @@ export interface FutureTimelineProjection {
   sleep: number;
   wellness: number;
   vitalityAge: number;
+  predictionText: string;
+  precautions: string;
 }
 
 export function getFutureTimeline(data: HealthDigitalTwin, currentAge: number): FutureTimelineProjection[] {
@@ -151,34 +153,42 @@ export function getFutureTimeline(data: HealthDigitalTwin, currentAge: number): 
       recovery: isImproving ? 90 : isDeclining ? 35 : 60,
       sleep: isImproving ? 88 : isDeclining ? 50 : 70,
       wellness: isImproving ? 85 : isDeclining ? 45 : 70,
-      vitalityAge: isImproving ? baseAge - 0.5 : isDeclining ? baseAge + 0.5 : baseAge
+      vitalityAge: isImproving ? baseAge - 0.5 : isDeclining ? baseAge + 0.5 : baseAge,
+      predictionText: isImproving ? "Your sleep cycle aligns fully, giving you sustained morning energy." : "You may start feeling mid-afternoon energy crashes if current sleep debt persists.",
+      precautions: "Maintain a strict 10 PM wind-down routine to solidify circadian rhythm."
     },
     {
       day: 30,
       label: '30 Days',
       energy: isImproving ? 90 : isDeclining ? 30 : 65,
       recovery: isImproving ? 95 : isDeclining ? 25 : 60,
-      sleep: isImproving ? 92 : isDeclining ? 40 : 70,
-      wellness: isImproving ? 90 : isDeclining ? 35 : 70,
-      vitalityAge: isImproving ? baseAge - 1.5 : isDeclining ? baseAge + 1 : baseAge
+      sleep: isImproving ? 92 : isDeclining ? 45 : 70,
+      wellness: isImproving ? 90 : isDeclining ? 40 : 70,
+      vitalityAge: isImproving ? baseAge - 1.5 : isDeclining ? baseAge + 1.5 : baseAge,
+      predictionText: isImproving ? "Your cardiovascular endurance spikes, making daily tasks feel effortless." : "Risk of minor muscular strains increases due to declining recovery scores.",
+      precautions: "Integrate two active recovery days per week focusing on mobility."
     },
     {
       day: 90,
       label: '90 Days',
-      energy: isImproving ? 95 : isDeclining ? 20 : 65,
-      recovery: isImproving ? 98 : isDeclining ? 15 : 60,
-      sleep: isImproving ? 95 : isDeclining ? 30 : 70,
-      wellness: isImproving ? 95 : isDeclining ? 25 : 70,
-      vitalityAge: isImproving ? baseAge - 3 : isDeclining ? baseAge + 2.5 : baseAge
+      energy: isImproving ? 95 : isDeclining ? 25 : 65,
+      recovery: isImproving ? 98 : isDeclining ? 20 : 60,
+      sleep: isImproving ? 95 : isDeclining ? 40 : 70,
+      wellness: isImproving ? 95 : isDeclining ? 35 : 70,
+      vitalityAge: isImproving ? baseAge - 3 : isDeclining ? baseAge + 3 : baseAge,
+      predictionText: isImproving ? "Cellular turnover rate optimizes. You'll likely see visible changes in skin and muscle tone." : "Chronic fatigue may set in, lowering your immune system's baseline defenses.",
+      precautions: "Monitor micro-nutrient intake, particularly Vitamin D and Magnesium."
     },
     {
       day: 365,
       label: '1 Year',
-      energy: isImproving ? 98 : isDeclining ? 10 : 65,
-      recovery: isImproving ? 100 : isDeclining ? 10 : 60,
-      sleep: isImproving ? 98 : isDeclining ? 20 : 70,
-      wellness: isImproving ? 98 : isDeclining ? 15 : 70,
-      vitalityAge: isImproving ? baseAge - 5 : isDeclining ? baseAge + 5 : baseAge
+      energy: isImproving ? 98 : isDeclining ? 20 : 65,
+      recovery: isImproving ? 100 : isDeclining ? 15 : 60,
+      sleep: isImproving ? 98 : isDeclining ? 35 : 70,
+      wellness: isImproving ? 98 : isDeclining ? 30 : 70,
+      vitalityAge: isImproving ? baseAge - 5 : isDeclining ? baseAge + 5 : baseAge,
+      predictionText: isImproving ? "Complete metabolic shift. Your biological age is effectively reversed by up to 5 years." : "High risk of metabolic syndrome components forming without intervention.",
+      precautions: "Schedule a comprehensive blood panel to establish your new healthy baseline."
     }
   ];
 }

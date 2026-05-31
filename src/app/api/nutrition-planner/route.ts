@@ -98,7 +98,7 @@ DO NOT include any markdown code blocks, comments, or backticks in the response.
     ];
 
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
       {
         method: "POST",
         headers: {
@@ -165,7 +165,8 @@ function generateFallbackPlan(goal: string, preference: string, metrics: any) {
     const southBreakfasts = [
       { n: "Steamed idlis with sambar and coconut chutney", w: "Fermented idlis are easy on digestion and provide sustained morning stamina." },
       { n: "Pesarattu (Green gram dosa) with upma", w: "High protein lentil base provides sustained energy and muscle repair." },
-      { n: "Ragi semiya upma with peanuts", w: "Complex carbs from ragi keep blood sugar stable throughout the morning." }
+      { n: "Ragi semiya upma with peanuts", w: "Complex carbs from ragi keep blood sugar stable throughout the morning." },
+      { n: "Oats dosa with tomato onion chutney", w: "Quick fiber-rich breakfast that regulates morning insulin spikes." }
     ];
     const northBreakfasts = [
       { n: "Paneer paratha with a side of curd", w: "Complex carbs and high-quality dairy protein to fuel morning workouts." },
