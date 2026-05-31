@@ -2542,7 +2542,7 @@ export default function FitnessPage() {
                         <canvas ref={postureCanvasRef} className="w-full h-full object-cover rounded-2xl block" />
 
                         {/* Interactive scan progress HUD */}
-                        <div className="absolute top-3 left-3 bg-black/75 backdrop-blur-md border border-white/10 rounded-xl p-2.5 text-[10px] font-bold text-left text-foreground space-y-0.5 shadow-lg pointer-events-none">
+                        <div className="absolute top-3 left-3 bg-black/75 backdrop-blur-md border border-white/20 rounded-xl p-2.5 text-[10px] font-bold text-left text-white/90 space-y-0.5 shadow-lg pointer-events-none">
                           <div className="text-[#00f0ff] uppercase tracking-wider text-[8px] mb-1 font-black">Scanning Matrix</div>
                           <div>• Target Focus: Spine Alignment</div>
                           <div>• Calibration: Ready</div>

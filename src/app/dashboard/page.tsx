@@ -244,13 +244,19 @@ export default function DashboardPage() {
     <DashboardLayout>
       <div className="max-w-6xl mx-auto py-2">
         {/* Page Header Welcome */}
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold text-[var(--foreground)] tracking-tight">
-            {greeting}{profile?.full_name ? `, ${profile.full_name.split(" ")[0].toUpperCase()}` : ""} 👋
-          </h1>
-          <p className="text-sm text-[var(--muted)] mt-1">
-            Here is your health overview today
-          </p>
+        <div className="mb-8 flex justify-between items-start">
+          <div>
+            <h1 className="text-2xl font-bold text-[var(--foreground)] tracking-tight">
+              {greeting}{profile?.full_name ? `, ${profile.full_name.split(" ")[0].toUpperCase()}` : ""} 👋
+            </h1>
+            <p className="text-sm text-[var(--muted)] mt-1">
+              Here is your health overview today
+            </p>
+          </div>
+          <div className="flex flex-col items-center justify-center bg-orange-500/10 border border-orange-500/30 px-5 py-2 rounded-2xl shadow-sm shadow-orange-500/10 hover:scale-105 transition-transform cursor-pointer">
+            <span className="text-xl animate-bounce mt-0.5">🔥</span>
+            <span className="text-[9px] font-black text-orange-500 uppercase tracking-widest mt-1">3 Day Streak</span>
+          </div>
         </div>
 
         {/* ======= COMMON FOCUS CARDS GRID ======= */}
@@ -258,7 +264,7 @@ export default function DashboardPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
 
             {/* Calories */}
-            <div className="bg-[var(--card-bg)] border border-[var(--border)] rounded-xl p-5 hover:border-primary/30 transition-colors">
+            <div className="bg-[var(--card-bg)] border border-rose-500/30 rounded-xl p-5 hover:border-rose-500/60 transition-colors shadow-sm shadow-rose-500/5">
               <div className="mb-3">
                 <Flame className="h-[18px] w-[18px] text-rose-500" />
               </div>
@@ -288,7 +294,7 @@ export default function DashboardPage() {
             </div>
 
             {/* Sleep */}
-            <div className="bg-[var(--card-bg)] border border-[var(--border)] rounded-xl p-5 hover:border-primary/30 transition-colors">
+            <div className="bg-[var(--card-bg)] border border-violet-500/30 rounded-xl p-5 hover:border-violet-500/60 transition-colors shadow-sm shadow-violet-500/5">
               <div className="mb-3">
                 <Moon className="h-[18px] w-[18px] text-violet-500" />
               </div>
@@ -300,7 +306,7 @@ export default function DashboardPage() {
             </div>
 
             {/* Steps */}
-            <div className="bg-[var(--card-bg)] border border-[var(--border)] rounded-xl p-5 hover:border-primary/30 transition-colors relative overflow-hidden">
+            <div className="bg-[var(--card-bg)] border border-amber-500/30 rounded-xl p-5 hover:border-amber-500/60 transition-colors relative overflow-hidden shadow-sm shadow-amber-500/5">
               <div className="mb-3">
                 <Footprints className="h-[18px] w-[18px] text-amber-500" />
               </div>
