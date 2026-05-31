@@ -88,13 +88,13 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
   ];
 
   const SidebarContent = () => (
-    <div className="flex flex-col h-full bg-[#111827]">
+    <div className="flex flex-col h-full bg-[var(--card-bg)]">
       {/* Logo / Brand */}
       <div className="flex items-center gap-3 px-6 py-6 shrink-0">
-        <div className="h-8 w-8 rounded-full bg-[#0f766e] flex items-center justify-center shrink-0">
+        <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center shrink-0">
           <Activity className="h-4 w-4 text-white" />
         </div>
-        <span className="font-bold text-lg text-white">VitalCore</span>
+        <span className="font-bold text-lg text-[var(--foreground)]">VitalCore</span>
       </div>
 
       {/* Navigation */}
@@ -102,7 +102,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
         {navGroups.map((group) => (
           <div key={group.label} className="space-y-1">
             {group.label !== "Main" && (
-              <p className="px-3 pb-2 text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
+              <p className="px-3 pb-2 text-[11px] font-semibold text-[var(--muted)] uppercase tracking-wider">
                 {group.label}
               </p>
             )}
@@ -117,11 +117,11 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
                     onClick={() => setMobileSidebarOpen(false)}
                     className={`flex items-center gap-3 px-4 py-2.5 rounded-full text-[14px] transition-all duration-200 ${
                       isActive
-                        ? "bg-[#0f766e] text-white font-medium"
-                        : "text-gray-400 hover:text-white hover:bg-gray-800/50"
+                        ? "bg-primary text-white font-medium"
+                        : "text-[var(--muted)] hover:text-[var(--foreground)] hover:bg-[var(--muted-bg)]/50"
                     }`}
                   >
-                    <Icon className={`h-[18px] w-[18px] shrink-0 ${isActive ? "text-white" : "text-gray-500"}`} />
+                    <Icon className={`h-[18px] w-[18px] shrink-0 ${isActive ? "text-white" : "opacity-70"}`} />
                     <span className="truncate">{link.name}</span>
                   </Link>
                 );
@@ -143,24 +143,24 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
               onClick={() => setMobileSidebarOpen(false)}
               className={`flex items-center gap-3 px-4 py-2.5 rounded-full text-[14px] transition-all duration-200 ${
                 isActive
-                  ? "bg-[#0f766e] text-white font-medium"
-                  : "text-gray-400 hover:text-white hover:bg-gray-800/50"
+                  ? "bg-primary text-white font-medium"
+                  : "text-[var(--muted)] hover:text-[var(--foreground)] hover:bg-[var(--muted-bg)]/50"
               }`}
             >
-              <Icon className="h-[18px] w-[18px] shrink-0 text-gray-500" />
+              <Icon className="h-[18px] w-[18px] shrink-0 opacity-70" />
               <span>{link.name}</span>
             </Link>
           );
         })}
         
         {/* User Profile Mini */}
-        <div className="mt-4 pt-4 border-t border-gray-800 flex items-center gap-3 px-2">
-          <div className="h-8 w-8 rounded-full bg-gray-800 flex items-center justify-center font-bold text-xs shrink-0 text-gray-300">
+        <div className="mt-4 pt-4 border-t border-[var(--border)] flex items-center gap-3 px-2">
+          <div className="h-8 w-8 rounded-full bg-[var(--muted-bg)] flex items-center justify-center font-bold text-xs shrink-0 text-[var(--foreground)]">
             {profile?.full_name?.charAt(0)?.toUpperCase() || "U"}
           </div>
           <div className="overflow-hidden min-w-0 flex-1">
-            <p className="text-sm font-medium text-white truncate leading-tight">{profile?.full_name || "User"}</p>
-            <Link href="/auth/login" className="text-[11px] text-gray-500 hover:text-gray-300 flex items-center gap-1 mt-0.5 transition-colors">
+            <p className="text-sm font-medium text-[var(--foreground)] truncate leading-tight">{profile?.full_name || "User"}</p>
+            <Link href="/auth/login" className="text-[11px] text-[var(--muted)] hover:text-[var(--foreground)] flex items-center gap-1 mt-0.5 transition-colors">
               Sign Out
             </Link>
           </div>

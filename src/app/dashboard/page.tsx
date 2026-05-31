@@ -245,10 +245,10 @@ export default function DashboardPage() {
       <div className="max-w-6xl mx-auto py-2">
         {/* Page Header Welcome */}
         <div className="mb-8">
-          <h1 className="text-2xl font-bold text-white tracking-tight">
+          <h1 className="text-2xl font-bold text-[var(--foreground)] tracking-tight">
             {greeting}{profile?.full_name ? `, ${profile.full_name.split(" ")[0].toUpperCase()}` : ""} 👋
           </h1>
-          <p className="text-sm text-gray-400 mt-1">
+          <p className="text-sm text-[var(--muted)] mt-1">
             Here is your health overview today
           </p>
         </div>
@@ -258,51 +258,51 @@ export default function DashboardPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
 
             {/* Calories */}
-            <div className="bg-[#111827] border border-gray-800 rounded-xl p-5 hover:border-gray-700 transition-colors">
+            <div className="bg-[var(--card-bg)] border border-[var(--border)] rounded-xl p-5 hover:border-primary/30 transition-colors">
               <div className="mb-3">
                 <Flame className="h-[18px] w-[18px] text-rose-500" />
               </div>
               <div className="flex items-baseline gap-2 mb-0.5">
-                <div className="text-2xl font-bold text-white">{totalCalories}</div>
-                <div className="text-[10px] text-gray-500 font-medium uppercase">kcal</div>
+                <div className="text-2xl font-bold text-[var(--foreground)]">{totalCalories}</div>
+                <div className="text-[10px] text-[var(--muted)] font-medium uppercase">kcal</div>
               </div>
-              <div className="text-[11px] text-gray-400 font-medium">Daily Meals Logged</div>
+              <div className="text-[11px] text-[var(--muted)] font-medium">Daily Meals Logged</div>
             </div>
 
             {/* Hydration */}
-            <div className="bg-[#111827] border border-gray-800 rounded-xl p-5 hover:border-gray-700 transition-colors">
+            <div className="bg-[var(--card-bg)] border border-[var(--border)] rounded-xl p-5 hover:border-primary/30 transition-colors">
               <div className="mb-3">
                 <Droplet className="h-[18px] w-[18px] text-blue-500" />
               </div>
               <div className="flex items-baseline gap-2 mb-0.5">
-                <div className="text-2xl font-bold text-white">{waterLogged}</div>
-                <div className="text-[10px] text-gray-500 font-medium uppercase">ml</div>
+                <div className="text-2xl font-bold text-[var(--foreground)]">{waterLogged}</div>
+                <div className="text-[10px] text-[var(--muted)] font-medium uppercase">ml</div>
               </div>
-              <div className="text-[11px] text-gray-400 font-medium">Hydration Intake</div>
+              <div className="text-[11px] text-[var(--muted)] font-medium">Hydration Intake</div>
             </div>
 
             {/* Sleep */}
-            <div className="bg-[#111827] border border-gray-800 rounded-xl p-5 hover:border-gray-700 transition-colors">
+            <div className="bg-[var(--card-bg)] border border-[var(--border)] rounded-xl p-5 hover:border-primary/30 transition-colors">
               <div className="mb-3">
                 <Moon className="h-[18px] w-[18px] text-violet-500" />
               </div>
               <div className="flex items-baseline gap-2 mb-0.5">
-                <div className="text-2xl font-bold text-white">{sleepHrs > 0 ? sleepHrs : "0"}</div>
-                <div className="text-[10px] text-gray-500 font-medium uppercase">hrs</div>
+                <div className="text-2xl font-bold text-[var(--foreground)]">{sleepHrs > 0 ? sleepHrs : "0"}</div>
+                <div className="text-[10px] text-[var(--muted)] font-medium uppercase">hrs</div>
               </div>
-              <div className="text-[11px] text-gray-400 font-medium">Sleep Duration</div>
+              <div className="text-[11px] text-[var(--muted)] font-medium">Sleep Duration</div>
             </div>
 
             {/* Steps */}
-            <div className="bg-[#111827] border border-gray-800 rounded-xl p-5 hover:border-gray-700 transition-colors relative overflow-hidden">
+            <div className="bg-[var(--card-bg)] border border-[var(--border)] rounded-xl p-5 hover:border-primary/30 transition-colors relative overflow-hidden">
               <div className="mb-3">
                 <Footprints className="h-[18px] w-[18px] text-amber-500" />
               </div>
               <div className="flex items-baseline gap-2 mb-0.5">
-                <div className="text-2xl font-bold text-white">{stepsLogged.toLocaleString()}</div>
-                <div className="text-[10px] text-gray-500 font-medium uppercase">steps</div>
+                <div className="text-2xl font-bold text-[var(--foreground)]">{stepsLogged.toLocaleString()}</div>
+                <div className="text-[10px] text-[var(--muted)] font-medium uppercase">steps</div>
               </div>
-              <div className="text-[11px] text-gray-400 font-medium">Activity Tracker</div>
+              <div className="text-[11px] text-[var(--muted)] font-medium">Activity Tracker</div>
               
               {pedometer.isTracking && (
                 <div className="absolute top-5 right-5 flex items-center gap-1.5">
@@ -516,10 +516,10 @@ export default function DashboardPage() {
         {predictions && (
           <div className="mb-8">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-[15px] font-bold text-white">Health Insights</h2>
+              <h2 className="text-[15px] font-bold text-[var(--foreground)]">Health Insights</h2>
               <button
                 onClick={() => setSimulating(!simulating)}
-                className="text-[11px] font-semibold text-gray-400 hover:text-white transition-colors"
+                className="text-[11px] font-semibold text-[var(--muted)] hover:text-[var(--foreground)] transition-colors"
               >
                 {simulating ? "Close Simulator" : "Try Simulator"}
               </button>
@@ -527,42 +527,42 @@ export default function DashboardPage() {
 
             {/* Simulated sliders panel */}
             {simulating && (
-              <div className="bg-[#111827] border border-gray-800 rounded-xl p-5 mb-4 animate-[fadeIn_0.3s_ease-out]">
-                <div className="flex justify-between items-center text-[11px] font-bold text-indigo-400 mb-4 uppercase tracking-wider">
+              <div className="bg-[var(--card-bg)] border border-[var(--border)] rounded-xl p-5 mb-4 animate-[fadeIn_0.3s_ease-out]">
+                <div className="flex justify-between items-center text-[11px] font-bold text-indigo-500 mb-4 uppercase tracking-wider">
                   <span>Lifestyle Prediction Simulator</span>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="space-y-2">
-                    <div className="flex justify-between font-medium text-xs text-gray-300">
+                    <div className="flex justify-between font-medium text-xs text-[var(--muted)]">
                       <span>Sleep</span>
-                      <span className="text-white">{simSleep}h</span>
+                      <span className="text-[var(--foreground)]">{simSleep}h</span>
                     </div>
                     <input
                       type="range" min="4" max="10" step="0.5" value={simSleep}
                       onChange={(e) => setSimSleep(Number(e.target.value))}
-                      className="w-full h-1 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-indigo-500"
+                      className="w-full h-1 bg-[var(--border)] rounded-lg appearance-none cursor-pointer accent-indigo-500"
                     />
                   </div>
                   <div className="space-y-2">
-                    <div className="flex justify-between font-medium text-xs text-gray-300">
+                    <div className="flex justify-between font-medium text-xs text-[var(--muted)]">
                       <span>Water Target</span>
-                      <span className="text-white">{simWater} ml</span>
+                      <span className="text-[var(--foreground)]">{simWater} ml</span>
                     </div>
                     <input
                       type="range" min="500" max="4000" step="250" value={simWater}
                       onChange={(e) => setSimWater(Number(e.target.value))}
-                      className="w-full h-1 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-blue-500"
+                      className="w-full h-1 bg-[var(--border)] rounded-lg appearance-none cursor-pointer accent-blue-500"
                     />
                   </div>
                   <div className="space-y-2">
-                    <div className="flex justify-between font-medium text-xs text-gray-300">
+                    <div className="flex justify-between font-medium text-xs text-[var(--muted)]">
                       <span>Daily Stress</span>
-                      <span className="text-white">{simStress}%</span>
+                      <span className="text-[var(--foreground)]">{simStress}%</span>
                     </div>
                     <input
                       type="range" min="10" max="95" step="5" value={simStress}
                       onChange={(e) => setSimStress(Number(e.target.value))}
-                      className="w-full h-1 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-rose-500"
+                      className="w-full h-1 bg-[var(--border)] rounded-lg appearance-none cursor-pointer accent-rose-500"
                     />
                   </div>
                 </div>
@@ -572,7 +572,7 @@ export default function DashboardPage() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
               
               {/* Energy Balance */}
-              <div className="bg-[#111827] border border-gray-800 rounded-xl p-5 hover:border-gray-700 transition-colors">
+              <div className="bg-[var(--card-bg)] border border-[var(--border)] rounded-xl p-5 hover:border-primary/30 transition-colors">
                 <div className="flex justify-between items-center mb-4">
                   <div className="h-8 w-8 rounded-lg bg-green-500/10 flex items-center justify-center">
                     <Zap className="h-4 w-4 text-green-500" />
@@ -581,44 +581,44 @@ export default function DashboardPage() {
                     {100 - predictions.burnoutRisk}%
                   </span>
                 </div>
-                <h3 className="text-[13px] font-semibold text-white mb-1">Energy Balance</h3>
-                <p className="text-[11px] text-gray-400">
+                <h3 className="text-[13px] font-semibold text-[var(--foreground)] mb-1">Energy Balance</h3>
+                <p className="text-[11px] text-[var(--muted)]">
                   {predictions.burnoutRisk > 60 ? "Focus on restorative periods today." : "Optimal energy reservoir."}
                 </p>
               </div>
 
               {/* Rest Profile */}
-              <div className="bg-[#111827] border border-gray-800 rounded-xl p-5 hover:border-gray-700 transition-colors">
+              <div className="bg-[var(--card-bg)] border border-[var(--border)] rounded-xl p-5 hover:border-primary/30 transition-colors">
                 <div className="flex justify-between items-center mb-4">
                   <div className="h-8 w-8 rounded-lg bg-indigo-500/10 flex items-center justify-center">
                     <Moon className="h-4 w-4 text-indigo-500" />
                   </div>
-                  <span className={`text-xl font-bold ${predictions.fatigueBuildup > 65 ? "text-rose-500" : predictions.fatigueBuildup > 40 ? "text-amber-500" : "text-indigo-400"}`}>
+                  <span className={`text-xl font-bold ${predictions.fatigueBuildup > 65 ? "text-rose-500" : predictions.fatigueBuildup > 40 ? "text-amber-500" : "text-indigo-500"}`}>
                     {100 - predictions.fatigueBuildup}%
                   </span>
                 </div>
-                <h3 className="text-[13px] font-semibold text-white mb-1">Rest Profile</h3>
-                <p className="text-[11px] text-gray-400">
+                <h3 className="text-[13px] font-semibold text-[var(--foreground)] mb-1">Rest Profile</h3>
+                <p className="text-[11px] text-[var(--muted)]">
                   {predictions.fatigueBuildup > 65 ? "Slight rest debt. Wind down early." : "Recovery battery fully charged."}
                 </p>
               </div>
 
               {/* Recommendations */}
-              <div className="bg-[#111827] border border-gray-800 rounded-xl p-5 hover:border-gray-700 transition-colors flex flex-col justify-center">
+              <div className="bg-[var(--card-bg)] border border-[var(--border)] rounded-xl p-5 hover:border-primary/30 transition-colors flex flex-col justify-center">
                 <div className="flex items-center gap-2 mb-3">
-                  <ShieldAlert className="h-4 w-4 text-gray-400" />
-                  <h3 className="text-[13px] font-semibold text-white">Recommendations</h3>
+                  <ShieldAlert className="h-4 w-4 text-[var(--muted)]" />
+                  <h3 className="text-[13px] font-semibold text-[var(--foreground)]">Recommendations</h3>
                 </div>
                 <div className="space-y-2">
                   {predictions.preventiveReminders.length > 0 ? (
                     predictions.preventiveReminders.slice(0, 2).map((reminder, idx) => (
                       <div key={idx} className="flex gap-2">
-                        <Sparkles className="h-3 w-3 text-indigo-400 shrink-0 mt-0.5" />
-                        <span className="text-[11px] text-gray-400 leading-snug">{reminder.replace("Circadian Debt Alert", "Rest Alert")}</span>
+                        <Sparkles className="h-3 w-3 text-indigo-500 shrink-0 mt-0.5" />
+                        <span className="text-[11px] text-[var(--muted)] leading-snug">{reminder.replace("Circadian Debt Alert", "Rest Alert")}</span>
                       </div>
                     ))
                   ) : (
-                    <span className="text-[11px] text-gray-400">Keep up the great work! No urgent alerts.</span>
+                    <span className="text-[11px] text-[var(--muted)]">Keep up the great work! No urgent alerts.</span>
                   )}
                 </div>
               </div>
@@ -630,85 +630,85 @@ export default function DashboardPage() {
         {/* ======= QUICK ACTIONS (all modes except elderly) ======= */}
         {activeMode !== "elderly" && (
           <div className="mb-8">
-            <h2 className="text-[15px] font-bold text-white mb-4">Quick Actions</h2>
+            <h2 className="text-[15px] font-bold text-[var(--foreground)] mb-4">Quick Actions</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               
-              <Link href="/nutrition" className="bg-[#111827] border border-gray-800 rounded-xl p-4 flex items-center justify-between hover:border-gray-700 transition-colors group">
+              <Link href="/nutrition" className="bg-[var(--card-bg)] border border-[var(--border)] rounded-xl p-4 flex items-center justify-between hover:border-primary/30 transition-colors group">
                 <div className="flex items-center gap-4">
-                  <div className="h-10 w-10 rounded-xl bg-blue-500 flex items-center justify-center shrink-0 shadow-sm shadow-blue-500/20">
-                    <Flame className="h-5 w-5 text-white" />
+                  <div className="h-10 w-10 rounded-xl bg-blue-500/10 flex items-center justify-center shrink-0 shadow-sm shadow-blue-500/10">
+                    <Flame className="h-5 w-5 text-blue-500" />
                   </div>
                   <div>
-                    <div className="text-[13px] font-semibold text-white mb-0.5">Log Meals</div>
-                    <div className="text-[11px] text-gray-400">Track your daily foods</div>
+                    <div className="text-[13px] font-semibold text-[var(--foreground)] mb-0.5">Log Meals</div>
+                    <div className="text-[11px] text-[var(--muted)]">Track your daily foods</div>
                   </div>
                 </div>
-                <ArrowRight className="h-4 w-4 text-gray-600 group-hover:text-white transition-colors" />
+                <ArrowRight className="h-4 w-4 text-[var(--muted)] group-hover:text-primary transition-colors" />
               </Link>
 
-              <Link href="/sleep" className="bg-[#111827] border border-gray-800 rounded-xl p-4 flex items-center justify-between hover:border-gray-700 transition-colors group">
+              <Link href="/sleep" className="bg-[var(--card-bg)] border border-[var(--border)] rounded-xl p-4 flex items-center justify-between hover:border-primary/30 transition-colors group">
                 <div className="flex items-center gap-4">
-                  <div className="h-10 w-10 rounded-xl bg-[#0f766e] flex items-center justify-center shrink-0 shadow-sm shadow-teal-500/20">
-                    <Moon className="h-5 w-5 text-white" />
+                  <div className="h-10 w-10 rounded-xl bg-teal-500/10 flex items-center justify-center shrink-0 shadow-sm shadow-teal-500/10">
+                    <Moon className="h-5 w-5 text-teal-500" />
                   </div>
                   <div>
-                    <div className="text-[13px] font-semibold text-white mb-0.5">Log Sleep</div>
-                    <div className="text-[11px] text-gray-400">Note last night's rest</div>
+                    <div className="text-[13px] font-semibold text-[var(--foreground)] mb-0.5">Log Sleep</div>
+                    <div className="text-[11px] text-[var(--muted)]">Note last night's rest</div>
                   </div>
                 </div>
-                <ArrowRight className="h-4 w-4 text-gray-600 group-hover:text-white transition-colors" />
+                <ArrowRight className="h-4 w-4 text-[var(--muted)] group-hover:text-primary transition-colors" />
               </Link>
 
-              <Link href="/ai-coach" className="bg-[#111827] border border-gray-800 rounded-xl p-4 flex items-center justify-between hover:border-gray-700 transition-colors group">
+              <Link href="/ai-coach" className="bg-[var(--card-bg)] border border-[var(--border)] rounded-xl p-4 flex items-center justify-between hover:border-primary/30 transition-colors group">
                 <div className="flex items-center gap-4">
-                  <div className="h-10 w-10 rounded-xl bg-indigo-500 flex items-center justify-center shrink-0 shadow-sm shadow-indigo-500/20">
-                    <Brain className="h-5 w-5 text-white" />
+                  <div className="h-10 w-10 rounded-xl bg-indigo-500/10 flex items-center justify-center shrink-0 shadow-sm shadow-indigo-500/10">
+                    <Brain className="h-5 w-5 text-indigo-500" />
                   </div>
                   <div>
-                    <div className="text-[13px] font-semibold text-white mb-0.5">Wellness Chat</div>
-                    <div className="text-[11px] text-gray-400">Speak with your AI companion</div>
+                    <div className="text-[13px] font-semibold text-[var(--foreground)] mb-0.5">Wellness Chat</div>
+                    <div className="text-[11px] text-[var(--muted)]">Speak with your AI companion</div>
                   </div>
                 </div>
-                <ArrowRight className="h-4 w-4 text-gray-600 group-hover:text-white transition-colors" />
+                <ArrowRight className="h-4 w-4 text-[var(--muted)] group-hover:text-primary transition-colors" />
               </Link>
 
-              <Link href="/scanner" className="bg-[#111827] border border-gray-800 rounded-xl p-4 flex items-center justify-between hover:border-gray-700 transition-colors group">
+              <Link href="/scanner" className="bg-[var(--card-bg)] border border-[var(--border)] rounded-xl p-4 flex items-center justify-between hover:border-primary/30 transition-colors group">
                 <div className="flex items-center gap-4">
-                  <div className="h-10 w-10 rounded-xl bg-orange-500 flex items-center justify-center shrink-0 shadow-sm shadow-orange-500/20">
-                    <Scan className="h-5 w-5 text-white" />
+                  <div className="h-10 w-10 rounded-xl bg-orange-500/10 flex items-center justify-center shrink-0 shadow-sm shadow-orange-500/10">
+                    <Scan className="h-5 w-5 text-orange-500" />
                   </div>
                   <div>
-                    <div className="text-[13px] font-semibold text-white mb-0.5">Food Scanner</div>
-                    <div className="text-[11px] text-gray-400">Scan or search any ingredient</div>
+                    <div className="text-[13px] font-semibold text-[var(--foreground)] mb-0.5">Food Scanner</div>
+                    <div className="text-[11px] text-[var(--muted)]">Scan or search any ingredient</div>
                   </div>
                 </div>
-                <ArrowRight className="h-4 w-4 text-gray-600 group-hover:text-white transition-colors" />
+                <ArrowRight className="h-4 w-4 text-[var(--muted)] group-hover:text-primary transition-colors" />
               </Link>
 
-              <Link href="/fitness" className="bg-[#111827] border border-gray-800 rounded-xl p-4 flex items-center justify-between hover:border-gray-700 transition-colors group">
+              <Link href="/fitness" className="bg-[var(--card-bg)] border border-[var(--border)] rounded-xl p-4 flex items-center justify-between hover:border-primary/30 transition-colors group">
                 <div className="flex items-center gap-4">
-                  <div className="h-10 w-10 rounded-xl bg-rose-500 flex items-center justify-center shrink-0 shadow-sm shadow-rose-500/20">
-                    <Dumbbell className="h-5 w-5 text-white" />
+                  <div className="h-10 w-10 rounded-xl bg-rose-500/10 flex items-center justify-center shrink-0 shadow-sm shadow-rose-500/10">
+                    <Dumbbell className="h-5 w-5 text-rose-500" />
                   </div>
                   <div>
-                    <div className="text-[13px] font-semibold text-white mb-0.5">Fitness</div>
-                    <div className="text-[11px] text-gray-400">Track and log your workouts</div>
+                    <div className="text-[13px] font-semibold text-[var(--foreground)] mb-0.5">Fitness</div>
+                    <div className="text-[11px] text-[var(--muted)]">Track and log your workouts</div>
                   </div>
                 </div>
-                <ArrowRight className="h-4 w-4 text-gray-600 group-hover:text-white transition-colors" />
+                <ArrowRight className="h-4 w-4 text-[var(--muted)] group-hover:text-primary transition-colors" />
               </Link>
 
-              <Link href="/future-lab" className="bg-[#111827] border border-gray-800 rounded-xl p-4 flex items-center justify-between hover:border-gray-700 transition-colors group">
+              <Link href="/future-lab" className="bg-[var(--card-bg)] border border-[var(--border)] rounded-xl p-4 flex items-center justify-between hover:border-primary/30 transition-colors group">
                 <div className="flex items-center gap-4">
-                  <div className="h-10 w-10 rounded-xl bg-fuchsia-500 flex items-center justify-center shrink-0 shadow-sm shadow-fuchsia-500/20">
-                    <Sparkles className="h-5 w-5 text-white" />
+                  <div className="h-10 w-10 rounded-xl bg-fuchsia-500/10 flex items-center justify-center shrink-0 shadow-sm shadow-fuchsia-500/10">
+                    <Sparkles className="h-5 w-5 text-fuchsia-500" />
                   </div>
                   <div>
-                    <div className="text-[13px] font-semibold text-white mb-0.5">Future Health Lab</div>
-                    <div className="text-[11px] text-gray-400">Predict future health trends</div>
+                    <div className="text-[13px] font-semibold text-[var(--foreground)] mb-0.5">Future Health Lab</div>
+                    <div className="text-[11px] text-[var(--muted)]">Predict future health trends</div>
                   </div>
                 </div>
-                <ArrowRight className="h-4 w-4 text-gray-600 group-hover:text-white transition-colors" />
+                <ArrowRight className="h-4 w-4 text-[var(--muted)] group-hover:text-primary transition-colors" />
               </Link>
 
             </div>
