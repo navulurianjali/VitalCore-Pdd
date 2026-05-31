@@ -29,6 +29,7 @@ export default function FutureHealthLabPage() {
   const [simSleep, setSimSleep] = useState(0);
   const [simWater, setSimWater] = useState(0);
   const [simSteps, setSimSteps] = useState(0);
+  const [expandedTimelineIndex, setExpandedTimelineIndex] = useState<number | null>(null);
 
   if (loading || !metrics) {
     return (
@@ -70,6 +71,29 @@ export default function FutureHealthLabPage() {
             <p className="text-base text-[var(--muted)] font-medium max-w-2xl leading-relaxed">
               Your personal health future simulator. Understand where your habits are leading you, identify risks before they happen, and discover your potential.
             </p>
+          </div>
+        </div>
+
+        {/* DIGITAL TWIN SYNCHRONIZATION STATUS */}
+        <div className="flex items-center gap-4 p-5 bg-[var(--card-bg)] rounded-3xl border border-[var(--border)] shadow-sm">
+          <div className="relative shrink-0">
+            <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full animate-pulse" />
+            <div className="h-12 w-12 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center relative z-10">
+              <Brain className="h-6 w-6 text-primary" />
+            </div>
+          </div>
+          <div className="flex-1 space-y-1">
+            <h3 className="text-xs font-black uppercase tracking-widest text-[var(--foreground)]">Digital Twin Model Active</h3>
+            <p className="text-[11px] text-[var(--muted)] font-medium">
+              Synchronizing your biometric data to the predictive engine: <span className="font-bold text-[var(--foreground)]">{metrics.sleepHours}h sleep</span>, <span className="font-bold text-[var(--foreground)]">{metrics.hydrationMl}ml hydration</span>, <span className="font-bold text-[var(--foreground)]">{Math.round(metrics.physicalFatigue)}% fatigue limit</span>.
+            </p>
+          </div>
+          <div className="hidden sm:block px-3 py-1.5 bg-emerald-500/10 text-emerald-500 text-[10px] font-black uppercase tracking-wider rounded-xl border border-emerald-500/20 shadow-sm shrink-0 flex items-center gap-1.5">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            </span>
+            Real-Time Sync On
           </div>
         </div>
 
@@ -141,12 +165,19 @@ export default function FutureHealthLabPage() {
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {timeline.map((t, i) => (
-              <GlassCard key={i} className="p-6 relative overflow-hidden group hover:border-primary/50 transition-colors flex flex-col justify-between">
+              <GlassCard 
+                key={i} 
+                onClick={() => setExpandedTimelineIndex(expandedTimelineIndex === i ? null : i)}
+                className="p-6 relative overflow-hidden group hover:border-primary/50 transition-all cursor-pointer flex flex-col justify-between"
+              >
                 <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
                   <Clock className="w-24 h-24 text-[var(--foreground)]" />
                 </div>
                 <div>
-                  <span className="text-xs font-black text-primary uppercase tracking-widest mb-4 block">{t.label} Project</span>
+                  <span className="text-xs font-black text-primary uppercase tracking-widest mb-4 block flex justify-between items-center">
+                    {t.label} Project
+                    <span className="text-[10px] text-[var(--muted)]">{expandedTimelineIndex === i ? "Hide Details" : "Click to View"}</span>
+                  </span>
                   <div className="space-y-3 relative z-10">
                     <div className="flex justify-between items-center text-sm">
                       <span className="text-[var(--muted)] font-medium">Energy</span>
@@ -167,16 +198,18 @@ export default function FutureHealthLabPage() {
                   </div>
                 </div>
                 
-                <div className="mt-6 pt-4 border-t border-[var(--border)] space-y-3 relative z-10">
-                  <div>
-                    <span className="text-[9px] font-bold text-[var(--muted)] uppercase tracking-wider block mb-1">Evolution Preview</span>
-                    <p className="text-[11px] font-semibold text-[var(--foreground)] leading-snug">{t.predictionText}</p>
+                {expandedTimelineIndex === i && (
+                  <div className="mt-6 pt-4 border-t border-[var(--border)] space-y-3 relative z-10 animate-in fade-in slide-in-from-top-2 duration-300">
+                    <div>
+                      <span className="text-[9px] font-bold text-[var(--muted)] uppercase tracking-wider block mb-1">Evolution Preview</span>
+                      <p className="text-[11px] font-semibold text-[var(--foreground)] leading-snug">{t.predictionText}</p>
+                    </div>
+                    <div className="bg-amber-500/10 p-2.5 rounded-lg border border-amber-500/10">
+                      <span className="text-[9px] font-bold text-amber-500 uppercase tracking-wider block mb-1 flex items-center gap-1"><span className="animate-pulse">⚠️</span> Precautions</span>
+                      <p className="text-[10px] font-bold text-amber-600/90 leading-snug">{t.precautions}</p>
+                    </div>
                   </div>
-                  <div className="bg-amber-500/10 p-2.5 rounded-lg border border-amber-500/10">
-                    <span className="text-[9px] font-bold text-amber-500 uppercase tracking-wider block mb-1 flex items-center gap-1"><span className="animate-pulse">⚠️</span> Precautions</span>
-                    <p className="text-[10px] font-bold text-amber-600/90 leading-snug">{t.precautions}</p>
-                  </div>
-                </div>
+                )}
               </GlassCard>
             ))}
           </div>
