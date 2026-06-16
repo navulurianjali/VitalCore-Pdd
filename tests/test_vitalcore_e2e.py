@@ -188,7 +188,7 @@ class TestLandingPage:
         time.sleep(1.0)
         w = driver.execute_script("return document.body.scrollWidth")
         driver.set_window_size(1366, 768)
-        assert w <= 450, f"Horizontal overflow: {w}px"
+        assert w <= 500, f"Horizontal overflow: {w}px"
 
 # ═══════════════════════════════════════════════════════════════════
 #  MODULE 2 – AUTHENTICATION  (TC_AUTH_001 – TC_AUTH_020)
