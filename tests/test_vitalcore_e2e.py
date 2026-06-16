@@ -1,4 +1,4 @@
-﻿"""
+"""
 VitalCore ΓÇô Selenium E2E Test Suite  (170 Tests / 17 Modules)
 =============================================================
 RUN:
@@ -45,9 +45,7 @@ def driver(request):
     opts.add_experimental_option("excludeSwitches", ["enable-automation"])
     opts.add_experimental_option("useAutomationExtension", False)
     
-    is_ci = os.environ.get("CI", "").lower() in ("true", "1", "yes")
-    if is_ci or request.config.getoption("--headless", default=False):
-        opts.add_argument("--headless=new")
+    opts.add_argument("--headless=new")
 
     if os.path.exists(_LOCAL_CHROMEDRIVER):
         srv = Service(_LOCAL_CHROMEDRIVER)
@@ -59,7 +57,7 @@ def driver(request):
     drv.implicitly_wait(4)
     drv._base = BASE_URL
     
-    class_name = request.node.name
+    class_name = request.cls.__name__ if hasattr(request, "cls") and request.cls else request.node.name
     auth_classes = ["TestDashboard", "TestFitnessPage", "TestNutritionPage", "TestSleepPage", 
                     "TestAICoachPage", "TestScannerPage", "TestFutureLabPage", "TestChallengesPage", 
                     "TestCommunityPage", "TestProfilePage", "TestSettingsPage", "TestAdminPage"]
