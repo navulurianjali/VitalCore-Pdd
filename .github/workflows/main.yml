@@ -1,0 +1,62 @@
+name: VitalCore E2E Selenium Tests
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  e2e-tests:
+    name: 🧬 Selenium E2E (170 tests)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: ⬇️ Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🐍 Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: 🌐 Install Google Chrome
+        uses: browser-actions/setup-chrome@v1
+        with:
+          chrome-version: stable
+
+      - name: 📦 Install Python dependencies
+        run: |
+          pip install --upgrade pip
+          pip install selenium>=4.15 pytest openpyxl
+
+      - name: 🚀 Run Selenium E2E Tests
+        env:
+          CI: "true"
+        run: |
+          pytest tests/test_vitalcore_e2e.py -v --tb=short 2>&1 | tee pytest.log
+
+      - name: 📊 Generate XLSX Report
+        if: always()
+        run: python tests/generate_report.py
+
+      - name: 📁 Upload E2E XLSX Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: E2E-Report-VitalCore-${{ github.run_number }}
+          path: E2E_Test_Report_VitalCore_*.xlsx
+          retention-days: 30
+
+      - name: 📋 Test Summary
+        if: always()
+        run: |
+          PASSED=$(grep -c "PASSED" pytest.log || echo 0)
+          FAILED=$(grep -c "FAILED" pytest.log || echo 0)
+          echo "## VitalCore E2E Results" >> $GITHUB_STEP_SUMMARY
+          echo "| ✅ Passed | ❌ Failed |" >> $GITHUB_STEP_SUMMARY
+          echo "|---------|---------|" >> $GITHUB_STEP_SUMMARY
+          echo "| $PASSED | $FAILED |" >> $GITHUB_STEP_SUMMARY
