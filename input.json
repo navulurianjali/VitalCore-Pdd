@@ -1,0 +1,5 @@
+{
+  "baseUrl": "http://localhost:3000",
+  "user": "mock_user_token_123",
+  "admin": "mock_admin_token_456"
+}

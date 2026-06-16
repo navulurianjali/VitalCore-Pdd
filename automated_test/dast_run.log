@@ -1,0 +1,379 @@
+=======================================================
+  VitalCore DAST Runner v3  (2026-06-16)
+=======================================================
+  Base URL : http://localhost:3000
+  Started  : 2026-06-16T03:32:56.501941Z
+
+  [OK] Server reachable -> HTTP 200
+
+
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+  Running: 1. AuthN Bypass
+  Running: 1. AuthN Bypass
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+  [✓ pass] AuthN Bypass | POST /api/ai-coach as none → 401
+  [✓ pass] AuthN Bypass | POST /api/ai-coach as malformed → 401
+  [✓ pass] AuthN Bypass | POST /api/ai-coach as tampered_jwt → 401
+  [✓ pass] AuthN Bypass | POST /api/ai-coach as expired_jwt → 401
+  [✓ pass] AuthN Bypass | POST /api/food-scanner as none → 401
+  [✓ pass] AuthN Bypass | POST /api/food-scanner as malformed → 401
+  [✓ pass] AuthN Bypass | POST /api/food-scanner as tampered_jwt → 401
+  [✓ pass] AuthN Bypass | POST /api/food-scanner as expired_jwt → 401
+  [✓ pass] AuthN Bypass | POST /api/nutrition-planner as none → 401
+  [✓ pass] AuthN Bypass | POST /api/nutrition-planner as malformed → 401
+  [✓ pass] AuthN Bypass | POST /api/nutrition-planner as tampered_jwt → 401
+  [✓ pass] AuthN Bypass | POST /api/nutrition-planner as expired_jwt → 401
+  -> 12 tests, 0 findings  (2.46s)
+  -> 12 tests, 0 findings  (2.46s)
+
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+  Running: 2. AuthZ / Privesc
+  Running: 2. AuthZ / Privesc
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+  [✓ pass] AuthZ | GET /admin as none → 307
+  [✓ pass] AuthZ | GET /admin as user → 307
+  [✓ pass] AuthZ | GET /admin as admin → 307
+  [✓ pass] AuthZ | GET /dashboard as none → 307
+  [✓ pass] AuthZ | GET /dashboard as user → 307
+  [✓ pass] AuthZ | GET /dashboard as admin → 307
+  [✓ pass] AuthZ | GET /settings as none → 307
+  [✓ pass] AuthZ | GET /settings as user → 307
+  [✓ pass] AuthZ | GET /settings as admin → 307
+  [✓ pass] AuthZ | GET /profile as none → 307
+  [✓ pass] AuthZ | GET /profile as user → 307
+  [✓ pass] AuthZ | GET /profile as admin → 307
+  [✓ pass] AuthZ-API | POST /api/ai-coach as none → 401
+  [✓ pass] AuthZ-API | POST /api/ai-coach as user → 401
+  [✓ pass] AuthZ-API | POST /api/ai-coach as admin → 401
+  [✓ pass] AuthZ-API | POST /api/food-scanner as none → 401
+  [✓ pass] AuthZ-API | POST /api/food-scanner as user → 401
+  [✓ pass] AuthZ-API | POST /api/food-scanner as admin → 401
+  [✓ pass] AuthZ-API | POST /api/nutrition-planner as none → 401
+  [✓ pass] AuthZ-API | POST /api/nutrition-planner as user → 401
+  [✓ pass] AuthZ-API | POST /api/nutrition-planner as admin → 401
+  -> 21 tests, 0 findings  (2.85s)
+  -> 21 tests, 0 findings  (2.85s)
+
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+  Running: 3. IDOR
+  Running: 3. IDOR
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+  [✓ pass] IDOR | POST /api/ai-coach userId=00000000… → 401
+  [✓ pass] IDOR | POST /api/ai-coach userId=ffffffff… → 401
+  [✓ pass] IDOR | POST /api/ai-coach userId=11111111… → 401
+  [✓ pass] IDOR | POST /api/nutrition-planner userId=00000000… → 401
+  [✓ pass] IDOR | POST /api/nutrition-planner userId=ffffffff… → 401
+  [✓ pass] IDOR | POST /api/nutrition-planner userId=11111111… → 401
+  [✓ pass] IDOR | POST /api/food-scanner userId=00000000… → 401
+  [✓ pass] IDOR | POST /api/food-scanner userId=ffffffff… → 401
+  [✓ pass] IDOR | POST /api/food-scanner userId=11111111… → 401
+  -> 9 tests, 0 findings  (1.54s)
+  -> 9 tests, 0 findings  (1.54s)
+
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+  Running: 4. RBAC Matrix
+  Running: 4. RBAC Matrix
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+  [✓ pass] RBAC | GET / as none → 200
+  [✓ pass] RBAC | GET / as user → 200
+  [✓ pass] RBAC | GET / as admin → 200
+  [✓ pass] RBAC | GET /about as none → 200
+  [✓ pass] RBAC | GET /about as user → 200
+  [✓ pass] RBAC | GET /about as admin → 200
+  [✓ pass] RBAC | GET /features as none → 200
+  [✓ pass] RBAC | GET /features as user → 200
+  [✓ pass] RBAC | GET /features as admin → 200
+  [✓ pass] RBAC | GET /privacy as none → 200
+  [✓ pass] RBAC | GET /privacy as user → 200
+  [✓ pass] RBAC | GET /privacy as admin → 200
+  [✓ pass] RBAC | GET /terms as none → 200
+  [✓ pass] RBAC | GET /terms as user → 200
+  [✓ pass] RBAC | GET /terms as admin → 200
+  [✓ pass] RBAC | GET /contact as none → 200
+  [✓ pass] RBAC | GET /contact as user → 200
+  [✓ pass] RBAC | GET /contact as admin → 200
+  [✓ pass] RBAC | GET /auth/login as none → 200
+  [✓ pass] RBAC | GET /auth/login as user → 200
+  [✓ pass] RBAC | GET /auth/login as admin → 200
+  [✓ pass] RBAC | GET /auth/signup as none → 200
+  [✓ pass] RBAC | GET /auth/signup as user → 200
+  [✓ pass] RBAC | GET /auth/signup as admin → 200
+  [✓ pass] RBAC | GET /auth/forgot-password as none → 200
+  [✓ pass] RBAC | GET /auth/forgot-password as user → 200
+  [✓ pass] RBAC | GET /auth/forgot-password as admin → 200
+  [✓ pass] RBAC | GET /dashboard as none → 307
+  [✓ pass] RBAC | GET /dashboard as user → 307
+  [✓ pass] RBAC | GET /dashboard as admin → 307
+  [✓ pass] RBAC | GET /ai-coach as none → 307
+  [✓ pass] RBAC | GET /ai-coach as user → 307
+  [✓ pass] RBAC | GET /ai-coach as admin → 307
+  [✓ pass] RBAC | GET /fitness as none → 307
+  [✓ pass] RBAC | GET /fitness as user → 307
+  [✓ pass] RBAC | GET /fitness as admin → 307
+  [✓ pass] RBAC | GET /nutrition as none → 307
+  [✓ pass] RBAC | GET /nutrition as user → 307
+  [✓ pass] RBAC | GET /nutrition as admin → 307
+  [✓ pass] RBAC | GET /sleep as none → 307
+  [✓ pass] RBAC | GET /sleep as user → 307
+  [✓ pass] RBAC | GET /sleep as admin → 307
+  [✓ pass] RBAC | GET /scanner as none → 307
+  [✓ pass] RBAC | GET /scanner as user → 307
+  [✓ pass] RBAC | GET /scanner as admin → 307
+  [✓ pass] RBAC | GET /future-lab as none → 307
+  [✓ pass] RBAC | GET /future-lab as user → 307
+  [✓ pass] RBAC | GET /future-lab as admin → 307
+  [✓ pass] RBAC | GET /challenges as none → 307
+  [✓ pass] RBAC | GET /challenges as user → 307
+  [✓ pass] RBAC | GET /challenges as admin → 307
+  [✓ pass] RBAC | GET /community as none → 307
+  [✓ pass] RBAC | GET /community as user → 307
+  [✓ pass] RBAC | GET /community as admin → 307
+  [✓ pass] RBAC | GET /profile as none → 307
+  [✓ pass] RBAC | GET /profile as user → 307
+  [✓ pass] RBAC | GET /profile as admin → 307
+  [✓ pass] RBAC | GET /settings as none → 307
+  [✓ pass] RBAC | GET /settings as user → 307
+  [✓ pass] RBAC | GET /settings as admin → 307
+  [✓ pass] RBAC | GET /admin as none → 307
+  [✓ pass] RBAC | GET /admin as user → 307
+  [✓ pass] RBAC | GET /admin as admin → 307
+  [✓ pass] RBAC | POST /api/ai-coach as none → 401
+  [✓ pass] RBAC | POST /api/ai-coach as user → 401
+  [✓ pass] RBAC | POST /api/ai-coach as admin → 401
+  [✓ pass] RBAC | POST /api/food-scanner as none → 401
+  [✓ pass] RBAC | POST /api/food-scanner as user → 401
+  [✓ pass] RBAC | POST /api/food-scanner as admin → 401
+  [✓ pass] RBAC | POST /api/nutrition-planner as none → 401
+  [✓ pass] RBAC | POST /api/nutrition-planner as user → 401
+  [✓ pass] RBAC | POST /api/nutrition-planner as admin → 401
+  -> 72 tests, 0 findings  (10.63s)
+  -> 72 tests, 0 findings  (10.63s)
+
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+  Running: 5. Token Tampering
+  Running: 5. Token Tampering
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+  [✓ pass] Token Tamper (role_flip_admin) | /api/ai-coach → 401
+  [✓ pass] Token Tamper (alg_none) | /api/ai-coach → 401
+  [✓ pass] Token Tamper (corrupt_sig) | /api/ai-coach → 401
+  [✓ pass] Token Tamper (claim_inject) | /api/ai-coach → 401
+  [✓ pass] Token Tamper (role_flip_admin) | /api/food-scanner → 401
+  [✓ pass] Token Tamper (alg_none) | /api/food-scanner → 401
+  [✓ pass] Token Tamper (corrupt_sig) | /api/food-scanner → 401
+  [✓ pass] Token Tamper (claim_inject) | /api/food-scanner → 401
+  [✓ pass] Token Tamper (role_flip_admin) | /api/nutrition-planner → 401
+  [✓ pass] Token Tamper (alg_none) | /api/nutrition-planner → 401
+  [✓ pass] Token Tamper (corrupt_sig) | /api/nutrition-planner → 401
+  [✓ pass] Token Tamper (claim_inject) | /api/nutrition-planner → 401
+  -> 12 tests, 0 findings  (1.98s)
+  -> 12 tests, 0 findings  (1.98s)
+
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+  Running: 6. Injection Probe
+  Running: 6. Injection Probe
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+  [✓ pass] Inject (SQLi) | /api/ai-coach → 401 34.08ms
+  [✓ pass] Inject (SQLi) | /api/ai-coach → 401 34.26ms
+  [✓ pass] Inject (SQLi) | /api/ai-coach → 401 33.95ms
+  [✓ pass] Inject (SQLi) | /api/ai-coach → 401 33.33ms
+  [✓ pass] Inject (SQLi) | /api/ai-coach → 401 34.84ms
+  [✓ pass] Inject (SQLi) | /api/ai-coach → 401 31.91ms
+  [✓ pass] Inject (NoSQLi) | /api/ai-coach → 401 29.92ms
+  [✓ pass] Inject (NoSQLi) | /api/ai-coach → 401 34.63ms
+  [✓ pass] Inject (NoSQLi) | /api/ai-coach → 401 44.75ms
+  [✓ pass] Inject (SSTI) | /api/ai-coach → 401 59.23ms
+  [✓ pass] Inject (SSTI) | /api/ai-coach → 401 58.37ms
+  [✓ pass] Inject (SSTI) | /api/ai-coach → 401 34.77ms
+  [✓ pass] Inject (CmdInj) | /api/ai-coach → 401 35.8ms
+  [✓ pass] Inject (CmdInj) | /api/ai-coach → 401 50.49ms
+  [✓ pass] Inject (CmdInj) | /api/ai-coach → 401 37.01ms
+  [✓ pass] Inject (CmdInj) | /api/ai-coach → 401 52.32ms
+  [✓ pass] Inject (SQLi) | /api/food-scanner → 401 39.09ms
+  [✓ pass] Inject (SQLi) | /api/food-scanner → 401 63.13ms
+  [✓ pass] Inject (SQLi) | /api/food-scanner → 401 51.68ms
+  [✓ pass] Inject (SQLi) | /api/food-scanner → 401 24.43ms
+  [✓ pass] Inject (SQLi) | /api/food-scanner → 401 49.73ms
+  [✓ pass] Inject (SQLi) | /api/food-scanner → 401 46.59ms
+  [✓ pass] Inject (NoSQLi) | /api/food-scanner → 401 50.8ms
+  [✓ pass] Inject (NoSQLi) | /api/food-scanner → 401 35.43ms
+  [✓ pass] Inject (NoSQLi) | /api/food-scanner → 401 49.82ms
+  [✓ pass] Inject (SSTI) | /api/food-scanner → 401 33.98ms
+  [✓ pass] Inject (SSTI) | /api/food-scanner → 401 50.72ms
+  [✓ pass] Inject (SSTI) | /api/food-scanner → 401 34.68ms
+  [✓ pass] Inject (CmdInj) | /api/food-scanner → 401 50.56ms
+  [✓ pass] Inject (CmdInj) | /api/food-scanner → 401 58.81ms
+  [✓ pass] Inject (CmdInj) | /api/food-scanner → 401 38.62ms
+  [✓ pass] Inject (CmdInj) | /api/food-scanner → 401 36.27ms
+  [✓ pass] Inject (SQLi) | /api/nutrition-planner → 401 35.01ms
+  [✓ pass] Inject (SQLi) | /api/nutrition-planner → 401 27.71ms
+  [✓ pass] Inject (SQLi) | /api/nutrition-planner → 401 49.73ms
+  [✓ pass] Inject (SQLi) | /api/nutrition-planner → 401 45.03ms
+  [✓ pass] Inject (SQLi) | /api/nutrition-planner → 401 34.14ms
+  [✓ pass] Inject (SQLi) | /api/nutrition-planner → 401 50.82ms
+  [✓ pass] Inject (NoSQLi) | /api/nutrition-planner → 401 48.99ms
+  [✓ pass] Inject (NoSQLi) | /api/nutrition-planner → 401 23.58ms
+  [✓ pass] Inject (NoSQLi) | /api/nutrition-planner → 401 50.65ms
+  [✓ pass] Inject (SSTI) | /api/nutrition-planner → 401 25.57ms
+  [✓ pass] Inject (SSTI) | /api/nutrition-planner → 401 49.56ms
+  [✓ pass] Inject (SSTI) | /api/nutrition-planner → 401 33.05ms
+  [✓ pass] Inject (CmdInj) | /api/nutrition-planner → 401 49.9ms
+  [✓ pass] Inject (CmdInj) | /api/nutrition-planner → 401 49.37ms
+  [✓ pass] Inject (CmdInj) | /api/nutrition-planner → 401 41.31ms
+  [✓ pass] Inject (CmdInj) | /api/nutrition-planner → 401 35.23ms
+  -> 48 tests, 0 findings  (7.15s)
+  -> 48 tests, 0 findings  (7.15s)
+
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+  Running: 7. Rate Limiting
+  Running: 7. Rate Limiting
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+  [⚠ FINDING] Rate Limit | POST /api/ai-coach as none → 429 seen=False, statuses={401}
+  [⚠ FINDING] Rate Limit | POST /api/ai-coach as user → 429 seen=False, statuses={401}
+  [⚠ FINDING] Rate Limit | POST /api/food-scanner as none → 429 seen=False, statuses={401}
+  [⚠ FINDING] Rate Limit | POST /api/food-scanner as user → 429 seen=False, statuses={401}
+  [⚠ FINDING] Rate Limit | POST /api/nutrition-planner as none → 429 seen=False, statuses={401}
+  [⚠ FINDING] Rate Limit | POST /api/nutrition-planner as user → 429 seen=False, statuses={401}
+  [⚠ FINDING] Rate Limit | GET /auth/login as none → 429 seen=False, statuses={200}
+  [⚠ FINDING] Rate Limit | GET /auth/login as user → 429 seen=False, statuses={200}
+  -> 8 tests, 8 findings  (27.74s)
+  -> 8 tests, 8 findings  (27.74s)
+
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+  Running: 8. Hardcoded Creds
+  Running: 8. Hardcoded Creds
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+  [ℹ info] Hardcoded Creds (Supabase JWT token in source) | .env.local:6 → severity=Low
+  [ℹ info] Hardcoded Creds (Gemini API key pattern) | .env.local:1 → severity=Low
+  [⚠ FINDING] Hardcoded Creds (Supabase JWT token in source) | automated_test\test_01_authn_bypass.py:24 → severity=Critical
+  [⚠ FINDING] Hardcoded Creds (Supabase JWT token in source) | automated_test\test_01_authn_bypass.py:25 → severity=Critical
+  [⚠ FINDING] Hardcoded Creds (Hardcoded Bearer token) | automated_test\test_01_authn_bypass.py:24 → severity=Critical
+  [⚠ FINDING] Hardcoded Creds (Hardcoded Bearer token) | automated_test\test_01_authn_bypass.py:25 → severity=Critical
+  [⚠ FINDING] Hardcoded Creds (Hardcoded admin email) | src\app\admin\page.tsx:58 → severity=Critical
+  [⚠ FINDING] Hardcoded Creds (Hardcoded admin email) | src\app\admin\page.tsx:60 → severity=Critical
+  [⚠ FINDING] Hardcoded Creds (Hardcoded admin email) | src\app\admin\page.tsx:85 → severity=Critical
+  -> 9 tests, 9 findings  (8.83s)
+  -> 9 tests, 9 findings  (8.83s)
+
+
+========================================================
+========================================================
+  REPORT SAVED -> D:\web app\automated_test\report.json
+  REPORT SAVED -> D:\web app\automated_test\report.json
+========================================================
+========================================================
+
+
+  Endpoints Discovered : 24
+  Endpoints Discovered : 24
+  Total Tests Run      : 191
+  Total Tests Run      : 191
+  Total Findings       : 17
+  Total Findings       : 17
+
+
+  [CRIT] Critical (7)
+  [CRIT] Critical (7)
+    FAIL [Hardcoded Creds] STATIC automated_test\test_01_authn_bypass.py as N/A -> HTTP N/A
+    FAIL [Hardcoded Creds] STATIC automated_test\test_01_authn_bypass.py as N/A -> HTTP N/A
+         File: automated_test\test_01_authn_bypass.py | Line 24 | Match (redacted): eyJhbG…[REDACTED] | NOT in .gitignore — commi
+         File: automated_test\test_01_authn_bypass.py | Line 24 | Match (redacted): eyJhbG…[REDACTED] | NOT in .gitignore — commi
+    FAIL [Hardcoded Creds] STATIC automated_test\test_01_authn_bypass.py as N/A -> HTTP N/A
+    FAIL [Hardcoded Creds] STATIC automated_test\test_01_authn_bypass.py as N/A -> HTTP N/A
+         File: automated_test\test_01_authn_bypass.py | Line 25 | Match (redacted): eyJhbG…[REDACTED] | NOT in .gitignore — commi
+         File: automated_test\test_01_authn_bypass.py | Line 25 | Match (redacted): eyJhbG…[REDACTED] | NOT in .gitignore — commi
+    FAIL [Hardcoded Creds] STATIC automated_test\test_01_authn_bypass.py as N/A -> HTTP N/A
+    FAIL [Hardcoded Creds] STATIC automated_test\test_01_authn_bypass.py as N/A -> HTTP N/A
+         File: automated_test\test_01_authn_bypass.py | Line 24 | Match (redacted): Bearer…[REDACTED] | NOT in .gitignore — commi
+         File: automated_test\test_01_authn_bypass.py | Line 24 | Match (redacted): Bearer…[REDACTED] | NOT in .gitignore — commi
+    FAIL [Hardcoded Creds] STATIC automated_test\test_01_authn_bypass.py as N/A -> HTTP N/A
+    FAIL [Hardcoded Creds] STATIC automated_test\test_01_authn_bypass.py as N/A -> HTTP N/A
+         File: automated_test\test_01_authn_bypass.py | Line 25 | Match (redacted): Bearer…[REDACTED] | NOT in .gitignore — commi
+         File: automated_test\test_01_authn_bypass.py | Line 25 | Match (redacted): Bearer…[REDACTED] | NOT in .gitignore — commi
+    FAIL [Hardcoded Creds] STATIC src\app\admin\page.tsx as N/A -> HTTP N/A
+    FAIL [Hardcoded Creds] STATIC src\app\admin\page.tsx as N/A -> HTTP N/A
+         File: src\app\admin\page.tsx | Line 58 | Match (redacted): admin@…[REDACTED] | NOT in .gitignore — committed secret!
+         File: src\app\admin\page.tsx | Line 58 | Match (redacted): admin@…[REDACTED] | NOT in .gitignore — committed secret!
+    FAIL [Hardcoded Creds] STATIC src\app\admin\page.tsx as N/A -> HTTP N/A
+    FAIL [Hardcoded Creds] STATIC src\app\admin\page.tsx as N/A -> HTTP N/A
+         File: src\app\admin\page.tsx | Line 60 | Match (redacted): admin@…[REDACTED] | NOT in .gitignore — committed secret!
+         File: src\app\admin\page.tsx | Line 60 | Match (redacted): admin@…[REDACTED] | NOT in .gitignore — committed secret!
+    FAIL [Hardcoded Creds] STATIC src\app\admin\page.tsx as N/A -> HTTP N/A
+    FAIL [Hardcoded Creds] STATIC src\app\admin\page.tsx as N/A -> HTTP N/A
+         File: src\app\admin\page.tsx | Line 85 | Match (redacted): admin@…[REDACTED] | NOT in .gitignore — committed secret!
+         File: src\app\admin\page.tsx | Line 85 | Match (redacted): admin@…[REDACTED] | NOT in .gitignore — committed secret!
+  [MED] Medium (8)
+  [MED] Medium (8)
+    FAIL [Rate Limiting] POST /api/ai-coach as none -> HTTP 401
+    FAIL [Rate Limiting] POST /api/ai-coach as none -> HTTP 401
+         Burst 30 reqs. No 429 returned. Statuses seen: {401}
+         Burst 30 reqs. No 429 returned. Statuses seen: {401}
+    FAIL [Rate Limiting] POST /api/ai-coach as user -> HTTP 401
+    FAIL [Rate Limiting] POST /api/ai-coach as user -> HTTP 401
+         Burst 30 reqs. No 429 returned. Statuses seen: {401}
+         Burst 30 reqs. No 429 returned. Statuses seen: {401}
+    FAIL [Rate Limiting] POST /api/food-scanner as none -> HTTP 401
+    FAIL [Rate Limiting] POST /api/food-scanner as none -> HTTP 401
+         Burst 30 reqs. No 429 returned. Statuses seen: {401}
+         Burst 30 reqs. No 429 returned. Statuses seen: {401}
+    FAIL [Rate Limiting] POST /api/food-scanner as user -> HTTP 401
+    FAIL [Rate Limiting] POST /api/food-scanner as user -> HTTP 401
+         Burst 30 reqs. No 429 returned. Statuses seen: {401}
+         Burst 30 reqs. No 429 returned. Statuses seen: {401}
+    FAIL [Rate Limiting] POST /api/nutrition-planner as none -> HTTP 401
+    FAIL [Rate Limiting] POST /api/nutrition-planner as none -> HTTP 401
+         Burst 30 reqs. No 429 returned. Statuses seen: {401}
+         Burst 30 reqs. No 429 returned. Statuses seen: {401}
+    FAIL [Rate Limiting] POST /api/nutrition-planner as user -> HTTP 401
+    FAIL [Rate Limiting] POST /api/nutrition-planner as user -> HTTP 401
+         Burst 30 reqs. No 429 returned. Statuses seen: {401}
+         Burst 30 reqs. No 429 returned. Statuses seen: {401}
+    FAIL [Rate Limiting] GET /auth/login as none -> HTTP 200
+    FAIL [Rate Limiting] GET /auth/login as none -> HTTP 200
+         Burst 30 reqs. No 429 returned. Statuses seen: {200}
+         Burst 30 reqs. No 429 returned. Statuses seen: {200}
+    FAIL [Rate Limiting] GET /auth/login as user -> HTTP 200
+    FAIL [Rate Limiting] GET /auth/login as user -> HTTP 200
+         Burst 30 reqs. No 429 returned. Statuses seen: {200}
+         Burst 30 reqs. No 429 returned. Statuses seen: {200}
+  [LOW] Low (2)
+  [LOW] Low (2)
+    FAIL [Hardcoded Creds] STATIC .env.local as N/A -> HTTP N/A
+    FAIL [Hardcoded Creds] STATIC .env.local as N/A -> HTTP N/A
+         File: .env.local | Line 6 | Match (redacted): eyJhbG…[REDACTED] | In .gitignore scope (good) but contains live key
+         File: .env.local | Line 6 | Match (redacted): eyJhbG…[REDACTED] | In .gitignore scope (good) but contains live key
+    FAIL [Hardcoded Creds] STATIC .env.local as N/A -> HTTP N/A
+    FAIL [Hardcoded Creds] STATIC .env.local as N/A -> HTTP N/A
+         File: .env.local | Line 1 | Match (redacted): AQ.Ab8…[REDACTED] | In .gitignore scope (good) but contains live key
+         File: .env.local | Line 1 | Match (redacted): AQ.Ab8…[REDACTED] | In .gitignore scope (good) but contains live key
+
+
+  Completed : 2026-06-16T03:34:00.413577Z
+  Completed : 2026-06-16T03:34:00.413577Z
+  Log saved : D:\web app\automated_test\dast_run.log
+  Log saved : D:\web app\automated_test\dast_run.log
+
+

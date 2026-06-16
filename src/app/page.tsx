@@ -72,7 +72,7 @@ export default function LandingPage() {
 
 
   return (
-    <div className="flex-1 flex flex-col bg-background relative overflow-hidden">
+    <div className="flex-1 flex flex-col bg-background relative overflow-hidden w-full max-w-[100vw]">
       {/* Premium Ambient Glow Orbs & Mesh Background */}
       <div className="absolute top-0 left-0 right-0 h-[900px] overflow-hidden pointer-events-none z-0">
         {/* Glow Orb 1 (Forest Sage Green) */}

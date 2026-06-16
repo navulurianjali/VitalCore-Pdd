@@ -46,7 +46,12 @@ def driver(request):
     opts.add_experimental_option("useAutomationExtension", False)
     opts.add_argument("--headless=new")
 
-    drv = webdriver.Chrome(service=Service(_LOCAL_CHROMEDRIVER), options=opts)
+    if os.path.exists(_LOCAL_CHROMEDRIVER):
+        srv = Service(_LOCAL_CHROMEDRIVER)
+    else:
+        srv = Service()
+        
+    drv = webdriver.Chrome(service=srv, options=opts)
     drv.set_page_load_timeout(35)
     drv.implicitly_wait(4)
     drv._base = BASE_URL

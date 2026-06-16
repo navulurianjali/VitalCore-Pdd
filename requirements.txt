@@ -1,0 +1,4 @@
+selenium>=4.15
+pytest
+openpyxl
+pytest-html
