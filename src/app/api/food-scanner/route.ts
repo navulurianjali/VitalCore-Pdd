@@ -1,5 +1,45 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
+import { Ratelimit } from "@upstash/ratelimit";
+import { Redis } from "@upstash/redis";
+
+// VULN-03 FIX: Upstash Redis rate limiter (10 scans/min — image AI is expensive)
+let ratelimit: Ratelimit | null = null;
+if (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) {
+  ratelimit = new Ratelimit({
+    redis: Redis.fromEnv(),
+    limiter: Ratelimit.slidingWindow(10, "1 m"),
+    analytics: true,
+  });
+}
+
+// In-memory fallback
+const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
+const RATE_LIMIT = 10;
+const RATE_WINDOW_MS = 60_000;
+
+async function checkRateLimit(userId: string): Promise<boolean> {
+  if (ratelimit) {
+    const { success } = await ratelimit.limit(userId);
+    return success;
+  }
+  
+  const now = Date.now();
+  const entry = rateLimitMap.get(userId);
+  if (!entry || now > entry.resetAt) {
+    rateLimitMap.set(userId, { count: 1, resetAt: now + RATE_WINDOW_MS });
+    return true;
+  }
+  if (entry.count >= RATE_LIMIT) return false;
+  entry.count++;
+  return true;
+}
+
+// VULN-09 FIX: MIME type allowlist — reject any unlisted types
+const ALLOWED_MIME_TYPES = new Set(["image/jpeg", "image/jpg", "image/png", "image/webp"]);
+// Max base64 size = ~7MB decoded (5MB * 4/3 ratio + buffer)
+const MAX_BASE64_LENGTH = 7_000_000;
+
 
 export async function POST(req: NextRequest) {
   try {
@@ -10,6 +50,15 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         { error: "Unauthorized access. Valid Supabase session required." },
         { status: 401 }
+      );
+    }
+
+    // VULN-03 FIX: Rate limit check
+    const isAllowed = await checkRateLimit(user.id);
+    if (!isAllowed) {
+      return NextResponse.json(
+        { error: "Too many requests. Please wait before scanning again." },
+        { status: 429 }
       );
     }
 
@@ -48,6 +97,20 @@ export async function POST(req: NextRequest) {
 
     const mimeType = matches[1];
     const base64Data = matches[2];
+
+    // VULN-09 FIX: Enforce MIME type allowlist and server-side size limit
+    if (!ALLOWED_MIME_TYPES.has(mimeType)) {
+      return NextResponse.json(
+        { error: "Unsupported image type. Please upload JPEG, PNG, or WEBP only." },
+        { status: 400 }
+      );
+    }
+    if (base64Data.length > MAX_BASE64_LENGTH) {
+      return NextResponse.json(
+        { error: "Image is too large. Maximum allowed size is 5MB." },
+        { status: 413 }
+      );
+    }
 
     const systemPrompt = `You are a professional, helpful, and highly intelligent AI Nutrition Vision Scanner.
 Your job is to analyze the food image using a layered Multi-Stage Food Analysis Pipeline:
@@ -119,9 +182,10 @@ DO NOT return any markdown code blocks, backticks, or text outside of the JSON. 
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
+      // VULN-12 FIX: Log Gemini errors server-side only, do not return details to client
       console.warn("Gemini vision endpoint failed", errorData);
       return NextResponse.json(
-        { error: "AI Scanner failed to process this image. Please ensure your API key is valid and you have internet connection.", details: errorData },
+        { error: "AI Scanner failed to process this image. Please try with a clearer image." },
         { status: 500 }
       );
     }
@@ -141,9 +205,10 @@ DO NOT return any markdown code blocks, backticks, or text outside of the JSON. 
       );
     }
   } catch (err: any) {
+    // VULN-12 FIX: Never expose raw error messages to the client
     console.error("Food Scanner API Error:", err);
     return NextResponse.json(
-      { error: err.message || "Internal server error during image analysis" },
+      { error: "An internal error occurred during image analysis. Please try again." },
       { status: 500 }
     );
   }

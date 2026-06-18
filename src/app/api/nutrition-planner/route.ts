@@ -1,5 +1,50 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
+import { Ratelimit } from "@upstash/ratelimit";
+import { Redis } from "@upstash/redis";
+
+// VULN-03 FIX: Upstash Redis rate limiter (per-user, 20 req/min)
+let ratelimit: Ratelimit | null = null;
+if (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) {
+  ratelimit = new Ratelimit({
+    redis: Redis.fromEnv(),
+    limiter: Ratelimit.slidingWindow(20, "1 m"),
+    analytics: true,
+  });
+}
+
+// In-memory fallback
+const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
+const RATE_LIMIT = 20;
+const RATE_WINDOW_MS = 60_000;
+
+async function checkRateLimit(userId: string): Promise<boolean> {
+  if (ratelimit) {
+    const { success } = await ratelimit.limit(userId);
+    return success;
+  }
+  
+  const now = Date.now();
+  const entry = rateLimitMap.get(userId);
+  if (!entry || now > entry.resetAt) {
+    rateLimitMap.set(userId, { count: 1, resetAt: now + RATE_WINDOW_MS });
+    return true;
+  }
+  if (entry.count >= RATE_LIMIT) return false;
+  entry.count++;
+  return true;
+}
+
+// VULN-04 FIX: Allowlists for goal and preference to prevent prompt injection
+const VALID_GOALS = new Set([
+  "Weight Loss", "Muscle Gain", "Weight Gain", "General Wellness",
+  "Endurance", "Energy", "Recovery", "Stress Management"
+]);
+const VALID_PREFERENCES = new Set([
+  "Standard", "Vegetarian", "Vegan", "Keto", "South Indian",
+  "North Indian", "Indian", "Mediterranean", "Paleo"
+]);
+
 
 export async function POST(req: NextRequest) {
   try {
@@ -13,14 +58,47 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // VULN-03 FIX: Rate limit check
+    const isAllowed = await checkRateLimit(user.id);
+    if (!isAllowed) {
+      return NextResponse.json(
+        { error: "Too many requests. Please wait a moment before trying again." },
+        { status: 429 }
+      );
+    }
+
+    // VULN-04 FIX: Explicitly check body size (limit to 1MB)
     let body;
     try {
-      body = await req.json();
+      const rawBody = await req.text();
+      if (rawBody.length > 1_000_000) {
+        return NextResponse.json({ error: "Payload too large." }, { status: 413 });
+      }
+      body = JSON.parse(rawBody);
     } catch (parseError) {
       return NextResponse.json({ error: "Invalid JSON payload." }, { status: 400 });
     }
     
-    const { goal, preference, profile, metrics } = body;
+    // VULN-04 FIX: Validate goal and preference against allowlists
+    const rawGoal = String(body.goal || "");
+    const rawPreference = String(body.preference || "");
+
+    const goal = VALID_GOALS.has(rawGoal) ? rawGoal : "General Wellness";
+    const preference = VALID_PREFERENCES.has(rawPreference) ? rawPreference : "Standard";
+    // VULN-01 FIX: Enforce bounds on client-supplied metrics
+    const rawMetrics = body.metrics || {};
+    const metrics = {
+      stressLevel: Math.max(0, Math.min(Number(rawMetrics.stressLevel) || 45, 100)),
+      sleepHours: Math.max(0, Math.min(Number(rawMetrics.sleepHours) || 7.2, 24))
+    };
+
+    // VULN-05 FIX: Fetch real profile server-side, ignore client-supplied profile
+    const { data: serverProfile } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", user.id)
+      .single();
+    const profile = serverProfile || {};
 
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
@@ -155,9 +233,10 @@ DO NOT include any markdown code blocks, comments, or backticks in the response.
 
     return NextResponse.json(generateFallbackPlan(goal, preference, metrics));
   } catch (err: any) {
+    // VULN-12 FIX: Never expose raw error messages to the client
     console.error("AI Nutrition Planner API error:", err);
     return NextResponse.json(
-      { error: err.message || "Internal server error" },
+      { error: "An internal error occurred. Please try again." },
       { status: 500 }
     );
   }

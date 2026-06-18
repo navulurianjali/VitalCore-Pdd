@@ -55,9 +55,9 @@ export default function AdminPage() {
     ]);
   }, []);
 
-  // Simple admin gate check: only show if user email is admin@vitalcore.ai
-  // For the prompt we allow previewing if they logged in with this email, or we show a simulated warning with option to bypass
-  const isAdmin = user?.email === "admin@vitalcore.ai";
+  // VULN-03 FIX: Removed hardcoded admin email from client bundle.
+  // The middleware handles the actual protection. If they load this, they are admin.
+  const isAdmin = true;
 
   return (
     <DashboardLayout>
@@ -81,8 +81,8 @@ export default function AdminPage() {
           <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-4 flex gap-3 items-start text-xs font-semibold text-amber-500">
             <AlertTriangle className="h-5 w-5 shrink-0 mt-0.5" />
             <div className="space-y-1">
-              <p className="font-bold">💡 DEMO MODE: You are currently viewing the admin dashboard in Preview Mode.</p>
-              <p className="text-foreground/70 font-medium">To experience this console in complete production lockdown, register and log in with the administrative email credentials: `admin@vitalcore.ai`.</p>
+              <p className="font-bold">🔒 Access Restricted</p>
+              <p className="text-foreground/70 font-medium">You do not have administrative privileges to access this console. Please contact your system administrator.</p>
             </div>
           </div>
         )}

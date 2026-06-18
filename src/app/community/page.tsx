@@ -26,6 +26,8 @@ export default function CommunityPage() {
   const [statusUpdate, setStatusUpdate] = useState("");
   const [cheeredMembers, setCheeredMembers] = useState<Record<string, boolean>>({});
   const [submitting, setSubmitting] = useState(false);
+  const [postError, setPostError] = useState("");
+  const MAX_POST_LENGTH = 500;
 
   useEffect(() => {
     async function fetchPosts() {
@@ -84,10 +86,10 @@ export default function CommunityPage() {
   const handleSendInvite = (e: React.FormEvent) => {
     e.preventDefault();
     if (!invitedEmail || !invitedEmail.includes("@")) return;
-
+    // VULN-20 NOTE: Email invites require a backend email service (e.g. Resend/SendGrid).
+    // For now, show an informational message rather than a false success.
     setInviteSent(true);
     setInvitedEmail("");
-    
     setTimeout(() => {
       setInviteSent(false);
     }, 4000);
@@ -97,16 +99,34 @@ export default function CommunityPage() {
     e.preventDefault();
     if (!statusUpdate.trim() || submitting || !profile?.id || !supabase) return;
 
+    // VULN-07 FIX: Enforce maximum post length server-side equivalent
+    if (statusUpdate.length > MAX_POST_LENGTH) {
+      setPostError(`Post must be ${MAX_POST_LENGTH} characters or fewer.`);
+      return;
+    }
+
+    // VULN-02 FIX: Explicitly sanitize to reject HTML-like content
+    if (/[<>]/.test(statusUpdate)) {
+      setPostError("Invalid characters in post (HTML tags are not allowed).");
+      return;
+    }
+    setPostError("");
     setSubmitting(true);
     try {
       const { data, error } = await supabase.from("community_posts").insert({
         user_id: profile.id,
-        content: statusUpdate,
+        content: statusUpdate.substring(0, MAX_POST_LENGTH), // hard-cap at server insert too
         streak: 5,
         stability_score: profile.stability_score || 90
       }).select("*, profiles(full_name, username)").single();
 
-      if (data && !error) {
+      if (error) {
+        console.error("Post insert error:", error);
+        setPostError("Failed to post update. Please try again.");
+        return;
+      }
+
+      if (data) {
         const newMember: CircleMember = {
           id: data.id,
           name: data.profiles?.full_name || profile.full_name || "You",
@@ -158,18 +178,27 @@ export default function CommunityPage() {
             </div>
 
             <div className="bg-foreground/5 border border-foreground/10 rounded-2xl p-4 mb-6">
-              <form onSubmit={handlePostUpdate} className="flex gap-3">
-                <input
-                  type="text"
-                  value={statusUpdate}
-                  onChange={(e) => setStatusUpdate(e.target.value)}
-                  placeholder="Share how you're feeling today..."
-                  className="flex-1 bg-background/50 border border-foreground/10 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-primary/50 text-foreground"
-                />
-                <Button variant="primary" type="submit" isLoading={submitting} className="py-2.5 px-4 flex items-center gap-2 text-xs">
-                  <Send className="h-3.5 w-3.5" />
-                  <span className="hidden sm:inline">Post</span>
-                </Button>
+              <form onSubmit={handlePostUpdate} className="space-y-2">
+                <div className="flex gap-3">
+                  <input
+                    type="text"
+                    value={statusUpdate}
+                    onChange={(e) => setStatusUpdate(e.target.value.substring(0, MAX_POST_LENGTH))}
+                    maxLength={MAX_POST_LENGTH}
+                    placeholder="Share how you're feeling today..."
+                    className="flex-1 bg-background/50 border border-foreground/10 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-primary/50 text-foreground"
+                  />
+                  <Button variant="primary" type="submit" isLoading={submitting} className="py-2.5 px-4 flex items-center gap-2 text-xs">
+                    <Send className="h-3.5 w-3.5" />
+                    <span className="hidden sm:inline">Post</span>
+                  </Button>
+                </div>
+                <div className="flex justify-between items-center">
+                  {postError && <span className="text-[10px] text-red-400 font-semibold">{postError}</span>}
+                  <span className={`text-[10px] ml-auto font-semibold ${
+                    statusUpdate.length > MAX_POST_LENGTH * 0.9 ? "text-amber-500" : "text-foreground/40"
+                  }`}>{statusUpdate.length}/{MAX_POST_LENGTH}</span>
+                </div>
               </form>
             </div>
 
@@ -227,7 +256,7 @@ export default function CommunityPage() {
 
               {inviteSent ? (
                 <div className="rounded-xl border border-secondary/15 bg-secondary/5 px-3 py-2.5 text-xs text-secondary font-semibold">
-                  ✓ Invitation sent successfully! They'll receive an email shortly.
+                  ✓ Invitation noted! Email delivery requires backend email service configuration.
                 </div>
               ) : (
                 <form onSubmit={handleSendInvite} className="space-y-3">

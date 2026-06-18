@@ -220,8 +220,11 @@ alter table public.challenges enable row level security;
 create policy "Anyone can read challenges." on public.challenges
     for select to authenticated using (true);
 
-create policy "Authenticated users can insert challenges" on public.challenges
-    for insert to authenticated with check (true);
+-- VULN-14 FIX: Removed open insert policy for challenges.
+-- Challenges should be managed by admins only via the Supabase dashboard
+-- or a privileged service-role key, not by regular authenticated users.
+-- create policy "Authenticated users can insert challenges" on public.challenges
+--     for insert to authenticated with check (true);
 
 -- USER CHALLENGES (Tracking joined challenges & progress)
 create table public.user_challenges (
@@ -438,8 +441,10 @@ create table public.contact_inquiries (
 
 alter table public.contact_inquiries enable row level security;
 
-create policy "Anyone can insert inquiries." on public.contact_inquiries
-    for insert with check (true);
+-- VULN-08 FIX: Changed from anonymous to authenticated-only inserts.
+-- This prevents unauthenticated spam flooding of the contact_inquiries table.
+create policy "Authenticated users can insert inquiries." on public.contact_inquiries
+    for insert to authenticated with check (true);
 
 create policy "Users can view their own inquiries." on public.contact_inquiries
     for select using (auth.uid() = user_id);

@@ -5,15 +5,37 @@ import Link from "next/link";
 import { Activity, ShieldCheck, Mail } from "lucide-react";
 import Button from "@/components/ui/Button";
 import GlassCard from "@/components/ui/GlassCard";
+import { supabase } from "@/utils/supabase";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
-    setSubmitted(true);
+
+    setLoading(true);
+    setErrorMsg("");
+
+    try {
+      // VULN-06 FIX: Actually call Supabase password reset API
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/auth/login`,
+      });
+
+      if (error) {
+        setErrorMsg(error.message);
+      } else {
+        setSubmitted(true);
+      }
+    } catch (err: any) {
+      setErrorMsg(err.message || "An unexpected error occurred. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -43,7 +65,7 @@ export default function ForgotPasswordPage() {
               </div>
               <h3 className="text-sm font-semibold tracking-tight">Reset Link Transmitted</h3>
               <p className="text-[13px] text-foreground/70 leading-relaxed font-medium">
-                If <strong>{email}</strong> is registered, you will receive cryptographic parameters to reset your access shortly.
+                If <strong>{email}</strong> is registered, you will receive a password reset link shortly. Check your inbox and spam folder.
               </p>
               <Link href="/auth/login" className="block pt-2">
                 <Button variant="glass" className="w-full font-semibold">
@@ -54,8 +76,15 @@ export default function ForgotPasswordPage() {
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
               <p className="text-[13px] text-foreground/75 leading-relaxed font-medium">
-                Enter your registered biometric security email. We will transmit temporary cryptographic parameters to override your key.
+                Enter your registered email address. We will send you a secure link to reset your password.
               </p>
+
+              {errorMsg && (
+                <div className="rounded-xl border border-rose-500/20 bg-rose-500/10 px-4 py-3 text-[13px] text-rose-400 font-medium flex items-center gap-2">
+                  <span className="shrink-0">⚠️</span>
+                  <span>{errorMsg}</span>
+                </div>
+              )}
               
               <div className="space-y-1.5">
                 <label className="auth-label">Registered Email</label>
@@ -72,8 +101,8 @@ export default function ForgotPasswordPage() {
                 </div>
               </div>
 
-              <Button variant="primary" type="submit" className="w-full mt-2 font-semibold">
-                Request Cryptographic Reset
+              <Button variant="primary" type="submit" isLoading={loading} className="w-full mt-2 font-semibold">
+                Send Reset Link
               </Button>
 
             </form>
@@ -85,3 +114,4 @@ export default function ForgotPasswordPage() {
     </div>
   );
 }
+

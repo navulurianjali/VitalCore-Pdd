@@ -112,7 +112,7 @@ export default function OnboardingPage() {
         dietary_preferences: diet,
         allergies: allergies,
         caffeine_intake: caffeine,
-        wearable_synced: true,
+        wearable_synced: wearableType !== "none", // VULN-15 FIX: Only true if user actually selected a wearable
         anxiety_rating: Number(anxietyRating),
         motivation_level: Number(motivation),
         screen_time_hours: Number(screenTime),

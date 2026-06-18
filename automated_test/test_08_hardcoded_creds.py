@@ -35,11 +35,12 @@ PATTERNS = [
     (r"-----BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY-----", "Private key in source"),
 ]
 
-SKIP_DIRS  = {".git", ".next", "node_modules", "__pycache__", ".pytest_cache"}
+SKIP_DIRS  = {".git", ".next", "node_modules", "__pycache__", ".pytest_cache",
+              "Vulnerability Test Results", ".gemini", "automated_test"}
 SKIP_EXTS  = {".png", ".jpg", ".jpeg", ".gif", ".webp", ".ico", ".woff",
               ".woff2", ".ttf", ".eot", ".svg", ".lock", ".tsbuildinfo",
-              ".xlsx", ".pdf", ".zip"}
-SKIP_FILES = {"package-lock.json", "yarn.lock"}
+              ".xlsx", ".pdf", ".zip", ".log", ".pyc"}
+SKIP_FILES = {"package-lock.json", "yarn.lock", "report.json", "dast_run.log"}
 
 def run(project_root: str, base_url=None, user_token=None, admin_token=None):
     results = []

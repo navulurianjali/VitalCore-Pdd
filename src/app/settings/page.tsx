@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Settings, Sparkles, Trash2, ShieldCheck, Sun, Moon, Info } from "lucide-react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import GlassCard from "@/components/ui/GlassCard";
@@ -13,17 +14,29 @@ import confetti from "canvas-confetti";
 export default function SettingsPage() {
   const { theme, toggleTheme, activeMode, setActiveMode } = useTheme();
   const { profile } = useAuth();
+  const router = useRouter();
   
   const [cleared, setCleared] = useState(false);
+  const [wipeError, setWipeError] = useState("");
 
   const handleWipeCache = async () => {
     if (confirm("Are you absolutely sure you want to delete all of your logged data? This action is permanent and cannot be undone.")) {
       if (typeof window !== "undefined" && supabase && profile?.id) {
-        // Clear real database data for user
-        await supabase.from("hydration_logs").delete().eq("user_id", profile.id);
-        await supabase.from("workouts").delete().eq("user_id", profile.id);
-        await supabase.from("sleep_logs").delete().eq("user_id", profile.id);
-        await supabase.from("user_challenges").delete().eq("user_id", profile.id);
+        setWipeError("");
+        // VULN-18 FIX: Use Promise.all to run all deletes in parallel
+        // and check every result for errors before confirming success.
+        const results = await Promise.all([
+          supabase.from("hydration_logs").delete().eq("user_id", profile.id),
+          supabase.from("workouts").delete().eq("user_id", profile.id),
+          supabase.from("sleep_logs").delete().eq("user_id", profile.id),
+          supabase.from("user_challenges").delete().eq("user_id", profile.id),
+        ]);
+
+        const hasError = results.some(r => r.error);
+        if (hasError) {
+          setWipeError("Some data could not be deleted. Please try again.");
+          return;
+        }
       }
       setCleared(true);
       
@@ -33,8 +46,9 @@ export default function SettingsPage() {
         colors: ["#ef4444"]
       });
 
+      // VULN-19 FIX: Use router.push instead of window.location.href
       setTimeout(() => {
-        window.location.href = "/";
+        router.push("/");
       }, 1500);
     }
   };
@@ -127,6 +141,10 @@ export default function SettingsPage() {
               {cleared ? (
                 <div className="rounded-xl border border-red-500/20 bg-red-500/5 px-3 py-2 text-xs text-red-500 font-semibold">
                   ⚠ All logged data has been deleted! Redirecting...
+                </div>
+              ) : wipeError ? (
+                <div className="rounded-xl border border-rose-500/20 bg-rose-500/5 px-3 py-2 text-xs text-rose-400 font-semibold">
+                  ⚠ {wipeError}
                 </div>
               ) : (
                 <Button variant="danger" onClick={handleWipeCache} className="w-full py-3 flex items-center justify-center gap-1 text-xs font-bold">
