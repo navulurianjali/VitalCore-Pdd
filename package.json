@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test:dast": "pip install requests openpyxl --break-system-packages && cd automated_test && python3 dast_runner_v2.py"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.0",
