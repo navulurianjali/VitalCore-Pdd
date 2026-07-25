@@ -107,10 +107,12 @@ export async function POST(req: NextRequest) {
       sleepTarget: Math.max(1, Math.min(Number(rawMetrics.sleepTarget) || 8.0, 24))
     };
 
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) {
+    const groqKey = process.env.GROQ_API_KEY;
+    const geminiKey = process.env.GEMINI_API_KEY;
+
+    if (!groqKey && !geminiKey) {
       return NextResponse.json({
-        error: "Hello! The `GEMINI_API_KEY` is not configured. Please add the API key to enable full personalized AI coaching!"
+        error: "Hello! No AI API key configured. Please add GROQ_API_KEY or GEMINI_API_KEY in your environment variables!"
       }, { status: 400 });
     }
 
@@ -159,76 +161,104 @@ Operational Coach Directives:
 6. Maintain conversational continuity and reference past topics in the conversation if they are relevant.
 7. Keep responses concise and easy to scan, using clear formatting (bold, bullet points).`;
 
-    // Map history to Gemini REST API contents
-    const contents: any[] = [];
     const MAX_HISTORY_MESSAGES = 20;
     const MAX_MESSAGE_LENGTH = 1000;
+    const safeHistory = (history && Array.isArray(history))
+      ? history
+          .filter((h: any) => h.id !== "msg-welcome" && h.text !== "...")
+          .slice(-MAX_HISTORY_MESSAGES)
+          .map((h: any) => ({
+            role: h.sender === "user" ? "user" : "assistant",
+            text: String(h.text || "").substring(0, MAX_MESSAGE_LENGTH)
+          }))
+      : [];
 
-    if (history && Array.isArray(history)) {
-      // VULN-H2 FIX: Enforce a strict max of 20 messages, and max 1000 characters per message
-      const safeHistory = history
-        .filter((h: any) => h.id !== "msg-welcome" && h.text !== "...")
-        .slice(-MAX_HISTORY_MESSAGES)
-        .map((h: any) => ({
-          ...h,
-          text: String(h.text || "").substring(0, MAX_MESSAGE_LENGTH)
-        }));
+    // --- 1. TRY GROQ API FIRST IF AVAILABLE ---
+    if (groqKey) {
+      try {
+        const groqMessages = [
+          { role: "system", content: systemPrompt },
+          ...safeHistory.map((h: any) => ({ role: h.role, content: h.text })),
+          { role: "user", content: String(message || "Hello Coach! Give me a quick update on my health telemetry.").substring(0, MAX_MESSAGE_LENGTH) }
+        ];
 
+        const groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${groqKey}`
+          },
+          body: JSON.stringify({
+            model: "llama-3.3-70b-versatile",
+            messages: groqMessages,
+            temperature: 0.65,
+            max_tokens: 800
+          })
+        });
+
+        if (groqRes.ok) {
+          const groqData = await groqRes.json();
+          const replyText = groqData?.choices?.[0]?.message?.content;
+          if (replyText) {
+            return NextResponse.json({ reply: replyText });
+          }
+        } else {
+          const groqErr = await groqRes.json().catch(() => ({}));
+          console.warn("Groq API error, falling back to Gemini:", groqErr);
+        }
+      } catch (groqErr) {
+        console.warn("Groq API request failed:", groqErr);
+      }
+    }
+
+    // --- 2. FALLBACK TO GEMINI API ---
+    if (geminiKey) {
+      const contents: any[] = [];
       safeHistory.forEach((h: any) => {
         contents.push({
-          role: h.sender === "user" ? "user" : "model",
+          role: h.role === "user" ? "user" : "model",
           parts: [{ text: h.text }]
         });
       });
-    }
+      contents.push({
+        role: "user",
+        parts: [{ text: String(message || "Hello Coach!").substring(0, MAX_MESSAGE_LENGTH) }]
+      });
 
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents,
+            systemInstruction: { parts: [{ text: systemPrompt }] },
+            generationConfig: { temperature: 0.65, maxOutputTokens: 800 }
+          })
+        }
+      );
 
-    // Make official REST API call to Google Gemini model
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          contents,
-          systemInstruction: {
-            parts: [{ text: systemPrompt }]
-          },
-          generationConfig: {
-            temperature: 0.65,
-            maxOutputTokens: 800
-          }
-        })
+      if (response.ok) {
+        const data = await response.json();
+        const replyText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (replyText) {
+          return NextResponse.json({ reply: replyText });
+        }
       }
-    );
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      console.error("Gemini API Error:", errorData);
-      
-      // Fallback for demo purposes if API key is invalid/missing
-      // Interpolate real-time data so the user gets actual feedback even offline.
-      const waterStatus = metrics?.hydrationMl >= (metrics?.hydrationTarget || 2500) 
-        ? "You're hitting your hydration targets beautifully." 
-        : `You've logged ${metrics?.hydrationMl || 0}ml of water, but you're still short of your ${(metrics?.hydrationTarget || 2500)}ml target. Please drink more water!`;
-        
-      const sleepStatus = metrics?.sleepHours >= (metrics?.sleepTarget || 8)
-        ? "Your sleep duration is optimal."
-        : `Your sleep of ${metrics?.sleepHours || 0} hours is below the target. This might increase your fatigue later.`;
-        
-      const fallbackReply = `Hello ${profile?.full_name?.split(" ")[0] || "there"}! My connection to the central neural core is currently limited due to an invalid API key, so I'm operating in offline mode. However, looking at your real-time data: ${waterStatus} ${sleepStatus} Keep up the great work! How else can I help you fine-tune your routine?`;
-      
-      return NextResponse.json({ reply: fallbackReply });
     }
 
-    const data = await response.json();
-    const replyText =
-      data?.candidates?.[0]?.content?.parts?.[0]?.text ||
-      "I was unable to synthesize a biometric response. Please verify key parameters.";
-
-    return NextResponse.json({ reply: replyText });
+    // Fallback response if API call fails
+    const waterStatus = metrics?.hydrationMl >= (metrics?.hydrationTarget || 2500) 
+      ? "You're hitting your hydration targets beautifully." 
+      : `You've logged ${metrics?.hydrationMl || 0}ml of water, but you're still short of your ${(metrics?.hydrationTarget || 2500)}ml target. Please drink more water!`;
+      
+    const sleepStatus = metrics?.sleepHours >= (metrics?.sleepTarget || 8)
+      ? "Your sleep duration is optimal."
+      : `Your sleep of ${metrics?.sleepHours || 0} hours is below the target. This might increase your fatigue later.`;
+      
+    const fallbackReply = `Hello ${profile?.full_name?.split(" ")[0] || "there"}! Looking at your real-time data: ${waterStatus} ${sleepStatus} How else can I help you fine-tune your routine?`;
+    
+    return NextResponse.json({ reply: fallbackReply });
   } catch (err: any) {
     // VULN-12 FIX: Log error server-side only, never expose raw error to client
     console.error("AI Coach REST API Error:", err);

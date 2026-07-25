@@ -152,7 +152,7 @@ You MUST output strictly a valid JSON object matching this structure:
 DO NOT return any markdown code blocks, backticks, or text outside of the JSON. Return only the raw JSON.`;
 
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
       {
         method: "POST",
         headers: {
