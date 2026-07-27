@@ -1,0 +1,191 @@
+import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@/utils/supabase/server";
+import {
+  getFutureHealthScore,
+  getHabitEvolution,
+  getFoodEvolution,
+  getEarlyWarnings,
+  getFutureTimeline,
+  getHealthMilestoneForecast,
+  getPersonalizedStory,
+  getRiskScores,
+  getDailyImprovementPlan
+} from "@/utils/futureLabEngine";
+import { HealthDigitalTwin } from "@/hooks/useHealthData";
+
+export async function GET(req: NextRequest) {
+  try {
+    let user = null;
+    const authHeader = req.headers.get("authorization");
+
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+      const token = authHeader.substring(7);
+      const { createClient: createSupabaseClient } = await import("@supabase/supabase-js");
+      const supabaseAdmin = createSupabaseClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL || "https://bevolemwakfozxuymxsn.supabase.co",
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "placeholder-anon-key"
+      );
+      const { data: authData } = await supabaseAdmin.auth.getUser(token);
+      user = authData?.user || null;
+    }
+
+    if (!user) {
+      const supabase = await createClient();
+      const { data: { user: cookieUser } } = await supabase.auth.getUser();
+      user = cookieUser;
+    }
+
+    if (!user) {
+      return NextResponse.json(
+        { error: "Unauthorized access. Valid Supabase session required." },
+        { status: 401 }
+      );
+    }
+
+    const { createClient: createSupabaseClient } = await import("@supabase/supabase-js");
+    const supabase = createSupabaseClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL || "https://bevolemwakfozxuymxsn.supabase.co",
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "placeholder-anon-key"
+    );
+
+    const today = new Date().toISOString().split("T")[0];
+
+    // Fetch Profile
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", user.id)
+      .single();
+
+    // Fetch Today's Nutrition
+    const { data: nutritionData } = await supabase
+      .from("nutrition_logs")
+      .select("calories, protein_g, carbs_g, fat_g")
+      .eq("user_id", user.id)
+      .gte("created_at", `${today}T00:00:00Z`);
+
+    const caloriesConsumed = nutritionData?.reduce((sum, item) => sum + (item.calories || 0), 0) || 0;
+    const proteinConsumed = nutritionData?.reduce((sum, item) => sum + (item.protein_g || 0), 0) || 0;
+    const carbsConsumed = nutritionData?.reduce((sum, item) => sum + (item.carbs_g || 0), 0) || 0;
+    const fatConsumed = nutritionData?.reduce((sum, item) => sum + (item.fat_g || 0), 0) || 0;
+
+    // Fetch Today's Workouts
+    const { data: workoutData } = await supabase
+      .from("workouts")
+      .select("calories_burned, duration_minutes, type")
+      .eq("user_id", user.id)
+      .gte("created_at", `${today}T00:00:00Z`);
+
+    const caloriesBurned = workoutData?.reduce((sum, item) => sum + (item.calories_burned || 0), 0) || 0;
+    const totalWorkoutDuration = workoutData?.reduce((sum, item) => sum + (item.duration_minutes || 0), 0) || 0;
+
+    // Fetch Today's Hydration
+    const { data: hydrationData } = await supabase
+      .from("hydration_logs")
+      .select("amount_ml")
+      .eq("user_id", user.id)
+      .gte("created_at", `${today}T00:00:00Z`);
+
+    const hydrationMl = hydrationData?.reduce((sum, item) => sum + (item.amount_ml || 0), 0) || 0;
+
+    // Fetch Latest Sleep Log
+    const { data: sleepData } = await supabase
+      .from("sleep_logs")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(1);
+
+    const lastSleep = sleepData?.[0] || { sleep_hours: 0, recovery_quality: 50 };
+
+    // Fetch Latest Recovery Log
+    const { data: recoveryData } = await supabase
+      .from("recovery_scores")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(1);
+
+    const lastRecovery = recoveryData?.[0] || { recovery_percentage: 50 };
+
+    // Fetch Latest Fatigue Log
+    const { data: fatigueData } = await supabase
+      .from("fatigue_logs")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(1);
+
+    const lastFatigue = fatigueData?.[0] || { physical_fatigue: 50, mental_fatigue: 50, fatigue_score: 50 };
+
+    // Fetch Latest Mood Log
+    const { data: moodData } = await supabase
+      .from("mood_tracking")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(1);
+
+    const lastMood = moodData?.[0] || { stress_level: 50, mood: "neutral" };
+
+    const metrics: HealthDigitalTwin = {
+      caloriesBurned,
+      caloriesTarget: 600,
+      caloriesConsumed,
+      hydrationMl,
+      hydrationTarget: 2500,
+      steps: totalWorkoutDuration * 80,
+      stepsTarget: 10000,
+      sleepHours: Number(lastSleep.sleep_hours || 0),
+      sleepTarget: 8.0,
+      sleepQuality: Number(lastSleep.recovery_quality || 50),
+      stressLevel: Number(lastMood.stress_level || 50),
+      mood: lastMood.mood || "neutral",
+      recoveryPercentage: Number(lastRecovery.recovery_percentage || 50),
+      fatigueScore: Number(lastFatigue.fatigue_score || 50),
+      physicalFatigue: Number(lastFatigue.physical_fatigue || 50),
+      mentalFatigue: Number(lastFatigue.mental_fatigue || 50),
+      energyLevel: 100 - Number(lastFatigue.fatigue_score || 50),
+      biologicalAge: profile?.biological_age || 30,
+      stabilityScore: profile?.stability_score || 80,
+      metabolicEfficiency: 80,
+      lifestyleSustainability: 80,
+      glycemicIndexLoad: "medium",
+      sedentaryPostureRisk: "low",
+      micronutrientDeficiencies: []
+    };
+
+    const healthScore = getFutureHealthScore(metrics);
+    const habitEvo = getHabitEvolution(metrics);
+    const foodEvo = getFoodEvolution(metrics);
+    const earlyWarnings = getEarlyWarnings(metrics);
+    const timeline = getFutureTimeline(metrics, profile?.biological_age || 30);
+    const milestones = getHealthMilestoneForecast(metrics);
+    const storyFeed = getPersonalizedStory(metrics);
+    const riskScores = getRiskScores(metrics);
+    const dailyPlan = getDailyImprovementPlan(metrics, profile);
+
+    return NextResponse.json({
+      metrics,
+      healthScore,
+      habitEvo,
+      foodEvo,
+      earlyWarnings,
+      timeline,
+      milestones,
+      storyFeed,
+      riskScores,
+      dailyPlan
+    });
+  } catch (err: any) {
+    console.error("Future Health Lab API Error:", err);
+    return NextResponse.json(
+      { error: "An internal error occurred." },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(req: NextRequest) {
+  return GET(req);
+}

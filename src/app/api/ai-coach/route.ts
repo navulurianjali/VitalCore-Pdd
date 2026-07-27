@@ -44,11 +44,28 @@ function sanitizeForPrompt(value: string): string {
 
 export async function POST(req: NextRequest) {
   try {
-    // 1. Authenticate Request
-    const supabase = await createClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    // 1. Authenticate Request (Supports Bearer token for Mobile & Cookies for Web)
+    let user = null;
+    const authHeader = req.headers.get("authorization");
 
-    if (authError || !user) {
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+      const token = authHeader.substring(7);
+      const { createClient: createSupabaseClient } = await import("@supabase/supabase-js");
+      const supabaseAdmin = createSupabaseClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL || "https://bevolemwakfozxuymxsn.supabase.co",
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "placeholder-anon-key"
+      );
+      const { data: authData } = await supabaseAdmin.auth.getUser(token);
+      user = authData?.user || null;
+    }
+
+    if (!user) {
+      const supabase = await createClient();
+      const { data: { user: cookieUser } } = await supabase.auth.getUser();
+      user = cookieUser;
+    }
+
+    if (!user) {
       return NextResponse.json(
         { error: "Unauthorized access. Valid Supabase session required." },
         { status: 401 }
@@ -82,7 +99,12 @@ export async function POST(req: NextRequest) {
     const { message, history } = body;
 
     // Fetch real profile server-side
-    const { data: serverProfile } = await supabase
+    const { createClient: createSupabaseClient } = await import("@supabase/supabase-js");
+    const supabaseClient = createSupabaseClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL || "https://bevolemwakfozxuymxsn.supabase.co",
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "placeholder-anon-key"
+    );
+    const { data: serverProfile } = await supabaseClient
       .from("profiles")
       .select("*")
       .eq("id", user.id)
