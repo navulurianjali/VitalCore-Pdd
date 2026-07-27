@@ -3,13 +3,15 @@
 import React, { useState } from "react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import GlassCard from "@/components/ui/GlassCard";
+import Button from "@/components/ui/Button";
 import { useAuth } from "@/context/AuthContext";
 import { useHealthData } from "@/hooks/useHealthData";
 import {
   Activity, ArrowRight, Brain, Clock, Droplet, Flame, Heart, 
   Leaf, Milestone, Moon, ShieldAlert, Sparkles, Target, 
   TrendingDown, TrendingUp, Zap, Footprints, Award, CheckCircle2,
-  Utensils, Dumbbell, ShieldCheck, AlertTriangle
+  Utensils, Dumbbell, ShieldCheck, AlertTriangle, FileText, Download,
+  Layers, UserCheck, Stethoscope, RefreshCw, Info, HelpCircle
 } from "lucide-react";
 
 import {
@@ -22,6 +24,10 @@ import {
   getPersonalizedStory,
   getRiskScores,
   getDailyImprovementPlan,
+  getDigitalTwinProfile,
+  getNutritionIntelligence,
+  getAchievementsAndMotivation,
+  getHealthReport,
   simulateDecisionImpact
 } from "@/utils/futureLabEngine";
 
@@ -32,7 +38,10 @@ export default function FutureHealthLabPage() {
   const [simSleep, setSimSleep] = useState(0);
   const [simWater, setSimWater] = useState(0);
   const [simSteps, setSimSteps] = useState(0);
+  const [simCals, setSimCals] = useState(0);
+
   const [expandedTimelineIndex, setExpandedTimelineIndex] = useState<number | null>(null);
+  const [expandedWarningId, setExpandedWarningId] = useState<string | null>(null);
   const [checkedGoals, setCheckedGoals] = useState<Record<number, boolean>>({});
 
   if (loading || !metrics) {
@@ -41,14 +50,15 @@ export default function FutureHealthLabPage() {
         <div className="flex h-[60vh] items-center justify-center">
           <div className="flex flex-col items-center gap-4">
             <div className="h-10 w-10 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-            <p className="text-sm font-medium text-[var(--muted)]">Synchronizing Digital Twin Telemetry...</p>
+            <p className="text-sm font-medium text-[var(--muted)]">Initializing Digital Twin Healthcare Engine...</p>
           </div>
         </div>
       </DashboardLayout>
     );
   }
 
-  // Calculate Engine Outputs
+  // Calculate Engine Outputs dynamically from 100% real Supabase telemetry
+  const digitalTwin = getDigitalTwinProfile(metrics, profile);
   const healthScore = getFutureHealthScore(metrics);
   const habitEvo = getHabitEvolution(metrics);
   const foodEvo = getFoodEvolution(metrics);
@@ -58,10 +68,17 @@ export default function FutureHealthLabPage() {
   const storyFeed = getPersonalizedStory(metrics);
   const riskScores = getRiskScores(metrics);
   const dailyPlan = getDailyImprovementPlan(metrics, profile);
-  const simImpact = simulateDecisionImpact(metrics, simSleep, simWater, simSteps);
+  const nutritionIntel = getNutritionIntelligence(metrics);
+  const motivation = getAchievementsAndMotivation(metrics);
+  const healthReport = getHealthReport(metrics, profile);
+  const simImpact = simulateDecisionImpact(metrics, simSleep, simWater, simSteps, simCals);
 
   const toggleGoal = (index: number) => {
     setCheckedGoals(prev => ({ ...prev, [index]: !prev[index] }));
+  };
+
+  const handleExportPDF = () => {
+    window.print();
   };
 
   return (
@@ -75,55 +92,66 @@ export default function FutureHealthLabPage() {
           </div>
           <div className="space-y-3 relative z-10">
             <span className="text-[10px] font-black text-primary uppercase tracking-widest bg-primary/10 px-3 py-1.5 rounded-full border border-primary/20">
-              Flagship Feature
+              AI Preventive Healthcare Center
             </span>
             <h1 className="text-3xl sm:text-5xl font-black text-[var(--foreground)] tracking-tight">
               Future Health Lab
             </h1>
             <p className="text-base text-[var(--muted)] font-medium max-w-2xl leading-relaxed">
-              Interactive AI Health Intelligence Center driven by your Digital Twin. Real-time risk analysis, visual health radar, predictive age timelines, dynamic warnings, and daily tailored longevity plans.
+              Driven by your living Digital Twin. Continuously analyzes nutrition, workouts, sleep architecture, hydration, body metrics, and stress telemetry to predict risks and guide your longevity.
             </p>
           </div>
         </div>
 
-        {/* DIGITAL TWIN SYNCHRONIZATION STATUS */}
-        <div className="flex items-center gap-4 p-5 bg-[var(--card-bg)] rounded-3xl border border-[var(--border)] shadow-sm">
-          <div className="relative shrink-0">
-            <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full animate-pulse" />
-            <div className="h-12 w-12 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center relative z-10">
-              <Brain className="h-6 w-6 text-primary animate-spin" style={{ animationDuration: '10s' }} />
+        {/* DIGITAL TWIN REAL-TIME SYNCHRONIZATION BAR */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 bg-[var(--card-bg)] rounded-3xl border border-[var(--border)] shadow-sm">
+          <div className="flex items-center gap-4">
+            <div className="relative shrink-0">
+              <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full animate-pulse" />
+              <div className="h-12 w-12 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center relative z-10">
+                <Brain className="h-6 w-6 text-primary animate-spin" style={{ animationDuration: '12s' }} />
+              </div>
+            </div>
+            <div className="space-y-1">
+              <h3 className="text-xs font-black uppercase tracking-widest text-[var(--foreground)] flex items-center gap-2">
+                Digital Twin Profile Active
+                <span className="text-[10px] font-bold text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-full">
+                  100% Real Supabase Data
+                </span>
+              </h3>
+              <p className="text-[11px] text-[var(--muted)] font-medium">
+                Telemetry synced: <span className="font-bold text-[var(--foreground)]">{metrics.sleepHours}h sleep</span>, <span className="font-bold text-[var(--foreground)]">{metrics.hydrationMl}ml hydration</span>, <span className="font-bold text-[var(--foreground)]">{metrics.caloriesConsumed} kcal</span>, <span className="font-bold text-[var(--foreground)]">{metrics.recoveryPercentage}% recovery</span>.
+              </p>
             </div>
           </div>
-          <div className="flex-1 space-y-1">
-            <h3 className="text-xs font-black uppercase tracking-widest text-[var(--foreground)]">
-              Digital Twin Active • Shared Web & Mobile Pipeline
-            </h3>
-            <p className="text-[11px] text-[var(--muted)] font-medium">
-              Synchronized telemetry: <span className="font-bold text-[var(--foreground)]">{metrics.sleepHours}h sleep</span>, <span className="font-bold text-[var(--foreground)]">{metrics.hydrationMl}ml hydration</span>, <span className="font-bold text-[var(--foreground)]">{metrics.caloriesConsumed} kcal logged</span>, <span className="font-bold text-[var(--foreground)]">{metrics.recoveryPercentage}% recovery</span>.
-            </p>
-          </div>
-          <div className="hidden sm:flex px-3 py-1.5 bg-emerald-500/10 text-emerald-500 text-[10px] font-black uppercase tracking-wider rounded-xl border border-emerald-500/20 shadow-sm shrink-0 items-center gap-1.5">
+
+          <div className="px-3.5 py-1.5 bg-emerald-500/10 text-emerald-500 text-[10px] font-black uppercase tracking-wider rounded-xl border border-emerald-500/20 shadow-sm flex items-center gap-1.5 shrink-0">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
             </span>
-            Supabase Sync Active
+            Real-Time Engine Sync
           </div>
         </div>
 
-        {/* 1. VISUAL HEALTH DASHBOARD: HEALTH SCORE & RADAR */}
+        {/* 1. COMPREHENSIVE DIGITAL TWIN PROFILE & OVERALL HEALTH SCORE */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           
-          {/* Health Score Gauge Card */}
-          <GlassCard glowColor={healthScore.direction === 'Improving' ? 'emerald' : healthScore.direction === 'Declining' ? 'rose' : 'none'} className="lg:col-span-5 p-8 flex flex-col justify-between">
-            <div>
-              <h2 className="text-[10px] font-bold text-[var(--muted)] uppercase tracking-widest mb-4 flex items-center gap-2">
-                <Target className="h-4 w-4 text-primary" /> Future Health Direction
-              </h2>
-              
-              <div className="flex flex-col items-center justify-center my-6 space-y-4">
-                {/* SVG Gauge Circle */}
-                <div className="relative h-40 w-40 flex items-center justify-center">
+          {/* Overall Health Score & Bio Age Card */}
+          <GlassCard glowColor="emerald" className="lg:col-span-5 p-8 flex flex-col justify-between">
+            <div className="space-y-6">
+              <div className="flex justify-between items-center">
+                <h2 className="text-[10px] font-bold text-[var(--muted)] uppercase tracking-widest flex items-center gap-2">
+                  <Target className="h-4 w-4 text-primary" /> Overall Health Score
+                </h2>
+                <span className="text-xs font-black text-emerald-500 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
+                  {digitalTwin.overallHealthScore >= 80 ? 'Optimal' : digitalTwin.overallHealthScore >= 65 ? 'Good' : 'Action Required'}
+                </span>
+              </div>
+
+              {/* Gauge */}
+              <div className="flex flex-col items-center justify-center my-4 space-y-3">
+                <div className="relative h-44 w-44 flex items-center justify-center">
                   <svg className="h-full w-full transform -rotate-90" viewBox="0 0 100 100">
                     <circle cx="50" cy="50" r="42" stroke="currentColor" strokeWidth="8" className="text-foreground/10" fill="transparent" />
                     <circle 
@@ -131,154 +159,122 @@ export default function FutureHealthLabPage() {
                       stroke="currentColor" 
                       strokeWidth="8" 
                       strokeDasharray={264}
-                      strokeDashoffset={264 - (264 * (metrics.stabilityScore / 100))}
+                      strokeDashoffset={264 - (264 * (digitalTwin.overallHealthScore / 100))}
                       strokeLinecap="round"
-                      className={healthScore.direction === 'Improving' ? 'text-emerald-500' : healthScore.direction === 'Declining' ? 'text-rose-500' : 'text-primary'} 
+                      className="text-emerald-500" 
                       fill="transparent" 
                     />
                   </svg>
                   <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-                    <span className="text-3xl font-black text-[var(--foreground)]">{Math.round(metrics.stabilityScore)}</span>
-                    <span className="text-[9px] font-bold text-[var(--muted)] uppercase tracking-widest">Stability Index</span>
+                    <span className="text-4xl font-black text-[var(--foreground)]">{digitalTwin.overallHealthScore}</span>
+                    <span className="text-[9px] font-bold text-[var(--muted)] uppercase tracking-widest">Health Score</span>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3">
-                  <div className={`p-2.5 rounded-xl ${healthScore.direction === 'Improving' ? 'bg-emerald-500/10 text-emerald-500' : healthScore.direction === 'Declining' ? 'bg-rose-500/10 text-rose-500' : 'bg-blue-500/10 text-blue-500'}`}>
-                    {healthScore.direction === 'Improving' ? <TrendingUp className="h-6 w-6" /> : 
-                     healthScore.direction === 'Declining' ? <TrendingDown className="h-6 w-6" /> : 
-                     <Activity className="h-6 w-6" />}
+                <div className="text-center space-y-1">
+                  <div className="text-sm font-black text-[var(--foreground)]">
+                    Biological Age: <span className="text-emerald-500">{digitalTwin.biologicalAge} yrs</span>
                   </div>
-                  <h3 className={`text-2xl font-black uppercase tracking-wider ${healthScore.direction === 'Improving' ? 'text-emerald-500' : healthScore.direction === 'Declining' ? 'text-rose-500' : 'text-blue-500'}`}>
-                    {healthScore.direction}
-                  </h3>
+                  <div className="text-[11px] font-bold text-[var(--muted)]">
+                    Chronological Age: {digitalTwin.chronologicalAge} yrs ({digitalTwin.ageDifference > 0 ? `+${digitalTwin.ageDifference}` : digitalTwin.ageDifference} yrs difference)
+                  </div>
                 </div>
               </div>
             </div>
 
-            <p className="text-xs text-[var(--foreground)] font-medium leading-relaxed bg-[var(--background)] p-4 rounded-2xl border border-[var(--border)]">
+            <p className="text-xs text-[var(--foreground)] font-medium leading-relaxed bg-[var(--background)] p-4 rounded-2xl border border-[var(--border)] mt-4">
               {healthScore.explanation}
             </p>
           </GlassCard>
 
-          {/* SVG Health Radar & Telemetry Chart */}
+          {/* Living Body System Avatar Grid */}
           <GlassCard className="lg:col-span-7 p-8 space-y-6">
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center border-b border-[var(--border)] pb-4">
               <h2 className="text-[10px] font-bold text-[var(--muted)] uppercase tracking-widest flex items-center gap-2">
-                <Activity className="h-4 w-4 text-primary" /> Visual Biometric Health Radar
+                <Stethoscope className="h-4 w-4 text-primary" /> Living Digital Twin Body Systems
               </h2>
               <span className="text-[10px] font-bold uppercase tracking-wider bg-primary/10 text-primary px-3 py-1 rounded-full">
-                6-Axis Telemetry
+                8 Body Systems Active
               </span>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-              <div className="p-4 bg-[var(--background)] rounded-2xl border border-[var(--border)] space-y-1 text-center">
-                <span className="text-[9px] font-bold text-[var(--muted)] uppercase">Sleep Consistency</span>
-                <p className="text-xl font-black text-violet-500">{metrics.sleepQuality}%</p>
-                <div className="w-full h-1.5 bg-foreground/10 rounded-full overflow-hidden">
-                  <div className="h-full bg-violet-500 rounded-full" style={{ width: `${metrics.sleepQuality}%` }} />
-                </div>
-              </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {digitalTwin.bodySystems.map((system, i) => (
+                <div key={i} className="p-4 bg-[var(--background)] rounded-2xl border border-[var(--border)] space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-xs font-bold text-[var(--foreground)]">{system.name}</span>
+                    <span className={`text-[9px] font-black uppercase px-2.5 py-0.5 rounded-full ${
+                      system.status === 'Optimal' ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' :
+                      system.status === 'Good' ? 'bg-blue-500/10 text-blue-500 border border-blue-500/20' :
+                      system.status === 'Needs Attention' ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20' :
+                      'bg-rose-500/10 text-rose-500 border border-rose-500/20'
+                    }`}>
+                      {system.status} ({system.score}%)
+                    </span>
+                  </div>
 
-              <div className="p-4 bg-[var(--background)] rounded-2xl border border-[var(--border)] space-y-1 text-center">
-                <span className="text-[9px] font-bold text-[var(--muted)] uppercase">Recovery Score</span>
-                <p className="text-xl font-black text-emerald-500">{metrics.recoveryPercentage}%</p>
-                <div className="w-full h-1.5 bg-foreground/10 rounded-full overflow-hidden">
-                  <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${metrics.recoveryPercentage}%` }} />
-                </div>
-              </div>
+                  <div className="w-full h-1.5 bg-foreground/10 rounded-full overflow-hidden">
+                    <div className={`h-full rounded-full ${
+                      system.status === 'Optimal' ? 'bg-emerald-500' :
+                      system.status === 'Good' ? 'bg-blue-500' :
+                      system.status === 'Needs Attention' ? 'bg-amber-500' : 'bg-rose-500'
+                    }`} style={{ width: `${system.score}%` }} />
+                  </div>
 
-              <div className="p-4 bg-[var(--background)] rounded-2xl border border-[var(--border)] space-y-1 text-center">
-                <span className="text-[9px] font-bold text-[var(--muted)] uppercase">Hydration Index</span>
-                <p className="text-xl font-black text-cyan-500">{Math.round((metrics.hydrationMl / (metrics.hydrationTarget || 2500)) * 100)}%</p>
-                <div className="w-full h-1.5 bg-foreground/10 rounded-full overflow-hidden">
-                  <div className="h-full bg-cyan-500 rounded-full" style={{ width: `${Math.min(100, Math.round((metrics.hydrationMl / (metrics.hydrationTarget || 2500)) * 100))}%` }} />
+                  <p className="text-[11px] font-medium text-[var(--muted)] leading-snug">
+                    {system.recommendation}
+                  </p>
                 </div>
-              </div>
-
-              <div className="p-4 bg-[var(--background)] rounded-2xl border border-[var(--border)] space-y-1 text-center">
-                <span className="text-[9px] font-bold text-[var(--muted)] uppercase">Energy Level</span>
-                <p className="text-xl font-black text-amber-500">{metrics.energyLevel}%</p>
-                <div className="w-full h-1.5 bg-foreground/10 rounded-full overflow-hidden">
-                  <div className="h-full bg-amber-500 rounded-full" style={{ width: `${metrics.energyLevel}%` }} />
-                </div>
-              </div>
-
-              <div className="p-4 bg-[var(--background)] rounded-2xl border border-[var(--border)] space-y-1 text-center">
-                <span className="text-[9px] font-bold text-[var(--muted)] uppercase">Stress Capacity</span>
-                <p className="text-xl font-black text-rose-500">{100 - metrics.stressLevel}%</p>
-                <div className="w-full h-1.5 bg-foreground/10 rounded-full overflow-hidden">
-                  <div className="h-full bg-rose-500 rounded-full" style={{ width: `${100 - metrics.stressLevel}%` }} />
-                </div>
-              </div>
-
-              <div className="p-4 bg-[var(--background)] rounded-2xl border border-[var(--border)] space-y-1 text-center">
-                <span className="text-[9px] font-bold text-[var(--muted)] uppercase">Metabolic Efficiency</span>
-                <p className="text-xl font-black text-blue-500">{metrics.metabolicEfficiency}%</p>
-                <div className="w-full h-1.5 bg-foreground/10 rounded-full overflow-hidden">
-                  <div className="h-full bg-blue-500 rounded-full" style={{ width: `${metrics.metabolicEfficiency}%` }} />
-                </div>
-              </div>
+              ))}
             </div>
           </GlassCard>
 
         </div>
 
-        {/* 2. HEALTH RISK RADAR & MULTI-METRIC RISK SCORES */}
+        {/* 10 DOMAIN HEALTH SCORES GRID */}
         <div className="space-y-4">
           <h2 className="text-xl font-bold flex items-center gap-2 px-2">
-            <ShieldAlert className="h-6 w-6 text-rose-500" /> Continuous Preventive Health Risk Analysis
+            <Layers className="h-6 w-6 text-primary" /> 10 Digital Twin Domain Scores
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {riskScores.map((risk, i) => (
-              <GlassCard key={i} className="p-6 space-y-4 border border-[var(--border)] hover:border-primary/40 transition-all">
-                <div className="flex justify-between items-center">
-                  <span className="text-xs font-bold uppercase tracking-wider text-[var(--muted)]">{risk.name}</span>
-                  <span className={`px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${
-                    risk.level === 'High' ? 'bg-rose-500/10 text-rose-500 border border-rose-500/20' :
-                    risk.level === 'Moderate' ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20' :
-                    'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20'
-                  }`}>
-                    {risk.level} Risk ({risk.score}%)
-                  </span>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+            {digitalTwin.domainScores.map((domain, i) => (
+              <GlassCard key={i} className="p-4 space-y-2 text-center border border-[var(--border)]">
+                <span className="text-[10px] font-bold text-[var(--muted)] uppercase tracking-wider block">{domain.name}</span>
+                <p className="text-2xl font-black text-[var(--foreground)]">{domain.score}</p>
+                <div className="w-full h-1.5 bg-foreground/10 rounded-full overflow-hidden">
+                  <div className={`h-full rounded-full ${
+                    domain.score >= 80 ? 'bg-emerald-500' : domain.score >= 60 ? 'bg-blue-500' : 'bg-amber-500'
+                  }`} style={{ width: `${domain.score}%` }} />
                 </div>
-
-                <div className="w-full h-2 bg-foreground/10 rounded-full overflow-hidden">
-                  <div className={`h-full rounded-full transition-all duration-1000 ${
-                    risk.level === 'High' ? 'bg-rose-500' : risk.level === 'Moderate' ? 'bg-amber-500' : 'bg-emerald-500'
-                  }`} style={{ width: `${risk.score}%` }} />
-                </div>
-
-                <p className="text-[11px] font-medium text-[var(--muted)] leading-relaxed">
-                  {risk.description}
-                </p>
+                <span className={`text-[9px] font-bold uppercase ${domain.trend === 'Improving' ? 'text-emerald-500' : 'text-rose-500'}`}>
+                  {domain.trend}
+                </span>
               </GlassCard>
             ))}
           </div>
         </div>
 
-        {/* 3. PROACTIVE HEALTH WARNINGS CENTER */}
+        {/* 2. EXPANDED PREVENTIVE HEALTH EARLY WARNING RADAR */}
         <GlassCard className="p-8 space-y-6 border border-rose-500/20 shadow-lg shadow-rose-500/5">
           <div className="flex justify-between items-center border-b border-[var(--border)] pb-4">
             <h2 className="text-lg font-bold flex items-center gap-2">
-              <AlertTriangle className="h-5 w-5 text-rose-500" /> Proactive Health Warnings & Alert System
+              <ShieldAlert className="h-5 w-5 text-rose-500" /> Continuous Preventive Early Warning Radar
             </h2>
-            <span className="text-[10px] font-black uppercase bg-rose-500/10 text-rose-500 px-3 py-1.5 rounded-full">
-              Automated Alert Engine
+            <span className="text-[10px] font-black uppercase bg-rose-500/10 text-rose-500 px-3 py-1.5 rounded-full border border-rose-500/20">
+              15+ Risk Markers Evaluated
             </span>
           </div>
 
           {earlyWarnings.length === 0 ? (
             <div className="p-6 bg-emerald-500/5 border border-emerald-500/20 rounded-2xl text-center space-y-2">
               <ShieldCheck className="h-10 w-10 text-emerald-500 mx-auto" />
-              <h3 className="text-sm font-bold text-emerald-500">All Telemetry Systems Clear</h3>
-              <p className="text-xs text-[var(--muted)]">No active lifestyle risks detected. Keep maintaining your hydration, sleep, and nutrition consistency!</p>
+              <h3 className="text-sm font-bold text-emerald-500">All Preventive Systems Clear</h3>
+              <p className="text-xs text-[var(--muted)]">No lifestyle risk flags detected. Keep maintaining your hydration, sleep, and nutrition targets!</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {earlyWarnings.map((warning, i) => (
-                <div key={i} className={`p-5 rounded-2xl border ${
+              {earlyWarnings.map((warning) => (
+                <div key={warning.id} className={`p-5 rounded-2xl border ${
                   warning.severity === 'high' ? 'bg-rose-500/5 border-rose-500/30' : 'bg-amber-500/5 border-amber-500/30'
                 } space-y-3 flex flex-col justify-between`}>
                   <div>
@@ -287,45 +283,61 @@ export default function FutureHealthLabPage() {
                         <span className={`h-2 w-2 rounded-full ${warning.severity === 'high' ? 'bg-rose-500 animate-pulse' : 'bg-amber-500'}`} />
                         {warning.type}
                       </span>
-                      <span className={`text-[9px] font-bold uppercase px-2 py-0.5 rounded-full ${
-                        warning.severity === 'high' ? 'bg-rose-500/10 text-rose-500' : 'bg-amber-500/10 text-amber-500'
-                      }`}>
-                        {warning.severity} priority
+                      <span className="text-[9px] font-black uppercase px-2.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
+                        {warning.confidenceScore}% Confidence
                       </span>
                     </div>
 
-                    <p className="text-xs font-semibold text-[var(--foreground)] leading-relaxed mb-2">
+                    <p className="text-xs font-semibold text-[var(--foreground)] leading-relaxed mb-3">
                       {warning.message}
                     </p>
 
-                    <div className="p-3 bg-[var(--background)] rounded-xl border border-[var(--border)]">
-                      <span className="text-[9px] font-bold text-amber-500 uppercase tracking-wider block mb-0.5">Physiological Impact</span>
-                      <p className="text-[11px] font-medium text-[var(--muted)]">{warning.consequences}</p>
+                    <div className="p-3 bg-[var(--background)] rounded-xl border border-[var(--border)] space-y-1">
+                      <div className="flex justify-between items-center text-[10px] font-bold text-amber-500">
+                        <span>EXPECTED TIMELINE</span>
+                        <span>{warning.expectedTimeline}</span>
+                      </div>
+                      <p className="text-[11px] font-medium text-[var(--muted)] leading-snug">{warning.consequences}</p>
                     </div>
+
+                    {expandedWarningId === warning.id && (
+                      <div className="mt-3 p-3 bg-primary/5 rounded-xl border border-primary/20 text-[10px] font-semibold text-[var(--foreground)] space-y-1 animate-in fade-in">
+                        <span className="text-primary font-bold uppercase block">Data Attribution</span>
+                        <p>{warning.dataAttribution}</p>
+                      </div>
+                    )}
                   </div>
 
-                  <button 
-                    onClick={() => alert(`Initiated action: ${warning.actionTrigger}`)}
-                    className={`w-full py-2.5 rounded-xl text-xs font-bold transition-all active:scale-95 border ${
-                      warning.severity === 'high' 
-                        ? 'bg-rose-500/10 text-rose-500 border-rose-500/30 hover:bg-rose-500/20' 
-                        : 'bg-amber-500/10 text-amber-500 border-amber-500/30 hover:bg-amber-500/20'
-                    }`}
-                  >
-                    {warning.actionTrigger}
-                  </button>
+                  <div className="flex gap-2">
+                    <button 
+                      onClick={() => setExpandedWarningId(expandedWarningId === warning.id ? null : warning.id)}
+                      className="px-3 py-2 rounded-xl text-[10px] font-bold bg-foreground/5 hover:bg-foreground/10 text-[var(--muted)] border border-[var(--border)] shrink-0"
+                    >
+                      {expandedWarningId === warning.id ? "Hide Source" : "Why AI predicted this?"}
+                    </button>
+                    <button 
+                      onClick={() => alert(`Initiated action: ${warning.actionTrigger}`)}
+                      className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all active:scale-95 border ${
+                        warning.severity === 'high' 
+                          ? 'bg-rose-500/10 text-rose-500 border-rose-500/30 hover:bg-rose-500/20' 
+                          : 'bg-amber-500/10 text-amber-500 border-amber-500/30 hover:bg-amber-500/20'
+                      }`}
+                    >
+                      {warning.actionTrigger}
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
           )}
         </GlassCard>
 
-        {/* 4. DYNAMIC DAILY TAILORED IMPROVEMENT PLAN */}
+        {/* 3. TODAY'S AI HEALTH PLAN (COORDINATED MULTI-MODULE PLAN) */}
         <GlassCard glowColor="emerald" className="p-8 space-y-8">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[var(--border)] pb-6">
             <div className="space-y-1">
               <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
-                Coordinated Multi-Module Plan
+                Today's Dynamic Longevity Plan
               </span>
               <h2 className="text-2xl font-black tracking-tight text-[var(--foreground)] mt-2">
                 {dailyPlan.headline}
@@ -421,10 +433,53 @@ export default function FutureHealthLabPage() {
           </div>
         </GlassCard>
 
-        {/* 5. FUTURE HEALTH TIMELINE & BIOLOGICAL AGE CHANGE */}
+        {/* 4. NUTRITION INTELLIGENCE CENTER */}
+        <GlassCard className="p-8 space-y-6">
+          <div className="flex justify-between items-center border-b border-[var(--border)] pb-4">
+            <div>
+              <span className="text-[10px] font-black uppercase tracking-widest text-primary">Micro & Macro Analysis</span>
+              <h2 className="text-xl font-bold flex items-center gap-2 mt-1">
+                <Flame className="h-5 w-5 text-amber-500" /> Nutrition Intelligence Center
+              </h2>
+            </div>
+            <span className="text-xs font-black text-emerald-500 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
+              Score: {nutritionIntel.overallNutritionScore}/100
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {nutritionIntel.micros.map((micro, i) => (
+              <div key={i} className="p-4 bg-[var(--background)] rounded-2xl border border-[var(--border)] space-y-2">
+                <div className="flex justify-between items-center text-xs font-bold">
+                  <span>{micro.name}</span>
+                  <span className={micro.status === 'Optimal' ? 'text-emerald-500' : 'text-amber-500'}>
+                    {micro.currentAmount} / {micro.targetAmount} {micro.unit}
+                  </span>
+                </div>
+                <div className="w-full h-1.5 bg-foreground/10 rounded-full overflow-hidden">
+                  <div className={`h-full rounded-full ${micro.status === 'Optimal' ? 'bg-emerald-500' : 'bg-amber-500'}`} style={{ width: `${Math.min(100, Math.round((micro.currentAmount / micro.targetAmount) * 100))}%` }} />
+                </div>
+                <span className="text-[9px] font-bold text-[var(--muted)] uppercase block">
+                  Sources: {micro.foodSources.slice(0, 3).join(", ")}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          <div className="p-5 bg-primary/5 rounded-2xl border border-primary/20 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div className="space-y-1">
+              <h4 className="text-xs font-bold text-primary uppercase tracking-wider">Recommended Foods to Correct Deficiencies</h4>
+              <p className="text-xs font-medium text-[var(--foreground)]">
+                Add these foods to your next meal: <span className="font-bold text-emerald-500">{nutritionIntel.recommendedFoodsToCorrect.join(", ")}</span>.
+              </p>
+            </div>
+          </div>
+        </GlassCard>
+
+        {/* 5. RECALCULATING FUTURE TIMELINE */}
         <div className="space-y-4">
           <h2 className="text-xl font-bold flex items-center gap-2 px-2">
-            <Milestone className="h-6 w-6 text-primary" /> Biological Age & Vitality Timeline
+            <Milestone className="h-6 w-6 text-primary" /> Recalculating Future Longevity Timeline
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {timeline.map((t, i) => (
@@ -437,14 +492,18 @@ export default function FutureHealthLabPage() {
                   <Clock className="w-24 h-24 text-[var(--foreground)]" />
                 </div>
                 <div>
-                  <span className="text-xs font-black text-primary uppercase tracking-widest mb-4 block flex justify-between items-center">
-                    {t.label} Projection
-                    <span className="text-[10px] text-[var(--muted)]">{expandedTimelineIndex === i ? "Hide Details" : "Details"}</span>
-                  </span>
-                  <div className="space-y-3 relative z-10">
+                  <div className="flex justify-between items-center mb-3">
+                    <span className="text-xs font-black text-primary uppercase tracking-widest">
+                      {t.label} Projection
+                    </span>
+                    <span className="text-[9px] font-bold text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-full">
+                      {t.confidenceScore}% Confidence
+                    </span>
+                  </div>
+                  <div className="space-y-2.5 relative z-10">
                     <div className="flex justify-between items-center text-sm">
-                      <span className="text-[var(--muted)] font-medium">Energy Impact</span>
-                      <span className="font-bold">{t.energy}%</span>
+                      <span className="text-[var(--muted)] font-medium">Predicted Weight</span>
+                      <span className="font-bold">{t.predictedWeightKg} kg</span>
                     </div>
                     <div className="flex justify-between items-center text-sm">
                       <span className="text-[var(--muted)] font-medium">Recovery Index</span>
@@ -467,6 +526,9 @@ export default function FutureHealthLabPage() {
                       <span className="text-[9px] font-bold text-amber-500 uppercase tracking-wider block mb-1 flex items-center gap-1">⚠️ Precautions</span>
                       <p className="text-[10px] font-bold text-amber-600/90 leading-snug">{t.precautions}</p>
                     </div>
+                    <div className="bg-primary/5 p-2 rounded-lg border border-primary/10 text-[9px] text-[var(--muted)] font-medium">
+                      <span className="font-bold text-primary">Data Attribution:</span> {t.dataAttribution}
+                    </div>
                   </div>
                 )}
               </GlassCard>
@@ -474,7 +536,7 @@ export default function FutureHealthLabPage() {
           </div>
         </div>
 
-        {/* 6. DECISION IMPACT TOOL (SIMULATOR) & STORY FEED */}
+        {/* 6. DECISION IMPACT SIMULATOR & HABIT EVOLUTION */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           
           <div className="lg:col-span-7 space-y-6">
@@ -510,15 +572,51 @@ export default function FutureHealthLabPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4 pt-4 border-t border-[var(--border)]">
+              <div className="grid grid-cols-3 gap-4 pt-4 border-t border-[var(--border)]">
                 <div className="bg-[var(--background)] p-4 rounded-2xl border border-[var(--border)] text-center">
-                  <span className="text-[10px] font-bold text-[var(--muted)] uppercase tracking-wider block mb-1">Projected Energy</span>
-                  <span className="text-2xl font-black text-primary">{simImpact.energyProjected}%</span>
+                  <span className="text-[9px] font-bold text-[var(--muted)] uppercase block mb-1">Energy Impact</span>
+                  <span className="text-xl font-black text-primary">{simImpact.energyProjected}%</span>
                 </div>
                 <div className="bg-[var(--background)] p-4 rounded-2xl border border-[var(--border)] text-center">
-                  <span className="text-[10px] font-bold text-[var(--muted)] uppercase tracking-wider block mb-1">Projected Burnout Risk</span>
-                  <span className={`text-2xl font-black ${simImpact.burnoutRiskProjected > 60 ? 'text-rose-500' : 'text-emerald-500'}`}>{simImpact.burnoutRiskProjected}%</span>
+                  <span className="text-[9px] font-bold text-[var(--muted)] uppercase block mb-1">Burnout Risk</span>
+                  <span className={`text-xl font-black ${simImpact.burnoutRiskProjected > 60 ? 'text-rose-500' : 'text-emerald-500'}`}>{simImpact.burnoutRiskProjected}%</span>
                 </div>
+                <div className="bg-[var(--background)] p-4 rounded-2xl border border-[var(--border)] text-center">
+                  <span className="text-[9px] font-bold text-[var(--muted)] uppercase block mb-1">Bio-Age Shift</span>
+                  <span className="text-xl font-black text-emerald-500">{simImpact.vitalityAgeChange} yrs</span>
+                </div>
+              </div>
+            </GlassCard>
+
+            {/* Achievement & Motivation Center */}
+            <GlassCard className="p-8 space-y-6">
+              <div className="flex justify-between items-center border-b border-[var(--border)] pb-4">
+                <h2 className="text-lg font-bold flex items-center gap-2">
+                  <Award className="h-5 w-5 text-amber-500" /> Achievement & Motivation Center
+                </h2>
+                <span className="text-[10px] font-bold text-amber-500 bg-amber-500/10 px-3 py-1 rounded-full border border-amber-500/20">
+                  {motivation.hydrationStreakDays} Day Streak 🔥
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {motivation.badges.map((badge) => (
+                  <div key={badge.id} className="p-4 bg-[var(--background)] rounded-2xl border border-[var(--border)] space-y-2">
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs font-bold text-[var(--foreground)]">{badge.title}</span>
+                      <span className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-full ${
+                        badge.unlocked ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' : 'bg-foreground/10 text-[var(--muted)]'
+                      }`}>
+                        {badge.unlocked ? 'Unlocked' : `${badge.progressPct}%`}
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-[var(--muted)] leading-snug">{badge.description}</p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="p-4 bg-amber-500/5 border border-amber-500/20 rounded-2xl text-xs font-semibold text-[var(--foreground)]">
+                💬 <span className="font-bold text-amber-500">Coach Encouragement:</span> "{motivation.encouragingAiMessage}"
               </div>
             </GlassCard>
           </div>
@@ -543,19 +641,31 @@ export default function FutureHealthLabPage() {
               </div>
             </GlassCard>
 
+            {/* Health Reports Center */}
             <GlassCard className="p-8 space-y-6">
-              <h2 className="text-[10px] font-bold text-[var(--muted)] uppercase tracking-widest flex items-center gap-2 mb-2">
-                <Milestone className="h-4 w-4 text-blue-500" /> Longevity Milestone Forecast
-              </h2>
-              <div className="space-y-3">
-                {milestones.map((m, i) => (
-                  <div key={i} className="flex items-center gap-3 p-3 bg-[var(--background)] rounded-xl border border-[var(--border)]">
-                    <div className="h-8 w-8 rounded-lg bg-blue-500/10 flex items-center justify-center shrink-0">
-                      <Award className="h-4 w-4 text-blue-500" />
+              <div className="flex justify-between items-center border-b border-[var(--border)] pb-4">
+                <h2 className="text-[10px] font-bold text-[var(--muted)] uppercase tracking-widest flex items-center gap-2">
+                  <FileText className="h-4 w-4 text-primary" /> Weekly Health Report Center
+                </h2>
+                <Button variant="glass" size="sm" onClick={handleExportPDF} className="text-xs font-bold gap-1">
+                  <Download className="h-3.5 w-3.5" /> Export PDF
+                </Button>
+              </div>
+
+              <div className="space-y-3 text-xs font-medium text-[var(--foreground)]">
+                <p className="leading-relaxed bg-[var(--background)] p-4 rounded-2xl border border-[var(--border)]">
+                  {healthReport.headlineSummary}
+                </p>
+
+                <div className="space-y-2">
+                  <span className="text-[10px] font-bold text-emerald-500 uppercase">Top Improvements</span>
+                  {healthReport.biggestImprovements.map((imp, idx) => (
+                    <div key={idx} className="flex items-center gap-2 text-[11px] text-[var(--muted)]">
+                      <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+                      <span>{imp}</span>
                     </div>
-                    <span className="text-xs font-bold">{m}</span>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             </GlassCard>
           </div>

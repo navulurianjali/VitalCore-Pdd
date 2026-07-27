@@ -9,7 +9,11 @@ import {
   getHealthMilestoneForecast,
   getPersonalizedStory,
   getRiskScores,
-  getDailyImprovementPlan
+  getDailyImprovementPlan,
+  getDigitalTwinProfile,
+  getNutritionIntelligence,
+  getAchievementsAndMotivation,
+  getHealthReport
 } from "@/utils/futureLabEngine";
 import { HealthDigitalTwin } from "@/hooks/useHealthData";
 
@@ -60,14 +64,11 @@ export async function GET(req: NextRequest) {
     // Fetch Today's Nutrition
     const { data: nutritionData } = await supabase
       .from("nutrition_logs")
-      .select("calories, protein_g, carbs_g, fat_g")
+      .select("calories, protein_g, carbs_g, fat_g, food_name")
       .eq("user_id", user.id)
       .gte("created_at", `${today}T00:00:00Z`);
 
     const caloriesConsumed = nutritionData?.reduce((sum, item) => sum + (item.calories || 0), 0) || 0;
-    const proteinConsumed = nutritionData?.reduce((sum, item) => sum + (item.protein_g || 0), 0) || 0;
-    const carbsConsumed = nutritionData?.reduce((sum, item) => sum + (item.carbs_g || 0), 0) || 0;
-    const fatConsumed = nutritionData?.reduce((sum, item) => sum + (item.fat_g || 0), 0) || 0;
 
     // Fetch Today's Workouts
     const { data: workoutData } = await supabase
@@ -155,6 +156,7 @@ export async function GET(req: NextRequest) {
       micronutrientDeficiencies: []
     };
 
+    const digitalTwinProfile = getDigitalTwinProfile(metrics, profile);
     const healthScore = getFutureHealthScore(metrics);
     const habitEvo = getHabitEvolution(metrics);
     const foodEvo = getFoodEvolution(metrics);
@@ -164,9 +166,13 @@ export async function GET(req: NextRequest) {
     const storyFeed = getPersonalizedStory(metrics);
     const riskScores = getRiskScores(metrics);
     const dailyPlan = getDailyImprovementPlan(metrics, profile);
+    const nutritionIntel = getNutritionIntelligence(metrics);
+    const motivation = getAchievementsAndMotivation(metrics);
+    const healthReport = getHealthReport(metrics, profile);
 
     return NextResponse.json({
       metrics,
+      digitalTwinProfile,
       healthScore,
       habitEvo,
       foodEvo,
@@ -175,7 +181,10 @@ export async function GET(req: NextRequest) {
       milestones,
       storyFeed,
       riskScores,
-      dailyPlan
+      dailyPlan,
+      nutritionIntel,
+      motivation,
+      healthReport
     });
   } catch (err: any) {
     console.error("Future Health Lab API Error:", err);
