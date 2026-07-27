@@ -11,6 +11,8 @@ import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/utils/supabase";
 import confetti from "canvas-confetti";
 
+import OnboardingModal from "@/components/onboarding/OnboardingModal";
+
 export default function SettingsPage() {
   const { theme, toggleTheme, activeMode, setActiveMode } = useTheme();
   const { profile } = useAuth();
@@ -18,6 +20,7 @@ export default function SettingsPage() {
   
   const [cleared, setCleared] = useState(false);
   const [wipeError, setWipeError] = useState("");
+  const [showOnboardingModal, setShowOnboardingModal] = useState(false);
 
   const handleWipeCache = async () => {
     if (confirm("Are you absolutely sure you want to delete all of your logged data? This action is permanent and cannot be undone.")) {
@@ -120,6 +123,24 @@ export default function SettingsPage() {
                 </div>
               </div>
 
+              {/* Replay Onboarding Tour */}
+              <div className="space-y-3 pt-3 border-t border-foreground/5">
+                <h3 className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                  <Info className="h-4.5 w-4.5 text-secondary" />
+                  Product Tour & Feature Guide
+                </h3>
+                <p className="text-xs text-foreground/60 leading-relaxed font-semibold">
+                  Want to review the initial onboarding tour and feature highlights?
+                </p>
+                <Button 
+                  variant="glass" 
+                  onClick={() => setShowOnboardingModal(true)} 
+                  className="w-full py-2.5 text-xs font-bold border border-primary/20 hover:bg-primary/10 text-primary"
+                >
+                  Replay Onboarding Tour
+                </Button>
+              </div>
+
             </div>
 
             <div className="text-xs text-foreground/50 leading-normal font-semibold border-t border-foreground/5 pt-3">
@@ -166,6 +187,8 @@ export default function SettingsPage() {
           </div>
 
         </div>
+
+        <OnboardingModal isOpen={showOnboardingModal} onClose={() => setShowOnboardingModal(false)} />
 
       </div>
     </DashboardLayout>
