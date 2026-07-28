@@ -26,21 +26,10 @@ import {
 import Button from "@/components/ui/Button";
 import GlassCard from "@/components/ui/GlassCard";
 import Footer from "@/components/layout/Footer";
-import OnboardingModal from "@/components/onboarding/OnboardingModal";
 import { useAuth } from "@/context/AuthContext";
 
 export default function LandingPage() {
   const { profile } = useAuth();
-  const [showOnboarding, setShowOnboarding] = useState(false);
-
-  React.useEffect(() => {
-    if (typeof window !== "undefined") {
-      const completed = localStorage.getItem("vitalcore_onboarding_completed");
-      if (!completed && !profile?.onboarding_completed) {
-        setShowOnboarding(true);
-      }
-    }
-  }, [profile]);
 
   const features = [
     {
@@ -337,9 +326,6 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
-
-      {/* ONBOARDING MODAL */}
-      <OnboardingModal isOpen={showOnboarding} onClose={() => setShowOnboarding(false)} />
 
       {/* FOOTER */}
       <Footer />

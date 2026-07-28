@@ -25,11 +25,11 @@ export default function CalorieTrackerPage() {
   const [logs, setLogs] = useState<LoggedFood[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Daily goals (default standard targets)
-  const goalCalories = 2200;
-  const goalProtein = 120;
-  const goalCarbs = 250;
-  const goalFat = 70;
+  // Daily goals derived from user profile targets
+  const goalCalories = profile?.calorie_goal || 2000;
+  const goalProtein = profile?.protein_goal || 110;
+  const goalCarbs = profile?.carb_goal || 225;
+  const goalFat = profile?.fat_goal || 65;
 
   // Add/Edit Modal state
   const [modalOpen, setModalOpen] = useState(false);
