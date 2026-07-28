@@ -10,12 +10,8 @@ import {
   Heart, 
   Clock, 
   Search, 
-  ThumbsDown, 
   X, 
-  ChevronDown,
-  Sparkles,
-  Flame,
-  Award
+  ChevronDown
 } from "lucide-react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import GlassCard from "@/components/ui/GlassCard";
@@ -37,12 +33,6 @@ interface FoodLog {
   protein_g: number;
   carbs_g: number;
   fat_g: number;
-  created_at: string;
-}
-
-interface WaterLog {
-  id: string;
-  amount_ml: number;
   created_at: string;
 }
 
@@ -82,16 +72,16 @@ export default function SmartAINutritionPlansPage() {
   });
 
   const FILTER_PILLS = [
-    { label: "Breakfast", type: "category", val: "Breakfast" },
-    { label: "Lunch", type: "category", val: "Lunch" },
-    { label: "Dinner", type: "category", val: "Dinner" },
-    { label: "Snacks", type: "category", val: "Evening Snack" },
-    { label: "South Indian", type: "cuisine", val: "South Indian" },
-    { label: "Vegetarian", type: "pref", val: "Vegetarian" },
-    { label: "Non-Vegetarian", type: "pref", val: "Non-Vegetarian" },
-    { label: "High Protein", type: "goal", val: "High Protein" },
-    { label: "Weight Loss", type: "goal", val: "Weight Loss" },
-    { label: "Quick Meals", type: "time", val: "10" }
+    { label: "Breakfast", val: "Breakfast" },
+    { label: "Lunch", val: "Lunch" },
+    { label: "Dinner", val: "Dinner" },
+    { label: "Snacks", val: "Evening Snack" },
+    { label: "South Indian", val: "South Indian" },
+    { label: "Vegetarian", val: "Vegetarian" },
+    { label: "Non-Vegetarian", val: "Non-Vegetarian" },
+    { label: "High Protein", val: "High Protein" },
+    { label: "Weight Loss", val: "Weight Loss" },
+    { label: "Quick Meals", val: "10" }
   ];
 
   // Fetch logged meals & water from Supabase
@@ -141,7 +131,7 @@ export default function SmartAINutritionPlansPage() {
   // Primary recommendation generator
   const fetchRecommendations = async (overrideQuery?: string, overrideChip?: string) => {
     setLoadingAI(true);
-    setVisibleCount(4); // Reset to top 3-4 cards on new search!
+    setVisibleCount(4);
     const activeQuery = overrideQuery !== undefined ? overrideQuery : queryPrompt;
     const activeFilterTag = overrideChip || activeChip;
 
@@ -189,14 +179,13 @@ export default function SmartAINutritionPlansPage() {
     }
   };
 
-  // Initial load
   useEffect(() => {
     if (recommendations.length === 0) {
       fetchRecommendations();
     }
   }, []);
 
-  // Handle Mark Eaten & Log Meal to database in real-time
+  // Handle Mark Eaten & Log Meal
   const handleLogMeal = async (card: RecommendationCard) => {
     if (!profile?.id) return;
     try {
@@ -227,7 +216,6 @@ export default function SmartAINutritionPlansPage() {
     }
   };
 
-  // Favorites & Dislikes handlers
   const toggleFavorite = (dishName: string) => {
     if (favoriteFoods.includes(dishName)) {
       setFavoriteFoods(favoriteFoods.filter(f => f !== dishName));
@@ -248,7 +236,7 @@ export default function SmartAINutritionPlansPage() {
     <DashboardLayout>
       <div className="space-y-6 pb-12 max-w-5xl mx-auto">
         
-        {/* HEADER & CLEAN SEARCH BAR */}
+        {/* HEADER & CLEAN SPOTIFY-STYLE SEARCH BAR */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
@@ -261,27 +249,27 @@ export default function SmartAINutritionPlansPage() {
               </p>
             </div>
             <div className="flex items-center gap-2">
-              <Button size="sm" variant="primary" onClick={() => setShowManualMealModal(true)} className="text-xs font-bold">
-                + Log Meal
+              <Button size="sm" variant="primary" onClick={() => setShowManualMealModal(true)} className="text-xs font-bold bg-primary text-white">
+                + Log Custom Meal
               </Button>
             </div>
           </div>
 
-          {/* COMPACT AI SEARCH BAR WITH PROPER PADDING OFFSET */}
-          <div className="relative flex items-center">
-            <Search className="absolute left-3.5 h-4 w-4 text-foreground/40 pointer-events-none z-10" />
+          {/* COMPACT AI SEARCH BAR WITH GENEROUS LEFT PADDING (NO ICON OVERLAP) */}
+          <div className="relative flex items-center w-full">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground/45 pointer-events-none z-10" />
             <input
               type="text"
               value={queryPrompt}
               onChange={(e) => setQueryPrompt(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && fetchRecommendations()}
               placeholder="What are you craving today?"
-              className="w-full pl-10 pr-24 py-3.5 rounded-2xl border border-foreground/10 bg-background text-foreground text-xs font-semibold focus:outline-none focus:border-primary shadow-sm"
+              className="w-full pl-12 pr-28 py-3.5 rounded-2xl border border-foreground/10 bg-background text-foreground text-xs font-semibold focus:outline-none focus:border-primary shadow-sm"
             />
             <button
               onClick={() => fetchRecommendations()}
               disabled={loadingAI}
-              className="absolute right-2 px-4 py-2 rounded-xl bg-primary text-white text-xs font-bold hover:bg-primary/90 transition-all flex items-center gap-1"
+              className="absolute right-2 top-1/2 -translate-y-1/2 px-4 py-2 rounded-xl bg-primary text-white text-xs font-bold hover:bg-primary/90 transition-all flex items-center gap-1 shadow-sm"
             >
               {loadingAI ? <RefreshCw className="h-3.5 w-3.5 animate-spin" /> : "Search"}
             </button>
@@ -298,7 +286,7 @@ export default function SmartAINutritionPlansPage() {
                     setActiveChip(pill.val);
                     fetchRecommendations(queryPrompt, pill.val);
                   }}
-                  className={`px-3.5 py-1.5 rounded-full border shrink-0 transition-all text-xs font-semibold ${
+                  className={`px-4 py-2 rounded-full border shrink-0 transition-all text-xs font-semibold ${
                     isActive
                       ? "bg-primary text-white border-primary shadow-sm"
                       : "bg-background border-foreground/10 text-foreground/70 hover:border-primary/40 hover:text-foreground"
@@ -331,14 +319,14 @@ export default function SmartAINutritionPlansPage() {
           </GlassCard>
         </div>
 
-        {/* TOP 3-4 FOCUSED RECOMMENDATION CARDS */}
+        {/* TOP 3-4 FOCUSED RECOMMENDATION CARDS (TITLES BELOW IMAGES) */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-bold text-foreground tracking-tight">
               Top Recommendations for You
             </h3>
             <span className="text-xs text-foreground/50 font-semibold">
-              Showing top {Math.min(visibleCount, recommendations.length)} of {recommendations.length} options
+              Top {Math.min(visibleCount, recommendations.length)} of {recommendations.length} options
             </span>
           </div>
 
@@ -348,7 +336,7 @@ export default function SmartAINutritionPlansPage() {
               <p className="text-xs font-semibold text-foreground/60">Selecting top 3-4 AI Indian meal recommendations...</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               {recommendations.slice(0, visibleCount).map((card, idx) => {
                 const isFav = favoriteFoods.includes(card.name);
                 const isLoggedToday = todayFoodLogs.some(l => l.food_name === card.name);
@@ -358,79 +346,68 @@ export default function SmartAINutritionPlansPage() {
                     key={idx}
                     className="rounded-2xl glass-panel border border-foreground/10 bg-background overflow-hidden flex flex-col justify-between hover:border-primary/30 transition-all duration-200 group shadow-sm"
                   >
-                    {/* Meal Image Container */}
+                    {/* LARGE FOOD IMAGE ON TOP (WITH OVERLAY BADGES ONLY) */}
                     <div className="relative h-44 w-full bg-foreground/5 overflow-hidden">
                       <img
                         src={card.imageUrl || "https://images.unsplash.com/photo-1589301760014-d929f3979dbc?auto=format&fit=crop&w=600&q=80"}
                         alt={card.name}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
                       
-                      {/* Top Badges Overlay */}
+                      {/* Top Overlay Badges */}
                       <div className="absolute top-3 left-3 right-3 flex justify-between items-center z-10">
-                        <span className="px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-white text-[10px] font-bold">
+                        <span className="px-2.5 py-1 rounded-full bg-primary text-white text-[10px] font-bold shadow-md">
                           {card.matchBadge}
                         </span>
                         <button
                           onClick={() => toggleFavorite(card.name)}
-                          className="p-2 rounded-full bg-black/50 backdrop-blur-md text-white hover:text-pink-400 transition-all"
+                          className="p-2 rounded-full bg-black/50 backdrop-blur-md text-white hover:text-pink-400 transition-all shadow-md"
                         >
                           <Heart className={`h-3.5 w-3.5 ${isFav ? "fill-pink-500 text-pink-500" : ""}`} />
                         </button>
                       </div>
-
-                      {/* Bottom Image Overlay Details */}
-                      <div className="absolute bottom-3 left-3 right-3 text-white z-10">
-                        <h4 className="text-sm font-bold leading-tight drop-shadow">{card.name}</h4>
-                        <div className="flex items-center gap-2 text-[10px] font-medium text-white/80 mt-0.5">
-                          <span>⏱️ {card.prepTime}</span>
-                          <span>•</span>
-                          <span>approx {card.estimatedCost}</span>
-                        </div>
-                      </div>
                     </div>
 
-                    {/* Card Content & Colorful Badges */}
+                    {/* CARD BODY STRICTLY BELOW THE IMAGE */}
                     <div className="p-4 space-y-3 flex-1 flex flex-col justify-between">
-                      {/* Short Tag & Colorful Badges */}
-                      <div className="space-y-2">
-                        <span className="text-[10px] font-bold text-primary block">
+                      {/* Meal Title & Subtitle Below Image */}
+                      <div>
+                        <h4 className="text-base font-bold text-foreground leading-tight line-clamp-1">
+                          {card.name}
+                        </h4>
+                        <p className="text-xs font-semibold text-primary mt-1">
                           ✨ {card.shortTag || "Recommended for You"}
-                        </span>
+                        </p>
+                      </div>
 
-                        <div className="flex flex-wrap gap-1">
-                          {(card.badgeList || ["High Protein", "Easy Digestion"]).map((badge, bIdx) => (
-                            <span
-                              key={bIdx}
-                              className="px-2 py-0.5 rounded-md bg-primary/10 text-primary text-[9px] font-bold"
-                            >
-                              {badge}
-                            </span>
-                          ))}
+                      {/* Metrics Row: Calories, Protein, Time & Cost */}
+                      <div className="flex items-center justify-between text-xs font-bold pt-2 border-t border-foreground/5 text-foreground/75">
+                        <div className="flex items-center gap-2">
+                          <span className="text-rose-500 font-bold">🔥 {card.calories} kcal</span>
+                          <span>•</span>
+                          <span className="text-primary font-bold">💪 {card.protein}g</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-foreground/60 text-[11px]">
+                          <span>⏱️ {card.prepTime}</span>
+                          <span>•</span>
+                          <span>{card.estimatedCost}</span>
                         </div>
                       </div>
 
-                      {/* Macro Metrics */}
-                      <div className="flex items-center justify-between text-xs font-bold pt-2 border-t border-foreground/5 text-foreground/75">
-                        <span className="text-rose-500 font-extrabold">{card.calories} kcal</span>
-                        <span className="text-primary font-bold">Protein: {card.protein}g</span>
-                        <span className="text-emerald-500 font-bold">Carbs: {card.carbs}g</span>
-                      </div>
-
-                      {/* ONLY TWO PRIMARY BUTTONS: View Recipe & Log Meal */}
+                      {/* TWO PRIMARY BUTTONS: View Recipe & Log Meal */}
                       <div className="grid grid-cols-2 gap-2 pt-2">
                         <button
                           onClick={() => setSelectedCardModal(card)}
-                          className="w-full py-2 rounded-xl bg-foreground/5 hover:bg-foreground/10 text-foreground text-xs font-bold transition-all"
+                          className="w-full py-2.5 rounded-xl bg-foreground/5 hover:bg-foreground/10 text-foreground text-xs font-bold transition-all border border-foreground/5"
                         >
                           View Recipe
                         </button>
 
                         <button
                           onClick={() => handleLogMeal(card)}
-                          className={`w-full py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition-all ${
-                            isLoggedToday ? "bg-emerald-500 text-white" : "bg-primary text-white hover:bg-primary/90"
+                          className={`w-full py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition-all ${
+                            isLoggedToday ? "bg-emerald-600 text-white" : "bg-primary text-white hover:bg-primary/90"
                           }`}
                         >
                           <Check className="h-3.5 w-3.5" />
@@ -451,7 +428,7 @@ export default function SmartAINutritionPlansPage() {
                 onClick={() => setVisibleCount(prev => prev + 4)}
                 className="px-6 py-2.5 rounded-2xl border border-foreground/10 bg-background text-foreground/80 hover:text-primary hover:border-primary/40 text-xs font-bold transition-all inline-flex items-center gap-1.5 shadow-sm"
               >
-                <span>Show More Recommendations ({recommendations.length - visibleCount} left)</span>
+                <span>Show More Recommendations ({recommendations.length - visibleCount} remaining)</span>
                 <ChevronDown className="h-3.5 w-3.5" />
               </button>
             </div>
@@ -513,7 +490,7 @@ export default function SmartAINutritionPlansPage() {
               <Button size="sm" variant="glass" onClick={() => setSelectedCardModal(null)}>
                 Close
               </Button>
-              <Button size="sm" variant="primary" onClick={() => handleLogMeal(selectedCardModal)}>
+              <Button size="sm" variant="primary" onClick={() => handleLogMeal(selectedCardModal)} className="bg-primary text-white font-bold">
                 Log Meal Now
               </Button>
             </div>
@@ -626,7 +603,7 @@ export default function SmartAINutritionPlansPage() {
                   await fetchLogs();
                   setShowManualMealModal(false);
                 }
-              }}>
+              }} className="bg-primary text-white font-bold">
                 Save Meal Log
               </Button>
             </div>
