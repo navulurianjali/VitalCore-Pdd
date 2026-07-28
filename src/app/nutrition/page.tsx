@@ -5,7 +5,6 @@ import {
   Utensils, 
   Check, 
   RefreshCw, 
-  Heart, 
   X, 
   Sparkles, 
   ChefHat,
@@ -15,7 +14,11 @@ import {
   HeartPulse,
   Activity,
   Zap,
-  ShieldCheck
+  ShieldCheck,
+  Sunrise,
+  Sun,
+  Coffee,
+  Moon
 } from "lucide-react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import GlassCard from "@/components/ui/GlassCard";
@@ -24,8 +27,10 @@ import { useAuth } from "@/context/AuthContext";
 import confetti from "canvas-confetti";
 import { supabase } from "@/utils/supabase";
 import { 
-  generateSimplifiedAIMealRecommendations, 
-  RecommendationCard 
+  generateFullDailyDietPlan, 
+  generateIngredientBasedRecipes,
+  IndianMeal,
+  DailyDietPlan 
 } from "@/utils/indianNutritionEngine";
 
 interface FoodLog {
@@ -43,26 +48,24 @@ interface FoodLog {
 export default function SmartAINutritionPlansPage() {
   const { profile } = useAuth();
 
-  // SECTION 1: FOOD PREFERENCE CHIPS
+  // TOP LEVEL MODE SELECTOR: "diet_plan" | "cook_with_pantry"
+  const [activeMode, setActiveMode] = useState<"diet_plan" | "cook_with_pantry">("diet_plan");
+
+  // MODE 1 STATE: FOOD PREFERENCE & PRIMARY GOAL
   const [selectedPref, setSelectedPref] = useState("No Preference");
+  const [selectedGoal, setSelectedGoal] = useState("Weight Loss");
+  const [dailyDietPlan, setDailyDietPlan] = useState<DailyDietPlan | null>(null);
 
-  // SECTION 2: HEALTH GOAL CARDS
-  const [selectedGoal, setSelectedGoal] = useState("Muscle Gain");
-
-  // SECTION 3: COOK WITH WHAT I HAVE (OPTIONAL PANTRY TAGS)
-  const [pantryIngredients, setPantryIngredients] = useState<string[]>([]);
+  // MODE 2 STATE: INGREDIENTS ONLY
+  const [pantryIngredients, setPantryIngredients] = useState<string[]>(["rice", "eggs", "onions"]);
   const [customIngInput, setCustomIngInput] = useState("");
+  const [pantryRecipes, setPantryRecipes] = useState<IndianMeal[]>([]);
 
-  // Recommendations state (Top 3-4 Cards)
-  const [recommendations, setRecommendations] = useState<RecommendationCard[]>([]);
+  // Loading state
   const [loadingAI, setLoadingAI] = useState(false);
 
-  // Favorites & Dislikes tracking
-  const [favoriteFoods, setFavoriteFoods] = useState<string[]>([]);
-  const [dislikedFoods, setDislikedFoods] = useState<string[]>([]);
-
   // Modal inspection states
-  const [selectedCardModal, setSelectedCardModal] = useState<RecommendationCard | null>(null);
+  const [selectedCardModal, setSelectedCardModal] = useState<IndianMeal | null>(null);
 
   // Water & Food Logs states
   const [waterLogged, setWaterLogged] = useState(0);
@@ -90,19 +93,19 @@ export default function SmartAINutritionPlansPage() {
 
   const GOAL_OPTIONS = [
     { label: "Weight Loss", val: "Weight Loss", icon: Scale },
-    { label: "Weight Gain", val: "Weight Gain", icon: Zap },
+    { label: "Fat Loss", val: "Fat Loss", icon: Flame },
     { label: "Muscle Gain", val: "Muscle Gain", icon: Dumbbell },
     { label: "Strength Building", val: "Strength Building", icon: Activity },
-    { label: "Fat Loss", val: "Fat Loss", icon: Flame },
+    { label: "Lean Muscle", val: "Lean Muscle", icon: Zap },
     { label: "Healthy Lifestyle", val: "Healthy Lifestyle", icon: Sparkles },
     { label: "Balanced Diet", val: "Balanced Diet", icon: ShieldCheck },
     { label: "High Protein", val: "High Protein", icon: Dumbbell },
     { label: "Diabetes Friendly", val: "Diabetes Friendly", icon: HeartPulse },
-    { label: "Heart Healthy", val: "Heart Healthy", icon: Heart }
+    { label: "Heart Healthy", val: "Heart Healthy", icon: HeartPulse }
   ];
 
   const COMMON_PANTRY_ITEMS = [
-    "rice", "dal", "eggs", "onions", "tomatoes", "spinach", "paneer", "chicken", "fish", "curd", "carrots", "potatoes", "sprouts", "fruits"
+    "rice", "eggs", "chicken", "paneer", "dal", "onion", "tomato", "spinach", "potato", "carrot", "beans", "curd", "milk", "banana"
   ];
 
   // Fetch logged meals from Supabase
@@ -149,60 +152,47 @@ export default function SmartAINutritionPlansPage() {
     fetchLogs();
   }, [profile]);
 
-  // Today's totals calculation & Macro Deficits
-  const todayStr = new Date().toISOString().split("T")[0];
-  const todayFoodLogs = foodLogs.filter(log => log.created_at.startsWith(todayStr));
-  const totalCalories = todayFoodLogs.reduce((acc, curr) => acc + curr.calories, 0);
-  const totalProtein = todayFoodLogs.reduce((acc, curr) => acc + curr.protein_g, 0);
-
-  const targetDailyCalories = 2200;
-  const targetDailyProtein = 90;
-  const remainingCalories = Math.max(200, targetDailyCalories - totalCalories);
-  const proteinDeficitGrams = Math.max(5, targetDailyProtein - totalProtein);
-
-  // Dynamic AI Recommendation Generator
+  // Primary recommendation generator based on ACTIVE MODE
   const fetchRecommendations = async () => {
     setLoadingAI(true);
-    const loggedTodayNames = todayFoodLogs.map(log => log.food_name);
+    const todayStr = new Date().toISOString().split("T")[0];
+    const loggedTodayNames = foodLogs
+      .filter(log => log.created_at.startsWith(todayStr))
+      .map(log => log.food_name);
 
     try {
       const response = await fetch("/api/nutrition-planner", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          mode: activeMode,
           preference: selectedPref,
           goal: selectedGoal,
           pantryIngredients,
-          dislikedFoods,
-          favoriteFoods,
-          loggedTodayNames,
-          remainingCalories,
-          proteinDeficitGrams,
-          daySeed: Date.now()
+          loggedTodayNames
         })
       });
 
       if (response.ok) {
         const data = await response.json();
-        if (data.recommendations && data.recommendations.length > 0) {
-          setRecommendations(data.recommendations.slice(0, 4));
+        if (activeMode === "diet_plan" && data.dailyPlan) {
+          setDailyDietPlan(data.dailyPlan);
+        } else if (activeMode === "cook_with_pantry" && data.recipes) {
+          setPantryRecipes(data.recipes);
         } else {
-          throw new Error("Empty result");
+          throw new Error("Empty response");
         }
       } else {
         throw new Error("API error");
       }
     } catch {
-      const fallback = generateSimplifiedAIMealRecommendations({
-        preference: selectedPref,
-        goal: selectedGoal,
-        pantryIngredients,
-        dislikedFoods,
-        favoriteFoods,
-        loggedTodayNames,
-        daySeed: Date.now()
-      });
-      setRecommendations(fallback.slice(0, 4));
+      if (activeMode === "diet_plan") {
+        const fallback = generateFullDailyDietPlan({ goal: selectedGoal, preference: selectedPref, loggedTodayNames });
+        setDailyDietPlan(fallback);
+      } else {
+        const fallback = generateIngredientBasedRecipes(pantryIngredients);
+        setPantryRecipes(fallback);
+      }
     } finally {
       setLoadingAI(false);
     }
@@ -210,10 +200,10 @@ export default function SmartAINutritionPlansPage() {
 
   useEffect(() => {
     fetchRecommendations();
-  }, [selectedPref, selectedGoal, pantryIngredients]);
+  }, [activeMode, selectedPref, selectedGoal, pantryIngredients]);
 
   // Handle Mark Eaten & Log Meal
-  const handleLogMeal = async (card: RecommendationCard) => {
+  const handleLogMeal = async (card: IndianMeal) => {
     if (!profile?.id) return;
     try {
       const logData = {
@@ -243,15 +233,6 @@ export default function SmartAINutritionPlansPage() {
     }
   };
 
-  const toggleFavorite = (dishName: string) => {
-    if (favoriteFoods.includes(dishName)) {
-      setFavoriteFoods(favoriteFoods.filter(f => f !== dishName));
-    } else {
-      setFavoriteFoods([...favoriteFoods, dishName]);
-      confetti({ particleCount: 30, spread: 30, colors: ["#ec4899"] });
-    }
-  };
-
   const togglePantryIng = (ing: string) => {
     if (pantryIngredients.includes(ing)) {
       setPantryIngredients(pantryIngredients.filter(i => i !== ing));
@@ -269,6 +250,71 @@ export default function SmartAINutritionPlansPage() {
     }
   };
 
+  const renderMealCard = (meal: IndianMeal, mealLabel: string, IconComp: any) => {
+    const isLoggedToday = foodLogs.some(l => l.food_name === meal.name);
+
+    return (
+      <div className="p-4 rounded-2xl glass-panel border border-foreground/10 bg-background flex flex-col justify-between space-y-3 hover:border-primary/30 transition-all shadow-sm">
+        <div className="flex items-center justify-between">
+          <span className="px-2.5 py-1 rounded-full bg-primary/10 text-primary text-[11px] font-bold flex items-center gap-1.5">
+            <IconComp className="h-3.5 w-3.5" />
+            {mealLabel}
+          </span>
+          <span className="text-xs text-foreground/50 font-bold">⏱️ {meal.prepTime}</span>
+        </div>
+
+        <div>
+          <h4 className="text-base font-bold text-foreground leading-tight">
+            {meal.name}
+          </h4>
+          <p className="text-xs font-semibold text-primary mt-1">
+            ✨ {meal.shortTag || "Evidence-Based Nutrition"}
+          </p>
+          <p className="text-xs text-foreground/60 line-clamp-2 mt-1 font-normal">
+            {meal.whyHelps}
+          </p>
+        </div>
+
+        <div className="grid grid-cols-4 gap-1 p-2 rounded-xl bg-foreground/5 text-center text-xs font-bold border border-foreground/5">
+          <div>
+            <span className="text-rose-500 block text-xs font-black">{meal.calories}</span>
+            <span className="text-[9px] text-foreground/45 uppercase">kcal</span>
+          </div>
+          <div>
+            <span className="text-primary block text-xs font-black">{meal.protein}g</span>
+            <span className="text-[9px] text-foreground/45 uppercase">Protein</span>
+          </div>
+          <div>
+            <span className="text-emerald-500 block text-xs font-black">{meal.carbs}g</span>
+            <span className="text-[9px] text-foreground/45 uppercase">Carbs</span>
+          </div>
+          <div>
+            <span className="text-amber-500 block text-xs font-black">{meal.fat}g</span>
+            <span className="text-[9px] text-foreground/45 uppercase">Fat</span>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-2 pt-1">
+          <button
+            onClick={() => setSelectedCardModal(meal)}
+            className="w-full py-2 rounded-xl bg-foreground/5 hover:bg-foreground/10 text-foreground text-xs font-bold transition-all border border-foreground/5"
+          >
+            View Recipe
+          </button>
+          <button
+            onClick={() => handleLogMeal(meal)}
+            className={`w-full py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition-all ${
+              isLoggedToday ? "bg-emerald-600 text-white" : "bg-primary text-white hover:bg-primary/90"
+            }`}
+          >
+            <Check className="h-3.5 w-3.5" />
+            {isLoggedToday ? "Logged" : "Log Meal"}
+          </button>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <DashboardLayout>
       <div className="space-y-6 pb-12 max-w-5xl mx-auto">
@@ -281,7 +327,7 @@ export default function SmartAINutritionPlansPage() {
               Smart AI Meal Planner
             </h1>
             <p className="text-xs text-foreground/60 font-medium">
-              Personalized Indian & South Indian meal recommendations
+              Evidence-based clinical nutrition & recipe generator
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -295,255 +341,229 @@ export default function SmartAINutritionPlansPage() {
           </div>
         </div>
 
-        {/* SECTION 1: WHAT'S YOUR FOOD PREFERENCE? */}
-        <div className="p-4 rounded-2xl glass-panel border border-foreground/10 bg-background space-y-2.5 shadow-sm">
-          <h3 className="text-xs font-bold text-foreground uppercase tracking-wider">
-            1. What's your food preference?
-          </h3>
-          <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
-            {PREFERENCE_OPTIONS.map((pref) => {
-              const isSelected = selectedPref === pref.val;
-              return (
-                <button
-                  key={pref.val}
-                  onClick={() => setSelectedPref(pref.val)}
-                  className={`px-4 py-2 rounded-full border text-xs font-bold shrink-0 transition-all ${
-                    isSelected
-                      ? "bg-primary text-white border-primary shadow-sm"
-                      : "bg-background border-foreground/10 text-foreground/70 hover:border-primary/40 hover:text-foreground"
-                  }`}
-                >
-                  {pref.label}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* SECTION 2: WHAT'S YOUR CURRENT GOAL? */}
-        <div className="p-4 rounded-2xl glass-panel border border-foreground/10 bg-background space-y-2.5 shadow-sm">
-          <h3 className="text-xs font-bold text-foreground uppercase tracking-wider">
-            2. What's your current goal?
-          </h3>
-          <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
-            {GOAL_OPTIONS.map((g) => {
-              const isSelected = selectedGoal === g.val;
-              const IconComp = g.icon;
-              return (
-                <button
-                  key={g.val}
-                  onClick={() => setSelectedGoal(g.val)}
-                  className={`p-3 rounded-2xl border text-left flex flex-col justify-between transition-all ${
-                    isSelected
-                      ? "bg-primary text-white border-primary shadow-sm"
-                      : "bg-background border-foreground/10 text-foreground/75 hover:border-primary/40"
-                  }`}
-                >
-                  <IconComp className={`h-4 w-4 ${isSelected ? "text-white" : "text-primary"}`} />
-                  <span className="text-xs font-bold mt-2">{g.label}</span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* SECTION 3: COOK WITH WHAT I HAVE (OPTIONAL PANTRY TAGS) */}
-        <div className="p-4 rounded-2xl glass-panel border border-foreground/10 bg-background space-y-3 shadow-sm">
-          <div className="flex items-center justify-between">
-            <h3 className="text-xs font-bold text-foreground uppercase tracking-wider flex items-center gap-1.5">
-              <ChefHat className="h-4 w-4 text-primary" />
-              3. Cook With What I Have <span className="text-[10px] text-foreground/45 font-normal lowercase">(optional)</span>
-            </h3>
-            {pantryIngredients.length > 0 && (
-              <button onClick={() => setPantryIngredients([])} className="text-[11px] font-bold text-rose-500 hover:underline">
-                Clear All
-              </button>
-            )}
-          </div>
-
-          {/* Selectable Ingredient Chips */}
-          <div className="flex flex-wrap gap-1.5">
-            {COMMON_PANTRY_ITEMS.map((item) => {
-              const isSelected = pantryIngredients.includes(item);
-              return (
-                <button
-                  key={item}
-                  onClick={() => togglePantryIng(item)}
-                  className={`px-3 py-1 rounded-full text-[11px] font-bold border transition-all ${
-                    isSelected
-                      ? "bg-primary text-white border-primary shadow-sm"
-                      : "bg-background border-foreground/10 text-foreground/70 hover:border-primary/40"
-                  }`}
-                >
-                  {isSelected ? "✓ " : "+ "}{item}
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Add Custom Ingredient Bar */}
-          <div className="flex items-center gap-2 pt-2 border-t border-foreground/5">
-            <input
-              type="text"
-              value={customIngInput}
-              onChange={(e) => setCustomIngInput(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && addCustomIng()}
-              placeholder="Add custom ingredient (e.g. oats, brocolli)..."
-              className="flex-1 px-3 py-2 rounded-xl border border-foreground/10 bg-background text-foreground text-xs font-semibold focus:outline-none focus:border-primary"
-            />
-            <button
-              onClick={addCustomIng}
-              className="px-4 py-2 rounded-xl bg-primary text-white text-xs font-bold hover:bg-primary/90 transition-all shadow-sm"
-            >
-              Add
-            </button>
-          </div>
-        </div>
-
-        {/* TODAY'S MACRO SNAPSHOT */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <GlassCard glowColor="rose" className="p-3.5 flex flex-col justify-between">
-            <span className="text-[10px] font-bold text-foreground/50 uppercase">Calories Remaining</span>
-            <h3 className="text-xl font-black text-rose-500 mt-1">{remainingCalories} kcal</h3>
-          </GlassCard>
-          <GlassCard glowColor="violet" className="p-3.5 flex flex-col justify-between">
-            <span className="text-[10px] font-bold text-foreground/50 uppercase">Protein Deficit</span>
-            <h3 className="text-xl font-black text-primary mt-1">{proteinDeficitGrams}g</h3>
-          </GlassCard>
-          <GlassCard glowColor="amber" className="p-3.5 flex flex-col justify-between">
-            <span className="text-[10px] font-bold text-foreground/50 uppercase">Hydration</span>
-            <h3 className="text-xl font-black text-amber-500 mt-1">{waterLogged} ml</h3>
-          </GlassCard>
-          <GlassCard glowColor="emerald" className="p-3.5 flex flex-col justify-between">
-            <span className="text-[10px] font-bold text-foreground/50 uppercase">Logged Meals</span>
-            <h3 className="text-xl font-black text-emerald-500 mt-1">{todayFoodLogs.length} items</h3>
-          </GlassCard>
-        </div>
-
-        {/* TOP 3-4 TEXT-FOCUSED CLEAN RECOMMENDATION CARDS (NO FOOD PHOTOS) */}
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm font-bold text-foreground tracking-tight">
-              Top Recommendations for {selectedGoal}
-            </h3>
-            <span className="text-xs text-foreground/50 font-semibold">
-              Top {recommendations.length} Personalized Matches
-            </span>
-          </div>
-
-          {loadingAI ? (
-            <div className="p-12 text-center space-y-3 rounded-3xl glass-panel border border-foreground/5">
-              <RefreshCw className="h-6 w-6 text-primary animate-spin mx-auto" />
-              <p className="text-xs font-semibold text-foreground/60">Generating personalized meal plan for {selectedGoal}...</p>
+        {/* TOP LEVEL MODE SELECTOR CARDS */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <button
+            onClick={() => setActiveMode("diet_plan")}
+            className={`p-4 rounded-2xl border text-left flex items-start gap-3 transition-all ${
+              activeMode === "diet_plan"
+                ? "bg-primary/10 border-primary shadow-md"
+                : "bg-background border-foreground/10 hover:border-primary/40"
+            }`}
+          >
+            <div className={`p-2.5 rounded-xl ${activeMode === "diet_plan" ? "bg-primary text-white" : "bg-foreground/5 text-foreground/70"}`}>
+              <Sparkles className="h-5 w-5" />
             </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {recommendations.slice(0, 4).map((card, idx) => {
-                const isFav = favoriteFoods.includes(card.name);
-                const isLoggedToday = todayFoodLogs.some(l => l.food_name === card.name);
+            <div>
+              <h3 className={`text-sm font-bold ${activeMode === "diet_plan" ? "text-primary" : "text-foreground"}`}>
+                ① AI Personalized Diet Plan
+              </h3>
+              <p className="text-xs text-foreground/60 mt-0.5 font-normal">
+                Complete 4-meal daily nutrition plan optimized for your goal.
+              </p>
+            </div>
+          </button>
 
-                return (
-                  <div
-                    key={idx}
-                    className="p-5 rounded-2xl glass-panel border border-foreground/10 bg-background flex flex-col justify-between space-y-3.5 hover:border-primary/30 transition-all duration-200 shadow-sm"
-                  >
-                    {/* Header Row: Match Badge & Heart Favorite */}
-                    <div className="flex items-center justify-between">
-                      <span className="px-2.5 py-1 rounded-full bg-primary text-white text-[10px] font-bold shadow-sm">
-                        {card.matchBadge}
-                      </span>
-                      <button
-                        onClick={() => toggleFavorite(card.name)}
-                        className="p-1.5 rounded-full hover:bg-foreground/5 text-foreground/40 hover:text-pink-500 transition-all"
-                      >
-                        <Heart className={`h-4 w-4 ${isFav ? "fill-pink-500 text-pink-500" : ""}`} />
-                      </button>
+          <button
+            onClick={() => setActiveMode("cook_with_pantry")}
+            className={`p-4 rounded-2xl border text-left flex items-start gap-3 transition-all ${
+              activeMode === "cook_with_pantry"
+                ? "bg-primary/10 border-primary shadow-md"
+                : "bg-background border-foreground/10 hover:border-primary/40"
+            }`}
+          >
+            <div className={`p-2.5 rounded-xl ${activeMode === "cook_with_pantry" ? "bg-primary text-white" : "bg-foreground/5 text-foreground/70"}`}>
+              <ChefHat className="h-5 w-5" />
+            </div>
+            <div>
+              <h3 className={`text-sm font-bold ${activeMode === "cook_with_pantry" ? "text-primary" : "text-foreground"}`}>
+                ② Cook With What I Have
+              </h3>
+              <p className="text-xs text-foreground/60 mt-0.5 font-normal">
+                Recipe generator using ONLY ingredients currently at home.
+              </p>
+            </div>
+          </button>
+        </div>
+
+        {/* MODE 1 VIEW: DIET PLAN WORKFLOW */}
+        {activeMode === "diet_plan" && (
+          <div className="space-y-6">
+            {/* QUESTION 1: FOOD PREFERENCE */}
+            <div className="p-4 rounded-2xl glass-panel border border-foreground/10 bg-background space-y-2.5 shadow-sm">
+              <h3 className="text-xs font-bold text-foreground uppercase tracking-wider">
+                Question 1: What is your food preference?
+              </h3>
+              <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
+                {PREFERENCE_OPTIONS.map((pref) => {
+                  const isSelected = selectedPref === pref.val;
+                  return (
+                    <button
+                      key={pref.val}
+                      onClick={() => setSelectedPref(pref.val)}
+                      className={`px-4 py-2 rounded-full border text-xs font-bold shrink-0 transition-all ${
+                        isSelected
+                          ? "bg-primary text-white border-primary shadow-sm"
+                          : "bg-background border-foreground/10 text-foreground/70 hover:border-primary/40 hover:text-foreground"
+                      }`}
+                    >
+                      {pref.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* QUESTION 2: PRIMARY GOAL */}
+            <div className="p-4 rounded-2xl glass-panel border border-foreground/10 bg-background space-y-2.5 shadow-sm">
+              <h3 className="text-xs font-bold text-foreground uppercase tracking-wider">
+                Question 2: What is your primary goal?
+              </h3>
+              <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                {GOAL_OPTIONS.map((g) => {
+                  const isSelected = selectedGoal === g.val;
+                  const IconComp = g.icon;
+                  return (
+                    <button
+                      key={g.val}
+                      onClick={() => setSelectedGoal(g.val)}
+                      className={`p-3 rounded-2xl border text-left flex flex-col justify-between transition-all ${
+                        isSelected
+                          ? "bg-primary text-white border-primary shadow-sm"
+                          : "bg-background border-foreground/10 text-foreground/75 hover:border-primary/40"
+                      }`}
+                    >
+                      <IconComp className={`h-4 w-4 ${isSelected ? "text-white" : "text-primary"}`} />
+                      <span className="text-xs font-bold mt-2">{g.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* FULL DAILY DIET PLAN OUTPUT */}
+            {dailyDietPlan && (
+              <div className="space-y-4">
+                {/* TOTAL DAILY MACROS BAR */}
+                <div className="p-4 rounded-2xl glass-panel border border-primary/20 bg-primary/5 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-sm font-bold text-foreground">
+                      Full Daily Nutrition Targets ({selectedGoal})
+                    </h3>
+                    <span className="text-xs text-primary font-bold">4 Complete Meals</span>
+                  </div>
+                  <div className="grid grid-cols-5 gap-2 text-center text-xs font-bold pt-1">
+                    <div className="p-2 rounded-xl bg-background border border-foreground/5">
+                      <span className="text-rose-500 block text-sm font-black">{dailyDietPlan.totalCalories}</span>
+                      <span className="text-[9px] text-foreground/50 uppercase">Total kcal</span>
                     </div>
-
-                    {/* Meal Title & Subtitle */}
-                    <div>
-                      <h4 className="text-base font-bold text-foreground leading-tight flex items-center gap-1.5">
-                        <Utensils className="h-4 w-4 text-primary shrink-0" />
-                        {card.name}
-                      </h4>
-                      <p className="text-xs font-semibold text-primary mt-1">
-                        ✨ {card.shortTag || "Recommended for You"}
-                      </p>
-                      <p className="text-xs text-foreground/60 line-clamp-2 mt-1 font-normal">
-                        {card.whyHelps}
-                      </p>
+                    <div className="p-2 rounded-xl bg-background border border-foreground/5">
+                      <span className="text-primary block text-sm font-black">{dailyDietPlan.totalProtein}g</span>
+                      <span className="text-[9px] text-foreground/50 uppercase">Protein</span>
                     </div>
-
-                    {/* Nutrient Badges */}
-                    <div className="flex flex-wrap gap-1">
-                      {(card.badgeList || ["High Protein", "Easy Digestion"]).map((b, bIdx) => (
-                        <span key={bIdx} className="px-2.5 py-0.5 rounded-md bg-primary/10 text-primary text-[9px] font-bold">
-                          {b}
-                        </span>
-                      ))}
+                    <div className="p-2 rounded-xl bg-background border border-foreground/5">
+                      <span className="text-emerald-500 block text-sm font-black">{dailyDietPlan.totalCarbs}g</span>
+                      <span className="text-[9px] text-foreground/50 uppercase">Carbs</span>
                     </div>
-
-                    {/* Full Macro Breakdown Grid */}
-                    <div className="grid grid-cols-4 gap-1 p-2.5 rounded-xl bg-foreground/5 text-center text-xs font-bold border border-foreground/5">
-                      <div>
-                        <span className="text-rose-500 block text-xs font-black">{card.calories}</span>
-                        <span className="text-[9px] text-foreground/45 uppercase">kcal</span>
-                      </div>
-                      <div>
-                        <span className="text-primary block text-xs font-black">{card.protein}g</span>
-                        <span className="text-[9px] text-foreground/45 uppercase">Protein</span>
-                      </div>
-                      <div>
-                        <span className="text-emerald-500 block text-xs font-black">{card.carbs}g</span>
-                        <span className="text-[9px] text-foreground/45 uppercase">Carbs</span>
-                      </div>
-                      <div>
-                        <span className="text-amber-500 block text-xs font-black">{card.fat}g</span>
-                        <span className="text-[9px] text-foreground/45 uppercase">Fat</span>
-                      </div>
+                    <div className="p-2 rounded-xl bg-background border border-foreground/5">
+                      <span className="text-amber-500 block text-sm font-black">{dailyDietPlan.totalFat}g</span>
+                      <span className="text-[9px] text-foreground/50 uppercase">Fat</span>
                     </div>
-
-                    {/* Prep Time & Cost Row */}
-                    <div className="flex items-center justify-between text-[11px] font-semibold text-foreground/60 px-1">
-                      <span>⏱️ {card.prepTime}</span>
-                      <span>approx {card.estimatedCost}</span>
-                    </div>
-
-                    {/* Two Primary Buttons: View Recipe & Log Meal */}
-                    <div className="grid grid-cols-2 gap-2 pt-1">
-                      <button
-                        onClick={() => setSelectedCardModal(card)}
-                        className="w-full py-2.5 rounded-xl bg-foreground/5 hover:bg-foreground/10 text-foreground text-xs font-bold transition-all border border-foreground/5"
-                      >
-                        View Recipe
-                      </button>
-
-                      <button
-                        onClick={() => handleLogMeal(card)}
-                        className={`w-full py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition-all ${
-                          isLoggedToday ? "bg-emerald-600 text-white" : "bg-primary text-white hover:bg-primary/90"
-                        }`}
-                      >
-                        <Check className="h-3.5 w-3.5" />
-                        {isLoggedToday ? "Logged" : "Log Meal"}
-                      </button>
+                    <div className="p-2 rounded-xl bg-background border border-foreground/5">
+                      <span className="text-violet-500 block text-sm font-black">{dailyDietPlan.totalFiber}g</span>
+                      <span className="text-[9px] text-foreground/50 uppercase">Fiber</span>
                     </div>
                   </div>
-                );
-              })}
+                </div>
+
+                {/* 4 STRUCTURED MEALS */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {renderMealCard(dailyDietPlan.breakfast, "Breakfast", Sunrise)}
+                  {renderMealCard(dailyDietPlan.lunch, "Lunch", Sun)}
+                  {renderMealCard(dailyDietPlan.snack, "Evening Snack", Coffee)}
+                  {renderMealCard(dailyDietPlan.dinner, "Dinner", Moon)}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* MODE 2 VIEW: COOK WITH WHAT I HAVE WORKFLOW */}
+        {activeMode === "cook_with_pantry" && (
+          <div className="space-y-6">
+            <div className="p-4 rounded-2xl glass-panel border border-foreground/10 bg-background space-y-3 shadow-sm">
+              <div className="flex items-center justify-between">
+                <h3 className="text-xs font-bold text-foreground uppercase tracking-wider flex items-center gap-1.5">
+                  <ChefHat className="h-4 w-4 text-primary" />
+                  What ingredients do you currently have?
+                </h3>
+                {pantryIngredients.length > 0 && (
+                  <button onClick={() => setPantryIngredients([])} className="text-[11px] font-bold text-rose-500 hover:underline">
+                    Clear All
+                  </button>
+                )}
+              </div>
+
+              {/* Ingredient Chips */}
+              <div className="flex flex-wrap gap-1.5">
+                {COMMON_PANTRY_ITEMS.map((item) => {
+                  const isSelected = pantryIngredients.includes(item);
+                  return (
+                    <button
+                      key={item}
+                      onClick={() => togglePantryIng(item)}
+                      className={`px-3 py-1.5 rounded-full text-[11px] font-bold border transition-all ${
+                        isSelected
+                          ? "bg-primary text-white border-primary shadow-sm"
+                          : "bg-background border-foreground/10 text-foreground/70 hover:border-primary/40"
+                      }`}
+                    >
+                      {isSelected ? "✓ " : "+ "}{item}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Add Custom Ingredient Bar */}
+              <div className="flex items-center gap-2 pt-2 border-t border-foreground/5">
+                <input
+                  type="text"
+                  value={customIngInput}
+                  onChange={(e) => setCustomIngInput(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && addCustomIng()}
+                  placeholder="Type custom ingredient (e.g. oats, broccoli, fish)..."
+                  className="flex-1 px-3 py-2 rounded-xl border border-foreground/10 bg-background text-foreground text-xs font-semibold focus:outline-none focus:border-primary"
+                />
+                <button
+                  onClick={addCustomIng}
+                  className="px-4 py-2 rounded-xl bg-primary text-white text-xs font-bold hover:bg-primary/90 transition-all shadow-sm"
+                >
+                  Add Ingredient
+                </button>
+              </div>
             </div>
-          )}
-        </div>
+
+            {/* RECIPES GENERATED STRICTLY FROM INGREDIENTS */}
+            <div className="space-y-4">
+              <h3 className="text-sm font-bold text-foreground">
+                Best Recipes Using Only Available Ingredients
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {pantryRecipes.map((meal, idx) => renderMealCard(meal, `Recipe ${idx + 1}`, ChefHat))}
+              </div>
+            </div>
+          </div>
+        )}
 
       </div>
 
-      {/* VIEW RECIPE DETAILED MODAL */}
+      {/* VIEW RECIPE MODAL */}
       {selectedCardModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-[fadeIn_0.2s_ease-out]">
           <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setSelectedCardModal(null)} />
           <div className="relative w-full max-w-lg rounded-3xl glass-panel border border-foreground/10 bg-background p-6 space-y-4 z-10 shadow-2xl overflow-hidden">
             <div className="flex justify-between items-center">
-              <span className="text-[10px] font-black text-primary uppercase">{selectedCardModal.matchBadge}</span>
+              <span className="text-[10px] font-black text-primary uppercase">{selectedCardModal.mealType}</span>
               <button onClick={() => setSelectedCardModal(null)} className="text-foreground/50 hover:text-foreground">
                 <X className="h-4 w-4" />
               </button>
@@ -617,7 +637,7 @@ export default function SmartAINutritionPlansPage() {
                   type="text" 
                   value={manualMealForm.food_name}
                   onChange={(e) => setManualMealForm({ ...manualMealForm, food_name: e.target.value })}
-                  placeholder="e.g. Idli Sambar"
+                  placeholder="e.g. Oats Porridge"
                   className="w-full p-2.5 rounded-xl border border-foreground/10 bg-background text-foreground focus:outline-none focus:border-primary"
                 />
               </div>
