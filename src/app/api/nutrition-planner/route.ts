@@ -100,59 +100,51 @@ export async function POST(req: NextRequest) {
     if (!apiKey) {
       return NextResponse.json({
         recommendations: fallbackCards,
-        insights: [
-          `Formulated 6-10 ranked South Indian AI recommendations for ${goal}.`,
-          `Filtered out ${dislikedFoods.length} disliked foods and prioritized your favorites.`
-        ],
-        habits: [
-          "Pairing citrus fruits (Vitamin C) with iron-rich lentils or poha triples iron absorption.",
-          "Drink 300ml warm water 15 minutes before main meals to ease digestive kinetics."
-        ],
-        warnings: [
-          "Avoid consuming heavy sugar coffee/tea right after high-iron meals to prevent nutrient binding."
-        ]
+        insights: [`Formulated top recommendations for ${goal}.`],
+        habits: ["Pairing citrus fruits with lentils boosts iron absorption."],
+        warnings: ["Maintain hydrated intake before meals."]
       });
     }
 
     const systemPrompt = `You are a world-class South Indian & Clinical AI Nutritionist.
-Your task is to generate 6 to 10 distinct, ranked meal recommendation cards based on user intent and profile.
+Your task is to generate top authentic, familiar Indian meal recommendations matching user intent and profile.
 
 User Request:
-- User Prompt / Desire: "${queryPrompt}"
-- Selected Meal Type: ${mealCategory}
-- Cuisine Preference: ${cuisine} (PRIORITIZE South Indian: Idli, Dosa, Pesarattu, Upma, Pongal, Ragi Mudde, Ragi Dosa, Puttu, Appam, Uttapam, Poori, Chapati, Phulka, Lemon Rice, Tomato Rice, Curd Rice, Pulihora, Bisi Bele Bath, Sambar Rice, Rasam Rice, Dal Rice, Rajma Rice, Chole, Veg Kurma, Paneer Curry, Egg Curry, Fish Curry, Chicken Curry, Andhra Meals, Millet Meals, Sprouts, Sundal, Boiled Corn, Groundnuts, Buttermilk, Lassi, Tender Coconut Water, etc.)
+- User Prompt: "${queryPrompt}"
+- Meal Category: ${mealCategory}
+- Cuisine Preference: ${cuisine} (PRIORITIZE South Indian: Idli, Dosa, Pesarattu, Upma, Pongal, Ragi Mudde, Ragi Dosa, Puttu, Appam, Uttapam, Poori, Chapati, Phulka, Lemon Rice, Curd Rice, Pulihora, Bisi Bele Bath, Sambar Rice, Rasam Rice, Dal Rice, Rajma Rice, Chole, Veg Kurma, Paneer Curry, Egg Curry, Fish Curry, Chicken Curry, Andhra Meals, Millet Meals, Sprouts, Sundal, Makhana, Buttermilk, Lassi, Tender Coconut Water, etc.)
 - Dietary Preference: ${preference}
 - Health Goal: ${goal}
-- Spice Level: ${spiceLevel}
-- Max Prep Time: ${maxPrepTimeMinutes} mins
-- Budget: ${budget}
-- Disliked Foods (EXCLUDE ENTIRELY): ${JSON.stringify(dislikedFoods)}
+- Disliked Foods (EXCLUDE): ${JSON.stringify(dislikedFoods)}
 - Favorite Foods (PRIORITIZE): ${JSON.stringify(favoriteFoods)}
-- Body Weight: ${profile?.weight_kg || 70} kg
-
-CRITICAL INSTRUCTIONS:
-1. Provide 6 to 10 authentic, familiar Indian food recommendations ranked from Best Match to Alternative Choices.
-2. DO NOT recommend foreign/Western foods (like oats, sandwiches, quinoa salads). Stick to realistic Indian dishes.
-3. Every recommendation MUST include:
-   - "name": Authentic Indian Dish Name
-   - "servingSize": Portion details (e.g. "3 Idlis + 1 cup Sambar")
-   - "calories", "protein", "carbs", "fat", "fiber", "iron_mg", "calcium_mg"
-   - "matchScore": integer percentage (e.g. 96)
-   - "matchBadge": string (e.g. "96% Top AI Choice" or "90% High Protein Match")
-   - "prepTime": string (e.g. "10 mins")
-   - "estimatedCost": string (e.g. "Low (₹30-50)")
-   - "whyHelps": Conversational explanation of why it fits the user request
-   - "ingredients": array of authentic ingredient strings
-   - "instructions": array of cooking steps
 
 Respond strictly with a raw JSON object matching:
 {
-  "recommendations": [ ...6 to 10 cards... ],
-  "insights": ["Insight 1", "Insight 2"],
-  "habits": ["Habit 1"],
-  "warnings": ["Warning 1"]
+  "recommendations": [
+    {
+      "name": "Authentic Indian Dish Name",
+      "imageUrl": "https://images.unsplash.com/photo-1589301760014-d929f3979dbc?auto=format&fit=crop&w=600&q=80",
+      "servingSize": "Portion details",
+      "shortTag": "Short 3-4 word tag (e.g. High Protein)",
+      "badgeList": ["High Protein", "Iron", "Low Fat"],
+      "calories": 350,
+      "protein": 18,
+      "carbs": 52,
+      "fat": 8,
+      "fiber": 7,
+      "iron_mg": 3.5,
+      "calcium_mg": 90,
+      "matchScore": 96,
+      "matchBadge": "96% Top AI Choice",
+      "prepTime": "10 mins",
+      "estimatedCost": "₹40",
+      "whyHelps": "Concise 1-sentence benefit statement.",
+      "ingredients": ["ingredient 1", "ingredient 2"],
+      "instructions": ["step 1", "step 2"]
+    }
+  ]
 }
-DO NOT include markdown backticks or commentary outside JSON.`;
+DO NOT include markdown backticks or extra text outside JSON.`;
 
     const response = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
@@ -160,7 +152,7 @@ DO NOT include markdown backticks or commentary outside JSON.`;
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          contents: [{ role: "user", parts: [{ text: `Generate 6-10 ranked recommendations for: ${queryPrompt || mealCategory}` }] }],
+          contents: [{ role: "user", parts: [{ text: `Generate top recommendations for: ${queryPrompt || mealCategory}` }] }],
           systemInstruction: { parts: [{ text: systemPrompt }] },
           generationConfig: { temperature: 0.7, responseMimeType: "application/json" }
         })
@@ -168,7 +160,7 @@ DO NOT include markdown backticks or commentary outside JSON.`;
     );
 
     if (!response.ok) {
-      return NextResponse.json({ recommendations: fallbackCards, insights: ["AI fallback active."], habits: [], warnings: [] });
+      return NextResponse.json({ recommendations: fallbackCards });
     }
 
     const data = await response.json();
@@ -179,11 +171,11 @@ DO NOT include markdown backticks or commentary outside JSON.`;
         const parsed = JSON.parse(replyText.trim());
         return NextResponse.json(parsed);
       } catch {
-        return NextResponse.json({ recommendations: fallbackCards, insights: ["AI parse fallback active."], habits: [], warnings: [] });
+        return NextResponse.json({ recommendations: fallbackCards });
       }
     }
 
-    return NextResponse.json({ recommendations: fallbackCards, insights: [], habits: [], warnings: [] });
+    return NextResponse.json({ recommendations: fallbackCards });
   } catch (err: any) {
     console.error("AI Nutrition Assistant API Error:", err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
