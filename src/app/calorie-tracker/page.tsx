@@ -11,7 +11,7 @@ import { Utensils, Plus, Trash2, Edit2, Search, X, Flame, CheckCircle, PieChart,
 
 interface LoggedFood {
   id: string;
-  meal_type: 'breakfast' | 'lunch' | 'dinner' | 'snack';
+  meal_type: 'breakfast' | 'lunch' | 'dinner' | 'snack' | 'snacks';
   food_name: string;
   calories: number;
   protein_g: number;
@@ -71,6 +71,28 @@ export default function CalorieTrackerPage() {
 
   useEffect(() => {
     fetchLogs();
+
+    if (!user?.id || !supabase) return;
+
+    const channel = supabase
+      .channel(`web_nutrition_logs_${user.id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'nutrition_logs',
+          filter: `user_id=eq.${user.id}`,
+        },
+        () => {
+          fetchLogs();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [user?.id]);
 
   // Open modal to add food
@@ -87,12 +109,18 @@ export default function CalorieTrackerPage() {
 
   // Open modal to edit existing food
   const handleOpenEditModal = (log: LoggedFood) => {
-    setActiveMealType(log.meal_type);
+    setActiveMealType(log.meal_type === 'snacks' ? 'snack' : log.meal_type);
     setEditingLogId(log.id);
     const matched = FOOD_DATABASE.find(f => log.food_name.toLowerCase().includes(f.name.toLowerCase())) || FOOD_DATABASE[0];
     setSelectedFood(matched);
-    setQuantity(1);
-    setCustomFoodName(log.food_name);
+    
+    // Estimate existing quantity from calories or default to 1
+    let estQty = 1;
+    if (matched && matched.baseCalories > 0 && log.calories > 0) {
+      estQty = Number((log.calories / matched.baseCalories).toFixed(1));
+    }
+    setQuantity(estQty > 0 ? estQty : 1);
+    setCustomFoodName(matched.name);
     setModalOpen(true);
   };
 
@@ -101,7 +129,28 @@ export default function CalorieTrackerPage() {
     if (!user?.id || !selectedFood) return;
 
     const nutrition = calculateNutrition(selectedFood, quantity);
-    const formattedName = `${quantity} ${selectedFood.servingUnit}${quantity > 1 ? 's' : ''} ${selectedFood.name}`;
+    const unitStr = selectedFood.servingUnit;
+    const plural = quantity > 1 && !unitStr.endsWith('s') && unitStr !== 'g' && unitStr !== 'ml' ? 's' : '';
+    const formattedName = `${selectedFood.name} (${quantity} ${unitStr}${plural})`;
+
+    const tempId = editingLogId || `temp-${Date.now()}`;
+    const newLogEntry: LoggedFood = {
+      id: tempId,
+      meal_type: activeMealType,
+      food_name: formattedName,
+      calories: nutrition.calories,
+      protein_g: nutrition.protein,
+      carbs_g: nutrition.carbs,
+      fat_g: nutrition.fat,
+    };
+
+    // Instant local UI update
+    if (editingLogId) {
+      setLogs(prev => prev.map(item => item.id === editingLogId ? { ...item, ...newLogEntry } : item));
+    } else {
+      setLogs(prev => [...prev, newLogEntry]);
+    }
+    setModalOpen(false);
 
     try {
       if (editingLogId) {
@@ -118,7 +167,8 @@ export default function CalorieTrackerPage() {
           })
           .eq("id", editingLogId);
 
-        if (!error) fetchLogs();
+        if (error) console.error("Update error:", error);
+        fetchLogs();
       } else {
         // Insert new record
         const { error } = await supabase
@@ -134,17 +184,19 @@ export default function CalorieTrackerPage() {
             fat_g: nutrition.fat,
           });
 
-        if (!error) fetchLogs();
+        if (error) console.error("Insert error:", error);
+        fetchLogs();
       }
     } catch (e) {
       console.error("Save error:", e);
-    } finally {
-      setModalOpen(false);
+      fetchLogs();
     }
   };
 
   // Delete food log from Supabase
   const handleDeleteLog = async (id: string) => {
+    // Instant local UI update
+    setLogs(prev => prev.filter(item => item.id !== id));
     if (!supabase) return;
     try {
       const { error } = await supabase
@@ -152,11 +204,13 @@ export default function CalorieTrackerPage() {
         .delete()
         .eq("id", id);
 
-      if (!error) {
-        setLogs(prev => prev.filter(item => item.id !== id));
+      if (error) {
+        console.error("Delete error:", error);
+        fetchLogs();
       }
     } catch (e) {
       console.error("Delete error:", e);
+      fetchLogs();
     }
   };
 
@@ -172,7 +226,7 @@ export default function CalorieTrackerPage() {
   const breakfastLogs = logs.filter(l => l.meal_type === 'breakfast');
   const lunchLogs = logs.filter(l => l.meal_type === 'lunch');
   const dinnerLogs = logs.filter(l => l.meal_type === 'dinner');
-  const snackLogs = logs.filter(l => l.meal_type === 'snack');
+  const snackLogs = logs.filter(l => l.meal_type === 'snack' || l.meal_type === 'snacks');
 
   const foodSearchResults = searchFoodDatabase(searchQuery);
   const currentNutritionPreview = selectedFood ? calculateNutrition(selectedFood, quantity) : null;
@@ -473,14 +527,14 @@ export default function CalorieTrackerPage() {
             {/* Food Search Input */}
             <div className="space-y-2">
               <label className="text-xs font-bold text-foreground/70 uppercase">Search Food Database</label>
-              <div className="relative">
-                <Search className="absolute left-3 top-2.5 h-4 w-4 text-foreground/40" />
+              <div className="relative flex items-center">
+                <Search className="absolute left-3.5 h-4 w-4 text-foreground/40 pointer-events-none z-10" />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
                   placeholder="e.g., Idli, Chapati, Rice, Chicken Curry, Apple..."
-                  className="w-full pl-9 pr-4 py-2 text-xs font-semibold rounded-xl bg-foreground/5 border border-foreground/10 text-foreground focus:outline-none focus:border-primary"
+                  className="w-full pl-10 pr-4 py-2.5 text-xs font-semibold rounded-xl bg-foreground/5 border border-foreground/10 text-foreground focus:outline-none focus:border-primary placeholder:text-foreground/40"
                 />
               </div>
             </div>
