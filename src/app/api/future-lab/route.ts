@@ -129,10 +129,20 @@ export async function GET(req: NextRequest) {
 
     const lastMood = moodData?.[0] || { stress_level: 50, mood: "neutral" };
 
+    const proteinG = nutritionData?.reduce((sum, item) => sum + (Number(item.protein_g) || 0), 0) || 0;
+    const carbsG = nutritionData?.reduce((sum, item) => sum + (Number(item.carbs_g) || 0), 0) || 0;
+    const fatG = nutritionData?.reduce((sum, item) => sum + (Number(item.fat_g) || 0), 0) || 0;
+
     const metrics: HealthDigitalTwin = {
       caloriesBurned,
       caloriesTarget: 600,
       caloriesConsumed,
+      proteinG,
+      carbsG,
+      fatG,
+      fiberG: 0,
+      sugarG: 0,
+      sodiumMg: 0,
       hydrationMl,
       hydrationTarget: 2500,
       steps: totalWorkoutDuration * 80,

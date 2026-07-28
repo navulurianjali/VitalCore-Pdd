@@ -277,10 +277,14 @@ export default function FoodScannerPage() {
           user_id: profile.id,
           meal_type: result.mealType.includes("breakfast") ? "breakfast" : result.mealType.includes("lunch") ? "lunch" : result.mealType.includes("dinner") ? "dinner" : "snack",
           food_name: finalFoodName,
+          serving_size: finalPortion || '1 portion',
           calories: finalCalories,
           protein_g: finalProtein,
           carbs_g: finalCarbs,
           fat_g: finalFat,
+          fiber_g: result.fiber || 0,
+          sugar_g: result.sugar || 0,
+          sodium_mg: result.sodium || 0,
           stress_eating: false
         };
         const { error } = await supabase.from("nutrition_logs").insert(nutritionData);

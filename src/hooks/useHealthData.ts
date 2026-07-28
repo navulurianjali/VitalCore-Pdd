@@ -6,6 +6,12 @@ export interface HealthDigitalTwin {
   caloriesBurned: number;
   caloriesTarget: number;
   caloriesConsumed: number;
+  proteinG: number;
+  carbsG: number;
+  fatG: number;
+  fiberG: number;
+  sugarG: number;
+  sodiumMg: number;
   hydrationMl: number;
   hydrationTarget: number;
   steps: number;
@@ -50,10 +56,17 @@ export function useHealthData() {
       // 1. Fetch Nutrition
       const { data: nutritionData } = await supabase
         .from("nutrition_logs")
-        .select("calories")
+        .select("calories, protein_g, carbs_g, fat_g, fiber_g, sugar_g, sodium_mg")
         .eq("user_id", profile.id)
         .gte("created_at", `${today}T00:00:00Z`);
-      const caloriesConsumed = nutritionData?.reduce((sum, item) => sum + item.calories, 0) || 0;
+
+      const caloriesConsumed = nutritionData?.reduce((sum, item) => sum + (Number(item.calories) || 0), 0) || 0;
+      const proteinG = nutritionData?.reduce((sum, item) => sum + (Number(item.protein_g) || 0), 0) || 0;
+      const carbsG = nutritionData?.reduce((sum, item) => sum + (Number(item.carbs_g) || 0), 0) || 0;
+      const fatG = nutritionData?.reduce((sum, item) => sum + (Number(item.fat_g) || 0), 0) || 0;
+      const fiberG = nutritionData?.reduce((sum, item) => sum + (Number(item.fiber_g) || 0), 0) || 0;
+      const sugarG = nutritionData?.reduce((sum, item) => sum + (Number(item.sugar_g) || 0), 0) || 0;
+      const sodiumMg = nutritionData?.reduce((sum, item) => sum + (Number(item.sodium_mg) || 0), 0) || 0;
 
       // 2. Fetch Workouts
       const { data: workoutData } = await supabase
@@ -61,7 +74,7 @@ export function useHealthData() {
         .select("calories_burned")
         .eq("user_id", profile.id)
         .gte("created_at", `${today}T00:00:00Z`);
-      const caloriesBurned = workoutData?.reduce((sum, item) => sum + item.calories_burned, 0) || 0;
+      const caloriesBurned = workoutData?.reduce((sum, item) => sum + (item.calories_burned || 0), 0) || 0;
 
       // 3. Fetch Hydration
       const { data: hydrationData } = await supabase
@@ -69,7 +82,7 @@ export function useHealthData() {
         .select("amount_ml")
         .eq("user_id", profile.id)
         .gte("created_at", `${today}T00:00:00Z`);
-      const hydrationMl = hydrationData?.reduce((sum, item) => sum + item.amount_ml, 0) || 0;
+      const hydrationMl = hydrationData?.reduce((sum, item) => sum + (item.amount_ml || 0), 0) || 0;
 
       // 4. Fetch Sleep
       const { data: sleepData } = await supabase
@@ -105,15 +118,7 @@ export function useHealthData() {
         .limit(1);
       const lastMood = moodData?.[0] || { stress_level: 50, mood: 'neutral' };
 
-      // 6. Fetch Steps (using workouts table)
-      const { data: stepsData } = await supabase
-        .from("workouts")
-        .select("calories_burned")
-        .eq("user_id", profile.id)
-        .eq("type", "steps")
-        .gte("created_at", `${today}T00:00:00Z`);
-      
-      // We stored steps as duration_minutes or calories_burned. Let's assume we store steps count in duration_minutes for type 'steps'.
+      // 6. Fetch Steps
       const { data: stepCountData } = await supabase
         .from("workouts")
         .select("duration_minutes")
@@ -121,27 +126,32 @@ export function useHealthData() {
         .eq("type", "steps")
         .gte("created_at", `${today}T00:00:00Z`);
         
-      const realSteps = stepCountData?.reduce((sum, item) => sum + item.duration_minutes, 0) || 0;
-
+      const realSteps = stepCountData?.reduce((sum, item) => sum + (item.duration_minutes || 0), 0) || 0;
 
       const realMetrics: HealthDigitalTwin = {
         caloriesBurned,
         caloriesTarget: 600,
         caloriesConsumed,
+        proteinG,
+        carbsG,
+        fatG,
+        fiberG,
+        sugarG,
+        sodiumMg,
         hydrationMl,
         hydrationTarget: 2500,
         steps: realSteps,
         stepsTarget: 10000,
-        sleepHours: Number(lastSleep.sleep_hours),
+        sleepHours: Number(lastSleep.sleep_hours || 0),
         sleepTarget: 8.0,
-        sleepQuality: Number(lastSleep.recovery_quality),
+        sleepQuality: Number(lastSleep.recovery_quality || 50),
         stressLevel: Number(lastMood.stress_level || 50),
-        mood: lastMood.mood,
-        recoveryPercentage: Number(lastRecovery.recovery_percentage),
-        fatigueScore: Number(lastFatigue.fatigue_score),
-        physicalFatigue: Number(lastFatigue.physical_fatigue),
-        mentalFatigue: Number(lastFatigue.mental_fatigue),
-        energyLevel: 100 - Number(lastFatigue.fatigue_score),
+        mood: lastMood.mood || 'neutral',
+        recoveryPercentage: Number(lastRecovery.recovery_percentage || 50),
+        fatigueScore: Number(lastFatigue.fatigue_score || 50),
+        physicalFatigue: Number(lastFatigue.physical_fatigue || 50),
+        mentalFatigue: Number(lastFatigue.mental_fatigue || 50),
+        energyLevel: 100 - Number(lastFatigue.fatigue_score || 50),
         biologicalAge: profile.biological_age || 30,
         stabilityScore: profile.stability_score || 80,
         metabolicEfficiency: 80, 
@@ -155,36 +165,7 @@ export function useHealthData() {
     } catch (err: any) {
       console.error("Error fetching health data:", err);
       setError("Failed to load your health telemetry.");
-      
-      // We don't use localStorage fallbacks anymore. Just throw or return zeros.
-      const localSleep = { sleepHours: 0, sleepQuality: 50 };
-
-      setMetrics({
-        caloriesBurned: 0,
-        caloriesTarget: 600,
-        caloriesConsumed: 0,
-        hydrationMl: 0,
-        hydrationTarget: 2500,
-        steps: 0,
-        stepsTarget: 10000,
-        sleepHours: localSleep.sleepHours,
-        sleepTarget: 8.0,
-        sleepQuality: localSleep.sleepQuality,
-        stressLevel: 50,
-        mood: "neutral",
-        recoveryPercentage: 50,
-        fatigueScore: 50,
-        physicalFatigue: 50,
-        mentalFatigue: 50,
-        energyLevel: 50,
-        biologicalAge: profile.biological_age || 30,
-        stabilityScore: profile.stability_score || 80,
-        metabolicEfficiency: 80, 
-        lifestyleSustainability: 80,
-        glycemicIndexLoad: "medium",
-        sedentaryPostureRisk: "low",
-        micronutrientDeficiencies: []
-      });
+      setMetrics(null);
     } finally {
       setLoading(false);
     }
@@ -193,16 +174,51 @@ export function useHealthData() {
   useEffect(() => {
     fetchRealData();
     
-    // Add event listener for global data updates
     const handleDataUpdate = () => {
       fetchRealData();
     };
     
     window.addEventListener("vitalcore-data-updated", handleDataUpdate);
+
+    let channel: any = null;
+    if (supabase && profile?.id) {
+      const channelId = `realtime-health-${profile.id}-${Math.random().toString(36).substring(2, 8)}`;
+      channel = supabase
+        .channel(channelId)
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'hydration_logs',
+            filter: `user_id=eq.${profile.id}`,
+          },
+          () => {
+            fetchRealData();
+          }
+        )
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'nutrition_logs',
+            filter: `user_id=eq.${profile.id}`,
+          },
+          () => {
+            fetchRealData();
+          }
+        )
+        .subscribe();
+    }
+
     return () => {
       window.removeEventListener("vitalcore-data-updated", handleDataUpdate);
+      if (channel) {
+        supabase.removeChannel(channel);
+      }
     };
-  }, [fetchRealData]);
+  }, [fetchRealData, profile?.id]);
 
   return { metrics, loading, error, refetch: fetchRealData };
 }
