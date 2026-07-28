@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
-import { generateIndianMealPlan } from "@/utils/indianNutritionEngine";
+import { generateMultiMealRecommendations } from "@/utils/indianNutritionEngine";
 
 let ratelimit: Ratelimit | null = null;
 if (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) {
@@ -14,7 +14,7 @@ if (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) 
 }
 
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
-const RATE_LIMIT = 20;
+const RATE_LIMIT = 30;
 const RATE_WINDOW_MS = 60_000;
 
 async function checkRateLimit(userId: string): Promise<boolean> {
@@ -34,15 +34,6 @@ async function checkRateLimit(userId: string): Promise<boolean> {
   return true;
 }
 
-const VALID_GOALS = new Set([
-  "Weight Loss", "Muscle Gain", "Weight Gain", "General Wellness",
-  "Endurance", "Energy", "Recovery", "Stress Management", "Diabetes-Friendly", "Heart-Healthy", "Fat Loss"
-]);
-const VALID_PREFERENCES = new Set([
-  "Standard", "Vegetarian", "Vegan", "Keto", "South Indian",
-  "North Indian", "East Indian", "West Indian", "Pan-Indian", "Indian", "Mediterranean", "Paleo", "Eggetarian", "Non-Vegetarian", "Balanced", "High Protein"
-]);
-
 export async function POST(req: NextRequest) {
   try {
     const supabase = await createClient();
@@ -58,7 +49,7 @@ export async function POST(req: NextRequest) {
     const isAllowed = await checkRateLimit(user.id);
     if (!isAllowed) {
       return NextResponse.json(
-        { error: "Too many requests. Please wait a moment before trying again." },
+        { error: "Too many requests. Please wait a moment." },
         { status: 429 }
       );
     }
@@ -66,24 +57,10 @@ export async function POST(req: NextRequest) {
     let body;
     try {
       const rawBody = await req.text();
-      if (rawBody.length > 1_000_000) {
-        return NextResponse.json({ error: "Payload too large." }, { status: 413 });
-      }
       body = JSON.parse(rawBody);
-    } catch (parseError) {
+    } catch {
       return NextResponse.json({ error: "Invalid JSON payload." }, { status: 400 });
     }
-    
-    const rawGoal = String(body.goal || "");
-    const rawPreference = String(body.preference || "");
-
-    const goal = VALID_GOALS.has(rawGoal) ? rawGoal : "General Wellness";
-    const preference = VALID_PREFERENCES.has(rawPreference) ? rawPreference : "South Indian";
-    const rawMetrics = body.metrics || {};
-    const metrics = {
-      stressLevel: Math.max(0, Math.min(Number(rawMetrics.stressLevel) || 45, 100)),
-      sleepHours: Math.max(0, Math.min(Number(rawMetrics.sleepHours) || 7.2, 24))
-    };
 
     const { data: serverProfile } = await supabase
       .from("profiles")
@@ -92,106 +69,123 @@ export async function POST(req: NextRequest) {
       .single();
     const profile = serverProfile || {};
 
+    const goal = String(body.goal || "Muscle Gain");
+    const preference = String(body.preference || "South Indian");
+    const cuisine = String(body.cuisine || "South Indian");
+    const mealCategory = String(body.mealCategory || "Breakfast");
+    const queryPrompt = String(body.queryPrompt || "");
+    const spiceLevel = String(body.spiceLevel || "Any");
+    const maxPrepTimeMinutes = Number(body.maxPrepTimeMinutes) || 60;
+    const budget = String(body.budget || "Any");
+    const dislikedFoods = Array.isArray(body.dislikedFoods) ? body.dislikedFoods : [];
+    const favoriteFoods = Array.isArray(body.favoriteFoods) ? body.favoriteFoods : [];
     const daySeed = Number(body.daySeed) || Date.now();
+
+    const fallbackCards = generateMultiMealRecommendations({
+      goal,
+      preference,
+      cuisine,
+      mealCategory,
+      queryPrompt,
+      spiceLevel,
+      maxPrepTimeMinutes,
+      budget,
+      dislikedFoods,
+      favoriteFoods,
+      userWeightKg: profile?.weight_kg || 70,
+      daySeed
+    });
 
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
-      return NextResponse.json(generateIndianMealPlan({ goal, preference, userWeightKg: profile?.weight_kg || 70, daySeed }));
+      return NextResponse.json({
+        recommendations: fallbackCards,
+        insights: [
+          `Formulated 6-10 ranked South Indian AI recommendations for ${goal}.`,
+          `Filtered out ${dislikedFoods.length} disliked foods and prioritized your favorites.`
+        ],
+        habits: [
+          "Pairing citrus fruits (Vitamin C) with iron-rich lentils or poha triples iron absorption.",
+          "Drink 300ml warm water 15 minutes before main meals to ease digestive kinetics."
+        ],
+        warnings: [
+          "Avoid consuming heavy sugar coffee/tea right after high-iron meals to prevent nutrient binding."
+        ]
+      });
     }
 
-    const systemPrompt = `You are an elite Indian Clinical Dietitian and AI Nutrition Scientist.
-Generate an authentic, highly nutritious, personalized Indian meal plan using familiar Indian food names (e.g. Idli, Sambar, Pesarattu, Upma, Poha, Pongal, Ragi Dosa/Mudda, Chapati, Phulka, Jowar/Bajra Roti, Dal Makhani, Rajma Chawal, Chole, Palak Paneer, Baingan Bharta, Makhana, Chaach, Litti Chokha, Fish Curry, Chicken Curry, Khichdi, etc.).
+    const systemPrompt = `You are a world-class South Indian & Clinical AI Nutritionist.
+Your task is to generate 6 to 10 distinct, ranked meal recommendation cards based on user intent and profile.
 
-User Parameters:
-- Target Goal: ${goal}
-- Preference & Region: ${preference}
+User Request:
+- User Prompt / Desire: "${queryPrompt}"
+- Selected Meal Type: ${mealCategory}
+- Cuisine Preference: ${cuisine} (PRIORITIZE South Indian: Idli, Dosa, Pesarattu, Upma, Pongal, Ragi Mudde, Ragi Dosa, Puttu, Appam, Uttapam, Poori, Chapati, Phulka, Lemon Rice, Tomato Rice, Curd Rice, Pulihora, Bisi Bele Bath, Sambar Rice, Rasam Rice, Dal Rice, Rajma Rice, Chole, Veg Kurma, Paneer Curry, Egg Curry, Fish Curry, Chicken Curry, Andhra Meals, Millet Meals, Sprouts, Sundal, Boiled Corn, Groundnuts, Buttermilk, Lassi, Tender Coconut Water, etc.)
+- Dietary Preference: ${preference}
+- Health Goal: ${goal}
+- Spice Level: ${spiceLevel}
+- Max Prep Time: ${maxPrepTimeMinutes} mins
+- Budget: ${budget}
+- Disliked Foods (EXCLUDE ENTIRELY): ${JSON.stringify(dislikedFoods)}
+- Favorite Foods (PRIORITIZE): ${JSON.stringify(favoriteFoods)}
 - Body Weight: ${profile?.weight_kg || 70} kg
-- Fitness Goal: ${profile?.fitness_goal || "General Wellness"}
-- Daily stress level: ${metrics?.stressLevel}%
-- Daily sleep duration: ${metrics?.sleepHours} hours
 
-CRITICAL RULES:
-1. Recommend ONLY realistic Indian foods that everyday Indian households recognize and eat.
-2. DO NOT recommend generic Western meals (like oatmeal, sandwiches, or western salads) unless requested.
-3. Intra-Day Variety: Ensure breakfast, lunch, dinner, and snack use different staples (e.g., if rice for breakfast, no rice for dinner).
-4. Return strictly raw JSON with the following structure:
+CRITICAL INSTRUCTIONS:
+1. Provide 6 to 10 authentic, familiar Indian food recommendations ranked from Best Match to Alternative Choices.
+2. DO NOT recommend foreign/Western foods (like oats, sandwiches, quinoa salads). Stick to realistic Indian dishes.
+3. Every recommendation MUST include:
+   - "name": Authentic Indian Dish Name
+   - "servingSize": Portion details (e.g. "3 Idlis + 1 cup Sambar")
+   - "calories", "protein", "carbs", "fat", "fiber", "iron_mg", "calcium_mg"
+   - "matchScore": integer percentage (e.g. 96)
+   - "matchBadge": string (e.g. "96% Top AI Choice" or "90% High Protein Match")
+   - "prepTime": string (e.g. "10 mins")
+   - "estimatedCost": string (e.g. "Low (₹30-50)")
+   - "whyHelps": Conversational explanation of why it fits the user request
+   - "ingredients": array of authentic ingredient strings
+   - "instructions": array of cooking steps
+
+Respond strictly with a raw JSON object matching:
 {
-  "plan": [
-    {
-      "mealType": "breakfast",
-      "name": "Indian Dish Name",
-      "servingSize": "Serving portion",
-      "calories": 380,
-      "protein": 18,
-      "carbs": 50,
-      "fat": 10,
-      "fiber": 8,
-      "whyHelps": "Why this meal helps for ${goal}.",
-      "recoveryBenefits": "Recovery benefit",
-      "energyBenefits": "Energy benefit",
-      "hydrationSupport": "Hydration benefit",
-      "ingredients": ["ingredient 1", "ingredient 2"],
-      "instructions": ["step 1", "step 2"],
-      "prepTime": "15 mins",
-      "timingIntelligence": "Metabolic timing insight"
-    },
-    ... (lunch, dinner, snack)
-  ],
+  "recommendations": [ ...6 to 10 cards... ],
   "insights": ["Insight 1", "Insight 2"],
-  "habits": ["Habit 1", "Habit 2"],
-  "warnings": ["Warning 1", "Warning 2"]
+  "habits": ["Habit 1"],
+  "warnings": ["Warning 1"]
 }
-DO NOT include codeblock backticks or extra text outside JSON.`;
-
-    const contents = [
-      {
-        role: "user",
-        parts: [{ text: `Generate authentic Indian nutrition plan for Goal: "${goal}", Preference: "${preference}", Day Seed: ${daySeed}` }]
-      }
-    ];
+DO NOT include markdown backticks or commentary outside JSON.`;
 
     const response = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
       {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          contents,
-          systemInstruction: {
-            parts: [{ text: systemPrompt }]
-          },
-          generationConfig: {
-            temperature: 0.7,
-            responseMimeType: "application/json"
-          }
+          contents: [{ role: "user", parts: [{ text: `Generate 6-10 ranked recommendations for: ${queryPrompt || mealCategory}` }] }],
+          systemInstruction: { parts: [{ text: systemPrompt }] },
+          generationConfig: { temperature: 0.7, responseMimeType: "application/json" }
         })
       }
     );
 
     if (!response.ok) {
-      return NextResponse.json(generateIndianMealPlan({ goal, preference, userWeightKg: profile?.weight_kg || 70, daySeed }));
+      return NextResponse.json({ recommendations: fallbackCards, insights: ["AI fallback active."], habits: [], warnings: [] });
     }
 
     const data = await response.json();
     const replyText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-    
+
     if (replyText) {
       try {
         const parsed = JSON.parse(replyText.trim());
         return NextResponse.json(parsed);
-      } catch (jsonErr) {
-        return NextResponse.json(generateIndianMealPlan({ goal, preference, userWeightKg: profile?.weight_kg || 70, daySeed }));
+      } catch {
+        return NextResponse.json({ recommendations: fallbackCards, insights: ["AI parse fallback active."], habits: [], warnings: [] });
       }
     }
 
-    return NextResponse.json(generateIndianMealPlan({ goal, preference, userWeightKg: profile?.weight_kg || 70, daySeed }));
+    return NextResponse.json({ recommendations: fallbackCards, insights: [], habits: [], warnings: [] });
   } catch (err: any) {
-    console.error("AI Indian Nutrition Planner API error:", err);
-    return NextResponse.json(
-      { error: "An internal error occurred. Please try again." },
-      { status: 500 }
-    );
+    console.error("AI Nutrition Assistant API Error:", err);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
