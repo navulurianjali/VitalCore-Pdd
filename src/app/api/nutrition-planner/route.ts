@@ -3,7 +3,7 @@ import { createClient } from "@/utils/supabase/server";
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 import { 
-  generateLocationAwareDynamicRecommendations, 
+  generateDynamicMultiStageScoredRecommendations, 
   generateDynamicPantryMeals 
 } from "@/utils/indianNutritionEngine";
 
@@ -84,12 +84,16 @@ export async function POST(req: NextRequest) {
     const favoriteFoods = Array.isArray(body.favoriteFoods) ? body.favoriteFoods : [];
     const loggedTodayNames = Array.isArray(body.loggedTodayNames) ? body.loggedTodayNames : [];
     const pantryIngredients = Array.isArray(body.pantryIngredients) ? body.pantryIngredients : [];
+    const remainingCalories = Number(body.remainingCalories) || 1600;
+    const proteinDeficitGrams = Number(body.proteinDeficitGrams) || 35;
+    const ironDeficitMg = Number(body.ironDeficitMg) || 4;
+    const daySeed = Number(body.daySeed) || Date.now();
 
     let fallbackCards = [];
     if (pantryIngredients.length > 0) {
       fallbackCards = generateDynamicPantryMeals(pantryIngredients);
     } else {
-      fallbackCards = generateLocationAwareDynamicRecommendations({
+      fallbackCards = generateDynamicMultiStageScoredRecommendations({
         goal,
         preference,
         cuisine,
@@ -100,7 +104,11 @@ export async function POST(req: NextRequest) {
         maxPrepTimeMinutes,
         dislikedFoods,
         favoriteFoods,
-        loggedTodayNames
+        loggedTodayNames,
+        remainingCalories,
+        proteinDeficitGrams,
+        ironDeficitMg,
+        daySeed
       });
     }
 
@@ -109,19 +117,19 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ recommendations: fallbackCards });
     }
 
-    const systemPrompt = `You are a world-class South Indian & Clinical AI Nutritionist.
-Generate EXACTLY 3 DYNAMICALLY RANKED, LOCATION-AWARE Indian meal recommendations for the user in ${userCity}.
+    const systemPrompt = `You are an elite Clinical AI Nutritionist algorithm (Spotify/Netflix style scoring engine).
+Calculate multi-factor compatibility scores and generate EXACTLY 3 TOP-SCORING meal recommendations for ${userCity}.
 
-LOCATION CONSTRAINTS:
-- User Location: ${userCity}
-- If in Hyderabad/Vijayawada/Visakhapatnam/Tirupati: Prioritize Andhra/Telangana cuisine (Pesarattu, Gongura, Pappu, Rice).
-- If in Chennai/Coimbatore: Prioritize Tamil cuisine (Idli, Dosa, Pongal, Chettinad).
-- If in Bengaluru: Prioritize Karnataka cuisine (Ragi Mudde, Masala Dosa).
-- If in Kerala (Kochi): Prioritize Kerala cuisine (Appam, Puttu, Fish Curry).
+MULTISTAGE SCORING & COMPATIBILITY METRICS:
+- Location Fit: ${userCity} (Prioritize regional dishes)
+- Remaining Calories: ${remainingCalories} kcal
+- Protein Deficit: ${proteinDeficitGrams}g remaining to hit daily target
+- Iron Deficit: ${ironDeficitMg}mg remaining
+- Goal: ${goal}
+- Preference: ${preference}
 
-PANTRY CONSTRAINTS (if provided): ${JSON.stringify(pantryIngredients)}
-
-EXCLUSION OF EATEN FOODS TODAY: ${JSON.stringify(loggedTodayNames)}
+EXCLUSIONS (EATEN TODAY): ${JSON.stringify(loggedTodayNames)}
+PANTRY CONSTRAINTS: ${JSON.stringify(pantryIngredients)}
 
 RANKING OUTPUT:
 1. 🥇 Best Match
@@ -162,7 +170,7 @@ DO NOT include markdown backticks outside JSON.`;
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          contents: [{ role: "user", parts: [{ text: `Generate top 3 recommendations for ${userCity}` }] }],
+          contents: [{ role: "user", parts: [{ text: `Generate top 3 multi-stage scored recommendations for ${userCity}` }] }],
           systemInstruction: { parts: [{ text: systemPrompt }] },
           generationConfig: { temperature: 0.7, responseMimeType: "application/json" }
         })

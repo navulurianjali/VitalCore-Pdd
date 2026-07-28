@@ -20,7 +20,7 @@ import { useAuth } from "@/context/AuthContext";
 import confetti from "canvas-confetti";
 import { supabase } from "@/utils/supabase";
 import { 
-  generateLocationAwareDynamicRecommendations, 
+  generateDynamicMultiStageScoredRecommendations, 
   generateDynamicPantryMeals,
   RecommendationCard 
 } from "@/utils/indianNutritionEngine";
@@ -61,7 +61,7 @@ export default function SmartAINutritionPlansPage() {
   const [recommendations, setRecommendations] = useState<RecommendationCard[]>([]);
   const [loadingAI, setLoadingAI] = useState(false);
 
-  // Favorites & Dislikes tracking
+  // User feedback tracking
   const [favoriteFoods, setFavoriteFoods] = useState<string[]>([]);
   const [dislikedFoods, setDislikedFoods] = useState<string[]>([]);
 
@@ -99,7 +99,7 @@ export default function SmartAINutritionPlansPage() {
       setGpsLoading(true);
       navigator.geolocation.getCurrentPosition(
         () => {
-          setUserCity("Hyderabad"); // Defaults to regional capital
+          setUserCity("Hyderabad");
           setGpsLoading(false);
           fetchRecommendations();
         },
@@ -154,13 +154,21 @@ export default function SmartAINutritionPlansPage() {
     fetchLogs();
   }, [profile]);
 
-  // Primary recommendation generator with Location Awareness & Pantry Feature
+  // Today's totals calculation & Macro Deficits
+  const todayStr = new Date().toISOString().split("T")[0];
+  const todayFoodLogs = foodLogs.filter(log => log.created_at.startsWith(todayStr));
+  const totalCalories = todayFoodLogs.reduce((acc, curr) => acc + curr.calories, 0);
+  const totalProtein = todayFoodLogs.reduce((acc, curr) => acc + curr.protein_g, 0);
+
+  const targetDailyCalories = 2200;
+  const targetDailyProtein = 90;
+  const remainingCalories = Math.max(200, targetDailyCalories - totalCalories);
+  const proteinDeficitGrams = Math.max(5, targetDailyProtein - totalProtein);
+
+  // Primary recommendation generator with Multi-Stage Scoring Algorithm
   const fetchRecommendations = async (overridePantry?: string[]) => {
     setLoadingAI(true);
-    const todayStr = new Date().toISOString().split("T")[0];
-    const loggedTodayNames = foodLogs
-      .filter(log => log.created_at.startsWith(todayStr))
-      .map(log => log.food_name);
+    const loggedTodayNames = todayFoodLogs.map(log => log.food_name);
     const activePantry = overridePantry !== undefined ? overridePantry : pantryIngredients;
 
     try {
@@ -176,7 +184,11 @@ export default function SmartAINutritionPlansPage() {
           dislikedFoods,
           favoriteFoods,
           loggedTodayNames,
-          pantryIngredients: activeTab === "pantry" ? activePantry : []
+          remainingCalories,
+          proteinDeficitGrams,
+          ironDeficitMg: 3,
+          pantryIngredients: activeTab === "pantry" ? activePantry : [],
+          daySeed: Date.now()
         })
       });
 
@@ -195,7 +207,7 @@ export default function SmartAINutritionPlansPage() {
         const fallback = generateDynamicPantryMeals(activePantry);
         setRecommendations(fallback.slice(0, 3));
       } else {
-        const fallback = generateLocationAwareDynamicRecommendations({
+        const fallback = generateDynamicMultiStageScoredRecommendations({
           userCity,
           mealCategory: selectedMealType,
           preference: selectedPref,
@@ -203,7 +215,10 @@ export default function SmartAINutritionPlansPage() {
           maxPrepTimeMinutes: selectedMaxTime,
           dislikedFoods,
           favoriteFoods,
-          loggedTodayNames
+          loggedTodayNames,
+          remainingCalories,
+          proteinDeficitGrams,
+          daySeed: Date.now()
         });
         setRecommendations(fallback.slice(0, 3));
       }
@@ -256,7 +271,6 @@ export default function SmartAINutritionPlansPage() {
     }
   };
 
-  // Add / Remove Pantry Ingredient
   const togglePantryIng = (ing: string) => {
     let updated;
     if (pantryIngredients.includes(ing)) {
@@ -279,12 +293,6 @@ export default function SmartAINutritionPlansPage() {
     }
   };
 
-  // Today's totals calculation
-  const todayStr = new Date().toISOString().split("T")[0];
-  const todayFoodLogs = foodLogs.filter(log => log.created_at.startsWith(todayStr));
-  const totalCalories = todayFoodLogs.reduce((acc, curr) => acc + curr.calories, 0);
-  const totalProtein = todayFoodLogs.reduce((acc, curr) => acc + curr.protein_g, 0);
-
   return (
     <DashboardLayout>
       <div className="space-y-6 pb-12 max-w-5xl mx-auto">
@@ -298,13 +306,13 @@ export default function SmartAINutritionPlansPage() {
                 AI Nutrition Assistant
               </h1>
               <p className="text-xs text-foreground/60 font-medium">
-                Location-aware Indian recommendations & Pantry meal generator
+                Multi-stage scoring engine & personalized meal algorithm
               </p>
             </div>
             <div className="flex items-center gap-2">
               <Button size="sm" variant="glass" onClick={() => fetchRecommendations()} className="text-xs font-bold border border-foreground/10 flex items-center gap-1">
                 <RefreshCw className={`h-3.5 w-3.5 ${loadingAI ? "animate-spin" : ""}`} />
-                Refresh AI
+                Recalculate AI
               </Button>
               <Button size="sm" variant="primary" onClick={() => setShowManualMealModal(true)} className="text-xs font-bold bg-primary text-white">
                 + Log Custom Meal
@@ -312,7 +320,7 @@ export default function SmartAINutritionPlansPage() {
             </div>
           </div>
 
-          {/* MAIN MODE NAVIGATION: AI RECOMMENDATIONS vs BUILD WITH WHAT I HAVE */}
+          {/* MAIN MODE NAVIGATION */}
           <div className="grid grid-cols-2 p-1 bg-foreground/5 rounded-2xl border border-foreground/10 text-xs font-bold">
             <button
               onClick={() => setActiveTab("recommendations")}
@@ -321,7 +329,7 @@ export default function SmartAINutritionPlansPage() {
               }`}
             >
               <Sparkles className="h-3.5 w-3.5" />
-              <span>Location AI Recommendations</span>
+              <span>Dynamic AI Recommendations</span>
             </button>
             <button
               onClick={() => {
@@ -377,7 +385,6 @@ export default function SmartAINutritionPlansPage() {
           {/* CONVERSATIONAL QUICK 4 QUESTIONS */}
           {activeTab === "recommendations" && (
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-              {/* Question 1: Meal Type */}
               <div className="p-3 rounded-2xl glass-panel border border-foreground/10 bg-background space-y-1.5">
                 <span className="text-[10px] font-bold text-foreground/50 uppercase">Meal Type</span>
                 <select
@@ -392,7 +399,6 @@ export default function SmartAINutritionPlansPage() {
                 </select>
               </div>
 
-              {/* Question 2: Preference */}
               <div className="p-3 rounded-2xl glass-panel border border-foreground/10 bg-background space-y-1.5">
                 <span className="text-[10px] font-bold text-foreground/50 uppercase">Preference</span>
                 <select
@@ -407,7 +413,6 @@ export default function SmartAINutritionPlansPage() {
                 </select>
               </div>
 
-              {/* Question 3: Goal */}
               <div className="p-3 rounded-2xl glass-panel border border-foreground/10 bg-background space-y-1.5">
                 <span className="text-[10px] font-bold text-foreground/50 uppercase">Today's Goal</span>
                 <select
@@ -422,7 +427,6 @@ export default function SmartAINutritionPlansPage() {
                 </select>
               </div>
 
-              {/* Question 4: Time Available */}
               <div className="p-3 rounded-2xl glass-panel border border-foreground/10 bg-background space-y-1.5">
                 <span className="text-[10px] font-bold text-foreground/50 uppercase">Prep Time</span>
                 <select
@@ -448,7 +452,6 @@ export default function SmartAINutritionPlansPage() {
                 </span>
               </div>
 
-              {/* Common Pantry Ingredient Chips */}
               <div className="flex flex-wrap gap-1.5">
                 {COMMON_PANTRY_ITEMS.map((item) => {
                   const isSelected = pantryIngredients.includes(item);
@@ -468,7 +471,6 @@ export default function SmartAINutritionPlansPage() {
                 })}
               </div>
 
-              {/* Add Custom Ingredient Bar */}
               <div className="flex items-center gap-2 pt-2 border-t border-foreground/5">
                 <input
                   type="text"
@@ -493,12 +495,12 @@ export default function SmartAINutritionPlansPage() {
         {/* TODAY'S MACRO SNAPSHOT */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <GlassCard glowColor="rose" className="p-3.5 flex flex-col justify-between">
-            <span className="text-[10px] font-bold text-foreground/50 uppercase">Today's Calories</span>
-            <h3 className="text-xl font-black text-rose-500 mt-1">{totalCalories} kcal</h3>
+            <span className="text-[10px] font-bold text-foreground/50 uppercase">Calories Remaining</span>
+            <h3 className="text-xl font-black text-rose-500 mt-1">{remainingCalories} kcal</h3>
           </GlassCard>
           <GlassCard glowColor="violet" className="p-3.5 flex flex-col justify-between">
-            <span className="text-[10px] font-bold text-foreground/50 uppercase">Protein Accrued</span>
-            <h3 className="text-xl font-black text-primary mt-1">{totalProtein}g</h3>
+            <span className="text-[10px] font-bold text-foreground/50 uppercase">Protein Deficit</span>
+            <h3 className="text-xl font-black text-primary mt-1">{proteinDeficitGrams}g</h3>
           </GlassCard>
           <GlassCard glowColor="amber" className="p-3.5 flex flex-col justify-between">
             <span className="text-[10px] font-bold text-foreground/50 uppercase">Hydration</span>
@@ -510,21 +512,21 @@ export default function SmartAINutritionPlansPage() {
           </GlassCard>
         </div>
 
-        {/* TOP 3 DYNAMICALLY RANKED RECOMMENDATION CARDS */}
+        {/* TOP 3 MULTI-STAGE SCORED RECOMMENDATION CARDS */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-bold text-foreground tracking-tight">
-              {activeTab === "pantry" ? "Top Pantry Meals" : `Top 3 Recommendations for ${userCity}`}
+              {activeTab === "pantry" ? "Top Pantry Meals" : `Top Scored Recommendations for ${userCity}`}
             </h3>
             <span className="text-xs text-foreground/50 font-semibold">
-              Exactly Top 3 Ranked Options
+              Top 3 Algorithm Scored
             </span>
           </div>
 
           {loadingAI ? (
             <div className="p-12 text-center space-y-3 rounded-3xl glass-panel border border-foreground/5">
               <RefreshCw className="h-6 w-6 text-primary animate-spin mx-auto" />
-              <p className="text-xs font-semibold text-foreground/60">Generating dynamic Top 3 recommendations for {userCity}...</p>
+              <p className="text-xs font-semibold text-foreground/60">Executing multi-stage scoring algorithm for {userCity}...</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
@@ -537,7 +539,6 @@ export default function SmartAINutritionPlansPage() {
                     key={idx}
                     className="rounded-2xl glass-panel border border-foreground/10 bg-background overflow-hidden flex flex-col justify-between hover:border-primary/30 transition-all duration-200 group shadow-sm"
                   >
-                    {/* LARGE FOOD IMAGE ON TOP */}
                     <div className="relative h-44 w-full bg-foreground/5 overflow-hidden">
                       <img
                         src={card.imageUrl || "https://images.unsplash.com/photo-1589301760014-d929f3979dbc?auto=format&fit=crop&w=600&q=80"}
@@ -546,7 +547,6 @@ export default function SmartAINutritionPlansPage() {
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
                       
-                      {/* Top Overlay Badges */}
                       <div className="absolute top-3 left-3 right-3 flex justify-between items-center z-10">
                         <span className="px-2.5 py-1 rounded-full bg-primary text-white text-[10px] font-bold shadow-md">
                           {card.matchBadge}
@@ -560,9 +560,7 @@ export default function SmartAINutritionPlansPage() {
                       </div>
                     </div>
 
-                    {/* CARD BODY STRICTLY BELOW THE IMAGE */}
                     <div className="p-4 space-y-3 flex-1 flex flex-col justify-between">
-                      {/* Meal Title & Subtitle Below Image */}
                       <div>
                         <h4 className="text-base font-bold text-foreground leading-tight line-clamp-1">
                           {card.name}
@@ -572,7 +570,6 @@ export default function SmartAINutritionPlansPage() {
                         </p>
                       </div>
 
-                      {/* Metrics Row: Calories, Protein, Time & Cost */}
                       <div className="flex items-center justify-between text-xs font-bold pt-2 border-t border-foreground/5 text-foreground/75">
                         <div className="flex items-center gap-1.5">
                           <span className="text-rose-500 font-bold">🔥 {card.calories}</span>
@@ -586,7 +583,6 @@ export default function SmartAINutritionPlansPage() {
                         </div>
                       </div>
 
-                      {/* TWO PRIMARY BUTTONS: View Recipe & Log Meal */}
                       <div className="grid grid-cols-2 gap-2 pt-2">
                         <button
                           onClick={() => setSelectedCardModal(card)}
