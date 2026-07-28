@@ -3,15 +3,15 @@
 import React, { useState, useEffect } from "react";
 import { 
   Utensils, 
-  Droplet, 
-  Plus, 
+  MapPin, 
   Check, 
   RefreshCw, 
   Heart, 
-  Clock, 
   Search, 
   X, 
-  ChevronDown
+  Sparkles, 
+  ChefHat,
+  Navigation
 } from "lucide-react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import GlassCard from "@/components/ui/GlassCard";
@@ -20,7 +20,8 @@ import { useAuth } from "@/context/AuthContext";
 import confetti from "canvas-confetti";
 import { supabase } from "@/utils/supabase";
 import { 
-  generateStrictCategoryRecommendations, 
+  generateLocationAwareDynamicRecommendations, 
+  generateDynamicPantryMeals,
   RecommendationCard 
 } from "@/utils/indianNutritionEngine";
 
@@ -39,16 +40,28 @@ interface FoodLog {
 export default function SmartAINutritionPlansPage() {
   const { profile } = useAuth();
 
-  // Search & Filter state
-  const [queryPrompt, setQueryPrompt] = useState("");
-  const [activeChip, setActiveChip] = useState("Breakfast");
-  const [visibleCount, setVisibleCount] = useState(4);
+  // Location & Onboarding state
+  const [userCity, setUserCity] = useState("Hyderabad");
+  const [gpsLoading, setGpsLoading] = useState(false);
 
-  // Recommendations state
+  // Quick 4 Conversational Questions State
+  const [selectedMealType, setSelectedMealType] = useState("Breakfast");
+  const [selectedPref, setSelectedPref] = useState("Veg");
+  const [selectedGoal, setSelectedGoal] = useState("Muscle Gain");
+  const [selectedMaxTime, setSelectedMaxTime] = useState(30);
+
+  // Active Tab Mode: "recommendations" | "pantry"
+  const [activeTab, setActiveTab] = useState<"recommendations" | "pantry">("recommendations");
+
+  // Pantry Ingredients Feature State ("Build With What I Have")
+  const [pantryIngredients, setPantryIngredients] = useState<string[]>(["rice", "eggs", "tomatoes"]);
+  const [customIngInput, setCustomIngInput] = useState("");
+
+  // Recommendations state (Top 3)
   const [recommendations, setRecommendations] = useState<RecommendationCard[]>([]);
   const [loadingAI, setLoadingAI] = useState(false);
 
-  // User feedback tracking
+  // Favorites & Dislikes tracking
   const [favoriteFoods, setFavoriteFoods] = useState<string[]>([]);
   const [dislikedFoods, setDislikedFoods] = useState<string[]>([]);
 
@@ -59,7 +72,7 @@ export default function SmartAINutritionPlansPage() {
   const [waterLogged, setWaterLogged] = useState(0);
   const [foodLogs, setFoodLogs] = useState<FoodLog[]>([]);
 
-  // CRUD Modal States
+  // Manual Meal Log Modal
   const [showManualMealModal, setShowManualMealModal] = useState(false);
   const [manualMealForm, setManualMealForm] = useState({
     food_name: "",
@@ -71,20 +84,33 @@ export default function SmartAINutritionPlansPage() {
     fat_g: 10,
   });
 
-  const FILTER_PILLS = [
-    { label: "Breakfast", val: "Breakfast" },
-    { label: "Lunch", val: "Lunch" },
-    { label: "Dinner", val: "Dinner" },
-    { label: "Snacks", val: "Evening Snack" },
-    { label: "South Indian", val: "South Indian" },
-    { label: "Vegetarian", val: "Vegetarian" },
-    { label: "Non-Vegetarian", val: "Non-Vegetarian" },
-    { label: "High Protein", val: "High Protein" },
-    { label: "Weight Loss", val: "Weight Loss" },
-    { label: "Quick Meals", val: "10" }
+  const INDIAN_CITIES = [
+    "Hyderabad", "Vijayawada", "Visakhapatnam", "Tirupati", "Guntur",
+    "Chennai", "Coimbatore", "Bengaluru", "Kochi", "Mumbai", "Delhi"
   ];
 
-  // Fetch logged meals & water from Supabase
+  const COMMON_PANTRY_ITEMS = [
+    "rice", "eggs", "onions", "tomatoes", "dal", "paneer", "spinach", "chicken", "curd", "carrots", "ragi"
+  ];
+
+  // GPS Auto Detection
+  const handleDetectLocation = () => {
+    if ("geolocation" in navigator) {
+      setGpsLoading(true);
+      navigator.geolocation.getCurrentPosition(
+        () => {
+          setUserCity("Hyderabad"); // Defaults to regional capital
+          setGpsLoading(false);
+          fetchRecommendations();
+        },
+        () => {
+          setGpsLoading(false);
+        }
+      );
+    }
+  };
+
+  // Fetch logged meals from Supabase
   const fetchLogs = async () => {
     if (!profile?.id) return;
     try {
@@ -128,38 +154,36 @@ export default function SmartAINutritionPlansPage() {
     fetchLogs();
   }, [profile]);
 
-  // Primary recommendation generator with Strict Category & History Exclusion
-  const fetchRecommendations = async (overrideQuery?: string, overrideChip?: string) => {
+  // Primary recommendation generator with Location Awareness & Pantry Feature
+  const fetchRecommendations = async (overridePantry?: string[]) => {
     setLoadingAI(true);
-    setVisibleCount(4);
-    const activeQuery = overrideQuery !== undefined ? overrideQuery : queryPrompt;
-    const activeFilterTag = overrideChip || activeChip;
     const todayStr = new Date().toISOString().split("T")[0];
     const loggedTodayNames = foodLogs
       .filter(log => log.created_at.startsWith(todayStr))
       .map(log => log.food_name);
+    const activePantry = overridePantry !== undefined ? overridePantry : pantryIngredients;
 
     try {
       const response = await fetch("/api/nutrition-planner", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          queryPrompt: activeQuery,
-          mealCategory: activeFilterTag,
-          cuisine: "South Indian",
-          preference: activeFilterTag === "Vegetarian" ? "Vegetarian" : activeFilterTag === "Non-Vegetarian" ? "Non-Vegetarian" : "South Indian",
-          goal: activeFilterTag === "High Protein" ? "High Protein" : activeFilterTag === "Weight Loss" ? "Weight Loss" : "Muscle Gain",
+          userCity,
+          mealCategory: selectedMealType,
+          preference: selectedPref,
+          goal: selectedGoal,
+          maxPrepTimeMinutes: selectedMaxTime,
           dislikedFoods,
           favoriteFoods,
           loggedTodayNames,
-          daySeed: Date.now()
+          pantryIngredients: activeTab === "pantry" ? activePantry : []
         })
       });
 
       if (response.ok) {
         const data = await response.json();
         if (data.recommendations && data.recommendations.length > 0) {
-          setRecommendations(data.recommendations);
+          setRecommendations(data.recommendations.slice(0, 3));
         } else {
           throw new Error("Empty result");
         }
@@ -167,29 +191,30 @@ export default function SmartAINutritionPlansPage() {
         throw new Error("API error");
       }
     } catch {
-      const fallback = generateStrictCategoryRecommendations({
-        queryPrompt: activeQuery,
-        mealCategory: activeFilterTag,
-        cuisine: "South Indian",
-        preference: "South Indian",
-        goal: "Muscle Gain",
-        dislikedFoods,
-        favoriteFoods,
-        loggedTodayNames,
-        userWeightKg: profile?.weight_kg || 70,
-        daySeed: Date.now()
-      });
-      setRecommendations(fallback);
+      if (activeTab === "pantry") {
+        const fallback = generateDynamicPantryMeals(activePantry);
+        setRecommendations(fallback.slice(0, 3));
+      } else {
+        const fallback = generateLocationAwareDynamicRecommendations({
+          userCity,
+          mealCategory: selectedMealType,
+          preference: selectedPref,
+          goal: selectedGoal,
+          maxPrepTimeMinutes: selectedMaxTime,
+          dislikedFoods,
+          favoriteFoods,
+          loggedTodayNames
+        });
+        setRecommendations(fallback.slice(0, 3));
+      }
     } finally {
       setLoadingAI(false);
     }
   };
 
   useEffect(() => {
-    if (recommendations.length === 0) {
-      fetchRecommendations();
-    }
-  }, [foodLogs]);
+    fetchRecommendations();
+  }, [selectedMealType, selectedPref, selectedGoal, selectedMaxTime, userCity, activeTab]);
 
   // Handle Mark Eaten & Log Meal
   const handleLogMeal = async (card: RecommendationCard) => {
@@ -227,8 +252,30 @@ export default function SmartAINutritionPlansPage() {
       setFavoriteFoods(favoriteFoods.filter(f => f !== dishName));
     } else {
       setFavoriteFoods([...favoriteFoods, dishName]);
-      setDislikedFoods(dislikedFoods.filter(d => d !== dishName));
       confetti({ particleCount: 30, spread: 30, colors: ["#ec4899"] });
+    }
+  };
+
+  // Add / Remove Pantry Ingredient
+  const togglePantryIng = (ing: string) => {
+    let updated;
+    if (pantryIngredients.includes(ing)) {
+      updated = pantryIngredients.filter(i => i !== ing);
+    } else {
+      updated = [...pantryIngredients, ing];
+    }
+    setPantryIngredients(updated);
+    if (activeTab === "pantry") fetchRecommendations(updated);
+  };
+
+  const addCustomIng = () => {
+    if (!customIngInput.trim()) return;
+    const clean = customIngInput.trim().toLowerCase();
+    if (!pantryIngredients.includes(clean)) {
+      const updated = [...pantryIngredients, clean];
+      setPantryIngredients(updated);
+      setCustomIngInput("");
+      if (activeTab === "pantry") fetchRecommendations(updated);
     }
   };
 
@@ -242,16 +289,16 @@ export default function SmartAINutritionPlansPage() {
     <DashboardLayout>
       <div className="space-y-6 pb-12 max-w-5xl mx-auto">
         
-        {/* HEADER & CLEAN SPOTIFY-STYLE SEARCH BAR */}
+        {/* HEADER & TAB NAVIGATION */}
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
                 <Utensils className="h-5 w-5 text-primary" />
-                AI Indian Nutrition Assistant
+                AI Nutrition Assistant
               </h1>
               <p className="text-xs text-foreground/60 font-medium">
-                Category-filtered South Indian & regional meal recommendations
+                Location-aware Indian recommendations & Pantry meal generator
               </p>
             </div>
             <div className="flex items-center gap-2">
@@ -265,48 +312,182 @@ export default function SmartAINutritionPlansPage() {
             </div>
           </div>
 
-          {/* COMPACT AI SEARCH BAR WITH GENEROUS LEFT PADDING */}
-          <div className="relative flex items-center w-full">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground/45 pointer-events-none z-10" />
-            <input
-              type="text"
-              value={queryPrompt}
-              onChange={(e) => setQueryPrompt(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && fetchRecommendations()}
-              placeholder="What are you craving today?"
-              className="w-full pl-12 pr-28 py-3.5 rounded-2xl border border-foreground/10 bg-background text-foreground text-xs font-semibold focus:outline-none focus:border-primary shadow-sm"
-            />
+          {/* MAIN MODE NAVIGATION: AI RECOMMENDATIONS vs BUILD WITH WHAT I HAVE */}
+          <div className="grid grid-cols-2 p-1 bg-foreground/5 rounded-2xl border border-foreground/10 text-xs font-bold">
             <button
-              onClick={() => fetchRecommendations()}
-              disabled={loadingAI}
-              className="absolute right-2 top-1/2 -translate-y-1/2 px-4 py-2 rounded-xl bg-primary text-white text-xs font-bold hover:bg-primary/90 transition-all flex items-center gap-1 shadow-sm"
+              onClick={() => setActiveTab("recommendations")}
+              className={`py-2.5 rounded-xl transition-all flex items-center justify-center gap-1.5 ${
+                activeTab === "recommendations" ? "bg-primary text-white shadow-md" : "text-foreground/70 hover:text-foreground"
+              }`}
             >
-              {loadingAI ? <RefreshCw className="h-3.5 w-3.5 animate-spin" /> : "Search"}
+              <Sparkles className="h-3.5 w-3.5" />
+              <span>Location AI Recommendations</span>
+            </button>
+            <button
+              onClick={() => {
+                setActiveTab("pantry");
+                fetchRecommendations();
+              }}
+              className={`py-2.5 rounded-xl transition-all flex items-center justify-center gap-1.5 ${
+                activeTab === "pantry" ? "bg-primary text-white shadow-md" : "text-foreground/70 hover:text-foreground"
+              }`}
+            >
+              <ChefHat className="h-3.5 w-3.5" />
+              <span>Build With What I Have</span>
             </button>
           </div>
 
-          {/* HORIZONTAL PILL-SHAPED CHIPS */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar text-xs font-bold">
-            {FILTER_PILLS.map((pill, i) => {
-              const isActive = activeChip === pill.val;
-              return (
+          {/* CONVERSATIONAL LOCATION SELECTOR */}
+          {activeTab === "recommendations" && (
+            <div className="p-4 rounded-2xl glass-panel border border-foreground/10 bg-background space-y-3 shadow-sm">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                  <MapPin className="h-4 w-4 text-primary" />
+                  Where are you right now?
+                </span>
                 <button
-                  key={i}
-                  onClick={() => {
-                    setActiveChip(pill.val);
-                    fetchRecommendations(queryPrompt, pill.val);
-                  }}
-                  className={`px-4 py-2 rounded-full border shrink-0 transition-all text-xs font-semibold ${
-                    isActive
-                      ? "bg-primary text-white border-primary shadow-sm"
-                      : "bg-background border-foreground/10 text-foreground/70 hover:border-primary/40 hover:text-foreground"
-                  }`}
+                  onClick={handleDetectLocation}
+                  disabled={gpsLoading}
+                  className="px-3 py-1 rounded-xl bg-primary/10 text-primary text-[11px] font-bold hover:bg-primary/20 transition-all flex items-center gap-1"
                 >
-                  {pill.label}
+                  <Navigation className="h-3 w-3" />
+                  {gpsLoading ? "Detecting..." : "Use Current GPS"}
                 </button>
-              );
-            })}
-          </div>
+              </div>
+
+              {/* City Selection Buttons */}
+              <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
+                {INDIAN_CITIES.map((city) => (
+                  <button
+                    key={city}
+                    onClick={() => setUserCity(city)}
+                    className={`px-3 py-1 rounded-full text-[11px] font-bold shrink-0 border transition-all ${
+                      userCity === city
+                        ? "bg-primary text-white border-primary"
+                        : "bg-background border-foreground/10 text-foreground/70 hover:border-primary/40"
+                    }`}
+                  >
+                    {city}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* CONVERSATIONAL QUICK 4 QUESTIONS */}
+          {activeTab === "recommendations" && (
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+              {/* Question 1: Meal Type */}
+              <div className="p-3 rounded-2xl glass-panel border border-foreground/10 bg-background space-y-1.5">
+                <span className="text-[10px] font-bold text-foreground/50 uppercase">Meal Type</span>
+                <select
+                  value={selectedMealType}
+                  onChange={(e) => setSelectedMealType(e.target.value)}
+                  className="w-full bg-transparent text-xs font-bold text-foreground focus:outline-none cursor-pointer"
+                >
+                  <option value="Breakfast">Breakfast</option>
+                  <option value="Lunch">Lunch</option>
+                  <option value="Dinner">Dinner</option>
+                  <option value="Snack">Snack</option>
+                </select>
+              </div>
+
+              {/* Question 2: Preference */}
+              <div className="p-3 rounded-2xl glass-panel border border-foreground/10 bg-background space-y-1.5">
+                <span className="text-[10px] font-bold text-foreground/50 uppercase">Preference</span>
+                <select
+                  value={selectedPref}
+                  onChange={(e) => setSelectedPref(e.target.value)}
+                  className="w-full bg-transparent text-xs font-bold text-foreground focus:outline-none cursor-pointer"
+                >
+                  <option value="Veg">Vegetarian</option>
+                  <option value="Non-Veg">Non-Vegetarian</option>
+                  <option value="Vegan">Vegan</option>
+                  <option value="Eggetarian">Eggetarian</option>
+                </select>
+              </div>
+
+              {/* Question 3: Goal */}
+              <div className="p-3 rounded-2xl glass-panel border border-foreground/10 bg-background space-y-1.5">
+                <span className="text-[10px] font-bold text-foreground/50 uppercase">Today's Goal</span>
+                <select
+                  value={selectedGoal}
+                  onChange={(e) => setSelectedGoal(e.target.value)}
+                  className="w-full bg-transparent text-xs font-bold text-foreground focus:outline-none cursor-pointer"
+                >
+                  <option value="Muscle Gain">Muscle Gain</option>
+                  <option value="Weight Loss">Weight Loss</option>
+                  <option value="High Protein">High Protein</option>
+                  <option value="Healthy Eating">Healthy Eating</option>
+                </select>
+              </div>
+
+              {/* Question 4: Time Available */}
+              <div className="p-3 rounded-2xl glass-panel border border-foreground/10 bg-background space-y-1.5">
+                <span className="text-[10px] font-bold text-foreground/50 uppercase">Prep Time</span>
+                <select
+                  value={selectedMaxTime}
+                  onChange={(e) => setSelectedMaxTime(Number(e.target.value))}
+                  className="w-full bg-transparent text-xs font-bold text-foreground focus:outline-none cursor-pointer"
+                >
+                  <option value={10}>10 Mins</option>
+                  <option value={20}>20 Mins</option>
+                  <option value={30}>30+ Mins</option>
+                </select>
+              </div>
+            </div>
+          )}
+
+          {/* BUILD WITH WHAT I HAVE PANTRY FEATURE UI */}
+          {activeTab === "pantry" && (
+            <div className="p-4 rounded-2xl glass-panel border border-foreground/10 bg-background space-y-3 shadow-sm">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                  <ChefHat className="h-4 w-4 text-primary" />
+                  Select ingredients available at home:
+                </span>
+              </div>
+
+              {/* Common Pantry Ingredient Chips */}
+              <div className="flex flex-wrap gap-1.5">
+                {COMMON_PANTRY_ITEMS.map((item) => {
+                  const isSelected = pantryIngredients.includes(item);
+                  return (
+                    <button
+                      key={item}
+                      onClick={() => togglePantryIng(item)}
+                      className={`px-3 py-1 rounded-full text-[11px] font-bold border transition-all ${
+                        isSelected
+                          ? "bg-primary text-white border-primary shadow-sm"
+                          : "bg-background border-foreground/10 text-foreground/70 hover:border-primary/40"
+                      }`}
+                    >
+                      {isSelected ? "✓ " : "+ "}{item}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Add Custom Ingredient Bar */}
+              <div className="flex items-center gap-2 pt-2 border-t border-foreground/5">
+                <input
+                  type="text"
+                  value={customIngInput}
+                  onChange={(e) => setCustomIngInput(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && addCustomIng()}
+                  placeholder="Add custom ingredient (e.g. oats, brocolli)..."
+                  className="flex-1 px-3 py-2 rounded-xl border border-foreground/10 bg-background text-foreground text-xs font-semibold focus:outline-none focus:border-primary"
+                />
+                <button
+                  onClick={addCustomIng}
+                  className="px-4 py-2 rounded-xl bg-primary text-white text-xs font-bold hover:bg-primary/90 transition-all shadow-sm"
+                >
+                  Add
+                </button>
+              </div>
+            </div>
+          )}
+
         </div>
 
         {/* TODAY'S MACRO SNAPSHOT */}
@@ -329,25 +510,25 @@ export default function SmartAINutritionPlansPage() {
           </GlassCard>
         </div>
 
-        {/* TOP 3-4 DIVERSE RECOMMENDATION CARDS */}
+        {/* TOP 3 DYNAMICALLY RANKED RECOMMENDATION CARDS */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-bold text-foreground tracking-tight">
-              Top Recommendations for {activeChip}
+              {activeTab === "pantry" ? "Top Pantry Meals" : `Top 3 Recommendations for ${userCity}`}
             </h3>
             <span className="text-xs text-foreground/50 font-semibold">
-              {recommendations.length} distinct options
+              Exactly Top 3 Ranked Options
             </span>
           </div>
 
           {loadingAI ? (
             <div className="p-12 text-center space-y-3 rounded-3xl glass-panel border border-foreground/5">
               <RefreshCw className="h-6 w-6 text-primary animate-spin mx-auto" />
-              <p className="text-xs font-semibold text-foreground/60">Filtering distinct {activeChip} meal options...</p>
+              <p className="text-xs font-semibold text-foreground/60">Generating dynamic Top 3 recommendations for {userCity}...</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              {recommendations.slice(0, visibleCount).map((card, idx) => {
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+              {recommendations.slice(0, 3).map((card, idx) => {
                 const isFav = favoriteFoods.includes(card.name);
                 const isLoggedToday = todayFoodLogs.some(l => l.food_name === card.name);
 
@@ -393,12 +574,12 @@ export default function SmartAINutritionPlansPage() {
 
                       {/* Metrics Row: Calories, Protein, Time & Cost */}
                       <div className="flex items-center justify-between text-xs font-bold pt-2 border-t border-foreground/5 text-foreground/75">
-                        <div className="flex items-center gap-2">
-                          <span className="text-rose-500 font-bold">🔥 {card.calories} kcal</span>
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-rose-500 font-bold">🔥 {card.calories}</span>
                           <span>•</span>
                           <span className="text-primary font-bold">💪 {card.protein}g</span>
                         </div>
-                        <div className="flex items-center gap-2 text-foreground/60 text-[11px]">
+                        <div className="flex items-center gap-1.5 text-foreground/60 text-[11px]">
                           <span>⏱️ {card.prepTime}</span>
                           <span>•</span>
                           <span>{card.estimatedCost}</span>
@@ -409,14 +590,14 @@ export default function SmartAINutritionPlansPage() {
                       <div className="grid grid-cols-2 gap-2 pt-2">
                         <button
                           onClick={() => setSelectedCardModal(card)}
-                          className="w-full py-2.5 rounded-xl bg-foreground/5 hover:bg-foreground/10 text-foreground text-xs font-bold transition-all border border-foreground/5"
+                          className="w-full py-2 rounded-xl bg-foreground/5 hover:bg-foreground/10 text-foreground text-xs font-bold transition-all border border-foreground/5"
                         >
                           View Recipe
                         </button>
 
                         <button
                           onClick={() => handleLogMeal(card)}
-                          className={`w-full py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition-all ${
+                          className={`w-full py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition-all ${
                             isLoggedToday ? "bg-emerald-600 text-white" : "bg-primary text-white hover:bg-primary/90"
                           }`}
                         >
@@ -428,19 +609,6 @@ export default function SmartAINutritionPlansPage() {
                   </div>
                 );
               })}
-            </div>
-          )}
-
-          {/* SHOW MORE BUTTON */}
-          {recommendations.length > visibleCount && (
-            <div className="text-center pt-2">
-              <button
-                onClick={() => setVisibleCount(prev => prev + 4)}
-                className="px-6 py-2.5 rounded-2xl border border-foreground/10 bg-background text-foreground/80 hover:text-primary hover:border-primary/40 text-xs font-bold transition-all inline-flex items-center gap-1.5 shadow-sm"
-              >
-                <span>Show More Recommendations ({recommendations.length - visibleCount} remaining)</span>
-                <ChevronDown className="h-3.5 w-3.5" />
-              </button>
             </div>
           )}
         </div>

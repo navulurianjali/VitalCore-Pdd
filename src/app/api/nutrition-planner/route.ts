@@ -2,7 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
-import { generateStrictCategoryRecommendations } from "@/utils/indianNutritionEngine";
+import { 
+  generateLocationAwareDynamicRecommendations, 
+  generateDynamicPantryMeals 
+} from "@/utils/indianNutritionEngine";
 
 let ratelimit: Ratelimit | null = null;
 if (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) {
@@ -74,63 +77,62 @@ export async function POST(req: NextRequest) {
     const cuisine = String(body.cuisine || "South Indian");
     const mealCategory = String(body.mealCategory || "Breakfast");
     const queryPrompt = String(body.queryPrompt || "");
+    const userCity = String(body.userCity || "Hyderabad");
     const spiceLevel = String(body.spiceLevel || "Any");
     const maxPrepTimeMinutes = Number(body.maxPrepTimeMinutes) || 60;
-    const budget = String(body.budget || "Any");
     const dislikedFoods = Array.isArray(body.dislikedFoods) ? body.dislikedFoods : [];
     const favoriteFoods = Array.isArray(body.favoriteFoods) ? body.favoriteFoods : [];
     const loggedTodayNames = Array.isArray(body.loggedTodayNames) ? body.loggedTodayNames : [];
-    const daySeed = Number(body.daySeed) || Date.now();
+    const pantryIngredients = Array.isArray(body.pantryIngredients) ? body.pantryIngredients : [];
 
-    const fallbackCards = generateStrictCategoryRecommendations({
-      goal,
-      preference,
-      cuisine,
-      mealCategory,
-      queryPrompt,
-      spiceLevel,
-      maxPrepTimeMinutes,
-      budget,
-      dislikedFoods,
-      favoriteFoods,
-      loggedTodayNames,
-      userWeightKg: profile?.weight_kg || 70,
-      daySeed
-    });
-
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) {
-      return NextResponse.json({
-        recommendations: fallbackCards,
-        insights: [`Formulated top recommendations for ${goal}.`],
-        habits: ["Pairing citrus fruits with lentils boosts iron absorption."],
-        warnings: ["Maintain hydrated intake before meals."]
+    let fallbackCards = [];
+    if (pantryIngredients.length > 0) {
+      fallbackCards = generateDynamicPantryMeals(pantryIngredients);
+    } else {
+      fallbackCards = generateLocationAwareDynamicRecommendations({
+        goal,
+        preference,
+        cuisine,
+        mealCategory,
+        queryPrompt,
+        userCity,
+        spiceLevel,
+        maxPrepTimeMinutes,
+        dislikedFoods,
+        favoriteFoods,
+        loggedTodayNames
       });
     }
 
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      return NextResponse.json({ recommendations: fallbackCards });
+    }
+
     const systemPrompt = `You are a world-class South Indian & Clinical AI Nutritionist.
-Generate EXACTLY 4 STRICTLY CATEGORY-MATCHED, NON-DUPLICATIVE Indian meal recommendations matching user intent and profile.
+Generate EXACTLY 3 DYNAMICALLY RANKED, LOCATION-AWARE Indian meal recommendations for the user in ${userCity}.
 
-CRITICAL CONSTRAINTS:
-1. STRICT CATEGORY FILTERING:
-   - If Meal Category is "Breakfast", suggest ONLY Breakfast items (Idli, Dosa, Upma, Pongal, Pesarattu, Ragi Dosa, Appam, Uttapam, Poha, Besan Chilla). NO lunch/dinner/snack items!
-   - If Meal Category is "Lunch", suggest ONLY Lunch items (Andhra Thali, Chettinad Chicken, Kerala Fish Curry, Rajma Rice, Dal Makhani, Veg Biryani). NO breakfast/snack items!
-   - If Meal Category is "Dinner", suggest ONLY Dinner items (Moong Dal Khichdi, South Indian Curd Rice, Ragi Mudde, Paneer Bhurji with Bajra Roti, Phulka with Kurma). NO breakfast/snack items!
-   - If Meal Category is "Snacks", suggest ONLY Snack items (Black Chana Sundal, Roasted Makhana, Tender Coconut & Peanuts, Masala Chaach, Mishti Doi). NO heavy meals!
+LOCATION CONSTRAINTS:
+- User Location: ${userCity}
+- If in Hyderabad/Vijayawada/Visakhapatnam/Tirupati: Prioritize Andhra/Telangana cuisine (Pesarattu, Gongura, Pappu, Rice).
+- If in Chennai/Coimbatore: Prioritize Tamil cuisine (Idli, Dosa, Pongal, Chettinad).
+- If in Bengaluru: Prioritize Karnataka cuisine (Ragi Mudde, Masala Dosa).
+- If in Kerala (Kochi): Prioritize Kerala cuisine (Appam, Puttu, Fish Curry).
 
-2. STAPLE-TYPE DIVERSITY:
-   - Recommend 4 DISTINCT food items with 4 DIFFERENT staple bases (e.g. 1 Rice base, 1 Millet base, 1 Lentil base, 1 Wheat/Whole grain base).
-   - NEVER suggest multiple Dosa variants or multiple Idli variants in the same set!
+PANTRY CONSTRAINTS (if provided): ${JSON.stringify(pantryIngredients)}
 
-3. EXCLUSION OF EATEN & DISLIKED FOODS:
-   - Exclude foods logged today: ${JSON.stringify(loggedTodayNames)}
-   - Exclude disliked foods: ${JSON.stringify(dislikedFoods)}
+EXCLUSION OF EATEN FOODS TODAY: ${JSON.stringify(loggedTodayNames)}
+
+RANKING OUTPUT:
+1. 🥇 Best Match
+2. 🥈 Great Alternative
+3. 🥉 Quick Healthy Option
 
 Respond strictly with a raw JSON object:
 {
   "recommendations": [
     {
-      "name": "Authentic Indian Dish Name",
+      "name": "Authentic Dish Name",
       "imageUrl": "https://images.unsplash.com/photo-1589301760014-d929f3979dbc?auto=format&fit=crop&w=600&q=80",
       "servingSize": "Portion details",
       "shortTag": "Short 3-4 word tag (e.g. High Protein)",
@@ -143,7 +145,7 @@ Respond strictly with a raw JSON object:
       "iron_mg": 3.5,
       "calcium_mg": 90,
       "matchScore": 96,
-      "matchBadge": "96% Top AI Choice",
+      "matchBadge": "🥇 Best Match",
       "prepTime": "10 mins",
       "estimatedCost": "₹40",
       "whyHelps": "Concise 1-sentence benefit statement.",
@@ -160,7 +162,7 @@ DO NOT include markdown backticks outside JSON.`;
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          contents: [{ role: "user", parts: [{ text: `Generate top recommendations for: ${queryPrompt || mealCategory}` }] }],
+          contents: [{ role: "user", parts: [{ text: `Generate top 3 recommendations for ${userCity}` }] }],
           systemInstruction: { parts: [{ text: systemPrompt }] },
           generationConfig: { temperature: 0.7, responseMimeType: "application/json" }
         })
