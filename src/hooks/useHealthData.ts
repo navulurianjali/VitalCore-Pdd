@@ -58,7 +58,7 @@ export function useHealthData() {
         .from("nutrition_logs")
         .select("calories, protein_g, carbs_g, fat_g, fiber_g, sugar_g, sodium_mg")
         .eq("user_id", profile.id)
-        .or(`date.eq.${today},created_at.gte.${today}T00:00:00Z`);
+        .eq("date", today);
 
       const caloriesConsumed = nutritionData?.reduce((sum, item) => sum + (Number(item.calories) || 0), 0) || 0;
       const proteinG = nutritionData?.reduce((sum, item) => sum + (Number(item.protein_g) || 0), 0) || 0;

@@ -27,8 +27,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${inter.variable} dark`}>
-      <body className="antialiased min-h-screen bg-background text-foreground flex flex-col overflow-x-hidden">
+    <html lang="en" suppressHydrationWarning className={`${inter.variable} dark`}>
+      <body suppressHydrationWarning className="antialiased min-h-screen bg-background text-foreground flex flex-col overflow-x-hidden">
         <AuthProvider>
           <ThemeProvider>
             <Navbar />

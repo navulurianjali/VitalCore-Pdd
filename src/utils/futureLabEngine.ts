@@ -384,9 +384,9 @@ export function getAchievementsAndMotivation(data: HealthDigitalTwin): Motivatio
   const hydroRatio = data.hydrationMl / (data.hydrationTarget || 2500);
 
   return {
-    hydrationStreakDays: hydroRatio >= 0.8 ? 5 : 2,
-    sleepStreakDays: data.sleepHours >= 7 ? 4 : 1,
-    workoutStreakDays: data.steps >= 6000 ? 6 : 3,
+    hydrationStreakDays: hydroRatio >= 0.8 ? 5 : (data.hydrationMl > 0 ? 1 : 0),
+    sleepStreakDays: data.sleepHours >= 7 ? 4 : (data.sleepHours > 0 ? 1 : 0),
+    workoutStreakDays: data.steps >= 6000 ? 6 : (data.steps > 0 ? 1 : 0),
     badges: [
       { id: "b1", title: "Hydration Master", description: "Log 2500ml of water for 3 consecutive days", iconName: "Droplet", unlocked: hydroRatio >= 1, progressPct: Math.min(100, Math.round(hydroRatio * 100)) },
       { id: "b2", title: "Circadian Alignment", description: "Log 7.5+ hours of sleep with quality above 80%", iconName: "Moon", unlocked: data.sleepHours >= 7.5, progressPct: Math.min(100, Math.round((data.sleepHours / 7.5) * 100)) },

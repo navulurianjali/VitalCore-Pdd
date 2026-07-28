@@ -275,7 +275,7 @@ export default function DashboardPage() {
         {/* Page Header Welcome */}
         <div className="mb-8 flex justify-between items-start">
           <div>
-            <h1 className="text-2xl font-bold text-[var(--foreground)] tracking-tight">
+            <h1 suppressHydrationWarning className="text-2xl font-bold text-[var(--foreground)] tracking-tight">
               {greeting}{profile?.full_name ? `, ${profile.full_name.split(" ")[0].toUpperCase()}` : ""} 👋
             </h1>
             <p className="text-sm text-[var(--muted)] mt-1">
@@ -284,7 +284,7 @@ export default function DashboardPage() {
           </div>
           <div className="flex flex-col items-center justify-center bg-orange-500/10 border border-orange-500/30 px-5 py-2 rounded-2xl shadow-sm shadow-orange-500/10 hover:scale-105 transition-transform cursor-pointer">
             <span className="text-xl animate-bounce mt-0.5">🔥</span>
-            <span className="text-[9px] font-black text-orange-500 uppercase tracking-widest mt-1">3 Day Streak</span>
+            <span className="text-[9px] font-black text-orange-500 uppercase tracking-widest mt-1">{profile?.streak_days || 0} Day Streak</span>
           </div>
         </div>
 
