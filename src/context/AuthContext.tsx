@@ -75,6 +75,11 @@ export interface UserProfile {
   
   bmi?: number;
   body_fat_estimate?: number;
+
+  xp?: number;
+  badges?: string[];
+  streak_days?: number;
+  age?: number;
 }
 
 interface AuthContextProps {

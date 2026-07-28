@@ -91,7 +91,7 @@ export function useHealthData() {
         .eq("user_id", profile.id)
         .order("created_at", { ascending: false })
         .limit(1);
-      const lastSleep = sleepData?.[0] || { sleep_hours: 0, recovery_quality: 50 };
+      const lastSleep = sleepData?.[0] || null;
 
       // 5. Fetch Recovery/Fatigue/Mood
       const { data: recoveryData } = await supabase
@@ -100,7 +100,7 @@ export function useHealthData() {
         .eq("user_id", profile.id)
         .order("created_at", { ascending: false })
         .limit(1);
-      const lastRecovery = recoveryData?.[0] || { recovery_percentage: 50 };
+      const lastRecovery = recoveryData?.[0] || null;
 
       const { data: fatigueData } = await supabase
         .from("fatigue_logs")
@@ -108,7 +108,7 @@ export function useHealthData() {
         .eq("user_id", profile.id)
         .order("created_at", { ascending: false })
         .limit(1);
-      const lastFatigue = fatigueData?.[0] || { physical_fatigue: 50, mental_fatigue: 50, fatigue_score: 50 };
+      const lastFatigue = fatigueData?.[0] || null;
 
       const { data: moodData } = await supabase
         .from("mood_tracking")
@@ -116,7 +116,7 @@ export function useHealthData() {
         .eq("user_id", profile.id)
         .order("created_at", { ascending: false })
         .limit(1);
-      const lastMood = moodData?.[0] || { stress_level: 50, mood: 'neutral' };
+      const lastMood = moodData?.[0] || null;
 
       // 6. Fetch Steps
       const { data: stepCountData } = await supabase
@@ -130,7 +130,7 @@ export function useHealthData() {
 
       const realMetrics: HealthDigitalTwin = {
         caloriesBurned,
-        caloriesTarget: 600,
+        caloriesTarget: profile.calorie_goal || 2000,
         caloriesConsumed,
         proteinG,
         carbsG,
@@ -139,24 +139,24 @@ export function useHealthData() {
         sugarG,
         sodiumMg,
         hydrationMl,
-        hydrationTarget: 2500,
+        hydrationTarget: profile.water_goal || 2500,
         steps: realSteps,
-        stepsTarget: 10000,
-        sleepHours: Number(lastSleep.sleep_hours || 0),
-        sleepTarget: 8.0,
-        sleepQuality: Number(lastSleep.recovery_quality || 50),
-        stressLevel: Number(lastMood.stress_level || 50),
-        mood: lastMood.mood || 'neutral',
-        recoveryPercentage: Number(lastRecovery.recovery_percentage || 50),
-        fatigueScore: Number(lastFatigue.fatigue_score || 50),
-        physicalFatigue: Number(lastFatigue.physical_fatigue || 50),
-        mentalFatigue: Number(lastFatigue.mental_fatigue || 50),
-        energyLevel: 100 - Number(lastFatigue.fatigue_score || 50),
-        biologicalAge: profile.biological_age || 30,
-        stabilityScore: profile.stability_score || 80,
-        metabolicEfficiency: 80, 
-        lifestyleSustainability: 80,
-        glycemicIndexLoad: "medium",
+        stepsTarget: profile.step_goal || 10000,
+        sleepHours: lastSleep ? Number(lastSleep.sleep_hours || 0) : 0,
+        sleepTarget: profile.sleep_goal || 8.0,
+        sleepQuality: lastSleep ? Number(lastSleep.recovery_quality || 0) : 0,
+        stressLevel: lastMood ? Number(lastMood.stress_level || 0) : 0,
+        mood: lastMood ? lastMood.mood : 'neutral',
+        recoveryPercentage: lastRecovery ? Number(lastRecovery.recovery_percentage || 0) : 0,
+        fatigueScore: lastFatigue ? Number(lastFatigue.fatigue_score || 0) : 0,
+        physicalFatigue: lastFatigue ? Number(lastFatigue.physical_fatigue || 0) : 0,
+        mentalFatigue: lastFatigue ? Number(lastFatigue.mental_fatigue || 0) : 0,
+        energyLevel: lastFatigue ? Math.max(0, 100 - Number(lastFatigue.fatigue_score || 0)) : 0,
+        biologicalAge: profile.biological_age || 25,
+        stabilityScore: profile.stability_score || 100,
+        metabolicEfficiency: 0, 
+        lifestyleSustainability: 0,
+        glycemicIndexLoad: "low",
         sedentaryPostureRisk: "low",
         micronutrientDeficiencies: []
       };
