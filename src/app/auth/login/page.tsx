@@ -8,6 +8,8 @@ import { useAuth } from "@/context/AuthContext";
 import Button from "@/components/ui/Button";
 import GlassCard from "@/components/ui/GlassCard";
 
+import { supabase } from "@/utils/supabase";
+
 export default function LoginPage() {
   const { signIn, isMockMode } = useAuth();
   const router = useRouter();
@@ -29,6 +31,22 @@ export default function LoginPage() {
       if (error) {
         setErrorMsg(error.message);
       } else {
+        if (supabase) {
+          const { data: userData } = await supabase.auth.getUser();
+          const uid = userData?.user?.id;
+          if (uid) {
+            const { data: prof } = await supabase
+              .from("profiles")
+              .select("onboarding_completed")
+              .eq("id", uid)
+              .single();
+
+            if (!prof || prof.onboarding_completed !== true) {
+              router.push("/auth/onboarding");
+              return;
+            }
+          }
+        }
         router.push("/dashboard");
       }
     } catch (err: any) {
