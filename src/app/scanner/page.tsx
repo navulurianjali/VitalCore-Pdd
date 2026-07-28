@@ -211,16 +211,21 @@ export default function FoodScannerPage() {
     setScanningStep(0);
 
     try {
+      const session = (await supabase?.auth.getSession())?.data?.session;
+      const token = session?.access_token;
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+
       const response = await fetch("/api/food-scanner", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
+        headers,
         body: JSON.stringify({ image: base64Image })
       });
 
       const resData = await response.json();
-      if (!response.ok) {
+      if (!response.ok && !resData.result) {
         throw new Error(resData.error || "Failed to analyze image");
       }
 
@@ -237,6 +242,45 @@ export default function FoodScannerPage() {
     } catch (err: any) {
       console.error(err);
       setErrorMsg(err.message || "Couldn't identify this meal clearly. Please upload a clearer image of your plate.");
+    } finally {
+      setScanning(false);
+    }
+  };
+
+  const handleQuerySearch = async (queryText: string) => {
+    if (!queryText.trim()) return;
+    setScanning(true);
+    setErrorMsg("");
+    setResult(null);
+    setConfirmStatus("pending");
+
+    try {
+      const session = (await supabase?.auth.getSession())?.data?.session;
+      const token = session?.access_token;
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+
+      const response = await fetch("/api/food-scanner", {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ query: queryText.trim() })
+      });
+
+      const resData = await response.json();
+      if (resData.result) {
+        const scanResult = resData.result as ScanResult;
+        setResult(scanResult);
+        setEditFoodName(scanResult.foodName);
+        setEditPortion(scanResult.portionSize);
+        setEditCalories(scanResult.calories);
+        setEditProtein(scanResult.protein);
+        setEditCarbs(scanResult.carbs);
+        setEditFat(scanResult.fat);
+      }
+    } catch (err: any) {
+      console.error(err);
     } finally {
       setScanning(false);
     }
@@ -526,7 +570,7 @@ export default function FoodScannerPage() {
                         onClick={() => {
                           if (!inputText.trim()) return;
                           setImagePreview(null);
-                          handleScanSimulation(inputText);
+                          handleQuerySearch(inputText);
                         }} 
                         className="px-4 py-2.5 text-xs font-bold shrink-0"
                       >
