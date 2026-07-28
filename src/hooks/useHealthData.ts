@@ -182,7 +182,7 @@ export function useHealthData() {
 
     let channel: any = null;
     if (supabase && profile?.id) {
-      const channelId = `realtime-health-${profile.id}-${Math.random().toString(36).substring(2, 8)}`;
+      const channelId = `realtime-health-${profile.id}-${Date.now()}`;
       channel = supabase
         .channel(channelId)
         .on(

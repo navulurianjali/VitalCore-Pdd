@@ -21,7 +21,7 @@ export default function ProfilePage() {
 
   useEffect(() => {
     if (profile) {
-      setFullName(profile.full_name || "Wellness Explorer");
+      setFullName(profile.full_name || "");
       setWeight(Number(profile.weight_kg) || 72);
       setHeight(Number(profile.height_cm) || 178);
       setGoal(profile.fitness_goal || "stamina_optimization");
