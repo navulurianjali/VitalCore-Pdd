@@ -293,16 +293,17 @@ export default function DashboardPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
 
             {/* Calories */}
-            <div className="bg-[var(--card-bg)] border border-rose-500/30 rounded-xl p-5 hover:border-rose-500/60 transition-colors shadow-sm shadow-rose-500/5">
-              <div className="mb-3">
+            <Link href="/calorie-tracker" className="bg-[var(--card-bg)] border border-rose-500/30 rounded-xl p-5 hover:border-rose-500/60 transition-colors shadow-sm shadow-rose-500/5 group cursor-pointer block">
+              <div className="flex justify-between items-center mb-3">
                 <Flame className="h-[18px] w-[18px] text-rose-500" />
+                <span className="text-[10px] text-rose-400 font-extrabold group-hover:underline">Track Intake →</span>
               </div>
               <div className="flex items-baseline gap-2 mb-0.5">
                 <div className="text-2xl font-bold text-[var(--foreground)]">{totalCalories}</div>
                 <div className="text-[10px] text-[var(--muted)] font-medium uppercase">kcal</div>
               </div>
               <div className="text-[11px] text-[var(--muted)] font-medium">Daily Meals Logged</div>
-            </div>
+            </Link>
 
             {/* Hydration */}
             <div className="bg-[var(--card-bg)] border border-blue-500/30 rounded-xl p-5 hover:border-blue-500/60 transition-colors shadow-sm shadow-blue-500/5 flex flex-col justify-between">
