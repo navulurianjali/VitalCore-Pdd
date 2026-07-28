@@ -68,13 +68,11 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
         { name: "Future Health Lab", href: "/future-lab", icon: Sparkles, highlight: true },
         { name: "AI Coach", href: "/ai-coach", icon: Brain, highlight: true },
         { name: "Fitness", href: "/fitness", icon: Dumbbell, highlight: true },
-        { name: "Food Scanner", href: "/scanner", icon: Scan, highlight: true },
       ]
     },
     {
       label: "Health",
       links: [
-        { name: "Smart Nutrition Plans", href: "/nutrition", icon: Utensils },
         { name: "Sleep", href: "/sleep", icon: Moon },
         { name: "Healthy Habits", href: "/challenges", icon: CheckSquare },
       ]

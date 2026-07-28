@@ -58,31 +58,17 @@ const slides = [
     ]
   },
   {
-    id: "foodscanner",
-    tag: "AI Food Scanner",
-    title: "Snap a Photo for Instant Nutrition Analysis",
-    description: "No more tedious manual food searches! Simply capture a picture of any dish to receive instant macro breakdowns, portion size estimations, ingredient identification, health scores, and healthy alternatives.",
-    icon: Scan,
-    color: "from-violet-500 to-purple-600",
-    badgeColor: "bg-violet-500/10 text-violet-500 border-violet-500/20",
-    highlights: [
-      "Multi-stage AI Vision Model",
-      "Calories, Protein, Carbs, Fats & Sugars",
-      "Unhealthy additive & allergen warnings"
-    ]
-  },
-  {
     id: "smarttracking",
     tag: "Smart Lifestyle Modules",
-    title: "Nutrition, Sleep, Water & Fitness Integrated",
-    description: "Every aspect of your health works together. Log your meals, record sleep debt, track fluid hydration, and monitor workouts — all contributing to a complete, unified understanding of your wellness.",
+    title: "Sleep, Water & Fitness Integrated",
+    description: "Every aspect of your health works together. Record sleep debt, track fluid hydration, and monitor workouts — all contributing to a complete, unified understanding of your wellness.",
     icon: Activity,
     color: "from-blue-500 to-cyan-600",
     badgeColor: "bg-blue-500/10 text-blue-500 border-blue-500/20",
     highlights: [
-      "Adaptive Indian & Global meal plans",
       "Circadian sleep & wind-down schedules",
-      "Hydration goals with smart reminders"
+      "Hydration goals with smart reminders",
+      "Comprehensive fitness analytics"
     ]
   },
   {

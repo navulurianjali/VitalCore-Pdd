@@ -1,4 +1,4 @@
-"""
+﻿"""
 VitalCore ΓÇô Selenium E2E Test Suite  (170 Tests / 17 Modules)
 =============================================================
 RUN:
@@ -33,7 +33,7 @@ TEST_RESULTS: List[Dict[str, Any]] = []
 # ΓöÇΓöÇ CLI OPTIONS registered in conftest.py ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 
 # ΓöÇΓöÇ DRIVER FIXTURE ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
-@pytest.fixture(scope="class")
+@pytest.fixture(scope="function")
 def driver(request):
     opts = Options()
     opts.add_argument("--window-size=1366,768")
@@ -44,52 +44,28 @@ def driver(request):
     opts.add_argument("--use-fake-device-for-media-stream")
     opts.add_experimental_option("excludeSwitches", ["enable-automation"])
     opts.add_experimental_option("useAutomationExtension", False)
-    
-    opts.add_argument("--headless=new")
+    # Always headless in CI; honour --headless flag locally too
+    is_ci = os.environ.get("CI", "").lower() in ("true", "1", "yes")
+    if is_ci or request.config.getoption("--headless", default=False):
+        opts.add_argument("--headless=new")
 
+    # Use local driver file when it exists, otherwise let selenium-manager
+    # (bundled with Selenium 4.6+) download the correct driver automatically.
     if os.path.exists(_LOCAL_CHROMEDRIVER):
-        srv = Service(_LOCAL_CHROMEDRIVER)
+        drv = webdriver.Chrome(service=Service(_LOCAL_CHROMEDRIVER), options=opts)
     else:
-        srv = Service()
+        drv = webdriver.Chrome(options=opts)   # selenium-manager handles CI
 
-    drv = webdriver.Chrome(service=srv, options=opts)
     drv.set_page_load_timeout(35)
     drv.implicitly_wait(4)
     drv._base = BASE_URL
-    
-    class_name = request.cls.__name__ if hasattr(request, "cls") and request.cls else request.node.name
-    auth_classes = ["TestDashboard", "TestFitnessPage", "TestNutritionPage", "TestSleepPage", 
-                    "TestAICoachPage", "TestScannerPage", "TestFutureLabPage", "TestChallengesPage", 
-                    "TestCommunityPage", "TestProfilePage", "TestSettingsPage", "TestAdminPage"]
-    
-    if class_name in auth_classes:
-        import uuid
-        import time
-        uid = uuid.uuid4().hex[:8]
-        drv.get(f"{BASE_URL}/auth/signup")
-        try:
-            WebDriverWait(drv, 10).until(EC.visibility_of_element_located((By.NAME, "fullName"))).send_keys(f"Test User {uid}")
-            drv.find_element(By.NAME, "username").send_keys(f"test_user_{uid}")
-            drv.find_element(By.NAME, "email").send_keys(f"test_{uid}@vitalcore.ai")
-            drv.find_element(By.NAME, "password").send_keys("Password123!")
-            btn = WebDriverWait(drv, 10).until(EC.element_to_be_clickable((By.XPATH, "//button[@type='submit']")))
-            drv.execute_script("arguments[0].click();", btn)
-            WebDriverWait(drv, 15).until(EC.url_contains("/dashboard"))
-            time.sleep(1)
-        except Exception as e:
-            print(f"Auth failed in class {class_name}: {e}")
-
     yield drv
     drv.quit()
 
-
 # ΓöÇΓöÇ HELPERS ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 def go(driver, path=""):
-    try:
-        driver.get(f"{driver._base}{path}")
-    except Exception:
-        pass
-    time.sleep(1.0)
+    driver.get(f"{driver._base}{path}")
+    time.sleep(0.8)
 
 def wait_vis(driver, by, val, t=EXPLICIT_WAIT):
     return WebDriverWait(driver, t).until(EC.visibility_of_element_located((by, val)))
@@ -200,7 +176,7 @@ class TestLandingPage:
         time.sleep(1.0)
         w = driver.execute_script("return document.body.scrollWidth")
         driver.set_window_size(1366, 768)
-        assert w <= 500, f"Horizontal overflow: {w}px"
+        assert w <= 450, f"Horizontal overflow: {w}px"
 
 # ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
 #  MODULE 2 ΓÇô AUTHENTICATION  (TC_AUTH_001 ΓÇô TC_AUTH_020)
@@ -403,8 +379,11 @@ class TestDashboard:
         assert "Quick Actions" in b or "Log Meals" in b or on_auth(driver)
 
     def test_TC_DASH_010_log_meals_link_nutrition(self, driver):
-        """'Log Meals' route removed as part of Food Scanner & Smart Nutrition Plans cleanup."""
-        pass
+        """'Log Meals' quick action links to /nutrition."""
+        go(driver, "/dashboard"); time.sleep(2)
+        if on_auth(driver): return
+        hrefs = [a.get_attribute("href") or "" for a in driver.find_elements(By.TAG_NAME, "a")]
+        assert any("/nutrition" in h for h in hrefs)
 
     def test_TC_DASH_011_log_sleep_link(self, driver):
         """'Log Sleep' quick action links to /sleep."""
@@ -421,8 +400,11 @@ class TestDashboard:
         assert any("/ai-coach" in h for h in hrefs)
 
     def test_TC_DASH_013_scanner_link(self, driver):
-        """'Food Scanner' route removed as part of Food Scanner & Smart Nutrition Plans cleanup."""
-        pass
+        """'Food Scanner' quick action links to /scanner."""
+        go(driver, "/dashboard"); time.sleep(2)
+        if on_auth(driver): return
+        hrefs = [a.get_attribute("href") or "" for a in driver.find_elements(By.TAG_NAME, "a")]
+        assert any("/scanner" in h for h in hrefs)
 
     def test_TC_DASH_014_fitness_link(self, driver):
         """'Fitness' quick action links to /fitness."""

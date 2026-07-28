@@ -691,19 +691,6 @@ export default function DashboardPage() {
             <h2 className="text-[15px] font-bold text-[var(--foreground)] mb-4">Quick Actions</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               
-              <Link href="/nutrition" className="bg-[var(--card-bg)] border border-[var(--border)] rounded-xl p-4 flex items-center justify-between hover:border-primary/30 transition-colors group">
-                <div className="flex items-center gap-4">
-                  <div className="h-10 w-10 rounded-xl bg-blue-500/10 flex items-center justify-center shrink-0 shadow-sm shadow-blue-500/10">
-                    <Flame className="h-5 w-5 text-blue-500" />
-                  </div>
-                  <div>
-                    <div className="text-[13px] font-semibold text-[var(--foreground)] mb-0.5">Log Meals</div>
-                    <div className="text-[11px] text-[var(--muted)]">Track your daily foods</div>
-                  </div>
-                </div>
-                <ArrowRight className="h-4 w-4 text-[var(--muted)] group-hover:text-primary transition-colors" />
-              </Link>
-
               <Link href="/sleep" className="bg-[var(--card-bg)] border border-[var(--border)] rounded-xl p-4 flex items-center justify-between hover:border-primary/30 transition-colors group">
                 <div className="flex items-center gap-4">
                   <div className="h-10 w-10 rounded-xl bg-teal-500/10 flex items-center justify-center shrink-0 shadow-sm shadow-teal-500/10">
@@ -725,19 +712,6 @@ export default function DashboardPage() {
                   <div>
                     <div className="text-[13px] font-semibold text-[var(--foreground)] mb-0.5">Wellness Chat</div>
                     <div className="text-[11px] text-[var(--muted)]">Speak with your AI companion</div>
-                  </div>
-                </div>
-                <ArrowRight className="h-4 w-4 text-[var(--muted)] group-hover:text-primary transition-colors" />
-              </Link>
-
-              <Link href="/scanner" className="bg-[var(--card-bg)] border border-[var(--border)] rounded-xl p-4 flex items-center justify-between hover:border-primary/30 transition-colors group">
-                <div className="flex items-center gap-4">
-                  <div className="h-10 w-10 rounded-xl bg-orange-500/10 flex items-center justify-center shrink-0 shadow-sm shadow-orange-500/10">
-                    <Scan className="h-5 w-5 text-orange-500" />
-                  </div>
-                  <div>
-                    <div className="text-[13px] font-semibold text-[var(--foreground)] mb-0.5">Food Scanner</div>
-                    <div className="text-[11px] text-[var(--muted)]">Scan or search any ingredient</div>
                   </div>
                 </div>
                 <ArrowRight className="h-4 w-4 text-[var(--muted)] group-hover:text-primary transition-colors" />
