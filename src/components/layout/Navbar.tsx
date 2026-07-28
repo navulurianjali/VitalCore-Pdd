@@ -24,7 +24,6 @@ export const Navbar: React.FC = () => {
                       pathname === "/dashboard" || 
                       pathname === "/future-lab" ||
                       pathname === "/challenges" || 
-                      pathname === "/community" ||
                       pathname === "/settings" ||
                       pathname === "/profile" ||
                       pathname === "/admin";
