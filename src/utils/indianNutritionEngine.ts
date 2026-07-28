@@ -3,7 +3,7 @@ export interface IndianMeal {
   dishesCategory: "breakfast" | "lunch" | "dinner" | "evening_snack" | "healthy_snack" | "pre_workout" | "post_workout" | "dessert" | "quick_meal";
   name: string;
   hindiName?: string;
-  imageUrl: string;
+  imageUrl?: string;
   region: "south" | "north" | "east" | "west" | "andhra" | "telangana" | "tamil_nadu" | "karnataka" | "kerala" | "mixed" | "pan-indian";
   cuisineRegion: string;
   dietType: "veg" | "vegan" | "eggetarian" | "non-veg";
@@ -39,42 +39,19 @@ export interface RecommendationCard extends IndianMeal {
 }
 
 export interface MultiPlanOptions {
-  goal?: string;
-  preference?: string;
-  cuisine?: string;
+  goal?: string; // "Weight Loss" | "Weight Gain" | "Muscle Gain" | "Strength Building" | "Fat Loss" | "Healthy Lifestyle" | "Balanced Diet" | "High Protein" | "Diabetes Friendly" | "Heart Healthy"
+  preference?: string; // "Vegetarian" | "Non-Vegetarian" | "Vegan" | "Eggetarian" | "No Preference"
   mealCategory?: string;
   queryPrompt?: string;
-  spiceLevel?: string;
-  maxPrepTimeMinutes?: number;
-  budget?: string;
+  pantryIngredients?: string[];
   dislikedFoods?: string[];
   favoriteFoods?: string[];
   loggedTodayNames?: string[];
-  userCity?: string;
-  pantryIngredients?: string[];
   remainingCalories?: number;
   proteinDeficitGrams?: number;
-  ironDeficitMg?: number;
   userWeightKg?: number;
   daySeed?: number;
 }
-
-export const CITY_REGION_MAP: Record<string, { region: string; priorityCuisine: string }> = {
-  "hyderabad": { region: "telangana", priorityCuisine: "Andhra" },
-  "vijayawada": { region: "andhra", priorityCuisine: "Andhra" },
-  "visakhapatnam": { region: "andhra", priorityCuisine: "Andhra" },
-  "tirupati": { region: "andhra", priorityCuisine: "Andhra" },
-  "guntur": { region: "andhra", priorityCuisine: "Andhra" },
-  "chennai": { region: "tamil_nadu", priorityCuisine: "Tamil Nadu" },
-  "coimbatore": { region: "tamil_nadu", priorityCuisine: "Tamil Nadu" },
-  "madurai": { region: "tamil_nadu", priorityCuisine: "Tamil Nadu" },
-  "bengaluru": { region: "karnataka", priorityCuisine: "Karnataka" },
-  "mysuru": { region: "karnataka", priorityCuisine: "Karnataka" },
-  "kochi": { region: "kerala", priorityCuisine: "Kerala" },
-  "thiruvananthapuram": { region: "kerala", priorityCuisine: "Kerala" },
-  "mumbai": { region: "west", priorityCuisine: "Mixed Indian" },
-  "delhi": { region: "north", priorityCuisine: "North Indian" }
-};
 
 export const INDIAN_RECIPES: IndianMeal[] = [
   // --- BREAKFAST ---
@@ -83,7 +60,6 @@ export const INDIAN_RECIPES: IndianMeal[] = [
     dishesCategory: "breakfast",
     name: "Steamed Idlis with Sambar & Coconut Chutney",
     hindiName: "इडली सांभर",
-    imageUrl: "https://images.unsplash.com/photo-1589301760014-d929f3979dbc?auto=format&fit=crop&w=600&q=80",
     region: "south",
     cuisineRegion: "South Indian",
     dietType: "vegan",
@@ -110,7 +86,6 @@ export const INDIAN_RECIPES: IndianMeal[] = [
     dishesCategory: "breakfast",
     name: "Moong Dal Pesarattu with Upma & Ginger Chutney",
     hindiName: "पेसारट्टू उपमा",
-    imageUrl: "https://images.unsplash.com/photo-1668236543090-82eba5ee5976?auto=format&fit=crop&w=600&q=80",
     region: "andhra",
     cuisineRegion: "Andhra",
     dietType: "vegan",
@@ -137,7 +112,6 @@ export const INDIAN_RECIPES: IndianMeal[] = [
     dishesCategory: "breakfast",
     name: "Ragi Dosa with Vegetable Sambar & Tomato Chutney",
     hindiName: "रागी डोसा",
-    imageUrl: "https://images.unsplash.com/photo-1589301760014-d929f3979dbc?auto=format&fit=crop&w=600&q=80",
     region: "karnataka",
     cuisineRegion: "Karnataka",
     dietType: "vegan",
@@ -166,7 +140,6 @@ export const INDIAN_RECIPES: IndianMeal[] = [
     dishesCategory: "lunch",
     name: "Andhra Special Thali (Pappu, Sambar, Gunpowder Rice & Curd)",
     hindiName: "आंध्र स्पेशल थाली",
-    imageUrl: "https://images.unsplash.com/photo-1610192244261-3f33de3f55e4?auto=format&fit=crop&w=600&q=80",
     region: "andhra",
     cuisineRegion: "Andhra",
     dietType: "veg",
@@ -193,7 +166,6 @@ export const INDIAN_RECIPES: IndianMeal[] = [
     dishesCategory: "lunch",
     name: "Chettinad Chicken Curry with Steamed Rice & Pepper Rasam",
     hindiName: "चेट्टिनाड चिकन करी",
-    imageUrl: "https://images.unsplash.com/photo-1588166524941-3bf61a9c41db?auto=format&fit=crop&w=600&q=80",
     region: "tamil_nadu",
     cuisineRegion: "Tamil Nadu",
     dietType: "non-veg",
@@ -222,7 +194,6 @@ export const INDIAN_RECIPES: IndianMeal[] = [
     dishesCategory: "dinner",
     name: "Moong Dal Khichdi with Desi Ghee & Roasted Papad",
     hindiName: "मूंग दाल खिचड़ी",
-    imageUrl: "https://images.unsplash.com/photo-1546833999-b9f581a1996d?auto=format&fit=crop&w=600&q=80",
     region: "pan-indian",
     cuisineRegion: "Mixed Indian",
     dietType: "veg",
@@ -249,7 +220,6 @@ export const INDIAN_RECIPES: IndianMeal[] = [
     dishesCategory: "dinner",
     name: "South Indian Curd Rice with Pomegranate & Beetroot Poriyal",
     hindiName: "दही भात",
-    imageUrl: "https://images.unsplash.com/photo-1610192244261-3f33de3f55e4?auto=format&fit=crop&w=600&q=80",
     region: "south",
     cuisineRegion: "South Indian",
     dietType: "veg",
@@ -278,7 +248,6 @@ export const INDIAN_RECIPES: IndianMeal[] = [
     dishesCategory: "evening_snack",
     name: "Black Chana Sundal with Fresh Coconut & Curry Leaves",
     hindiName: "काला चने सुंदल",
-    imageUrl: "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=600&q=80",
     region: "south",
     cuisineRegion: "South Indian",
     dietType: "vegan",
@@ -305,7 +274,6 @@ export const INDIAN_RECIPES: IndianMeal[] = [
     dishesCategory: "healthy_snack",
     name: "Roasted Makhana (Foxnuts) with Turmeric & Himalayan Salt",
     hindiName: "भुना मखाना",
-    imageUrl: "https://images.unsplash.com/photo-1599490659213-e2b9527bd087?auto=format&fit=crop&w=600&q=80",
     region: "pan-indian",
     cuisineRegion: "Mixed Indian",
     dietType: "vegan",
@@ -329,80 +297,71 @@ export const INDIAN_RECIPES: IndianMeal[] = [
   }
 ];
 
-// DYNAMIC MULTI-STAGE SCORING & PERMUTATION ALGORITHM
-export function generateDynamicMultiStageScoredRecommendations(options: MultiPlanOptions): RecommendationCard[] {
+// SIMPLIFIED DYNAMIC RECOMMENDATION ALGORITHM (NO LOCATION / GPS)
+export function generateSimplifiedAIMealRecommendations(options: MultiPlanOptions): RecommendationCard[] {
   const {
     goal = "Muscle Gain",
-    preference = "South Indian",
-    mealCategory = "Breakfast",
-    userCity = "Hyderabad",
+    preference = "No Preference",
+    pantryIngredients = [],
     dislikedFoods = [],
     favoriteFoods = [],
     loggedTodayNames = [],
-    maxPrepTimeMinutes = 60,
-    proteinDeficitGrams = 25,
-    ironDeficitMg = 3,
     daySeed = Date.now()
   } = options;
 
-  // STAGE 1: HARD CONSTRAINT FILTERING
-  const catLower = mealCategory.toLowerCase();
-  let targetType: "breakfast" | "lunch" | "dinner" | "snack" = "breakfast";
-  if (catLower.includes("lunch")) targetType = "lunch";
-  else if (catLower.includes("dinner")) targetType = "dinner";
-  else if (catLower.includes("snack") || catLower.includes("workout")) targetType = "snack";
-
-  let pool = INDIAN_RECIPES.filter((r) => r.mealType === targetType);
-  if (pool.length === 0) pool = INDIAN_RECIPES;
-
-  let valid = pool.filter((r) => {
+  let valid = INDIAN_RECIPES.filter((r) => {
     // Exclude disliked foods
     if (dislikedFoods.some((d) => r.name.toLowerCase().includes(d.toLowerCase()))) return false;
     // Exclude foods already eaten today
     if (loggedTodayNames.some((l) => l.toLowerCase().includes(r.name.toLowerCase()))) return false;
-    // Filter by dietary category
+
+    // Food Preference Matching
     if (preference === "Vegan" && r.dietType !== "vegan") return false;
     if (preference === "Vegetarian" && r.dietType !== "veg" && r.dietType !== "vegan") return false;
     if (preference === "Eggetarian" && r.dietType === "non-veg") return false;
-    if (maxPrepTimeMinutes && r.prepTimeMinutes > maxPrepTimeMinutes) return false;
+
     return true;
   });
 
-  if (valid.length < 3) valid = pool;
+  if (valid.length < 3) valid = INDIAN_RECIPES;
 
-  // STAGE 2: MULTI-FACTOR COMPATIBILITY SCORING S IN [65, 99]
-  const cityKey = userCity.toLowerCase().trim();
-  const locationMeta = CITY_REGION_MAP[cityKey] || { region: "south", priorityCuisine: "South Indian" };
+  const userPantry = pantryIngredients.map(p => p.toLowerCase().trim());
 
   const scored = valid.map((recipe, index) => {
-    let score = 70;
+    let score = 75;
 
-    // 1. Location Fit (+15)
-    if (recipe.region === locationMeta.region || recipe.cuisineRegion.includes(locationMeta.priorityCuisine)) {
-      score += 15;
-    }
-
-    // 2. Goal Fit (+15)
-    if (goal === "High Protein" || goal === "Muscle Gain") {
+    // Goal Scoring Alignment
+    if (goal === "Weight Loss" || goal === "Fat Loss") {
+      if (recipe.calories <= 380 || recipe.fiber >= 8) score += 15;
+    } else if (goal === "Muscle Gain" || goal === "Strength Building" || goal === "High Protein") {
       if (recipe.protein >= 15) score += 15;
-    } else if (goal === "Weight Loss") {
-      if (recipe.calories <= 380) score += 15;
+    } else if (goal === "Diabetes Friendly") {
+      if (recipe.fiber >= 8 || recipe.keyNutrients.includes("Low GI")) score += 15;
+    } else if (goal === "Heart Healthy") {
+      if (recipe.fat <= 8 || recipe.badgeList.includes("Low Fat")) score += 15;
     }
 
-    // 3. Deficiency Fit (+10)
-    if (proteinDeficitGrams > 20 && recipe.protein >= 18) score += 10;
-    if (ironDeficitMg > 2 && recipe.iron_mg >= 3.5) score += 10;
+    // Pantry Ingredient Match (+15)
+    if (userPantry.length > 0) {
+      let matchCount = 0;
+      recipe.ingredients.forEach((ing) => {
+        if (userPantry.some((u) => ing.toLowerCase().includes(u) || u.includes(ing.toLowerCase()))) {
+          matchCount++;
+        }
+      });
+      if (matchCount > 0) score += 15;
+    }
 
-    // 4. Favorite Fit (+10)
+    // Favorite Boost (+10)
     if (favoriteFoods.some((fav) => recipe.name.toLowerCase().includes(fav.toLowerCase()))) {
       score += 10;
     }
 
-    // 5. Seed Permutation (+ 1..5) for rotation
-    const pseudoRandomOffset = ((daySeed + index * 17) % 7);
+    // Seed Rotation (+ 1..5)
+    const pseudoRandomOffset = ((daySeed + index * 19) % 7);
     score += pseudoRandomOffset;
 
-    const finalScore = Math.min(99, Math.max(68, score));
+    const finalScore = Math.min(99, Math.max(70, score));
     return {
       ...recipe,
       matchScore: finalScore,
@@ -410,49 +369,13 @@ export function generateDynamicMultiStageScoredRecommendations(options: MultiPla
     };
   });
 
-  // Sort by highest score
   scored.sort((a, b) => b.matchScore - a.matchScore);
 
-  // STAGE 3: STAPLE DIVERSITY & TOP 3 RANKING
   const top3 = scored.slice(0, 3);
   const ranks = ["🥇 Best Match", "🥈 Great Alternative", "🥉 Quick Healthy Option"];
 
   return top3.map((card, idx) => ({
     ...card,
     matchBadge: ranks[idx] || `${card.matchScore}% Match`
-  }));
-}
-
-export function generateDynamicPantryMeals(pantryIngredients: string[]): RecommendationCard[] {
-  if (!pantryIngredients || pantryIngredients.length === 0) {
-    return generateDynamicMultiStageScoredRecommendations({ mealCategory: "Breakfast" });
-  }
-
-  const userIngs = pantryIngredients.map((i) => i.toLowerCase().trim());
-
-  const scored = INDIAN_RECIPES.map((recipe) => {
-    let matchCount = 0;
-    recipe.ingredients.forEach((ing) => {
-      if (userIngs.some((u) => ing.toLowerCase().includes(u) || u.includes(ing.toLowerCase()))) {
-        matchCount++;
-      }
-    });
-
-    const matchPercent = Math.min(99, Math.max(65, Math.round((matchCount / Math.max(1, recipe.ingredients.length)) * 100) + 50));
-
-    return {
-      ...recipe,
-      matchScore: matchPercent,
-      matchBadge: `${matchPercent}% Pantry Match`
-    };
-  });
-
-  scored.sort((a, b) => b.matchScore - a.matchScore);
-  const top3 = scored.slice(0, 3);
-  const ranks = ["🥇 Best Match", "🥈 Great Alternative", "🥉 Quick Healthy Option"];
-
-  return top3.map((card, idx) => ({
-    ...card,
-    matchBadge: ranks[idx] || `${card.matchScore}% Pantry Match`
   }));
 }

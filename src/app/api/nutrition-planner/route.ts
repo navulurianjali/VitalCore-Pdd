@@ -3,8 +3,7 @@ import { createClient } from "@/utils/supabase/server";
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 import { 
-  generateDynamicMultiStageScoredRecommendations, 
-  generateDynamicPantryMeals 
+  generateSimplifiedAIMealRecommendations
 } from "@/utils/indianNutritionEngine";
 
 let ratelimit: Ratelimit | null = null;
@@ -73,63 +72,36 @@ export async function POST(req: NextRequest) {
     const profile = serverProfile || {};
 
     const goal = String(body.goal || "Muscle Gain");
-    const preference = String(body.preference || "South Indian");
-    const cuisine = String(body.cuisine || "South Indian");
-    const mealCategory = String(body.mealCategory || "Breakfast");
-    const queryPrompt = String(body.queryPrompt || "");
-    const userCity = String(body.userCity || "Hyderabad");
-    const spiceLevel = String(body.spiceLevel || "Any");
-    const maxPrepTimeMinutes = Number(body.maxPrepTimeMinutes) || 60;
+    const preference = String(body.preference || "No Preference");
     const dislikedFoods = Array.isArray(body.dislikedFoods) ? body.dislikedFoods : [];
     const favoriteFoods = Array.isArray(body.favoriteFoods) ? body.favoriteFoods : [];
     const loggedTodayNames = Array.isArray(body.loggedTodayNames) ? body.loggedTodayNames : [];
     const pantryIngredients = Array.isArray(body.pantryIngredients) ? body.pantryIngredients : [];
-    const remainingCalories = Number(body.remainingCalories) || 1600;
-    const proteinDeficitGrams = Number(body.proteinDeficitGrams) || 35;
-    const ironDeficitMg = Number(body.ironDeficitMg) || 4;
     const daySeed = Number(body.daySeed) || Date.now();
 
-    let fallbackCards = [];
-    if (pantryIngredients.length > 0) {
-      fallbackCards = generateDynamicPantryMeals(pantryIngredients);
-    } else {
-      fallbackCards = generateDynamicMultiStageScoredRecommendations({
-        goal,
-        preference,
-        cuisine,
-        mealCategory,
-        queryPrompt,
-        userCity,
-        spiceLevel,
-        maxPrepTimeMinutes,
-        dislikedFoods,
-        favoriteFoods,
-        loggedTodayNames,
-        remainingCalories,
-        proteinDeficitGrams,
-        ironDeficitMg,
-        daySeed
-      });
-    }
+    const fallbackCards = generateSimplifiedAIMealRecommendations({
+      goal,
+      preference,
+      pantryIngredients,
+      dislikedFoods,
+      favoriteFoods,
+      loggedTodayNames,
+      daySeed
+    });
 
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
       return NextResponse.json({ recommendations: fallbackCards });
     }
 
-    const systemPrompt = `You are an elite Clinical AI Nutritionist algorithm (Spotify/Netflix style scoring engine).
-Calculate multi-factor compatibility scores and generate EXACTLY 3 TOP-SCORING meal recommendations for ${userCity}.
+    const systemPrompt = `You are a world-class Clinical AI Nutritionist.
+Generate EXACTLY 3 TOP-SCORING Indian meal recommendations focusing on South Indian and regional cuisines.
 
-MULTISTAGE SCORING & COMPATIBILITY METRICS:
-- Location Fit: ${userCity} (Prioritize regional dishes)
-- Remaining Calories: ${remainingCalories} kcal
-- Protein Deficit: ${proteinDeficitGrams}g remaining to hit daily target
-- Iron Deficit: ${ironDeficitMg}mg remaining
-- Goal: ${goal}
-- Preference: ${preference}
-
-EXCLUSIONS (EATEN TODAY): ${JSON.stringify(loggedTodayNames)}
-PANTRY CONSTRAINTS: ${JSON.stringify(pantryIngredients)}
+USER CONSTRAINTS:
+- Food Preference: ${preference} (Vegetarian | Non-Vegetarian | Vegan | Eggetarian | No Preference)
+- Health Goal: ${goal} (Weight Loss | Weight Gain | Muscle Gain | Strength Building | Fat Loss | Healthy Lifestyle | Balanced Diet | High Protein | Diabetes Friendly | Heart Healthy)
+- Available Pantry Ingredients (if provided): ${JSON.stringify(pantryIngredients)}
+- Exclude Eaten Foods Today: ${JSON.stringify(loggedTodayNames)}
 
 RANKING OUTPUT:
 1. 🥇 Best Match
@@ -141,10 +113,9 @@ Respond strictly with a raw JSON object:
   "recommendations": [
     {
       "name": "Authentic Dish Name",
-      "imageUrl": "https://images.unsplash.com/photo-1589301760014-d929f3979dbc?auto=format&fit=crop&w=600&q=80",
       "servingSize": "Portion details",
       "shortTag": "Short 3-4 word tag (e.g. High Protein)",
-      "badgeList": ["High Protein", "Iron", "Low Fat"],
+      "badgeList": ["High Protein", "Iron Rich", "Low Fat"],
       "calories": 350,
       "protein": 18,
       "carbs": 52,
@@ -170,7 +141,7 @@ DO NOT include markdown backticks outside JSON.`;
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          contents: [{ role: "user", parts: [{ text: `Generate top 3 multi-stage scored recommendations for ${userCity}` }] }],
+          contents: [{ role: "user", parts: [{ text: `Generate top 3 recommendations for preference: ${preference}, goal: ${goal}` }] }],
           systemInstruction: { parts: [{ text: systemPrompt }] },
           generationConfig: { temperature: 0.7, responseMimeType: "application/json" }
         })
