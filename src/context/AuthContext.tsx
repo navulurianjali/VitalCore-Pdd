@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { supabase, isSupabaseConfigured } from "@/utils/supabase";
 
-interface UserProfile {
+export interface UserProfile {
   id: string;
   email: string;
   full_name: string;
@@ -18,32 +18,63 @@ interface UserProfile {
   height_cm?: number;
   fitness_goal?: string;
   
-  // Onboarding metadata parameters
+  // Comprehensive Health Profile Fields
+  date_of_birth?: string;
+  gender?: string;
+  blood_group?: string;
+  country?: string;
+  state?: string;
+  city?: string;
+  occupation?: string;
+
+  medical_conditions?: string;
+  medications?: string;
+  medication_schedule?: string;
+  allergies?: string;
+  food_allergies?: string;
+  surgeries?: string;
+  chronic_conditions?: string;
+  family_history?: string;
+  pregnancy_status?: string;
+
+  activity_level?: string;
+  exercise_frequency?: string;
+  workout_preference?: string;
+  fitness_experience?: string;
+  step_goal?: number;
+  water_goal?: number;
+  sleep_goal?: number;
+
+  food_preference?: string;
+  favorite_foods?: string[];
+  disliked_foods?: string[];
+  cuisine_preference?: string;
+  calorie_goal?: number;
+  protein_goal?: number;
+  carb_goal?: number;
+  fat_goal?: number;
+
+  smoking_status?: string;
+  alcohol_status?: string;
+  stress_level_onboard?: number;
+  working_hours?: string;
+  sleep_schedule?: string;
+
+  emergency_contact_name?: string;
+  emergency_contact_phone?: string;
+  emergency_contact_relation?: string;
+
+  reminder_preferences?: string;
+  notification_settings?: any;
+  ai_coach_style?: string;
+  unit_system?: string;
+  
+  screen_time_hours?: number;
+  caffeine_intake?: string;
+  sleep_problems?: boolean;
+  
   bmi?: number;
   body_fat_estimate?: number;
-  occupation?: string;
-  timezone?: string;
-  fitness_level?: string;
-  workout_duration_preference?: number;
-  preferred_workout_time?: string;
-  home_gym_preference?: string;
-  previous_injuries?: string;
-  chronic_conditions?: string;
-  surgeries?: string;
-  mobility_limitations?: string;
-  sleep_problems?: boolean;
-  dietary_preferences?: string;
-  disliked_foods?: string[];
-  favorite_foods?: string[];
-  allergies?: string;
-  meal_timing_habits?: string;
-  caffeine_intake?: string;
-  wearable_synced?: boolean;
-  anxiety_rating?: number;
-  motivation_level?: number;
-  stress_level_onboard?: number;
-  screen_time_hours?: number;
-  sitting_hours?: number;
 }
 
 interface AuthContextProps {
@@ -54,6 +85,7 @@ interface AuthContextProps {
   signUp: (email: string, password: string, fullName: string, username: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
   updateProfile: (updates: Partial<UserProfile>) => Promise<{ error: Error | null }>;
+  refreshProfile: () => Promise<void>;
   isMockMode: boolean;
 }
 
@@ -64,11 +96,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const isMockMode = false; // Supabase is now exclusively active
+  const isMockMode = false;
 
   useEffect(() => {
     if (supabase) {
-      // Supabase Active mode listener
       supabase.auth.getSession().then(({ data: { session } }) => {
         if (session) {
           setUser(session.user);
@@ -105,122 +136,79 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         .select("*")
         .eq("id", uid)
         .single();
-      if (data && !error) {
-        setProfile(data as UserProfile);
-      } else if (error && error.code === 'PGRST116') {
-        console.warn("Profile not found in database. Auto-healing by recreating profile...");
-        const { data: authData } = await supabase.auth.getUser();
-        if (authData?.user) {
-          const email = authData.user.email || "";
-          const fullName = authData.user.user_metadata?.full_name || "User";
-          const username = authData.user.user_metadata?.username || `user_${uid.substring(0,6)}`;
-          
-          const newProfile = {
-            id: uid,
-            full_name: fullName,
-            username: username,
-            active_mode: "wellness" as const,
-            onboarding_completed: false,
-            soreness_level: 0,
-            biological_age: 30,
-            stability_score: 100,
-          };
-          const { data: newDbProfile, error: insertError } = await supabase.from("profiles").insert(newProfile).select().single();
-          if (newDbProfile && !insertError) {
-             setProfile(newDbProfile as UserProfile);
-          } else {
-             console.error("Auto-heal profile insertion failed:", insertError);
-          }
-        }
+
+      if (!error && data) {
+        setProfile({
+          ...data,
+          email: user?.email || "",
+          soreness_level: Number(data.soreness_level) || 0,
+          biological_age: Number(data.biological_age) || 30,
+          stability_score: Number(data.stability_score) || 100
+        });
       }
     } catch (e) {
-      console.error(e);
+      console.error("Profile fetch error:", e);
     } finally {
       setLoading(false);
     }
   };
 
-  const signIn = async (email: string, password: string): Promise<{ error: Error | null }> => {
-    if (supabase) {
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) return { error };
-      setUser(data.user);
-      return { error: null };
+  const refreshProfile = async () => {
+    if (user?.id) {
+      await fetchSupabaseProfile(user.id);
     }
-    return { error: new Error("Supabase client is not initialized.") };
   };
 
-  const signUp = async (
-    email: string,
-    password: string,
-    fullName: string,
-    username: string
-  ): Promise<{ error: Error | null }> => {
-    if (supabase) {
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            full_name: fullName,
-            username: username,
-          },
-        },
-      });
-      if (error) return { error };
-      
-      // Explicitly insert into profiles table to guarantee instant profile creation
-      if (data.user) {
-        const newProfile = {
-          id: data.user.id,
+  const signIn = async (email: string, password: string) => {
+    if (!supabase) return { error: new Error("Supabase client not initialized") };
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    return { error };
+  };
+
+  const signUp = async (email: string, password: string, fullName: string, username: string) => {
+    if (!supabase) return { error: new Error("Supabase client not initialized") };
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
           full_name: fullName,
-          username: username,
-          active_mode: "wellness" as const,
-          onboarding_completed: false,
-          soreness_level: 0,
-          biological_age: 28.5,
-          stability_score: 95.0,
-        };
-        const { error: profileError } = await supabase.from("profiles").upsert(newProfile);
-        if (profileError) {
-          console.error("Error creating user profile:", profileError);
-        } else {
-          setProfile({ ...newProfile, email } as unknown as UserProfile);
+          username: username
         }
       }
-      
-      setUser(data.user);
-      return { error: null };
-    }
-    return { error: new Error("Supabase client is not initialized.") };
+    });
+    return { error };
   };
 
-  const signOut = async (): Promise<void> => {
+  const signOut = async () => {
     if (supabase) {
       await supabase.auth.signOut();
     }
+    setUser(null);
+    setProfile(null);
   };
 
-  const updateProfile = async (updates: Partial<UserProfile>): Promise<{ error: Error | null }> => {
-    if (!profile) return { error: new Error("No active session profile found.") };
+  const updateProfile = async (updates: Partial<UserProfile>) => {
+    if (!profile || !supabase) return { error: new Error("No active profile") };
 
-    if (supabase) {
-      const { data, error } = await supabase
+    try {
+      const { error } = await supabase
         .from("profiles")
         .update(updates)
-        .eq("id", profile.id)
-        .select()
-        .single();
-      
-      if (error) return { error };
-      setProfile(data as UserProfile);
-      return { error: null };
+        .eq("id", profile.id);
+
+      if (!error) {
+        setProfile({ ...profile, ...updates });
+        return { error: null };
+      }
+      return { error };
+    } catch (e: any) {
+      return { error: e };
     }
-    return { error: new Error("Supabase client is not initialized.") };
   };
 
   return (
-    <AuthContext.Provider value={{ user, profile, loading, signIn, signUp, signOut, updateProfile, isMockMode }}>
+    <AuthContext.Provider value={{ user, profile, loading, signIn, signUp, signOut, updateProfile, refreshProfile, isMockMode }}>
       {children}
     </AuthContext.Provider>
   );
@@ -228,9 +216,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (context === undefined) {
+  if (!context) {
     throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };
-
