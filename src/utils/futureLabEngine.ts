@@ -36,41 +36,43 @@ export function getDigitalTwinProfile(data: HealthDigitalTwin, profile?: any): D
   const fat = data.fatigueScore || 50;
 
   // Domain Scores
-  const nutritionScore = Math.min(100, Math.max(10, Math.round(
+  const nutritionScore = data.caloriesConsumed === 0 ? 0 : Math.min(100, Math.max(0, Math.round(
     (data.caloriesConsumed > 1200 && data.caloriesConsumed < 3000 ? 50 : 25) +
     (data.micronutrientDeficiencies.length === 0 ? 30 : 10) +
     (data.stabilityScore * 0.2)
   )));
 
-  const hydrationScore = Math.min(100, Math.max(10, Math.round(hydroRatio * 100)));
+  const hydrationScore = data.hydrationMl === 0 ? 0 : Math.min(100, Math.max(0, Math.round(hydroRatio * 100)));
 
-  const sleepScore = Math.min(100, Math.max(10, Math.round(
+  const sleepScore = sleepH === 0 ? 0 : Math.min(100, Math.max(0, Math.round(
     (sleepH >= 7 ? 60 : (sleepH / 7) * 50) + (data.sleepQuality * 0.4)
   )));
 
-  const recoveryScore = Math.min(100, Math.max(10, Math.round(recovPct)));
+  const recoveryScore = recovPct === 0 ? 0 : Math.min(100, Math.max(0, Math.round(recovPct)));
 
-  const fitnessScore = Math.min(100, Math.max(10, Math.round(
+  const fitnessScore = (data.steps === 0 && data.caloriesBurned === 0) ? 0 : Math.min(100, Math.max(0, Math.round(
     (data.steps / (data.stepsTarget || 10000)) * 50 + (data.caloriesBurned > 300 ? 50 : 25)
   )));
 
-  const stressScore = Math.min(100, Math.max(10, Math.round(100 - stress)));
+  const stressScore = data.stressLevel === 0 ? 0 : Math.min(100, Math.max(0, Math.round(100 - stress)));
 
-  const heartHealthScore = Math.min(100, Math.max(10, Math.round(
+  const activeDomains = [nutritionScore, hydrationScore, sleepScore, recoveryScore, fitnessScore, stressScore].filter(s => s > 0);
+
+  const heartHealthScore = activeDomains.length === 0 ? 0 : Math.min(100, Math.max(0, Math.round(
     (recovPct * 0.4) + ((100 - stress) * 0.4) + (sleepScore * 0.2)
   )));
 
-  const metabolismScore = Math.min(100, Math.max(10, Math.round(
+  const metabolismScore = activeDomains.length === 0 ? 0 : Math.min(100, Math.max(0, Math.round(
     (hydrationScore * 0.3) + (nutritionScore * 0.4) + (fitnessScore * 0.3)
   )));
 
-  const immuneHealthScore = Math.min(100, Math.max(10, Math.round(
+  const immuneHealthScore = activeDomains.length === 0 ? 0 : Math.min(100, Math.max(0, Math.round(
     (sleepScore * 0.4) + (nutritionScore * 0.3) + (recoveryScore * 0.3)
   )));
 
-  const lifestyleConsistencyScore = Math.min(100, Math.max(10, Math.round(data.stabilityScore)));
+  const lifestyleConsistencyScore = activeDomains.length === 0 ? 0 : Math.min(100, Math.max(0, Math.round(data.stabilityScore)));
 
-  const overallHealthScore = Math.round(
+  const overallHealthScore = activeDomains.length === 0 ? 0 : Math.round(
     (nutritionScore + hydrationScore + sleepScore + recoveryScore + fitnessScore + 
      stressScore + heartHealthScore + metabolismScore + immuneHealthScore + lifestyleConsistencyScore) / 10
   );
