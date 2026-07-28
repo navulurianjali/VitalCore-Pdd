@@ -190,13 +190,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signIn = async (email: string, password: string) => {
     if (!supabase) return { error: new Error("Supabase client not initialized") };
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (!error && data?.user) {
+      setUser(data.user);
+      await fetchSupabaseProfile(data.user.id);
+    }
     return { error };
   };
 
   const signUp = async (email: string, password: string, fullName: string, username: string) => {
     if (!supabase) return { error: new Error("Supabase client not initialized") };
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -206,6 +210,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
       }
     });
+    if (!error && data?.user) {
+      setUser(data.user);
+      await fetchSupabaseProfile(data.user.id);
+    }
     return { error };
   };
 
