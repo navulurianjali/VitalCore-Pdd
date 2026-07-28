@@ -20,7 +20,7 @@ import { useAuth } from "@/context/AuthContext";
 import confetti from "canvas-confetti";
 import { supabase } from "@/utils/supabase";
 import { 
-  generateMultiMealRecommendations, 
+  generateStrictCategoryRecommendations, 
   RecommendationCard 
 } from "@/utils/indianNutritionEngine";
 
@@ -42,7 +42,7 @@ export default function SmartAINutritionPlansPage() {
   // Search & Filter state
   const [queryPrompt, setQueryPrompt] = useState("");
   const [activeChip, setActiveChip] = useState("Breakfast");
-  const [visibleCount, setVisibleCount] = useState(4); // Display TOP 3-4 cards initially!
+  const [visibleCount, setVisibleCount] = useState(4);
 
   // Recommendations state
   const [recommendations, setRecommendations] = useState<RecommendationCard[]>([]);
@@ -128,12 +128,16 @@ export default function SmartAINutritionPlansPage() {
     fetchLogs();
   }, [profile]);
 
-  // Primary recommendation generator
+  // Primary recommendation generator with Strict Category & History Exclusion
   const fetchRecommendations = async (overrideQuery?: string, overrideChip?: string) => {
     setLoadingAI(true);
     setVisibleCount(4);
     const activeQuery = overrideQuery !== undefined ? overrideQuery : queryPrompt;
     const activeFilterTag = overrideChip || activeChip;
+    const todayStr = new Date().toISOString().split("T")[0];
+    const loggedTodayNames = foodLogs
+      .filter(log => log.created_at.startsWith(todayStr))
+      .map(log => log.food_name);
 
     try {
       const response = await fetch("/api/nutrition-planner", {
@@ -147,6 +151,7 @@ export default function SmartAINutritionPlansPage() {
           goal: activeFilterTag === "High Protein" ? "High Protein" : activeFilterTag === "Weight Loss" ? "Weight Loss" : "Muscle Gain",
           dislikedFoods,
           favoriteFoods,
+          loggedTodayNames,
           daySeed: Date.now()
         })
       });
@@ -162,7 +167,7 @@ export default function SmartAINutritionPlansPage() {
         throw new Error("API error");
       }
     } catch {
-      const fallback = generateMultiMealRecommendations({
+      const fallback = generateStrictCategoryRecommendations({
         queryPrompt: activeQuery,
         mealCategory: activeFilterTag,
         cuisine: "South Indian",
@@ -170,6 +175,7 @@ export default function SmartAINutritionPlansPage() {
         goal: "Muscle Gain",
         dislikedFoods,
         favoriteFoods,
+        loggedTodayNames,
         userWeightKg: profile?.weight_kg || 70,
         daySeed: Date.now()
       });
@@ -183,7 +189,7 @@ export default function SmartAINutritionPlansPage() {
     if (recommendations.length === 0) {
       fetchRecommendations();
     }
-  }, []);
+  }, [foodLogs]);
 
   // Handle Mark Eaten & Log Meal
   const handleLogMeal = async (card: RecommendationCard) => {
@@ -245,17 +251,21 @@ export default function SmartAINutritionPlansPage() {
                 AI Indian Nutrition Assistant
               </h1>
               <p className="text-xs text-foreground/60 font-medium">
-                Personalized South Indian & regional meal recommendations
+                Category-filtered South Indian & regional meal recommendations
               </p>
             </div>
             <div className="flex items-center gap-2">
+              <Button size="sm" variant="glass" onClick={() => fetchRecommendations()} className="text-xs font-bold border border-foreground/10 flex items-center gap-1">
+                <RefreshCw className={`h-3.5 w-3.5 ${loadingAI ? "animate-spin" : ""}`} />
+                Refresh AI
+              </Button>
               <Button size="sm" variant="primary" onClick={() => setShowManualMealModal(true)} className="text-xs font-bold bg-primary text-white">
                 + Log Custom Meal
               </Button>
             </div>
           </div>
 
-          {/* COMPACT AI SEARCH BAR WITH GENEROUS LEFT PADDING (NO ICON OVERLAP) */}
+          {/* COMPACT AI SEARCH BAR WITH GENEROUS LEFT PADDING */}
           <div className="relative flex items-center w-full">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground/45 pointer-events-none z-10" />
             <input
@@ -319,21 +329,21 @@ export default function SmartAINutritionPlansPage() {
           </GlassCard>
         </div>
 
-        {/* TOP 3-4 FOCUSED RECOMMENDATION CARDS (TITLES BELOW IMAGES) */}
+        {/* TOP 3-4 DIVERSE RECOMMENDATION CARDS */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-bold text-foreground tracking-tight">
-              Top Recommendations for You
+              Top Recommendations for {activeChip}
             </h3>
             <span className="text-xs text-foreground/50 font-semibold">
-              Top {Math.min(visibleCount, recommendations.length)} of {recommendations.length} options
+              {recommendations.length} distinct options
             </span>
           </div>
 
           {loadingAI ? (
             <div className="p-12 text-center space-y-3 rounded-3xl glass-panel border border-foreground/5">
               <RefreshCw className="h-6 w-6 text-primary animate-spin mx-auto" />
-              <p className="text-xs font-semibold text-foreground/60">Selecting top 3-4 AI Indian meal recommendations...</p>
+              <p className="text-xs font-semibold text-foreground/60">Filtering distinct {activeChip} meal options...</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
@@ -346,7 +356,7 @@ export default function SmartAINutritionPlansPage() {
                     key={idx}
                     className="rounded-2xl glass-panel border border-foreground/10 bg-background overflow-hidden flex flex-col justify-between hover:border-primary/30 transition-all duration-200 group shadow-sm"
                   >
-                    {/* LARGE FOOD IMAGE ON TOP (WITH OVERLAY BADGES ONLY) */}
+                    {/* LARGE FOOD IMAGE ON TOP */}
                     <div className="relative h-44 w-full bg-foreground/5 overflow-hidden">
                       <img
                         src={card.imageUrl || "https://images.unsplash.com/photo-1589301760014-d929f3979dbc?auto=format&fit=crop&w=600&q=80"}

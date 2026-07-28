@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
-import { generateMultiMealRecommendations } from "@/utils/indianNutritionEngine";
+import { generateStrictCategoryRecommendations } from "@/utils/indianNutritionEngine";
 
 let ratelimit: Ratelimit | null = null;
 if (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) {
@@ -79,9 +79,10 @@ export async function POST(req: NextRequest) {
     const budget = String(body.budget || "Any");
     const dislikedFoods = Array.isArray(body.dislikedFoods) ? body.dislikedFoods : [];
     const favoriteFoods = Array.isArray(body.favoriteFoods) ? body.favoriteFoods : [];
+    const loggedTodayNames = Array.isArray(body.loggedTodayNames) ? body.loggedTodayNames : [];
     const daySeed = Number(body.daySeed) || Date.now();
 
-    const fallbackCards = generateMultiMealRecommendations({
+    const fallbackCards = generateStrictCategoryRecommendations({
       goal,
       preference,
       cuisine,
@@ -92,6 +93,7 @@ export async function POST(req: NextRequest) {
       budget,
       dislikedFoods,
       favoriteFoods,
+      loggedTodayNames,
       userWeightKg: profile?.weight_kg || 70,
       daySeed
     });
@@ -107,18 +109,24 @@ export async function POST(req: NextRequest) {
     }
 
     const systemPrompt = `You are a world-class South Indian & Clinical AI Nutritionist.
-Your task is to generate top authentic, familiar Indian meal recommendations matching user intent and profile.
+Generate EXACTLY 4 STRICTLY CATEGORY-MATCHED, NON-DUPLICATIVE Indian meal recommendations matching user intent and profile.
 
-User Request:
-- User Prompt: "${queryPrompt}"
-- Meal Category: ${mealCategory}
-- Cuisine Preference: ${cuisine} (PRIORITIZE South Indian: Idli, Dosa, Pesarattu, Upma, Pongal, Ragi Mudde, Ragi Dosa, Puttu, Appam, Uttapam, Poori, Chapati, Phulka, Lemon Rice, Curd Rice, Pulihora, Bisi Bele Bath, Sambar Rice, Rasam Rice, Dal Rice, Rajma Rice, Chole, Veg Kurma, Paneer Curry, Egg Curry, Fish Curry, Chicken Curry, Andhra Meals, Millet Meals, Sprouts, Sundal, Makhana, Buttermilk, Lassi, Tender Coconut Water, etc.)
-- Dietary Preference: ${preference}
-- Health Goal: ${goal}
-- Disliked Foods (EXCLUDE): ${JSON.stringify(dislikedFoods)}
-- Favorite Foods (PRIORITIZE): ${JSON.stringify(favoriteFoods)}
+CRITICAL CONSTRAINTS:
+1. STRICT CATEGORY FILTERING:
+   - If Meal Category is "Breakfast", suggest ONLY Breakfast items (Idli, Dosa, Upma, Pongal, Pesarattu, Ragi Dosa, Appam, Uttapam, Poha, Besan Chilla). NO lunch/dinner/snack items!
+   - If Meal Category is "Lunch", suggest ONLY Lunch items (Andhra Thali, Chettinad Chicken, Kerala Fish Curry, Rajma Rice, Dal Makhani, Veg Biryani). NO breakfast/snack items!
+   - If Meal Category is "Dinner", suggest ONLY Dinner items (Moong Dal Khichdi, South Indian Curd Rice, Ragi Mudde, Paneer Bhurji with Bajra Roti, Phulka with Kurma). NO breakfast/snack items!
+   - If Meal Category is "Snacks", suggest ONLY Snack items (Black Chana Sundal, Roasted Makhana, Tender Coconut & Peanuts, Masala Chaach, Mishti Doi). NO heavy meals!
 
-Respond strictly with a raw JSON object matching:
+2. STAPLE-TYPE DIVERSITY:
+   - Recommend 4 DISTINCT food items with 4 DIFFERENT staple bases (e.g. 1 Rice base, 1 Millet base, 1 Lentil base, 1 Wheat/Whole grain base).
+   - NEVER suggest multiple Dosa variants or multiple Idli variants in the same set!
+
+3. EXCLUSION OF EATEN & DISLIKED FOODS:
+   - Exclude foods logged today: ${JSON.stringify(loggedTodayNames)}
+   - Exclude disliked foods: ${JSON.stringify(dislikedFoods)}
+
+Respond strictly with a raw JSON object:
 {
   "recommendations": [
     {
@@ -144,7 +152,7 @@ Respond strictly with a raw JSON object matching:
     }
   ]
 }
-DO NOT include markdown backticks or extra text outside JSON.`;
+DO NOT include markdown backticks outside JSON.`;
 
     const response = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
@@ -169,7 +177,9 @@ DO NOT include markdown backticks or extra text outside JSON.`;
     if (replyText) {
       try {
         const parsed = JSON.parse(replyText.trim());
-        return NextResponse.json(parsed);
+        if (parsed.recommendations && parsed.recommendations.length > 0) {
+          return NextResponse.json(parsed);
+        }
       } catch {
         return NextResponse.json({ recommendations: fallbackCards });
       }
