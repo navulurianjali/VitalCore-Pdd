@@ -146,9 +146,33 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setProfile({
           ...data,
           email: user?.email || "",
+          onboarding_completed: data.onboarding_completed === true,
           soreness_level: Number(data.soreness_level) || 0,
-          biological_age: Number(data.biological_age) || 30,
+          biological_age: Number(data.biological_age) || 25,
           stability_score: Number(data.stability_score) || 100
+        });
+      } else {
+        // If profile doesn't exist yet, insert basic profile for new user with onboarding_completed: false
+        const { data: newProfile } = await supabase
+          .from("profiles")
+          .upsert({
+            id: uid,
+            full_name: user?.user_metadata?.full_name || "Wellness Explorer",
+            onboarding_completed: false
+          })
+          .select()
+          .single();
+
+        setProfile(newProfile ? { ...newProfile, onboarding_completed: false } : {
+          id: uid,
+          email: user?.email || "",
+          full_name: user?.user_metadata?.full_name || "Wellness Explorer",
+          username: user?.user_metadata?.username || "",
+          active_mode: "wellness",
+          onboarding_completed: false,
+          soreness_level: 0,
+          biological_age: 25,
+          stability_score: 100
         });
       }
     } catch (e) {

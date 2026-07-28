@@ -53,12 +53,14 @@ export function useHealthData() {
       
       const today = new Date().toISOString().split('T')[0];
 
-      // 1. Fetch Nutrition
-      const { data: nutritionData } = await supabase
+      const { data: rawNutrition } = await supabase
         .from("nutrition_logs")
-        .select("calories, protein_g, carbs_g, fat_g, fiber_g, sugar_g, sodium_mg")
-        .eq("user_id", profile.id)
-        .eq("date", today);
+        .select("calories, protein_g, carbs_g, fat_g, fiber_g, sugar_g, sodium_mg, date, created_at")
+        .eq("user_id", profile.id);
+
+      const nutritionData = (rawNutrition || []).filter(
+        (item: any) => !item.date || item.date === today || (item.created_at && item.created_at.startsWith(today))
+      );
 
       const caloriesConsumed = nutritionData?.reduce((sum, item) => sum + (Number(item.calories) || 0), 0) || 0;
       const proteinG = nutritionData?.reduce((sum, item) => sum + (Number(item.protein_g) || 0), 0) || 0;

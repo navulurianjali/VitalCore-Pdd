@@ -17,15 +17,7 @@ export const Navbar: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [modeDropdownOpen, setModeDropdownOpen] = useState(false);
 
-  const isDashboard = pathname.startsWith("/dashboard") || 
-                      pathname === "/ai-coach" || 
-                      pathname === "/sleep" ||
-                      pathname === "/dashboard" || 
-                      pathname === "/future-lab" ||
-                      pathname === "/challenges" || 
-                      pathname === "/settings" ||
-                      pathname === "/profile" ||
-                      pathname === "/admin";
+  const isDashboard = Boolean(user) && pathname !== "/";
 
   const publicNavLinks = [
     { name: "Features", href: "/features" },

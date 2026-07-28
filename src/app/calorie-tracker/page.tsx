@@ -56,11 +56,13 @@ export default function CalorieTrackerPage() {
         .from("nutrition_logs")
         .select("*")
         .eq("user_id", user.id)
-        .eq("date", todayStr)
         .order("created_at", { ascending: true });
 
       if (data && !error) {
-        setLogs(data as LoggedFood[]);
+        const filtered = (data as any[]).filter(
+          item => !item.date || item.date === todayStr || (item.created_at && item.created_at.startsWith(todayStr))
+        );
+        setLogs(filtered as LoggedFood[]);
       }
     } catch (e) {
       console.error("Error fetching food logs:", e);
