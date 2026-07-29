@@ -112,6 +112,11 @@ export default function DashboardPage() {
       setTotalCalories(metrics.caloriesConsumed);
       setSleepHrs(metrics.sleepHours);
       setStepsLogged(metrics.steps);
+    } else {
+      setWaterLogged(0);
+      setTotalCalories(0);
+      setSleepHrs(0);
+      setStepsLogged(0);
     }
   }, [metrics]);
 

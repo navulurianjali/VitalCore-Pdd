@@ -27,9 +27,29 @@ export default function AICoachPage() {
   const [historyLoaded, setHistoryLoaded] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
+  // Reset messages when profile changes or user logs out
+  useEffect(() => {
+    setMessages([]);
+    setHistoryLoaded(false);
+
+    const handleLogout = () => {
+      setMessages([]);
+      setHistoryLoaded(false);
+    };
+
+    window.addEventListener("vitalcore-user-logout", handleLogout);
+    return () => window.removeEventListener("vitalcore-user-logout", handleLogout);
+  }, [profile?.id]);
+
   useEffect(() => {
     async function loadHistory() {
-      if (!profile?.id || !supabase || historyLoaded) return;
+      if (!profile?.id || !supabase) {
+        setMessages([]);
+        setHistoryLoaded(false);
+        return;
+      }
+      if (historyLoaded) return;
+
       const { data } = await supabase
         .from("ai_conversations")
         .select("*")
@@ -43,11 +63,13 @@ export default function AICoachPage() {
           text: row.message,
           timestamp: new Date(row.created_at)
         })));
+      } else {
+        setMessages([]);
       }
       setHistoryLoaded(true);
     }
     loadHistory();
-  }, [profile, historyLoaded]);
+  }, [profile?.id, historyLoaded]);
 
   useEffect(() => {
     if (metrics && messages.length === 0 && historyLoaded) {

@@ -133,8 +133,8 @@ export default function OnboardingModal({ isOpen, onClose }: OnboardingModalProp
 
   const markCompleted = async () => {
     try {
-      if (typeof window !== "undefined") {
-        localStorage.setItem("vitalcore_onboarding_completed", "true");
+      if (typeof window !== "undefined" && profile?.id) {
+        localStorage.setItem(`vitalcore_onboarding_${profile.id}_completed`, "true");
       }
       if (profile?.id) {
         await updateProfile({ onboarding_completed: true });

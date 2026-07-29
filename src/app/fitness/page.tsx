@@ -581,11 +581,12 @@ export default function FitnessPage() {
     return () => clearInterval(interval);
   }, [timerRunning, timeLeft]);
 
-  // Save active timer state to localStorage
+  // Save active timer state to localStorage (user-scoped)
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    if (typeof window === "undefined" || !profile?.id) return;
+    const key = `vitalcore_workout_${profile.id}`;
     if (timerRunning) {
-      localStorage.setItem("vitalcore_active_workout", JSON.stringify({
+      localStorage.setItem(key, JSON.stringify({
         currentExerciseIdx,
         timeLeft,
         isResting,
@@ -593,15 +594,16 @@ export default function FitnessPage() {
         lastUpdated: Date.now()
       }));
     } else if (coachState !== "active") {
-      localStorage.removeItem("vitalcore_active_workout");
+      localStorage.removeItem(key);
     }
-  }, [timerRunning, currentExerciseIdx, timeLeft, isResting, coachState]);
+  }, [timerRunning, currentExerciseIdx, timeLeft, isResting, coachState, profile?.id]);
 
   // Restore workout session on page load
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    if (typeof window === "undefined" || !profile?.id) return;
+    const key = `vitalcore_workout_${profile.id}`;
     try {
-      const saved = localStorage.getItem("vitalcore_active_workout");
+      const saved = localStorage.getItem(key);
       if (saved) {
         const parsed = JSON.parse(saved);
         const elapsed = Math.floor((Date.now() - (parsed.lastUpdated || Date.now())) / 1000);
@@ -613,13 +615,13 @@ export default function FitnessPage() {
           setTimerRunning(Boolean(parsed.timerRunning));
           setCoachState("active");
         } else {
-          localStorage.removeItem("vitalcore_active_workout");
+          localStorage.removeItem(key);
         }
       }
     } catch (e) {
       console.error("Error restoring workout session:", e);
     }
-  }, []);
+  }, [profile?.id]);
 
   // Loading Screen ticks animation
   useEffect(() => {

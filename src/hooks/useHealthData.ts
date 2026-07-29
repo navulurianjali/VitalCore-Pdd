@@ -46,6 +46,7 @@ export function useHealthData() {
 
   const fetchRealData = useCallback(async () => {
     if (!profile?.id) {
+      setMetrics(null);
       setLoading(false);
       return;
     }
@@ -54,7 +55,19 @@ export function useHealthData() {
       setLoading(true);
       setError(null);
       
-      const today = new Date().toISOString().split('T')[0];
+      const now = new Date();
+      const localToday = now.toLocaleDateString('sv-SE');
+      const isoToday = now.toISOString().split('T')[0];
+
+      const matchesToday = (dateStr?: string, createdAt?: string) => {
+        if (dateStr && (dateStr === localToday || dateStr === isoToday)) return true;
+        if (createdAt) {
+          if (createdAt.startsWith(localToday) || createdAt.startsWith(isoToday)) return true;
+          const itemDate = new Date(createdAt).toLocaleDateString('sv-SE');
+          if (itemDate === localToday || itemDate === isoToday) return true;
+        }
+        return false;
+      };
 
       // Concurrent Promise.all Batch Fetching
       const [
@@ -75,17 +88,14 @@ export function useHealthData() {
         supabase.from("mood_tracking").select("*").eq("user_id", profile.id).order("created_at", { ascending: false })
       ]);
 
-      const nutritionData = (rawNutrition || []).filter(
-        (item: any) => !item.date || item.date === today || (item.created_at && item.created_at.startsWith(today))
-      );
+      const todayNutrition = (rawNutrition || []).filter(item => matchesToday(item.date, item.created_at));
+      const nutritionData = todayNutrition.length > 0 ? todayNutrition : (rawNutrition || []);
 
-      const workoutData = (allWorkouts || []).filter(
-        (item: any) => item.created_at && item.created_at.startsWith(today)
-      );
+      const todayWorkouts = (allWorkouts || []).filter(item => matchesToday(undefined, item.created_at));
+      const workoutData = todayWorkouts.length > 0 ? todayWorkouts : (allWorkouts || []);
 
-      const hydrationData = (allHydration || []).filter(
-        (item: any) => item.created_at && item.created_at.startsWith(today)
-      );
+      const todayHydration = (allHydration || []).filter(item => matchesToday(undefined, item.created_at));
+      const hydrationData = todayHydration.length > 0 ? todayHydration : (allHydration || []);
 
       const stepCountData = workoutData.filter((item: any) => item.type === "steps");
 
@@ -206,8 +216,16 @@ export function useHealthData() {
         .subscribe();
     }
 
+    const handleLogout = () => {
+      setMetrics(null);
+      setLoading(false);
+    };
+
+    window.addEventListener("vitalcore-user-logout", handleLogout);
+
     return () => {
       window.removeEventListener("vitalcore-data-updated", handleDataUpdate);
+      window.removeEventListener("vitalcore-user-logout", handleLogout);
       if (channel) {
         supabase.removeChannel(channel);
       }

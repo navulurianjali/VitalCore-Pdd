@@ -104,13 +104,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const isMockMode = false;
 
+  const clearClientState = () => {
+    setUser(null);
+    setProfile(null);
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.clear();
+        sessionStorage.clear();
+        window.dispatchEvent(new Event("vitalcore-user-logout"));
+      } catch (e) {
+        console.error("Storage clear error:", e);
+      }
+    }
+  };
+
   useEffect(() => {
     if (supabase) {
       supabase.auth.getSession().then(({ data: { session } }) => {
         if (session) {
           setUser(session.user);
-          fetchSupabaseProfile(session.user.id);
+          fetchSupabaseProfile(session.user.id, session.user);
         } else {
+          clearClientState();
           setLoading(false);
         }
       });
@@ -118,10 +133,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
         if (session) {
           setUser(session.user);
-          fetchSupabaseProfile(session.user.id);
+          fetchSupabaseProfile(session.user.id, session.user);
         } else {
-          setUser(null);
-          setProfile(null);
+          clearClientState();
           setLoading(false);
         }
       });
@@ -134,41 +148,44 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, []);
 
-  const fetchSupabaseProfile = async (uid: string) => {
+  const fetchSupabaseProfile = async (uid: string, sessionUser?: any) => {
     if (!supabase) return;
     try {
+      const activeUser = sessionUser || user;
       const { data, error } = await supabase
         .from("profiles")
         .select("*")
         .eq("id", uid)
-        .single();
+        .maybeSingle();
 
       if (!error && data) {
         setProfile({
           ...data,
-          email: user?.email || "",
+          email: activeUser?.email || data.email || "",
           onboarding_completed: data.onboarding_completed === true,
           soreness_level: Number(data.soreness_level) || 0,
           biological_age: Number(data.biological_age) || 25,
           stability_score: Number(data.stability_score) || 100
         });
-      } else {
-        // If profile doesn't exist yet, insert basic profile for new user with onboarding_completed: false
+      } else if (!data) {
+        const userEmail = activeUser?.email || "";
+        const userFullName = activeUser?.user_metadata?.full_name || (userEmail ? userEmail.split("@")[0] : "Wellness Explorer");
+
         const { data: newProfile } = await supabase
           .from("profiles")
           .upsert({
             id: uid,
-            full_name: user?.user_metadata?.full_name || "Wellness Explorer",
+            full_name: userFullName,
             onboarding_completed: false
           })
           .select()
           .single();
 
-        setProfile(newProfile ? { ...newProfile, onboarding_completed: false } : {
+        setProfile(newProfile ? { ...newProfile, email: userEmail, onboarding_completed: false } : {
           id: uid,
-          email: user?.email || "",
-          full_name: user?.user_metadata?.full_name || "Wellness Explorer",
-          username: user?.user_metadata?.username || "",
+          email: userEmail,
+          full_name: userFullName,
+          username: activeUser?.user_metadata?.username || "",
           active_mode: "wellness",
           onboarding_completed: false,
           soreness_level: 0,
@@ -185,7 +202,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const refreshProfile = async () => {
     if (user?.id) {
-      await fetchSupabaseProfile(user.id);
+      await fetchSupabaseProfile(user.id, user);
     }
   };
 
@@ -194,7 +211,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (!error && data?.user) {
       setUser(data.user);
-      await fetchSupabaseProfile(data.user.id);
+      await fetchSupabaseProfile(data.user.id, data.user);
     }
     return { error };
   };
@@ -213,7 +230,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
     if (!error && data?.user) {
       setUser(data.user);
-      await fetchSupabaseProfile(data.user.id);
+      await fetchSupabaseProfile(data.user.id, data.user);
     }
     return { error };
   };
@@ -222,8 +239,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (supabase) {
       await supabase.auth.signOut();
     }
-    setUser(null);
-    setProfile(null);
+    clearClientState();
   };
 
   const updateProfile = async (updates: Partial<UserProfile>) => {
