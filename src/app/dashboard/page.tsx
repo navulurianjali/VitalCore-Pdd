@@ -636,13 +636,19 @@ export default function DashboardPage() {
                   <div className="h-8 w-8 rounded-lg bg-green-500/10 flex items-center justify-center">
                     <Zap className="h-4 w-4 text-green-500" />
                   </div>
-                  <span className={`text-xl font-bold ${predictions.burnoutRisk > 60 ? "text-rose-500" : predictions.burnoutRisk > 35 ? "text-amber-500" : "text-green-500"}`}>
-                    {100 - predictions.burnoutRisk}%
+                  <span className={`text-xl font-bold ${
+                    (totalCalories > 0 || waterLogged > 0 || sleepHrs > 0 || stepsLogged > 0)
+                      ? (predictions.burnoutRisk > 60 ? "text-rose-500" : predictions.burnoutRisk > 35 ? "text-amber-500" : "text-green-500")
+                      : "text-[var(--muted)]"
+                  }`}>
+                    {(totalCalories > 0 || waterLogged > 0 || sleepHrs > 0 || stepsLogged > 0) ? `${100 - predictions.burnoutRisk}%` : "--"}
                   </span>
                 </div>
                 <h3 className="text-[13px] font-semibold text-[var(--foreground)] mb-1">Energy Balance</h3>
                 <p className="text-[11px] text-[var(--muted)]">
-                  {predictions.burnoutRisk > 60 ? "Focus on restorative periods today." : "Optimal energy reservoir."}
+                  {(totalCalories > 0 || waterLogged > 0 || sleepHrs > 0 || stepsLogged > 0)
+                    ? (predictions.burnoutRisk > 60 ? "Focus on restorative periods today." : "Optimal energy reservoir.")
+                    : "Not enough telemetry data available yet."}
                 </p>
               </div>
 
@@ -652,13 +658,19 @@ export default function DashboardPage() {
                   <div className="h-8 w-8 rounded-lg bg-indigo-500/10 flex items-center justify-center">
                     <Moon className="h-4 w-4 text-indigo-500" />
                   </div>
-                  <span className={`text-xl font-bold ${predictions.fatigueBuildup > 65 ? "text-rose-500" : predictions.fatigueBuildup > 40 ? "text-amber-500" : "text-indigo-500"}`}>
-                    {100 - predictions.fatigueBuildup}%
+                  <span className={`text-xl font-bold ${
+                    (totalCalories > 0 || waterLogged > 0 || sleepHrs > 0 || stepsLogged > 0)
+                      ? (predictions.fatigueBuildup > 65 ? "text-rose-500" : predictions.fatigueBuildup > 40 ? "text-amber-500" : "text-indigo-500")
+                      : "text-[var(--muted)]"
+                  }`}>
+                    {(totalCalories > 0 || waterLogged > 0 || sleepHrs > 0 || stepsLogged > 0) ? `${100 - predictions.fatigueBuildup}%` : "--"}
                   </span>
                 </div>
                 <h3 className="text-[13px] font-semibold text-[var(--foreground)] mb-1">Rest Profile</h3>
                 <p className="text-[11px] text-[var(--muted)]">
-                  {predictions.fatigueBuildup > 65 ? "Slight rest debt. Wind down early." : "Recovery battery fully charged."}
+                  {(totalCalories > 0 || waterLogged > 0 || sleepHrs > 0 || stepsLogged > 0)
+                    ? (predictions.fatigueBuildup > 65 ? "Slight rest debt. Wind down early." : "Recovery battery fully charged.")
+                    : "Log sleep or workouts to calculate rest profile."}
                 </p>
               </div>
 

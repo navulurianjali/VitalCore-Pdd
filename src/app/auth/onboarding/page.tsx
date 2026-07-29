@@ -37,7 +37,7 @@ export default function OnboardingPage() {
   };
 
   // STEP 3: Health Goals (Multi-Select)
-  const [goals, setGoals] = useState<string[]>(["Healthy Lifestyle", "Better Nutrition"]);
+  const [goals, setGoals] = useState<string[]>([]);
   const availableGoals = [
     "Weight Loss",
     "Weight Gain",
@@ -584,7 +584,12 @@ export default function OnboardingPage() {
             )}
 
             {step < 7 ? (
-              <Button variant="primary" onClick={handleNext} className="flex items-center gap-1.5 ml-auto">
+              <Button 
+                variant="primary" 
+                onClick={handleNext} 
+                disabled={step === 3 && goals.length === 0}
+                className="flex items-center gap-1.5 ml-auto"
+              >
                 <span>Continue</span>
                 <ArrowRight className="h-4 w-4" />
               </Button>

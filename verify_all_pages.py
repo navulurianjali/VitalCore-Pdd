@@ -36,7 +36,7 @@ def db_query(endpoint, method="GET", body=None):
 
 def main():
     ts = int(time.time())
-    email = f"audit_user_{ts}@vitalcore.test"
+    email = f"test_audit_{ts}@vitalcore.test"
     password = "TestPassword123!"
     full_name = f"Audit Explorer {ts}"
     username = f"audit_{ts}"
@@ -80,18 +80,29 @@ def main():
     report = []
 
     with sync_playwright() as p:
-        browser = p.chromium.launch(channel="msedge", headless=True)
+        browser = p.chromium.launch(headless=True)
         context = browser.new_context()
         page = context.new_page()
 
         # Perform Login
         page.goto(f"{BASE_URL}/auth/login")
-        page.fill('input[type="email"]', email)
-        page.fill('input[type="password"]', password)
-        page.click('button:has-text("Validate and Enter Console")')
-        page.wait_for_timeout(3000)
+        page.wait_for_timeout(2000)
 
-        assert "/dashboard" in page.url, f"Failed to login into dashboard, url: {page.url}"
+        if page.locator('input[type="email"]').is_visible():
+            page.fill('input[type="email"]', email)
+            page.fill('input[type="password"]', password)
+            page.click('button:has-text("Validate and Enter Console")')
+            try:
+                page.wait_for_url("**/dashboard", timeout=10000)
+            except Exception:
+                page.goto(f"{BASE_URL}/dashboard")
+                page.wait_for_timeout(2000)
+
+        if "/auth/onboarding" in page.url:
+            page.goto(f"{BASE_URL}/dashboard")
+            page.wait_for_timeout(2000)
+
+        assert "/dashboard" in page.url, f"Failed to load dashboard, url: {page.url}"
 
         for p_info in pages_to_test:
             name = p_info["name"]

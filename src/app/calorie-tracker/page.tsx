@@ -97,6 +97,19 @@ export default function CalorieTrackerPage() {
     };
   }, [user?.id]);
 
+  const foodSearchResults = searchFoodDatabase(searchQuery);
+  const currentNutritionPreview = selectedFood ? calculateNutrition(selectedFood, quantity) : null;
+
+  // Auto-select top search result when searching to fix BUG 4
+  useEffect(() => {
+    if (searchQuery.trim() && foodSearchResults.length > 0) {
+      if (!selectedFood || !foodSearchResults.some(f => f.id === selectedFood.id)) {
+        setSelectedFood(foodSearchResults[0]);
+        setCustomFoodName(foodSearchResults[0].name);
+      }
+    }
+  }, [searchQuery]);
+
   // Open modal to add food
   const handleOpenAddModal = (mealType: 'breakfast' | 'lunch' | 'dinner' | 'snack') => {
     setActiveMealType(mealType);
@@ -116,7 +129,6 @@ export default function CalorieTrackerPage() {
     const matched = FOOD_DATABASE.find(f => log.food_name.toLowerCase().includes(f.name.toLowerCase())) || FOOD_DATABASE[0];
     setSelectedFood(matched);
     
-    // Estimate existing quantity from calories or default to 1
     let estQty = 1;
     if (matched && matched.baseCalories > 0 && log.calories > 0) {
       estQty = Number((log.calories / matched.baseCalories).toFixed(1));
@@ -146,7 +158,6 @@ export default function CalorieTrackerPage() {
       fat_g: nutrition.fat,
     };
 
-    // Instant local UI update
     if (editingLogId) {
       setLogs(prev => prev.map(item => item.id === editingLogId ? { ...item, ...newLogEntry } : item));
     } else {
@@ -154,9 +165,11 @@ export default function CalorieTrackerPage() {
     }
     setModalOpen(false);
 
+    // Instant Dashboard sync event (Fix BUG 5)
+    window.dispatchEvent(new Event("vitalcore-data-updated"));
+
     try {
       if (editingLogId) {
-        // Update existing record
         const { error } = await supabase
           .from("nutrition_logs")
           .update({
@@ -172,7 +185,6 @@ export default function CalorieTrackerPage() {
         if (error) console.error("Update error:", error);
         fetchLogs();
       } else {
-        // Insert new record
         const { error } = await supabase
           .from("nutrition_logs")
           .insert({
@@ -189,6 +201,7 @@ export default function CalorieTrackerPage() {
         if (error) console.error("Insert error:", error);
         fetchLogs();
       }
+      window.dispatchEvent(new Event("vitalcore-data-updated"));
     } catch (e) {
       console.error("Save error:", e);
       fetchLogs();
@@ -197,8 +210,9 @@ export default function CalorieTrackerPage() {
 
   // Delete food log from Supabase
   const handleDeleteLog = async (id: string) => {
-    // Instant local UI update
     setLogs(prev => prev.filter(item => item.id !== id));
+    window.dispatchEvent(new Event("vitalcore-data-updated"));
+
     if (!supabase) return;
     try {
       const { error } = await supabase
@@ -210,6 +224,7 @@ export default function CalorieTrackerPage() {
         console.error("Delete error:", error);
         fetchLogs();
       }
+      window.dispatchEvent(new Event("vitalcore-data-updated"));
     } catch (e) {
       console.error("Delete error:", e);
       fetchLogs();
@@ -230,8 +245,7 @@ export default function CalorieTrackerPage() {
   const dinnerLogs = logs.filter(l => l.meal_type === 'dinner');
   const snackLogs = logs.filter(l => l.meal_type === 'snack' || l.meal_type === 'snacks');
 
-  const foodSearchResults = searchFoodDatabase(searchQuery);
-  const currentNutritionPreview = selectedFood ? calculateNutrition(selectedFood, quantity) : null;
+
 
   return (
     <DashboardLayout>
