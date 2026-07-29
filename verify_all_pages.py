@@ -91,7 +91,7 @@ def main():
         if page.locator('input[type="email"]').is_visible():
             page.fill('input[type="email"]', email)
             page.fill('input[type="password"]', password)
-            page.click('button:has-text("Validate and Enter Console")')
+            page.click('button[type="submit"]')
             try:
                 page.wait_for_url("**/dashboard", timeout=10000)
             except Exception:

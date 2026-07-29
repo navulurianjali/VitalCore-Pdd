@@ -127,15 +127,15 @@ export default function LandingPage() {
                 transition={{ delay: 0.2 }}
                 className="flex flex-wrap gap-4 pt-2"
               >
-                <Link href="/auth/signup">
+                <Link href="/auth/get-started">
                   <Button variant="primary" size="lg" className="flex items-center gap-2 px-6 py-3 font-semibold shadow-sm hover:scale-[1.01] transition-transform">
-                    <span>Start Free</span>
+                    <span>Sign Up Free</span>
                     <ArrowRight className="h-4 w-4" />
                   </Button>
                 </Link>
                 <Link href="/features">
                   <Button variant="glass" size="lg" className="px-6 py-3 font-semibold hover:bg-foreground/5 hover:scale-[1.01] transition-transform">
-                    See How It Works
+                    Learn More
                   </Button>
                 </Link>
               </motion.div>
@@ -147,7 +147,7 @@ export default function LandingPage() {
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3, type: "spring", stiffness: 80 }}
-                className="relative mx-auto max-w-lg lg:max-w-none w-full"
+                className="relative mx-auto max-w-xl lg:max-w-none w-full"
               >
                 <div className="relative group p-4">
                   {/* Subtle glow effect behind the image */}
@@ -155,7 +155,7 @@ export default function LandingPage() {
                   <img 
                     src="/images/hero_wellness.png" 
                     alt="VitalCore Wellness Tracking" 
-                    className="relative z-10 w-full h-auto drop-shadow-[0_20px_50px_rgba(0,0,0,0.15)] transition-transform duration-700 hover:scale-[1.02]" 
+                    className="relative z-10 w-full h-auto drop-shadow-[0_20px_50px_rgba(0,0,0,0.15)] animate-float" 
                   />
                 </div>
               </motion.div>
@@ -316,9 +316,9 @@ export default function LandingPage() {
             </p>
             
             <div className="flex justify-center pt-2 relative z-10">
-              <Link href="/auth/signup">
+              <Link href="/auth/get-started">
                 <Button variant="primary" size="lg" className="flex items-center gap-2 px-8">
-                  <span>Get Started</span>
+                  <span>Get Started Free</span>
                   <ArrowRight className="h-4.5 w-4.5" />
                 </Button>
               </Link>

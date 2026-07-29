@@ -316,3 +316,14 @@ input[type="range"]::-webkit-slider-thumb:hover {
   font-size: 0.6875rem !important;
   font-weight: 500 !important;
 }
+
+/* ============================================
+   FLOATING ANIMATION — hero image gentle bob
+   ============================================ */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-10px); }
+}
+.animate-float {
+  animation: float 4.5s ease-in-out infinite;
+}

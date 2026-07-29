@@ -67,10 +67,10 @@ export default function LoginPage() {
           <Link href="/" className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-primary text-white shadow-lg shadow-primary/20 hover:scale-105 transition-transform">
             <Activity className="h-5 w-5" />
           </Link>
-          <h2 className="auth-subtitle tracking-tight text-center font-bold">Access VitalCore Console</h2>
+          <h2 className="auth-subtitle tracking-tight text-center font-bold">Welcome Back</h2>
           <p className="auth-helper text-[12px] flex items-center gap-1 justify-center">
             <ShieldCheck className="h-4 w-4 text-secondary/80" />
-            Secure Session Gateway
+            Log in to your VitalCore account
           </p>
         </div>
 
@@ -86,7 +86,7 @@ export default function LoginPage() {
           <form onSubmit={handleLogin} className="space-y-4">
             
             <div className="space-y-1.5">
-              <label className="auth-label">Registered Email</label>
+              <label className="auth-label">Email Address</label>
               <div className="relative">
                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-foreground/30 pointer-events-none" />
                 <input
@@ -95,14 +95,14 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full text-foreground placeholder-foreground/35 focus:outline-none input-with-icon"
-                  placeholder="name@company.com"
+                  placeholder="name@email.com"
                 />
               </div>
             </div>
 
             <div className="space-y-1.5">
               <div className="flex justify-between items-center">
-                <label className="auth-label">Encryption Key</label>
+                <label className="auth-label">Password</label>
                 <Link href="/auth/forgot-password" className="auth-link text-primary hover:underline">
                   Forgot Password?
                 </Link>
@@ -121,15 +121,15 @@ export default function LoginPage() {
             </div>
 
             <Button variant="primary" type="submit" isLoading={loading} className="w-full mt-2 font-semibold">
-              Validate and Enter Console
+              Log In
             </Button>
 
           </form>
 
           <div className="mt-5 border-t border-foreground/5 pt-4 text-center text-xs text-foreground/60 font-medium">
-            New explorer?{" "}
-            <Link href="/auth/signup" className="font-semibold text-primary hover:underline">
-              Create secure profile
+            Don&apos;t have an account?{" "}
+            <Link href="/auth/get-started" className="font-semibold text-primary hover:underline">
+              Sign Up Free
             </Link>
           </div>
 

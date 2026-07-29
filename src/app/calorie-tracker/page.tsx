@@ -542,23 +542,23 @@ export default function CalorieTrackerPage() {
 
             {/* Food Search Input */}
             <div className="space-y-2">
-              <label className="text-xs font-bold text-foreground/70 uppercase">Search Food Database</label>
-              <div className="relative flex items-center">
-                <Search className="absolute left-3.5 h-4 w-4 text-foreground/40 pointer-events-none z-10" />
+              <label className="text-xs font-bold text-foreground/70 uppercase tracking-wider">Search Food Database</label>
+              <div className="relative">
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground/40 pointer-events-none" />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
                   placeholder="e.g., Idli, Chapati, Rice, Chicken Curry, Apple..."
-                  className="w-full pl-10 pr-4 py-2.5 text-xs font-semibold rounded-xl bg-foreground/5 border border-foreground/10 text-foreground focus:outline-none focus:border-primary placeholder:text-foreground/40"
+                  className="w-full pl-10 pr-4 py-3 text-xs font-semibold rounded-xl bg-foreground/5 border border-foreground/10 text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 placeholder:text-foreground/35 transition-all"
                 />
               </div>
             </div>
 
             {/* Selectable Food Results */}
-            <div className="space-y-1.5 max-h-40 overflow-y-auto pr-1 scrollbar-thin">
-              <span className="text-[10px] font-bold text-foreground/45 uppercase">Select Item</span>
-              <div className="grid grid-cols-1 gap-1.5">
+            <div className="space-y-1.5 max-h-44 overflow-y-auto pr-1 scrollbar-thin">
+              <span className="text-[10px] font-bold text-foreground/40 uppercase tracking-widest">Select Item</span>
+              <div className="grid grid-cols-1 gap-2">
                 {foodSearchResults.map(food => (
                   <button
                     key={food.id}
@@ -566,14 +566,14 @@ export default function CalorieTrackerPage() {
                       setSelectedFood(food);
                       setCustomFoodName(food.name);
                     }}
-                    className={`w-full text-left p-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-between border ${
+                    className={`w-full text-left px-3 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-between border hover:scale-[1.005] ${
                       selectedFood?.id === food.id
-                        ? 'bg-primary/10 border-primary text-primary shadow-sm'
-                        : 'bg-foreground/5 border-foreground/5 text-foreground/80 hover:bg-foreground/10'
+                        ? 'bg-primary/12 border-primary text-primary shadow-sm ring-1 ring-primary/20'
+                        : 'bg-foreground/5 border-foreground/8 text-foreground/80 hover:bg-foreground/10 hover:border-foreground/15'
                     }`}
                   >
                     <span>{food.name}</span>
-                    <span className="text-[10px] opacity-75 font-medium">({food.baseCalories} kcal / {food.servingUnit})</span>
+                    <span className="text-[10px] opacity-60 font-semibold tabular-nums">{food.baseCalories} kcal / {food.servingUnit}</span>
                   </button>
                 ))}
               </div>
@@ -593,9 +593,9 @@ export default function CalorieTrackerPage() {
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => setQuantity(prev => Math.max(0.5, Number((prev - 0.5).toFixed(1))))}
-                      className="h-8 w-8 rounded-lg bg-foreground/10 text-foreground font-bold text-sm hover:bg-foreground/20"
+                      className="h-9 w-9 rounded-lg bg-foreground/10 text-foreground font-bold text-base hover:bg-foreground/20 hover:scale-105 active:scale-95 transition-all flex items-center justify-center"
                     >
-                      -
+                      −
                     </button>
                     <input
                       type="number"
@@ -603,11 +603,11 @@ export default function CalorieTrackerPage() {
                       min="0.1"
                       value={quantity}
                       onChange={e => setQuantity(parseFloat(e.target.value) || 1)}
-                      className="w-16 text-center py-1.5 text-xs font-bold rounded-lg bg-foreground/5 border border-foreground/10 text-foreground focus:outline-none"
+                      className="w-16 text-center py-2 text-xs font-bold rounded-lg bg-foreground/5 border border-foreground/10 text-foreground focus:outline-none focus:border-primary transition-colors"
                     />
                     <button
                       onClick={() => setQuantity(prev => Number((prev + 0.5).toFixed(1)))}
-                      className="h-8 w-8 rounded-lg bg-foreground/10 text-foreground font-bold text-sm hover:bg-foreground/20"
+                      className="h-9 w-9 rounded-lg bg-foreground/10 text-foreground font-bold text-base hover:bg-foreground/20 hover:scale-105 active:scale-95 transition-all flex items-center justify-center"
                     >
                       +
                     </button>

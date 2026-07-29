@@ -51,10 +51,10 @@ export default function SignupPage() {
           <Link href="/" className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-primary text-white shadow-lg shadow-primary/20 hover:scale-105 transition-transform">
             <Activity className="h-5 w-5" />
           </Link>
-          <h2 className="auth-subtitle tracking-tight text-center font-bold">Initialize Longevity Profile</h2>
+          <h2 className="auth-subtitle tracking-tight text-center font-bold">Create Your Account</h2>
           <p className="auth-helper text-[12px] flex items-center gap-1 justify-center">
             <ShieldCheck className="h-4 w-4 text-secondary/80" />
-            Biometric Enrolment Portal
+            Start your health journey for free
           </p>
         </div>
 
@@ -70,7 +70,7 @@ export default function SignupPage() {
           <form onSubmit={handleSignup} className="space-y-4">
             
             <div className="space-y-1.5">
-              <label className="auth-label">Explorer Name</label>
+              <label className="auth-label">Full Name</label>
               <div className="relative">
                 <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-foreground/30 pointer-events-none" />
                 <input
@@ -79,13 +79,13 @@ export default function SignupPage() {
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                   className="w-full text-foreground placeholder-foreground/35 focus:outline-none input-with-icon"
-                  placeholder="e.g. David R."
+                  placeholder="Your full name"
                 />
               </div>
             </div>
 
             <div className="space-y-1.5">
-              <label className="auth-label">Unique Username</label>
+              <label className="auth-label">Username</label>
               <div className="relative">
                 <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-foreground/30 pointer-events-none" />
                 <input
@@ -94,13 +94,13 @@ export default function SignupPage() {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   className="w-full text-foreground placeholder-foreground/35 focus:outline-none input-with-icon"
-                  placeholder="e.g. davidr_longevity"
+                  placeholder="Choose a unique username"
                 />
               </div>
             </div>
 
             <div className="space-y-1.5">
-              <label className="auth-label">Secure Email</label>
+              <label className="auth-label">Email Address</label>
               <div className="relative">
                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-foreground/30 pointer-events-none" />
                 <input
@@ -109,13 +109,13 @@ export default function SignupPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full text-foreground placeholder-foreground/35 focus:outline-none input-with-icon"
-                  placeholder="david@company.com"
+                  placeholder="your@email.com"
                 />
               </div>
             </div>
 
             <div className="space-y-1.5">
-              <label className="auth-label">Encryption Password</label>
+              <label className="auth-label">Password</label>
               <div className="relative">
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-foreground/30 pointer-events-none" />
                 <input
@@ -130,15 +130,15 @@ export default function SignupPage() {
             </div>
 
             <Button variant="primary" type="submit" isLoading={loading} className="w-full mt-2 font-semibold">
-              Initialize Profile Console
+              Create Account
             </Button>
 
           </form>
 
           <div className="mt-5 border-t border-foreground/5 pt-4 text-center text-xs text-foreground/60 font-medium">
-            Already registered?{" "}
+            Already have an account?{" "}
             <Link href="/auth/login" className="font-semibold text-primary hover:underline">
-              Enter secure console
+              Log In
             </Link>
           </div>
 
