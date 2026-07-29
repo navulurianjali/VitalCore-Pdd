@@ -34,16 +34,11 @@ export default function ProfilePage() {
     setSavedMsg(false);
 
     try {
-      const numWeight = Number(weight) || 0;
-      const weightFactor = numWeight > 100 ? 2.5 : (numWeight > 0 && numWeight < 50) ? -1.0 : 0.0;
-      const simulatedBioAge = Math.round((30.0 + weightFactor) * 10) / 10;
-
       const { error } = await updateProfile({
         full_name: fullName,
         weight_kg: weight !== "" ? Number(weight) : null,
         height_cm: height !== "" ? Number(height) : null,
-        fitness_goal: goal,
-        biological_age: simulatedBioAge
+        fitness_goal: goal
       });
 
       if (!error) {

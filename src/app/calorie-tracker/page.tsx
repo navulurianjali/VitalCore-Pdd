@@ -549,6 +549,13 @@ export default function CalorieTrackerPage() {
                   type="text"
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter' && foodSearchResults.length > 0 && !selectedFood) {
+                      e.preventDefault();
+                      setSelectedFood(foodSearchResults[0]);
+                      setCustomFoodName(foodSearchResults[0].name);
+                    }
+                  }}
                   placeholder="e.g., Idli, Chapati, Rice, Chicken Curry, Apple..."
                   className="w-full pl-11 pr-4 py-3 text-xs font-semibold rounded-xl bg-foreground/5 border border-foreground/10 text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 placeholder:text-foreground/40 transition-all leading-normal"
                 />
@@ -556,27 +563,36 @@ export default function CalorieTrackerPage() {
             </div>
 
             {/* Selectable Food Results */}
-            <div className="space-y-1.5 max-h-44 overflow-y-auto pr-1 scrollbar-thin">
+            <div className="space-y-1.5 max-h-48 overflow-y-auto pr-1 scrollbar-thin">
               <span className="text-[10px] font-bold text-foreground/40 uppercase tracking-widest">Select Item</span>
-              <div className="grid grid-cols-1 gap-2">
-                {foodSearchResults.map(food => (
-                  <button
-                    key={food.id}
-                    onClick={() => {
-                      setSelectedFood(food);
-                      setCustomFoodName(food.name);
-                    }}
-                    className={`w-full text-left px-3 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-between border hover:scale-[1.005] ${
-                      selectedFood?.id === food.id
-                        ? 'bg-primary/12 border-primary text-primary shadow-sm ring-1 ring-primary/20'
-                        : 'bg-foreground/5 border-foreground/8 text-foreground/80 hover:bg-foreground/10 hover:border-foreground/15'
-                    }`}
-                  >
-                    <span>{food.name}</span>
-                    <span className="text-[10px] opacity-60 font-semibold tabular-nums">{food.baseCalories} kcal / {food.servingUnit}</span>
-                  </button>
-                ))}
-              </div>
+              {foodSearchResults.length === 0 ? (
+                <div className="p-4 bg-rose-500/10 border border-rose-500/20 rounded-xl text-xs font-semibold text-rose-400 text-center space-y-1">
+                  <p className="font-bold">No matching foods found</p>
+                  <p className="text-[11px] opacity-80">Try searching for Idli, Chapati, Rice, Dal, Chicken Curry, or Apple.</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 gap-2">
+                  {foodSearchResults.map(food => (
+                    <button
+                      key={food.id}
+                      onClick={() => {
+                        setSelectedFood(food);
+                        setCustomFoodName(food.name);
+                      }}
+                      className={`w-full text-left px-3.5 py-3 rounded-xl text-xs font-bold transition-all flex items-center justify-between border hover:scale-[1.005] cursor-pointer ${
+                        selectedFood?.id === food.id
+                          ? 'bg-primary/15 border-primary text-primary shadow-sm ring-1 ring-primary/30'
+                          : 'bg-foreground/5 border-foreground/8 text-foreground/80 hover:bg-foreground/10 hover:border-foreground/15'
+                      }`}
+                    >
+                      <span className="font-bold text-foreground">{food.name}</span>
+                      <span className="text-[10px] opacity-70 font-semibold tabular-nums bg-foreground/5 px-2 py-1 rounded-lg">
+                        {food.baseCalories} kcal / {food.servingUnit}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Quantity Selector */}

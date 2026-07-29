@@ -369,8 +369,8 @@ begin
     new.raw_user_meta_data->>'avatar_url',
     'wellness',
     0,
-    30.0,
-    100.0
+    null,
+    0.0
   );
   return new;
 end;

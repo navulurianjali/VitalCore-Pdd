@@ -155,12 +155,12 @@ export default function HealthyHabitsPage() {
     const userId = profile?.id;
     if (!userId || !supabase) return;
 
-    // Optimistic UI Update: add to userChallenges state
+    // Optimistic UI Update: add to userChallenges state with 0% progress
     const optimisticObj = {
       id: `uc-${Date.now()}`,
       user_id: userId,
       challenge_id: ch.id,
-      progress_percentage: 15,
+      progress_percentage: 0,
       challenge: ch
     };
     setUserChallenges([optimisticObj, ...userChallenges]);
@@ -168,9 +168,28 @@ export default function HealthyHabitsPage() {
     try {
       await supabase
         .from("user_challenges")
-        .insert({ user_id: userId, challenge_id: ch.id, progress_percentage: 15 });
+        .insert({ user_id: userId, challenge_id: ch.id, progress_percentage: 0 });
+      fetchChallenges();
     } catch (err) {
       console.error("Join error:", err);
+    }
+  };
+
+  const handleLeaveChallenge = async (challengeId: string) => {
+    const userId = profile?.id;
+    if (!userId || !supabase) return;
+
+    setUserChallenges(prev => prev.filter(uc => uc.challenge_id !== challengeId && uc.challenge?.id !== challengeId));
+
+    try {
+      await supabase
+        .from("user_challenges")
+        .delete()
+        .eq("user_id", userId)
+        .eq("challenge_id", challengeId);
+      fetchChallenges();
+    } catch (err) {
+      console.error("Leave challenge error:", err);
     }
   };
 
@@ -194,7 +213,7 @@ export default function HealthyHabitsPage() {
         await supabase.from("user_challenges").insert({
           user_id: profile.id,
           challenge_id: data[0].id,
-          progress_percentage: 15
+          progress_percentage: 0
         });
       }
     } catch (err) {
@@ -280,6 +299,7 @@ export default function HealthyHabitsPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {userChallenges.map((uc: any, idx: number) => {
                 const ch = uc.challenge || {};
+                const chId = uc.challenge_id || ch.id;
                 return (
                   <GlassCard key={idx} className="p-5 flex items-center justify-between gap-4 border-l-4 border-l-orange-500">
                     <div className="space-y-1 flex-1">
@@ -292,14 +312,22 @@ export default function HealthyHabitsPage() {
                       <h4 className="font-bold text-sm text-foreground line-clamp-1">{ch.title || "Custom Challenge"}</h4>
                       <div className="flex items-center gap-2 pt-1.5">
                         <div className="flex-1 bg-foreground/10 h-2 rounded-full overflow-hidden">
-                          <div className="bg-orange-500 h-full rounded-full transition-all duration-300" style={{ width: `${uc.progress_percentage || 15}%` }} />
+                          <div className="bg-orange-500 h-full rounded-full transition-all duration-300" style={{ width: `${uc.progress_percentage || 0}%` }} />
                         </div>
-                        <span className="text-xs font-bold text-foreground/70">{uc.progress_percentage || 15}%</span>
+                        <span className="text-xs font-bold text-foreground/70">{uc.progress_percentage || 0}%</span>
                       </div>
                     </div>
-                    <Button onClick={() => setSelectedChallengeModal(ch)} variant="glass" size="sm" className="text-xs font-bold px-3 shrink-0">
-                      Details
-                    </Button>
+                    <div className="flex flex-col gap-1.5 shrink-0">
+                      <Button onClick={() => setSelectedChallengeModal(ch)} variant="glass" size="sm" className="text-xs font-bold px-3">
+                        Details
+                      </Button>
+                      <button
+                        onClick={() => handleLeaveChallenge(chId)}
+                        className="text-[10px] font-semibold text-rose-400 hover:text-rose-600 hover:underline transition-colors"
+                      >
+                        Leave
+                      </button>
+                    </div>
                   </GlassCard>
                 );
               })}

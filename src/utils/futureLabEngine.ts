@@ -29,6 +29,20 @@ export interface DigitalTwinHealthProfile {
 
 export function getDigitalTwinProfile(data: HealthDigitalTwin, profile?: any): DigitalTwinHealthProfile {
   const chronoAge = profile?.biological_age || 30;
+  const hasTelemetry = Boolean(data.hasTelemetry && data.trackingDaysCount > 0);
+
+  if (!hasTelemetry) {
+    return {
+      overallHealthScore: 0,
+      biologicalAge: 0,
+      chronologicalAge: chronoAge,
+      ageDifference: 0,
+      stabilityScore: 0,
+      domainScores: [],
+      bodySystems: []
+    };
+  }
+
   const sleepH = data.sleepHours || 0;
   const hydroRatio = data.hydrationMl / (data.hydrationTarget || 2500);
   const recovPct = data.recoveryPercentage || 50;
@@ -135,6 +149,7 @@ export interface EarlyWarning {
 }
 
 export function getEarlyWarnings(data: HealthDigitalTwin): EarlyWarning[] {
+  if (!data.hasTelemetry || data.trackingDaysCount === 0) return [];
   const warnings: EarlyWarning[] = [];
   const sleepH = data.sleepHours || 0;
   const hydroMl = data.hydrationMl || 0;
@@ -494,6 +509,13 @@ export interface FutureHealthScore {
 }
 
 export function getFutureHealthScore(data: HealthDigitalTwin): FutureHealthScore {
+  if (!data.hasTelemetry || data.trackingDaysCount === 0) {
+    return {
+      direction: 'Stable',
+      explanation: 'No health insights available yet. Track your health for several days to unlock AI insights.'
+    };
+  }
+
   const consistencyScore = data.stabilityScore;
   const recoveryScore = data.recoveryPercentage;
 

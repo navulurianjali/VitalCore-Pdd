@@ -164,8 +164,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           email: activeUser?.email || data.email || "",
           onboarding_completed: data.onboarding_completed === true,
           soreness_level: Number(data.soreness_level) || 0,
-          biological_age: Number(data.biological_age) || 25,
-          stability_score: Number(data.stability_score) || 100
+          biological_age: data.biological_age ? Number(data.biological_age) : 0,
+          stability_score: data.stability_score ? Number(data.stability_score) : 0
         });
       } else if (!data) {
         const userEmail = activeUser?.email || "";
@@ -189,8 +189,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           active_mode: "wellness",
           onboarding_completed: false,
           soreness_level: 0,
-          biological_age: 25,
-          stability_score: 100
+          biological_age: 0,
+          stability_score: 0
         });
       }
     } catch (e) {

@@ -17,56 +17,9 @@ import { supabase } from "@/utils/supabase";
 import confetti from "canvas-confetti";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
-// Curated exercise library
-interface Exercise {
-  name: string;
-  description: string;
-  sets: number;
-  reps: string;
-  durationSeconds: number;
-  restSeconds: number;
-  equipment: string;
-  primaryMuscle: string;
-  secondaryMuscle: string;
-}
+import { EXERCISE_LIBRARY, ExerciseDetail } from "@/utils/exerciseLibrary";
 
-const EXERCISE_DATABASE: Record<string, Exercise[]> = {
-  full_body: [
-    { name: "Jumping Jacks", description: "Standard cardio warmup. Activates full body coordination and increases core temperature.", sets: 3, reps: "30 sec", durationSeconds: 30, restSeconds: 15, equipment: "Bodyweight", primaryMuscle: "Cardio", secondaryMuscle: "Calves" },
-    { name: "Bodyweight Squats", description: "Lower body fundamental. Keeps weight back on heels and maintains posture.", sets: 3, reps: "15 reps", durationSeconds: 45, restSeconds: 20, equipment: "Bodyweight", primaryMuscle: "Legs (Quads/Glutes)", secondaryMuscle: "Core" },
-    { name: "Push-ups (or Knee Push-ups)", description: "Upper body push exercise. Trains chest and arms while protecting shoulder joints.", sets: 3, reps: "10-12 reps", durationSeconds: 40, restSeconds: 25, equipment: "Bodyweight", primaryMuscle: "Chest & Arms", secondaryMuscle: "Shoulders" },
-    { name: "Plank Hold", description: "Core isometric stability. Keeps hips level and neck neutral to protect the spine.", sets: 3, reps: "30 sec", durationSeconds: 30, restSeconds: 20, equipment: "Bodyweight", primaryMuscle: "Core (Abs)", secondaryMuscle: "Shoulders" }
-  ],
-  chest: [
-    { name: "Push-ups (standard)", description: "Bodyweight push. Targets chest fibers and improves anterior shoulder strength.", sets: 3, reps: "12 reps", durationSeconds: 45, restSeconds: 20, equipment: "Bodyweight", primaryMuscle: "Chest", secondaryMuscle: "Triceps" },
-    { name: "Dumbbell Floor Press", description: "Safe press alternative. Limits range of motion at floor to protect rotator cuff.", sets: 3, reps: "10 reps", durationSeconds: 45, restSeconds: 25, equipment: "Dumbbells", primaryMuscle: "Chest", secondaryMuscle: "Shoulders" },
-    { name: "Dumbbell Chest Fly", description: "Isolates outer chest muscles while stretching and improving pectoral mobility.", sets: 3, reps: "12 reps", durationSeconds: 40, restSeconds: 30, equipment: "Dumbbells", primaryMuscle: "Chest", secondaryMuscle: "Shoulders" }
-  ],
-  back: [
-    { name: "Prone Cobra Lift", description: "Excellent posterior chain builder. Strengthens upper back and improves posture.", sets: 3, reps: "12 reps", durationSeconds: 35, restSeconds: 15, equipment: "Bodyweight", primaryMuscle: "Upper Back", secondaryMuscle: "Lower Back" },
-    { name: "Single-Arm Dumbbell Rows", description: "Unilateral pulling movement. Fixes strength imbalances and targets latissimus dorsi.", sets: 3, reps: "10 reps each", durationSeconds: 50, restSeconds: 20, equipment: "Dumbbells", primaryMuscle: "Mid Back (Lats)", secondaryMuscle: "Biceps" },
-    { name: "Bird-Dog Extensions", description: "Decompresses back muscles and builds deep stabilizing spinal cord support.", sets: 3, reps: "12 reps", durationSeconds: 45, restSeconds: 15, equipment: "Bodyweight", primaryMuscle: "Glutes & Back", secondaryMuscle: "Core" }
-  ],
-  legs: [
-    { name: "Bodyweight Squats", description: "Basic squat pattern. Increases mobility in hips, knees, and ankles.", sets: 3, reps: "15 reps", durationSeconds: 45, restSeconds: 20, equipment: "Bodyweight", primaryMuscle: "Legs", secondaryMuscle: "Glutes" },
-    { name: "Dumbbell Romanian Deadlifts", description: "Focuses on hip hinge, hamstring load, and strengthening lower lumbar spine.", sets: 3, reps: "10 reps", durationSeconds: 40, restSeconds: 25, equipment: "Dumbbells", primaryMuscle: "Hamstrings", secondaryMuscle: "Lower Back" },
-    { name: "Reverse Lunges", description: "Single-leg balance. Safer on knees than forward lunges. Builds glute balance.", sets: 3, reps: "10 reps each", durationSeconds: 50, restSeconds: 20, equipment: "Bodyweight", primaryMuscle: "Legs", secondaryMuscle: "Glutes" }
-  ],
-  core: [
-    { name: "Abdominal Crunches", description: "Compresses abdominal wall. Targets rectus abdominis with controlled flexes.", sets: 3, reps: "15 reps", durationSeconds: 35, restSeconds: 15, equipment: "Bodyweight", primaryMuscle: "Core", secondaryMuscle: "Abs" },
-    { name: "Bicycle Crunches", description: "Rotational oblique work. Improves dynamic core rotation strength.", sets: 3, reps: "15 reps each", durationSeconds: 45, restSeconds: 20, equipment: "Bodyweight", primaryMuscle: "Obliques", secondaryMuscle: "Core" },
-    { name: "Russian Twists", description: "Engages full transverse abdominis. Can be weighted with light weight.", sets: 3, reps: "20 reps", durationSeconds: 40, restSeconds: 20, equipment: "Bodyweight", primaryMuscle: "Core", secondaryMuscle: "Obliques" }
-  ],
-  shoulders: [
-    { name: "Dumbbell Shoulder Press", description: "Vertical press. Builds shoulder width and enhances posture alignment.", sets: 3, reps: "10 reps", durationSeconds: 45, restSeconds: 25, equipment: "Dumbbells", primaryMuscle: "Shoulders", secondaryMuscle: "Triceps" },
-    { name: "Dumbbell Lateral Raise", description: "Targets lateral deltoids to create a balanced, strong shoulder appearance.", sets: 3, reps: "12 reps", durationSeconds: 40, restSeconds: 20, equipment: "Dumbbells", primaryMuscle: "Shoulders", secondaryMuscle: "Trapezius" }
-  ],
-  mobility: [
-    { name: "Cat-Cow Stretch", description: "Relieves tension in upper back, shoulders, and neck while boosting spine mobility.", sets: 3, reps: "45 sec", durationSeconds: 45, restSeconds: 10, equipment: "Bodyweight", primaryMuscle: "Spine", secondaryMuscle: "Shoulders" },
-    { name: "Child's Pose Decompression", description: "Stretches chest, lat muscles, and lower back. Slows down heart rate.", sets: 2, reps: "60 sec", durationSeconds: 60, restSeconds: 10, equipment: "Bodyweight", primaryMuscle: "Lower Back", secondaryMuscle: "Shoulders" },
-    { name: "Downward Facing Dog Flow", description: "Stretches calves and hamstrings while opening chest and shoulder joints.", sets: 3, reps: "30 sec", durationSeconds: 30, restSeconds: 15, equipment: "Bodyweight", primaryMuscle: "Hamstrings", secondaryMuscle: "Spine" }
-  ]
-};
+const EXERCISE_DATABASE = EXERCISE_LIBRARY;
 
 export default function FitnessPage() {
   const { profile } = useAuth();
@@ -91,7 +44,7 @@ export default function FitnessPage() {
   const [loadingTick, setLoadingTick] = useState(0);
 
   // Generated workout session states
-  const [generatedWorkout, setGeneratedWorkout] = useState<Exercise[]>([]);
+  const [generatedWorkout, setGeneratedWorkout] = useState<ExerciseDetail[]>([]);
   const [recoveryWarning, setRecoveryWarning] = useState("");
   const [activeWorkoutName, setActiveWorkoutName] = useState("Custom Adaptive Workout");
 

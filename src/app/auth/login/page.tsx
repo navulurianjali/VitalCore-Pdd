@@ -19,15 +19,23 @@ export default function LoginPage() {
   const [errorMsg, setErrorMsg] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const RFC_EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !password) return;
+    const cleanEmail = email.trim();
+    if (!cleanEmail || !password) return;
+
+    if (!RFC_EMAIL_REGEX.test(cleanEmail)) {
+      setErrorMsg("Please enter a valid RFC-compliant email address.");
+      return;
+    }
 
     setLoading(true);
     setErrorMsg("");
 
     try {
-      const { error } = await signIn(email, password);
+      const { error } = await signIn(cleanEmail, password);
       if (error) {
         setErrorMsg(error.message);
       } else {

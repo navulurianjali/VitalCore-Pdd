@@ -108,14 +108,16 @@ export default function FutureHealthLabPage() {
                     stroke="currentColor" 
                     strokeWidth="8" 
                     strokeDasharray={264}
-                    strokeDashoffset={264 - (264 * (digitalTwin.overallHealthScore / 100))}
+                    strokeDashoffset={264 - (264 * ((digitalTwin.overallHealthScore || 0) / 100))}
                     strokeLinecap="round"
                     className="text-emerald-500 transition-all duration-1000" 
                     fill="transparent" 
                   />
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-                  <span className="text-3xl font-black text-[var(--foreground)]">{digitalTwin.overallHealthScore}</span>
+                  <span className="text-3xl font-black text-[var(--foreground)]">
+                    {metrics.hasTelemetry && digitalTwin.overallHealthScore > 0 ? digitalTwin.overallHealthScore : "--"}
+                  </span>
                   <span className="text-[8px] font-bold text-[var(--muted)] uppercase tracking-wider">Score</span>
                 </div>
               </div>
@@ -127,14 +129,18 @@ export default function FutureHealthLabPage() {
                       ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' 
                       : 'bg-amber-500/10 text-amber-500 border-amber-500/20'
                   }`}>
-                    {healthScore.direction === 'Improving' ? '↗ Improving' : '→ Stable'}
+                    {metrics.hasTelemetry ? (healthScore.direction === 'Improving' ? '↗ Improving' : '→ Stable') : 'No Data'}
                   </span>
                 </div>
                 <h2 className="text-xl font-black text-[var(--foreground)]">
-                  Bio Age: <span className="text-emerald-500">{digitalTwin.biologicalAge} yrs</span>
+                  Bio Age: <span className="text-emerald-500">
+                    {metrics.hasTelemetry && digitalTwin.biologicalAge > 0 ? `${digitalTwin.biologicalAge} yrs` : "Not enough data yet."}
+                  </span>
                 </h2>
                 <p className="text-xs font-semibold text-[var(--muted)]">
-                  {digitalTwin.ageDifference > 0 ? `${digitalTwin.ageDifference} yrs younger than actual age` : 'Aligned with actual age'}
+                  {metrics.hasTelemetry && digitalTwin.biologicalAge > 0
+                    ? (digitalTwin.ageDifference > 0 ? `${digitalTwin.ageDifference} yrs younger than actual age` : 'Aligned with actual age')
+                    : 'Track your health for several days to compute Bio Age'}
                 </p>
               </div>
             </div>
@@ -179,7 +185,8 @@ export default function FutureHealthLabPage() {
               ))
             ) : (
               <div className="col-span-3 p-4 bg-emerald-500/5 border border-emerald-500/20 rounded-2xl text-center text-xs font-bold text-emerald-500 flex items-center justify-center gap-2">
-                <ShieldCheck className="h-4 w-4" /> All primary health systems clear and optimal today!
+                <ShieldCheck className="h-4 w-4" />
+                {metrics.hasTelemetry ? "All primary health systems clear and optimal today!" : "Not enough data yet. Log sleep, workouts, or nutrition to generate insights."}
               </div>
             )}
           </div>
