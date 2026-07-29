@@ -9,7 +9,7 @@ import Button from "@/components/ui/Button";
 import GlassCard from "@/components/ui/GlassCard";
 import { useAuth } from "@/context/AuthContext";
 
-export default function GetStartedPage() {
+export default function AuthChoicePage() {
   const { user } = useAuth();
   const router = useRouter();
 
@@ -18,6 +18,7 @@ export default function GetStartedPage() {
     router.replace("/dashboard");
     return null;
   }
+
   return (
     <div className="flex-1 flex items-center justify-center bg-background px-4 py-20 relative overflow-hidden auth-page">
       {/* Ambient glow */}
@@ -53,7 +54,7 @@ export default function GetStartedPage() {
               Welcome to VitalCore AI
             </h1>
             <p className="text-sm text-foreground/60 font-medium">
-              Start your personal health journey today.
+              Continue your health journey.
             </p>
           </div>
         </motion.div>
@@ -78,7 +79,7 @@ export default function GetStartedPage() {
                   className="w-full flex items-center justify-between gap-2 font-semibold shadow-md shadow-primary/15 group"
                 >
                   <div className="flex items-center gap-2.5">
-                    <UserPlus className="h-4.5 w-4.5" />
+                    <UserPlus className="h-5 w-5" />
                     <span>Create New Account</span>
                   </div>
                   <ArrowRight className="h-4 w-4 opacity-70 group-hover:translate-x-0.5 transition-transform" />
@@ -110,7 +111,7 @@ export default function GetStartedPage() {
                   className="w-full flex items-center justify-between gap-2 font-semibold border border-foreground/10 hover:border-primary/30 group"
                 >
                   <div className="flex items-center gap-2.5">
-                    <LogIn className="h-4.5 w-4.5" />
+                    <LogIn className="h-5 w-5" />
                     <span>Log In</span>
                   </div>
                   <ArrowRight className="h-4 w-4 opacity-50 group-hover:translate-x-0.5 transition-transform" />

@@ -80,10 +80,13 @@ export const Navbar: React.FC = () => {
             {/* User Session Info Buttons */}
             {(!user || pathname === "/" || pathname === "/auth/onboarding") ? (
               <div className="flex items-center gap-3">
-                <Link href="/auth/login" className="text-[14px] font-medium text-[var(--foreground)] hover:text-primary transition-colors px-4 py-2 rounded-lg border border-foreground/10 hover:border-primary/30">
+                <Link
+                  href={user ? "/dashboard" : "/auth/login"}
+                  className="text-[14px] font-medium text-[var(--foreground)] hover:text-primary transition-colors px-4 py-2 rounded-lg border border-foreground/10 hover:border-primary/30"
+                >
                   Log In
                 </Link>
-                <Link href="/auth/get-started">
+                <Link href={user ? "/dashboard" : "/auth"}>
                   <Button variant="primary" size="md" className="px-6 rounded-lg font-semibold shadow-sm">
                     Sign Up
                   </Button>
@@ -214,10 +217,10 @@ export const Navbar: React.FC = () => {
               <div className="border-t border-foreground/5 my-3 pt-3 flex flex-col gap-2">
                 {(!user || pathname === "/" || pathname === "/auth/onboarding") ? (
                   <>
-                    <Link href="/auth/login" onClick={() => setMobileMenuOpen(false)}>
+                    <Link href={user ? "/dashboard" : "/auth/login"} onClick={() => setMobileMenuOpen(false)}>
                       <Button variant="glass" className="w-full">Log In</Button>
                     </Link>
-                    <Link href="/auth/get-started" onClick={() => setMobileMenuOpen(false)}>
+                    <Link href={user ? "/dashboard" : "/auth"} onClick={() => setMobileMenuOpen(false)}>
                       <Button variant="primary" className="w-full">Sign Up</Button>
                     </Link>
                   </>

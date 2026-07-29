@@ -75,8 +75,11 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // If user is logged in but tries to access /auth/login or /auth/signup, redirect to dashboard (except /auth/onboarding)
-  if (user && isAuthRoute && !pathname.includes('/auth/logout') && pathname !== '/auth/onboarding') {
+  // If user is logged in but tries to access /auth/login or /auth/signup, redirect to dashboard
+  // Exception: /auth/onboarding (still needs to complete profile)
+  // Exception: /auth/get-started and /auth (choice pages — will redirect themselves via Link)
+  const isChoiceRoute = pathname === '/auth' || pathname === '/auth/get-started';
+  if (user && isAuthRoute && !pathname.includes('/auth/logout') && pathname !== '/auth/onboarding' && !isChoiceRoute) {
     const url = request.nextUrl.clone();
     url.pathname = '/dashboard';
     return NextResponse.redirect(url);

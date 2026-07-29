@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { 
   Activity, 
@@ -29,7 +30,7 @@ import Footer from "@/components/layout/Footer";
 import { useAuth } from "@/context/AuthContext";
 
 export default function LandingPage() {
-  const { profile } = useAuth();
+  const { user, profile } = useAuth();
 
   const features = [
     {
@@ -127,12 +128,14 @@ export default function LandingPage() {
                 transition={{ delay: 0.2 }}
                 className="flex flex-wrap gap-4 pt-2"
               >
-                <Link href="/auth/get-started">
+                {/* Sign Up Free → /auth choice page (or /dashboard if already logged in) */}
+                <Link href={user ? "/dashboard" : "/auth"}>
                   <Button variant="primary" size="lg" className="flex items-center gap-2 px-6 py-3 font-semibold shadow-sm hover:scale-[1.01] transition-transform">
                     <span>Sign Up Free</span>
                     <ArrowRight className="h-4 w-4" />
                   </Button>
                 </Link>
+                {/* Learn More → /features (public, no auth needed) */}
                 <Link href="/features">
                   <Button variant="glass" size="lg" className="px-6 py-3 font-semibold hover:bg-foreground/5 hover:scale-[1.01] transition-transform">
                     Learn More
@@ -316,7 +319,8 @@ export default function LandingPage() {
             </p>
             
             <div className="flex justify-center pt-2 relative z-10">
-              <Link href="/auth/get-started">
+              {/* Bottom CTA: auth-aware */}
+              <Link href={user ? "/dashboard" : "/auth"}>
                 <Button variant="primary" size="lg" className="flex items-center gap-2 px-8">
                   <span>Get Started Free</span>
                   <ArrowRight className="h-4.5 w-4.5" />
