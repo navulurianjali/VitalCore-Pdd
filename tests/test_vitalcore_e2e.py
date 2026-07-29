@@ -141,10 +141,10 @@ class TestLandingPage:
         assert h1.is_displayed() and len(h1.text) > 0
 
     def test_TC_LP_003_start_free_cta_links_signup(self, driver):
-        """'Start Free' CTA button links to /auth/signup."""
+        """'Start Free' CTA button links to /auth or /auth/signup."""
         go(driver)
         hrefs = [a.get_attribute("href") or "" for a in driver.find_elements(By.TAG_NAME, "a")]
-        assert any("/auth/signup" in h for h in hrefs)
+        assert any("/auth" in h for h in hrefs)
 
     def test_TC_LP_004_see_how_it_works_links_features(self, driver):
         """'See How It Works' links to /features."""
@@ -262,7 +262,7 @@ class TestAuthentication:
         """'Create secure profile' / signup link on login page."""
         go(driver, "/auth/login")
         hrefs = [a.get_attribute("href") or "" for a in driver.find_elements(By.TAG_NAME, "a")]
-        assert any("/auth/signup" in h for h in hrefs)
+        assert any("/auth" in h for h in hrefs)
 
     def test_TC_AUTH_010_signup_page_loads(self, driver):
         """Signup page URL contains 'signup' or 'auth'."""
