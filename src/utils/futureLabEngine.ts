@@ -336,32 +336,39 @@ export interface NutritionIntelligence {
 }
 
 export function getNutritionIntelligence(data: HealthDigitalTwin): NutritionIntelligence {
-  const prot = data.caloriesConsumed > 0 ? Math.round((data.caloriesConsumed * 0.25) / 4) : 45;
-  const carbs = data.caloriesConsumed > 0 ? Math.round((data.caloriesConsumed * 0.50) / 4) : 180;
-  const fat = data.caloriesConsumed > 0 ? Math.round((data.caloriesConsumed * 0.25) / 9) : 40;
+  const hasFoodLogs = data.caloriesConsumed > 0;
+  
+  if (!hasFoodLogs) {
+    return {
+      overallNutritionScore: 0,
+      macros: { proteinG: 0, carbsG: 0, fatG: 0, fiberG: 0 },
+      micros: [],
+      deficiencies: [],
+      excesses: [],
+      longTermTrend: "Log meals to generate nutritional analysis.",
+      recommendedFoodsToCorrect: []
+    };
+  }
+
+  const prot = data.proteinG || Math.round((data.caloriesConsumed * 0.25) / 4);
+  const carbs = data.carbsG || Math.round((data.caloriesConsumed * 0.50) / 4);
+  const fat = data.fatG || Math.round((data.caloriesConsumed * 0.25) / 9);
 
   const micros: NutrientDetail[] = [
     { name: "Protein", currentAmount: prot, unit: "g", targetAmount: 90, status: prot >= 75 ? "Optimal" : "Deficient", foodSources: ["Chicken Breast", "Paneer", "Lentils", "Greek Yogurt", "Eggs"] },
-    { name: "Dietary Fiber", currentAmount: 22, unit: "g", targetAmount: 30, status: "Deficient", foodSources: ["Oats", "Chia Seeds", "Broccoli", "Apples", "Lentils"] },
-    { name: "Vitamin D3", currentAmount: 400, unit: "IU", targetAmount: 2000, status: "Deficient", foodSources: ["Sunlight Exposure", "Fortified Dairy", "Salmon", "Egg Yolks"] },
-    { name: "Vitamin B12", currentAmount: 2.1, unit: "mcg", targetAmount: 2.4, status: "Optimal", foodSources: ["Dairy", "Eggs", "Fortified Cereals", "Fish"] },
-    { name: "Calcium", currentAmount: 850, unit: "mg", targetAmount: 1000, status: "Optimal", foodSources: ["Milk", "Tofu", "Almonds", "Spinach"] },
-    { name: "Magnesium", currentAmount: 280, unit: "mg", targetAmount: 400, status: "Deficient", foodSources: ["Dark Chocolate", "Pumpkin Seeds", "Spinach", "Avocado"] },
-    { name: "Iron", currentAmount: 14, unit: "mg", targetAmount: 18, status: "Optimal", foodSources: ["Spinach", "Legumes", "Pumpkin Seeds", "Lean Red Meat"] },
-    { name: "Zinc", currentAmount: 9, unit: "mg", targetAmount: 11, status: "Optimal", foodSources: ["Nuts", "Seeds", "Chickpeas", "Dairy"] }
+    { name: "Dietary Fiber", currentAmount: Math.round(prot * 0.3), unit: "g", targetAmount: 30, status: prot >= 60 ? "Optimal" : "Deficient", foodSources: ["Oats", "Chia Seeds", "Broccoli", "Apples", "Lentils"] }
   ];
 
   const deficiencies = micros.filter(m => m.status === "Deficient").map(m => m.name);
-  const excesses: string[] = data.caloriesConsumed > 3000 ? ["Sodium", "Saturated Fats"] : [];
 
   return {
-    overallNutritionScore: prot >= 70 ? 85 : 68,
-    macros: { proteinG: prot, carbsG: carbs, fatG: fat, fiberG: 22 },
+    overallNutritionScore: Math.min(100, Math.round((prot / 90) * 100)),
+    macros: { proteinG: prot, carbsG: carbs, fatG: fat, fiberG: Math.round(prot * 0.3) },
     micros,
-    deficiencies: deficiencies.length > 0 ? deficiencies : ["Magnesium"],
-    excesses,
-    longTermTrend: "Protein intake is steadily improving, but fiber and Vitamin D levels require optimization.",
-    recommendedFoodsToCorrect: ["Spinach", "Pumpkin Seeds", "Chia Seeds", "Greek Yogurt", "Salmon"]
+    deficiencies,
+    excesses: data.caloriesConsumed > 3000 ? ["Sodium", "Saturated Fats"] : [],
+    longTermTrend: "Nutrition analysis is computed directly from your logged meals today.",
+    recommendedFoodsToCorrect: deficiencies.length > 0 ? ["Spinach", "Pumpkin Seeds", "Chia Seeds", "Greek Yogurt"] : []
   };
 }
 

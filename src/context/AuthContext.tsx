@@ -8,78 +8,79 @@ export interface UserProfile {
   email: string;
   full_name: string;
   username: string;
-  avatar_url?: string;
+  avatar_url?: string | null;
   active_mode: "wellness" | "performance" | "elderly";
   onboarding_completed?: boolean;
   soreness_level: number;
   biological_age: number;
   stability_score: number;
-  weight_kg?: number;
-  height_cm?: number;
-  fitness_goal?: string;
+  weight_kg?: number | null;
+  height_cm?: number | null;
+  fitness_goal?: string | null;
   
   // Comprehensive Health Profile Fields
-  date_of_birth?: string;
-  gender?: string;
-  blood_group?: string;
-  country?: string;
-  state?: string;
-  city?: string;
-  occupation?: string;
+  date_of_birth?: string | null;
+  gender?: string | null;
+  blood_group?: string | null;
+  country?: string | null;
+  state?: string | null;
+  city?: string | null;
+  occupation?: string | null;
 
-  medical_conditions?: string;
-  medications?: string;
-  medication_schedule?: string;
-  allergies?: string;
-  food_allergies?: string;
-  surgeries?: string;
-  chronic_conditions?: string;
-  family_history?: string;
-  pregnancy_status?: string;
+  medical_conditions?: string | null;
+  medications?: string | null;
+  medication_schedule?: string | null;
+  allergies?: string | null;
+  food_allergies?: string | null;
+  surgeries?: string | null;
+  chronic_conditions?: string | null;
+  family_history?: string | null;
+  pregnancy_status?: string | null;
 
-  activity_level?: string;
-  exercise_frequency?: string;
-  workout_preference?: string;
-  fitness_experience?: string;
-  step_goal?: number;
-  water_goal?: number;
-  sleep_goal?: number;
+  activity_level?: string | null;
+  exercise_frequency?: string | null;
+  workout_preference?: string | null;
+  fitness_experience?: string | null;
+  step_goal?: number | null;
+  water_goal?: number | null;
+  sleep_goal?: number | null;
 
-  food_preference?: string;
-  favorite_foods?: string[];
-  disliked_foods?: string[];
-  cuisine_preference?: string;
-  calorie_goal?: number;
-  protein_goal?: number;
-  carb_goal?: number;
-  fat_goal?: number;
+  food_preference?: string | null;
+  favorite_foods?: string[] | null;
+  disliked_foods?: string[] | null;
+  cuisine_preference?: string | null;
+  calorie_goal?: number | null;
+  protein_goal?: number | null;
+  carb_goal?: number | null;
+  fat_goal?: number | null;
 
-  smoking_status?: string;
-  alcohol_status?: string;
-  stress_level_onboard?: number;
-  working_hours?: string;
-  sleep_schedule?: string;
+  smoking_status?: string | null;
+  alcohol_status?: string | null;
+  stress_level_onboard?: number | null;
+  working_hours?: string | null;
+  sleep_schedule?: string | null;
+  wind_down_routine?: string | null;
 
-  emergency_contact_name?: string;
-  emergency_contact_phone?: string;
-  emergency_contact_relation?: string;
+  emergency_contact_name?: string | null;
+  emergency_contact_phone?: string | null;
+  emergency_contact_relation?: string | null;
 
-  reminder_preferences?: string;
+  reminder_preferences?: string | null;
   notification_settings?: any;
-  ai_coach_style?: string;
-  unit_system?: string;
+  ai_coach_style?: string | null;
+  unit_system?: string | null;
   
-  screen_time_hours?: number;
-  caffeine_intake?: string;
-  sleep_problems?: boolean;
+  screen_time_hours?: number | null;
+  caffeine_intake?: string | null;
+  sleep_problems?: boolean | null;
   
-  bmi?: number;
-  body_fat_estimate?: number;
+  bmi?: number | null;
+  body_fat_estimate?: number | null;
 
   xp?: number;
   badges?: string[];
   streak_days?: number;
-  age?: number;
+  age?: number | null;
 }
 
 interface AuthContextProps {

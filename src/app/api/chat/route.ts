@@ -24,11 +24,11 @@ export async function POST(req: NextRequest) {
 User Profile:
 - Name: ${profile?.full_name || "Explorer"}
 - Active Mode: ${profile?.active_mode || "wellness"}
-- Primary Goal: ${profile?.fitness_goal || "Healthy Lifestyle"}
-- Biological Age: ${profile?.biological_age || profile?.age || 25}
-- Biometrics: ${profile?.weight_kg || 68} kg | ${profile?.height_cm || 170} cm
-- Medical Conditions: ${profile?.chronic_conditions || profile?.medical_conditions || "None"}
-- Allergies: ${profile?.allergies || "None"}
+- Primary Goal: ${profile?.fitness_goal || "Not specified"}
+- Biological Age: ${profile?.biological_age ? profile.biological_age : profile?.age ? profile.age : "Not calculated"}
+- Biometrics: Weight: ${profile?.weight_kg ? profile.weight_kg + " kg" : "Not provided"} | Height: ${profile?.height_cm ? profile.height_cm + " cm" : "Not provided"}
+- Medical Conditions: ${profile?.chronic_conditions || profile?.medical_conditions || "Not provided"}
+- Allergies: ${profile?.allergies || "Not provided"}
 
 Live Daily Telemetry:
 - Calories Consumed: ${metrics?.caloriesConsumed || 0} / ${profile?.calorie_goal || 2000} kcal

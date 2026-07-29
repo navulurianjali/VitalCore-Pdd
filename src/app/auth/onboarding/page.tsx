@@ -18,16 +18,16 @@ export default function OnboardingPage() {
 
   // STEP 1: Personal Information
   const [fullName, setFullName] = useState(profile?.full_name || "");
-  const [age, setAge] = useState<number | "">(profile?.age || 25);
+  const [age, setAge] = useState<number | "">(profile?.age || "");
   const [gender, setGender] = useState(profile?.gender || "male");
 
   // STEP 2: Body Information
-  const [height, setHeight] = useState<number | "">(profile?.height_cm || 170);
-  const [weight, setWeight] = useState<number | "">(profile?.weight_kg || 68);
+  const [height, setHeight] = useState<number | "">(profile?.height_cm || "");
+  const [weight, setWeight] = useState<number | "">(profile?.weight_kg || "");
 
-  // Auto calculated BMI
-  const heightM = height ? Number(height) / 100 : 0;
-  const bmi = heightM > 0 && weight ? Math.round((Number(weight) / (heightM * heightM)) * 10) / 10 : 0;
+  // Auto calculated BMI (hidden if height or weight is unentered)
+  const heightM = height && Number(height) > 0 ? Number(height) / 100 : 0;
+  const bmi = heightM > 0 && weight && Number(weight) > 0 ? Math.round((Number(weight) / (heightM * heightM)) * 10) / 10 : 0;
   
   const getBmiCategory = (val: number) => {
     if (val < 18.5) return { label: "Underweight", color: "text-amber-400 bg-amber-400/10 border-amber-400/20" };
@@ -141,18 +141,18 @@ export default function OnboardingPage() {
     setLoading(true);
     try {
       const updates = {
-        full_name: fullName.trim() || profile?.full_name || "Wellness Explorer",
-        age: Number(age) || 25,
+        full_name: fullName.trim() || profile?.full_name || "",
+        age: age !== "" ? Number(age) : null,
         gender: gender,
-        weight_kg: Number(weight) || 68,
-        height_cm: Number(height) || 170,
-        bmi: bmi,
-        fitness_goal: goals.length > 0 ? goals.join(", ") : "Healthy Lifestyle",
+        weight_kg: weight !== "" ? Number(weight) : null,
+        height_cm: height !== "" ? Number(height) : null,
+        bmi: bmi > 0 ? bmi : null,
+        fitness_goal: goals.length > 0 ? goals.join(", ") : "",
         food_preference: foodPreference,
         dietary_preferences: foodPreference,
-        medical_conditions: medicalConditions.trim() || "None",
-        medications: medications.trim() || "None",
-        allergies: allergies.trim() || "None",
+        medical_conditions: medicalConditions.trim() || "",
+        medications: medications.trim() || "",
+        allergies: allergies.trim() || "",
         activity_level: activityLevel,
         sleep_goal: Number(sleepDuration) || 8.0,
         calorie_goal: Number(calorieGoal) || 2000,

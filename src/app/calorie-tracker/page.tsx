@@ -543,14 +543,14 @@ export default function CalorieTrackerPage() {
             {/* Food Search Input */}
             <div className="space-y-2">
               <label className="text-xs font-bold text-foreground/70 uppercase tracking-wider">Search Food Database</label>
-              <div className="relative">
-                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground/40 pointer-events-none" />
+              <div className="relative flex items-center w-full">
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground/50 pointer-events-none z-10 shrink-0" />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
                   placeholder="e.g., Idli, Chapati, Rice, Chicken Curry, Apple..."
-                  className="w-full pl-10 pr-4 py-3 text-xs font-semibold rounded-xl bg-foreground/5 border border-foreground/10 text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 placeholder:text-foreground/35 transition-all"
+                  className="w-full pl-11 pr-4 py-3 text-xs font-semibold rounded-xl bg-foreground/5 border border-foreground/10 text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 placeholder:text-foreground/40 transition-all leading-normal"
                 />
               </div>
             </div>

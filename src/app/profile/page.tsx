@@ -13,18 +13,18 @@ export default function ProfilePage() {
   
   // Biometric form States
   const [fullName, setFullName] = useState("");
-  const [weight, setWeight] = useState(70);
-  const [height, setHeight] = useState(175);
-  const [goal, setGoal] = useState("stamina_optimization");
+  const [weight, setWeight] = useState<number | "">("");
+  const [height, setHeight] = useState<number | "">("");
+  const [goal, setGoal] = useState("");
   const [saving, setSaving] = useState(false);
   const [savedMsg, setSavedMsg] = useState(false);
 
   useEffect(() => {
     if (profile) {
       setFullName(profile.full_name || "");
-      setWeight(Number(profile.weight_kg) || 72);
-      setHeight(Number(profile.height_cm) || 178);
-      setGoal(profile.fitness_goal || "stamina_optimization");
+      setWeight(profile.weight_kg ? Number(profile.weight_kg) : "");
+      setHeight(profile.height_cm ? Number(profile.height_cm) : "");
+      setGoal(profile.fitness_goal || "");
     }
   }, [profile]);
 
@@ -34,14 +34,14 @@ export default function ProfilePage() {
     setSavedMsg(false);
 
     try {
-      // Calculate a fun simulated biological age modification based on biometrics
-      const weightFactor = weight > 100 ? 2.5 : weight < 50 ? -1.0 : 0.0;
+      const numWeight = Number(weight) || 0;
+      const weightFactor = numWeight > 100 ? 2.5 : (numWeight > 0 && numWeight < 50) ? -1.0 : 0.0;
       const simulatedBioAge = Math.round((30.0 + weightFactor) * 10) / 10;
 
       const { error } = await updateProfile({
         full_name: fullName,
-        weight_kg: Number(weight),
-        height_cm: Number(height),
+        weight_kg: weight !== "" ? Number(weight) : null,
+        height_cm: height !== "" ? Number(height) : null,
         fitness_goal: goal,
         biological_age: simulatedBioAge
       });
@@ -170,11 +170,11 @@ export default function ProfilePage() {
               <ul className="space-y-3 pt-2 text-xs text-foreground/75 font-semibold leading-normal">
                 <li className="flex gap-2">
                   <span className="text-primary font-bold">•</span>
-                  <span>**Biological Age Estimate**: {profile?.biological_age || "28.5"} yrs (Actual age index correlates down with step consistency metrics).</span>
+                  <span>**Biological Age Estimate**: {profile?.biological_age ? `${profile.biological_age} yrs` : "Not calculated (Complete 7+ days tracking)"}.</span>
                 </li>
                 <li className="flex gap-2">
                   <span className="text-primary font-bold">•</span>
-                  <span>**Metabolic Stability Curve**: Throttling enabled. Optimal daily water intake calculated at {(weight * 35)} ml.</span>
+                  <span>**Metabolic Stability Curve**: {weight && Number(weight) > 0 ? `Optimal daily water intake calculated at ${Math.round(Number(weight) * 35)} ml.` : "Complete weight to calculate water intake goal."}</span>
                 </li>
                 <li className="flex gap-2">
                   <span className="text-primary font-bold">•</span>

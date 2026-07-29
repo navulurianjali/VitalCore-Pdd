@@ -308,10 +308,16 @@ export default function FutureHealthLabPage() {
                 <div key={i} className="flex items-center justify-between text-xs font-semibold">
                   <span className="text-[var(--foreground)]">{domain.name}</span>
                   <div className="flex items-center gap-2">
-                    <div className="w-24 h-1.5 bg-foreground/10 rounded-full overflow-hidden">
-                      <div className={`h-full rounded-full ${domain.score >= 75 ? 'bg-emerald-500' : 'bg-amber-500'}`} style={{ width: `${domain.score}%` }} />
-                    </div>
-                    <span className="font-bold text-[var(--foreground)] w-7 text-right">{domain.score}</span>
+                    {metrics.hasTelemetry && domain.score > 0 ? (
+                      <>
+                        <div className="w-24 h-1.5 bg-foreground/10 rounded-full overflow-hidden">
+                          <div className={`h-full rounded-full ${domain.score >= 75 ? 'bg-emerald-500' : 'bg-amber-500'}`} style={{ width: `${domain.score}%` }} />
+                        </div>
+                        <span className="font-bold text-[var(--foreground)] w-7 text-right">{domain.score}</span>
+                      </>
+                    ) : (
+                      <span className="text-[10px] font-bold text-[var(--muted)] italic">Not enough data</span>
+                    )}
                   </div>
                 </div>
               ))}
@@ -324,29 +330,37 @@ export default function FutureHealthLabPage() {
               <div className="flex justify-between items-center">
                 <span className="text-[10px] font-bold text-[var(--muted)] uppercase tracking-wider">Nutrition Balance</span>
                 <span className="text-xs font-black text-emerald-500 bg-emerald-500/10 px-2.5 py-0.5 rounded-full">
-                  {nutritionIntel.overallNutritionScore}/100
+                  {metrics.caloriesConsumed > 0 ? `${nutritionIntel.overallNutritionScore}/100` : "Not enough data"}
                 </span>
               </div>
 
-              <div className="space-y-1.5">
-                <span className="text-[10px] font-bold text-[var(--muted)]">Focus Deficiencies:</span>
-                <div className="flex flex-wrap gap-1.5">
-                  {nutritionIntel.deficiencies.map((def, i) => (
-                    <span key={i} className="text-[10px] font-bold bg-amber-500/10 text-amber-500 px-2.5 py-1 rounded-full border border-amber-500/20">
-                      ⚠️ {def}
-                    </span>
-                  ))}
+              {metrics.caloriesConsumed > 0 && nutritionIntel.deficiencies.length > 0 ? (
+                <div className="space-y-1.5">
+                  <span className="text-[10px] font-bold text-[var(--muted)]">Focus Deficiencies:</span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {nutritionIntel.deficiencies.map((def, i) => (
+                      <span key={i} className="text-[10px] font-bold bg-amber-500/10 text-amber-500 px-2.5 py-1 rounded-full border border-amber-500/20">
+                        ⚠️ {def}
+                      </span>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <div className="p-3 bg-[var(--background)] rounded-xl border border-[var(--border)] text-xs text-[var(--muted)] font-semibold text-center">
+                  Log meals to generate nutritional analysis.
+                </div>
+              )}
             </div>
 
-            <button 
-              onClick={() => setShowDetailsModal(true)}
-              className="w-full py-2 bg-foreground/5 hover:bg-foreground/10 text-xs font-bold rounded-xl border border-[var(--border)] transition-all flex items-center justify-center gap-1 text-[var(--foreground)]"
-            >
-              <span>View Full Micronutrient Analysis</span>
-              <ChevronRight className="h-3.5 w-3.5" />
-            </button>
+            {metrics.caloriesConsumed > 0 && (
+              <button 
+                onClick={() => setShowDetailsModal(true)}
+                className="w-full py-2 bg-foreground/5 hover:bg-foreground/10 text-xs font-bold rounded-xl border border-[var(--border)] transition-all flex items-center justify-center gap-1 text-[var(--foreground)] cursor-pointer"
+              >
+                <span>View Full Micronutrient Analysis</span>
+                <ChevronRight className="h-3.5 w-3.5" />
+              </button>
+            )}
           </GlassCard>
 
         </div>

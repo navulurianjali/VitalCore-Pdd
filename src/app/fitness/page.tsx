@@ -413,6 +413,11 @@ export default function FitnessPage() {
   const startWebcam = async () => {
     setCameraError(null);
     try {
+      if (typeof window === "undefined" || !navigator?.mediaDevices?.getUserMedia) {
+        setCameraError("Camera access requires HTTPS connection or localhost.");
+        setIsWebcamActive(false);
+        return;
+      }
       if (webcamStream) {
         webcamStream.getTracks().forEach(track => track.stop());
       }
@@ -432,7 +437,11 @@ export default function FitnessPage() {
       }
     } catch (err: any) {
       console.error("Camera access failure:", err);
-      setCameraError("Camera access required for posture analysis.");
+      if (err.name === "NotAllowedError" || err.name === "PermissionDeniedError") {
+        setCameraError("Camera permission denied. Please enable camera access in your browser settings to analyze posture.");
+      } else {
+        setCameraError("Camera access required for posture analysis.");
+      }
       setIsWebcamActive(false);
       setPostureScore(null);
       setAlignmentQuality(null);
