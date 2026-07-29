@@ -253,32 +253,48 @@ export default function FutureHealthLabPage() {
             <h2 className="text-sm font-bold text-[var(--foreground)] flex items-center gap-2">
               <Sparkles className="h-4 w-4 text-primary" /> Future Longevity Projection
             </h2>
-            <span className="text-[10px] font-bold text-emerald-500 bg-emerald-500/10 px-2.5 py-0.5 rounded-full">
-              90% Projection Confidence
-            </span>
+            {metrics.trackingDaysCount >= 7 && (
+              <span className="text-[10px] font-bold text-emerald-500 bg-emerald-500/10 px-2.5 py-0.5 rounded-full">
+                90% Projection Confidence
+              </span>
+            )}
           </div>
 
-          <div className="grid grid-cols-3 gap-3 text-center">
-            
-            <div className="p-4 bg-[var(--background)] rounded-2xl border border-[var(--border)] space-y-1">
-              <span className="text-[9px] font-bold text-[var(--muted)] uppercase block">Today</span>
-              <p className="text-xl font-black text-[var(--foreground)]">{digitalTwin.overallHealthScore}</p>
-              <span className="text-[10px] font-semibold text-[var(--muted)]">Baseline</span>
-            </div>
+          {metrics.trackingDaysCount >= 7 ? (
+            <div className="grid grid-cols-3 gap-3 text-center">
+              
+              <div className="p-4 bg-[var(--background)] rounded-2xl border border-[var(--border)] space-y-1">
+                <span className="text-[9px] font-bold text-[var(--muted)] uppercase block">Today</span>
+                <p className="text-xl font-black text-[var(--foreground)]">{digitalTwin.overallHealthScore}</p>
+                <span className="text-[10px] font-semibold text-[var(--muted)]">Baseline</span>
+              </div>
 
-            <div className="p-4 bg-[var(--background)] rounded-2xl border border-primary/20 space-y-1 bg-primary/5">
-              <span className="text-[9px] font-bold text-primary uppercase block">30 Days</span>
-              <p className="text-xl font-black text-emerald-500">{projection30Days.wellness}</p>
-              <span className="text-[10px] font-bold text-emerald-500">Bio Age: {projection30Days.vitalityAge} yrs</span>
-            </div>
+              <div className="p-4 bg-[var(--background)] rounded-2xl border border-primary/20 space-y-1 bg-primary/5">
+                <span className="text-[9px] font-bold text-primary uppercase block">30 Days</span>
+                <p className="text-xl font-black text-emerald-500">{projection30Days.wellness}</p>
+                <span className="text-[10px] font-bold text-emerald-500">Bio Age: {projection30Days.vitalityAge} yrs</span>
+              </div>
 
-            <div className="p-4 bg-[var(--background)] rounded-2xl border border-[var(--border)] space-y-1">
-              <span className="text-[9px] font-bold text-[var(--muted)] uppercase block">1 Year</span>
-              <p className="text-xl font-black text-emerald-500">{projection1Year.wellness}</p>
-              <span className="text-[10px] font-bold text-emerald-500">Bio Age: {projection1Year.vitalityAge} yrs</span>
-            </div>
+              <div className="p-4 bg-[var(--background)] rounded-2xl border border-[var(--border)] space-y-1">
+                <span className="text-[9px] font-bold text-[var(--muted)] uppercase block">1 Year</span>
+                <p className="text-xl font-black text-emerald-500">{projection1Year.wellness}</p>
+                <span className="text-[10px] font-bold text-emerald-500">Bio Age: {projection1Year.vitalityAge} yrs</span>
+              </div>
 
-          </div>
+            </div>
+          ) : (
+            <div className="p-6 bg-[var(--background)] rounded-2xl border border-[var(--border)] text-center space-y-2">
+              <Clock className="h-6 w-6 text-amber-500 mx-auto" />
+              <p className="text-xs font-bold text-[var(--foreground)]">
+                Complete at least 7 days of health tracking to generate predictions.
+              </p>
+              <p className="text-[10px] text-[var(--muted)]">
+                {metrics.trackingDaysCount > 0 
+                  ? `${metrics.trackingDaysCount} of 7 days recorded` 
+                  : "0 of 7 days recorded — log daily sleep, hydration, or activity"}
+              </p>
+            </div>
+          )}
         </GlassCard>
 
         {/* 5. COMPACT DIGITAL TWIN STATUS & NUTRITION SCORE */}

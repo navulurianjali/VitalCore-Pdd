@@ -383,19 +383,50 @@ export interface MotivationCenter {
 }
 
 export function getAchievementsAndMotivation(data: HealthDigitalTwin): MotivationCenter {
-  const hydroRatio = data.hydrationMl / (data.hydrationTarget || 2500);
+  const hasData = Boolean(data.hasTelemetry && data.trackingDaysCount > 0);
+  const hydroRatio = data.hydrationMl > 0 ? data.hydrationMl / (data.hydrationTarget || 2500) : 0;
 
   return {
-    hydrationStreakDays: hydroRatio >= 0.8 ? 5 : (data.hydrationMl > 0 ? 1 : 0),
-    sleepStreakDays: data.sleepHours >= 7 ? 4 : (data.sleepHours > 0 ? 1 : 0),
-    workoutStreakDays: data.steps >= 6000 ? 6 : (data.steps > 0 ? 1 : 0),
+    hydrationStreakDays: hasData && data.hydrationMl > 0 ? (hydroRatio >= 0.8 ? Math.min(data.trackingDaysCount, 5) : 1) : 0,
+    sleepStreakDays: hasData && data.sleepHours > 0 ? (data.sleepHours >= 7 ? Math.min(data.trackingDaysCount, 4) : 1) : 0,
+    workoutStreakDays: hasData && data.steps > 0 ? (data.steps >= 6000 ? Math.min(data.trackingDaysCount, 6) : 1) : 0,
     badges: [
-      { id: "b1", title: "Hydration Master", description: "Log 2500ml of water for 3 consecutive days", iconName: "Droplet", unlocked: hydroRatio >= 1, progressPct: Math.min(100, Math.round(hydroRatio * 100)) },
-      { id: "b2", title: "Circadian Alignment", description: "Log 7.5+ hours of sleep with quality above 80%", iconName: "Moon", unlocked: data.sleepHours >= 7.5, progressPct: Math.min(100, Math.round((data.sleepHours / 7.5) * 100)) },
-      { id: "b3", title: "Bio-Age Reverser", description: "Lower biological age by 1.5+ years through stability", iconName: "Sparkles", unlocked: data.stabilityScore >= 80, progressPct: Math.min(100, data.stabilityScore) },
-      { id: "b4", title: "Metabolic Champion", description: "Burn 500+ active calories in a single day", iconName: "Flame", unlocked: data.caloriesBurned >= 500, progressPct: Math.min(100, Math.round((data.caloriesBurned / 500) * 100)) }
+      {
+        id: "b1",
+        title: "Hydration Master",
+        description: "Log 2500ml of water for 3 consecutive days",
+        iconName: "Droplet",
+        unlocked: hasData && data.trackingDaysCount >= 3 && hydroRatio >= 1,
+        progressPct: hasData && data.hydrationMl > 0 ? Math.min(100, Math.round(hydroRatio * 100)) : 0
+      },
+      {
+        id: "b2",
+        title: "Circadian Alignment",
+        description: "Log 7.5+ hours of sleep with quality above 80%",
+        iconName: "Moon",
+        unlocked: hasData && data.sleepHours >= 7.5 && data.sleepQuality >= 80,
+        progressPct: hasData && data.sleepHours > 0 ? Math.min(100, Math.round((data.sleepHours / 7.5) * 100)) : 0
+      },
+      {
+        id: "b3",
+        title: "Bio-Age Reverser",
+        description: "Lower biological age by 1.5+ years through stability",
+        iconName: "Sparkles",
+        unlocked: hasData && data.trackingDaysCount >= 7 && data.stabilityScore >= 80,
+        progressPct: hasData ? Math.min(100, data.stabilityScore) : 0
+      },
+      {
+        id: "b4",
+        title: "Metabolic Champion",
+        description: "Burn 500+ active calories in a single day",
+        iconName: "Flame",
+        unlocked: hasData && data.caloriesBurned >= 500,
+        progressPct: hasData && data.caloriesBurned > 0 ? Math.min(100, Math.round((data.caloriesBurned / 500) * 100)) : 0
+      }
     ],
-    encouragingAiMessage: "You're building remarkable consistency! Keep maintaining your hydration and sleep schedule to unlock your next longevity breakthrough."
+    encouragingAiMessage: hasData
+      ? "You're building remarkable consistency! Keep maintaining your hydration and sleep schedule to unlock your next longevity breakthrough."
+      : "Start logging your daily sleep, workouts, and nutrition to unlock achievements and track your progress!"
   };
 }
 

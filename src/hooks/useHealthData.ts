@@ -33,6 +33,9 @@ export interface HealthDigitalTwin {
   glycemicIndexLoad: "low" | "medium" | "high";
   sedentaryPostureRisk: "low" | "medium" | "critical";
   micronutrientDeficiencies: string[];
+  trackingDaysCount: number;
+  hasTelemetry: boolean;
+  hasEnergyTelemetry: boolean;
 }
 
 export function useHealthData() {
@@ -56,27 +59,48 @@ export function useHealthData() {
       // Concurrent Promise.all Batch Fetching
       const [
         { data: rawNutrition },
-        { data: workoutData },
-        { data: hydrationData },
-        { data: sleepData },
-        { data: recoveryData },
-        { data: fatigueData },
-        { data: moodData },
-        { data: stepCountData }
+        { data: allWorkouts },
+        { data: allHydration },
+        { data: sleepLogs },
+        { data: recoveryLogs },
+        { data: fatigueLogs },
+        { data: moodLogs }
       ] = await Promise.all([
         supabase.from("nutrition_logs").select("calories, protein_g, carbs_g, fat_g, date, created_at").eq("user_id", profile.id),
-        supabase.from("workouts").select("calories_burned").eq("user_id", profile.id).gte("created_at", `${today}T00:00:00Z`),
-        supabase.from("hydration_logs").select("amount_ml").eq("user_id", profile.id).gte("created_at", `${today}T00:00:00Z`),
-        supabase.from("sleep_logs").select("*").eq("user_id", profile.id).order("created_at", { ascending: false }).limit(1),
-        supabase.from("recovery_scores").select("*").eq("user_id", profile.id).order("created_at", { ascending: false }).limit(1),
-        supabase.from("fatigue_logs").select("*").eq("user_id", profile.id).order("created_at", { ascending: false }).limit(1),
-        supabase.from("mood_tracking").select("*").eq("user_id", profile.id).order("created_at", { ascending: false }).limit(1),
-        supabase.from("workouts").select("duration_minutes").eq("user_id", profile.id).eq("type", "steps").gte("created_at", `${today}T00:00:00Z`)
+        supabase.from("workouts").select("calories_burned, duration_minutes, type, created_at").eq("user_id", profile.id),
+        supabase.from("hydration_logs").select("amount_ml, created_at").eq("user_id", profile.id),
+        supabase.from("sleep_logs").select("*").eq("user_id", profile.id).order("created_at", { ascending: false }),
+        supabase.from("recovery_scores").select("*").eq("user_id", profile.id).order("created_at", { ascending: false }),
+        supabase.from("fatigue_logs").select("*").eq("user_id", profile.id).order("created_at", { ascending: false }),
+        supabase.from("mood_tracking").select("*").eq("user_id", profile.id).order("created_at", { ascending: false })
       ]);
 
       const nutritionData = (rawNutrition || []).filter(
         (item: any) => !item.date || item.date === today || (item.created_at && item.created_at.startsWith(today))
       );
+
+      const workoutData = (allWorkouts || []).filter(
+        (item: any) => item.created_at && item.created_at.startsWith(today)
+      );
+
+      const hydrationData = (allHydration || []).filter(
+        (item: any) => item.created_at && item.created_at.startsWith(today)
+      );
+
+      const stepCountData = workoutData.filter((item: any) => item.type === "steps");
+
+      // Compute distinct tracking dates
+      const trackingDates = new Set<string>();
+      (rawNutrition || []).forEach((i: any) => { const d = i.date || i.created_at?.split('T')[0]; if (d) trackingDates.add(d); });
+      (allWorkouts || []).forEach((i: any) => { if (i.created_at) trackingDates.add(i.created_at.split('T')[0]); });
+      (allHydration || []).forEach((i: any) => { if (i.created_at) trackingDates.add(i.created_at.split('T')[0]); });
+      (sleepLogs || []).forEach((i: any) => { if (i.created_at) trackingDates.add(i.created_at.split('T')[0]); });
+      (recoveryLogs || []).forEach((i: any) => { if (i.created_at) trackingDates.add(i.created_at.split('T')[0]); });
+      (fatigueLogs || []).forEach((i: any) => { if (i.created_at) trackingDates.add(i.created_at.split('T')[0]); });
+      (moodLogs || []).forEach((i: any) => { if (i.created_at) trackingDates.add(i.created_at.split('T')[0]); });
+
+      const trackingDaysCount = trackingDates.size;
+      const hasTelemetry = trackingDaysCount > 0;
 
       const caloriesConsumed = nutritionData?.reduce((sum, item) => sum + (Number(item.calories) || 0), 0) || 0;
       const proteinG = nutritionData?.reduce((sum, item) => sum + (Number(item.protein_g) || 0), 0) || 0;
@@ -88,10 +112,12 @@ export function useHealthData() {
       const caloriesBurned = workoutData?.reduce((sum, item) => sum + (item.calories_burned || 0), 0) || 0;
       const hydrationMl = hydrationData?.reduce((sum, item) => sum + (item.amount_ml || 0), 0) || 0;
       const realSteps = stepCountData?.reduce((sum, item) => sum + (item.duration_minutes || 0), 0) || 0;
-      const lastSleep = sleepData?.[0] || null;
-      const lastRecovery = recoveryData?.[0] || null;
-      const lastFatigue = fatigueData?.[0] || null;
-      const lastMood = moodData?.[0] || null;
+      const lastSleep = sleepLogs?.[0] || null;
+      const lastRecovery = recoveryLogs?.[0] || null;
+      const lastFatigue = fatigueLogs?.[0] || null;
+      const lastMood = moodLogs?.[0] || null;
+
+      const hasEnergyTelemetry = Boolean(lastSleep || lastRecovery || lastFatigue || lastMood);
 
       const realMetrics: HealthDigitalTwin = {
         caloriesBurned,
@@ -118,12 +144,15 @@ export function useHealthData() {
         mentalFatigue: lastFatigue ? Number(lastFatigue.mental_fatigue || 0) : 0,
         energyLevel: lastFatigue ? Math.max(0, 100 - Number(lastFatigue.fatigue_score || 0)) : 0,
         biologicalAge: profile.biological_age || 25,
-        stabilityScore: profile.stability_score || 100,
+        stabilityScore: hasTelemetry ? (profile.stability_score || 100) : 0,
         metabolicEfficiency: 0, 
         lifestyleSustainability: 0,
         glycemicIndexLoad: "low",
         sedentaryPostureRisk: "low",
-        micronutrientDeficiencies: []
+        micronutrientDeficiencies: [],
+        trackingDaysCount,
+        hasTelemetry,
+        hasEnergyTelemetry
       };
 
       setMetrics(realMetrics);

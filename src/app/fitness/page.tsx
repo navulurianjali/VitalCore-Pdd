@@ -121,10 +121,10 @@ export default function FitnessPage() {
   const [isWebcamActive, setIsWebcamActive] = useState(false);
   const [isFrontCamera, setIsFrontCamera] = useState(true);
   const [cameraError, setCameraError] = useState<string | null>(null);
-  const [postureScore, setPostureScore] = useState(96);
-  const [alignmentQuality, setAlignmentQuality] = useState("Optimal Spine");
-  const [stabilityScore, setStabilityScore] = useState(98);
-  const [mobilityScore, setMobilityScore] = useState(95);
+  const [postureScore, setPostureScore] = useState<number | null>(null);
+  const [alignmentQuality, setAlignmentQuality] = useState<string | null>(null);
+  const [stabilityScore, setStabilityScore] = useState<number | null>(null);
+  const [mobilityScore, setMobilityScore] = useState<number | null>(null);
   const [liveCue, setLiveCue] = useState("Place your full body in view to calibrate.");
   const [formAlert, setFormAlert] = useState<string | null>(null);
   
@@ -432,9 +432,12 @@ export default function FitnessPage() {
       }
     } catch (err: any) {
       console.error("Camera access failure:", err);
-      setCameraError(err.name === "NotAllowedError" 
-        ? "Camera permission denied. Please enable camera access in settings." 
-        : "Failed to access webcam. Please check device connections.");
+      setCameraError("Camera access required for posture analysis.");
+      setIsWebcamActive(false);
+      setPostureScore(null);
+      setAlignmentQuality(null);
+      setStabilityScore(null);
+      setMobilityScore(null);
     }
   };
 
@@ -444,6 +447,10 @@ export default function FitnessPage() {
       setWebcamStream(null);
     }
     setIsWebcamActive(false);
+    setPostureScore(null);
+    setAlignmentQuality(null);
+    setStabilityScore(null);
+    setMobilityScore(null);
     if (requestRef.current) {
       cancelAnimationFrame(requestRef.current);
       requestRef.current = null;
@@ -551,7 +558,7 @@ export default function FitnessPage() {
     fetchDBWorkouts();
   }, [profile?.id]);
 
-  // Timer intervals
+  // Timer intervals & localStorage sync
   useEffect(() => {
     let interval: NodeJS.Timeout;
     if (timerRunning && timeLeft > 0) {
@@ -564,6 +571,46 @@ export default function FitnessPage() {
     }
     return () => clearInterval(interval);
   }, [timerRunning, timeLeft]);
+
+  // Save active timer state to localStorage
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (timerRunning) {
+      localStorage.setItem("vitalcore_active_workout", JSON.stringify({
+        currentExerciseIdx,
+        timeLeft,
+        isResting,
+        timerRunning: true,
+        lastUpdated: Date.now()
+      }));
+    } else if (coachState !== "active") {
+      localStorage.removeItem("vitalcore_active_workout");
+    }
+  }, [timerRunning, currentExerciseIdx, timeLeft, isResting, coachState]);
+
+  // Restore workout session on page load
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const saved = localStorage.getItem("vitalcore_active_workout");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        const elapsed = Math.floor((Date.now() - (parsed.lastUpdated || Date.now())) / 1000);
+        const remaining = Math.max(0, (parsed.timeLeft || 45) - elapsed);
+        if (remaining > 0) {
+          setCurrentExerciseIdx(parsed.currentExerciseIdx || 0);
+          setTimeLeft(remaining);
+          setIsResting(Boolean(parsed.isResting));
+          setTimerRunning(Boolean(parsed.timerRunning));
+          setCoachState("active");
+        } else {
+          localStorage.removeItem("vitalcore_active_workout");
+        }
+      }
+    } catch (e) {
+      console.error("Error restoring workout session:", e);
+    }
+  }, []);
 
   // Loading Screen ticks animation
   useEffect(() => {
@@ -1179,17 +1226,23 @@ export default function FitnessPage() {
                       <div className="flex items-center gap-3 bg-primary/10 border border-primary/20 rounded-2xl px-4 py-2 shrink-0">
                         <div className="text-right">
                           <span className="text-[8px] font-bold text-foreground/50 uppercase block">Energy Status</span>
-                          <span className="text-xs font-semibold text-foreground">{readinessScore > 75 ? "Ready to Move" : "Restorative Recovery"}</span>
+                          <span className="text-xs font-semibold text-foreground">
+                            {metrics?.hasEnergyTelemetry 
+                              ? (readinessScore > 75 ? "Ready to Move" : "Restorative Recovery")
+                              : "Not enough telemetry"}
+                          </span>
                         </div>
                         <div className="h-10 w-10 rounded-full border-2 border-primary flex items-center justify-center font-bold text-sm text-primary shadow-lg shadow-primary/10 bg-background shrink-0">
-                          {readinessScore}%
+                          {metrics?.hasEnergyTelemetry ? `${readinessScore}%` : "--"}
                         </div>
                       </div>
                     </div>
 
                     {/* AI Reasoning Text */}
                     <div className="text-xs text-foreground/80 leading-relaxed font-semibold bg-foreground/5 p-4 rounded-xl border border-foreground/5">
-                      {recoveryWarning || "Your body is fully recharged! We compiled a strength and cardio session to support your metabolic wellness and cardiac health."}
+                      {metrics?.hasEnergyTelemetry 
+                        ? (recoveryWarning || "Your body is fully recharged! We compiled a strength and cardio session to support your metabolic wellness and cardiac health.")
+                        : "Insufficient telemetry logged today. Complete your sleep log, fatigue check, or recovery score to generate accurate Energy Status guidance."}
                     </div>
 
                     <div className="flex justify-between items-center text-[10px] text-foreground/50 font-bold uppercase tracking-wider pt-2">
@@ -1319,31 +1372,49 @@ export default function FitnessPage() {
                           />
 
                           {/* Real-time form indicators */}
-                          <div className="absolute top-3 left-3 bg-black/70 backdrop-blur-md border border-white/10 rounded-xl p-2.5 text-[10px] font-semibold text-left text-foreground space-y-1 shadow-lg pointer-events-none">
-                            <div className="flex items-center gap-1.5">
-                              <span className="h-1.5 w-1.5 rounded-full bg-[#00f0ff] animate-pulse" />
-                              <span className="text-[#00f0ff] uppercase tracking-wider text-[8px] font-bold">Live Feedback HUD</span>
-                            </div>
-                            <div className="text-foreground/80 mt-1">• Posture cue: {alignmentQuality}</div>
-                            <div className="text-foreground/80">• Spine stability: {stabilityScore}%</div>
-                            <div className="text-foreground/80">• Range of motion: {mobilityScore}%</div>
-                          </div>
-
-                          {/* Current Posture Score / Form Alerts Panel */}
-                          <div className="absolute bottom-3 right-3 flex flex-col items-end gap-1.5 pointer-events-none">
-                            {formAlert && (
-                              <div className="bg-rose-500 text-white text-[10px] font-black px-2.5 py-1 rounded-lg uppercase tracking-wider animate-bounce shadow-lg shadow-rose-500/25 border border-rose-400">
-                                ⚠️ {formAlert}
+                          {isWebcamActive && !cameraError && postureScore !== null ? (
+                            <>
+                              <div className="absolute top-3 left-3 bg-black/70 backdrop-blur-md border border-white/10 rounded-xl p-2.5 text-[10px] font-semibold text-left text-foreground space-y-1 shadow-lg pointer-events-none">
+                                <div className="flex items-center gap-1.5">
+                                  <span className="h-1.5 w-1.5 rounded-full bg-[#00f0ff] animate-pulse" />
+                                  <span className="text-[#00f0ff] uppercase tracking-wider text-[8px] font-bold">Live Feedback HUD</span>
+                                </div>
+                                <div className="text-foreground/80 mt-1">• Posture cue: {alignmentQuality || "Calibrating..."}</div>
+                                <div className="text-foreground/80">• Spine stability: {stabilityScore !== null ? `${stabilityScore}%` : "--"}</div>
+                                <div className="text-foreground/80">• Range of motion: {mobilityScore !== null ? `${mobilityScore}%` : "--"}</div>
                               </div>
-                            )}
-                            <div className={`text-white text-[10px] font-extrabold px-3 py-1 rounded-lg shadow-md border ${
-                              postureScore > 88 
-                                ? "bg-emerald-500 border-emerald-400" 
-                                : "bg-amber-500 border-amber-400"
-                            }`}>
-                              Posture Score: {postureScore}%
+
+                              <div className="absolute bottom-3 right-3 flex flex-col items-end gap-1.5 pointer-events-none">
+                                {formAlert && (
+                                  <div className="bg-rose-500 text-white text-[10px] font-black px-2.5 py-1 rounded-lg uppercase tracking-wider animate-bounce shadow-lg shadow-rose-500/25 border border-rose-400">
+                                    ⚠️ {formAlert}
+                                  </div>
+                                )}
+                                <div className={`text-white text-[10px] font-extrabold px-3 py-1 rounded-lg shadow-md border ${
+                                  (postureScore || 0) > 88 
+                                    ? "bg-emerald-500 border-emerald-400" 
+                                    : "bg-amber-500 border-amber-400"
+                                }`}>
+                                  Posture Score: {postureScore}%
+                                </div>
+                              </div>
+                            </>
+                          ) : (
+                            <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/85 backdrop-blur-sm p-6 text-center space-y-3 z-10">
+                              <div className="h-12 w-12 rounded-full bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-rose-400 text-xl font-bold">
+                                📷
+                              </div>
+                              <p className="text-sm font-bold text-white max-w-xs">
+                                Camera access required for posture analysis.
+                              </p>
+                              <button
+                                onClick={startWebcam}
+                                className="px-4 py-2 bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold rounded-xl transition-all shadow-lg shadow-rose-500/20 cursor-pointer"
+                              >
+                                Enable Camera
+                              </button>
                             </div>
-                          </div>
+                          )}
 
                           {/* Futuristic interactive camera utility actions */}
                           <div className="absolute bottom-3 left-3 flex gap-2">
