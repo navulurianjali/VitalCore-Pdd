@@ -229,9 +229,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (!profile || !supabase) return { error: new Error("No active profile") };
 
     try {
+      const validColumns = new Set([
+        "username", "full_name", "avatar_url", "date_of_birth", "gender",
+        "weight_kg", "height_cm", "fitness_goal", "activity_level", "active_mode",
+        "soreness_level", "biological_age", "stability_score", "onboarding_completed",
+        "bmi", "body_fat_estimate", "occupation", "timezone", "fitness_level",
+        "workout_duration_preference", "preferred_workout_time", "home_gym_preference",
+        "previous_injuries", "chronic_conditions", "surgeries", "mobility_limitations",
+        "sleep_problems", "dietary_preferences", "disliked_foods", "favorite_foods",
+        "allergies", "meal_timing_habits", "caffeine_intake", "wearable_synced",
+        "anxiety_rating", "motivation_level", "stress_level_onboard",
+        "screen_time_hours", "sitting_hours", "updated_at"
+      ]);
+
+      const validUpdates: Record<string, any> = {};
+      for (const [key, val] of Object.entries(updates)) {
+        if (validColumns.has(key)) {
+          validUpdates[key] = val;
+        }
+      }
+
       const { error } = await supabase
         .from("profiles")
-        .update(updates)
+        .update(validUpdates)
         .eq("id", profile.id);
 
       if (!error) {

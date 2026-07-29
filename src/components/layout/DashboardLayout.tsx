@@ -30,7 +30,7 @@ interface DashboardLayoutProps {
 }
 
 export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
-  const { user, profile, loading } = useAuth();
+  const { user, profile, loading, signOut } = useAuth();
   const { activeMode } = useTheme();
   const router = useRouter();
   const pathname = usePathname();
@@ -158,9 +158,15 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
           </div>
           <div className="overflow-hidden min-w-0 flex-1">
             <p className="text-sm font-medium text-[var(--foreground)] truncate leading-tight">{profile?.full_name || "User"}</p>
-            <Link href="/auth/login" className="text-[11px] text-[var(--muted)] hover:text-[var(--foreground)] flex items-center gap-1 mt-0.5 transition-colors">
+            <button
+              onClick={async () => {
+                await signOut();
+                router.push("/auth/login");
+              }}
+              className="text-[11px] text-[var(--muted)] hover:text-[var(--foreground)] flex items-center gap-1 mt-0.5 transition-colors cursor-pointer"
+            >
               Sign Out
-            </Link>
+            </button>
           </div>
         </div>
       </div>

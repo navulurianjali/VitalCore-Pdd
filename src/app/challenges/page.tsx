@@ -96,7 +96,7 @@ export default function HealthyHabitsPage() {
         .order("id", { ascending: false });
       
       if (allC && allC.length > 0) {
-        const combined = [...allC.map((c: any) => ({
+        setChallenges(allC.map((c: any) => ({
           id: c.id,
           title: c.title,
           description: c.description,
@@ -104,9 +104,8 @@ export default function HealthyHabitsPage() {
           difficulty: c.difficulty || "Medium",
           xp_reward: Number(c.xp_reward || 200),
           duration_days: Number(c.duration_days || 7),
-          participants_count: Number(c.participants_count || 0)
-        })), ...PREDEFINED_CHALLENGES];
-        setChallenges(combined);
+          participants_count: Number(c.participants_count || 120)
+        })));
       } else {
         setChallenges(PREDEFINED_CHALLENGES);
       }

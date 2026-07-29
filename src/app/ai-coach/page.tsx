@@ -66,6 +66,20 @@ export default function AICoachPage() {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  const generateHeuristicResponse = (userMsg: string): string => {
+    const lower = userMsg.toLowerCase();
+    if (lower.includes("sore") || lower.includes("workout") || lower.includes("exercise")) {
+      return `Active recovery is key, ${profile?.full_name || "Explorer"}! Your stability score is ${metrics?.stabilityScore || 100}%. Focus on foam rolling, light 15-minute walks, and taking in at least 30g of protein to repair muscle tissue.`;
+    }
+    if (lower.includes("sleep") || lower.includes("tired") || lower.includes("bed")) {
+      return `Rest is essential! You logged ${metrics?.sleepHours || 7} hours of sleep recently. Try turning off screens 45 minutes before bed and keeping your bedroom temperature around 18-20°C.`;
+    }
+    if (lower.includes("eat") || lower.includes("food") || lower.includes("diet") || lower.includes("slump")) {
+      return `Fueling your body properly maintains steady glucose! You've logged ${metrics?.caloriesConsumed || 0} kcal today. Pair complex carbohydrates with high-fiber foods and drink 500ml of water to restore focus.`;
+    }
+    return `I've analyzed your telemetry (${metrics?.caloriesConsumed || 0} kcal, ${metrics?.hydrationMl || 0}ml water, ${metrics?.sleepHours || 0}h sleep). Consistency in hydration, balanced macros, and daily movement will maximize your metabolic stability!`;
+  };
+
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!inputVal.trim() || !metrics) return;
@@ -86,12 +100,13 @@ export default function AICoachPage() {
     }
 
     const currentInput = inputVal;
-    setMessages(prev => [...prev, userMsg]);
+    const currentMessages = [...messages, userMsg];
+    setMessages(currentMessages);
     setInputVal("");
 
     const aiMsgId = `msg-ai-${Date.now()}`;
 
-    // Add placeholder first
+    // Add initial typing placeholder
     setMessages(prev => [...prev, {
       id: aiMsgId,
       sender: "ai",
@@ -99,56 +114,76 @@ export default function AICoachPage() {
       timestamp: new Date()
     }]);
 
-    let fullResponse = "";
+    let streamedText = "";
+
     try {
-      // Query secure server-side API endpoint
-      const response = await fetch("/api/ai-coach", {
+      // Call server-side Route Handler with Gemini 1.5 Flash
+      const response = await fetch("/api/chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          message: currentInput,
-          history: messages.concat(userMsg),
+          messages: currentMessages,
           profile,
           metrics
         })
       });
 
-      if (!response.ok) {
-        const errData = await response.json().catch(() => ({}));
-        throw new Error(errData.error || "AI Coach API Error");
+      if (!response.ok || !response.body) {
+        throw new Error(`API returned status ${response.status}`);
       }
 
-      const resData = await response.json();
-      fullResponse = resData.reply || resData.error;
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
 
-      if (supabase && profile?.id && !resData.error) {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value, { stream: true });
+        streamedText += chunk;
+        setMessages(prev => prev.map(m => m.id === aiMsgId ? { ...m, text: streamedText } : m));
+      }
+
+      if (!streamedText.trim()) {
+        throw new Error("Empty response stream");
+      }
+
+      if (supabase && profile?.id) {
         await supabase.from("ai_conversations").insert({
           user_id: profile.id,
           sender: "ai",
-          message: fullResponse
+          message: streamedText
         });
       }
     } catch (err: any) {
-      console.error("AI Coach API failed:", err);
-      fullResponse = err.message || "I'm having trouble connecting to my neural core right now.";
-    }
+      console.warn("API stream failed, activating heuristic fallback:", err);
+      const fallbackText = generateHeuristicResponse(currentInput);
 
-    // Stream word-by-word
-    const words = fullResponse.split(" ");
-    let currentText = "";
-    let wordIndex = 0;
+      // Type out fallback response smoothly
+      const words = fallbackText.split(" ");
+      let currentText = "";
+      let wordIndex = 0;
 
-    const timer = setInterval(() => {
-      if (wordIndex < words.length) {
-        currentText += (wordIndex === 0 ? "" : " ") + words[wordIndex];
-        setMessages(prev => prev.map(m => m.id === aiMsgId ? { ...m, text: currentText } : m));
-        wordIndex++;
-      } else {
-        clearInterval(timer);
+      const timer = setInterval(() => {
+        if (wordIndex < words.length) {
+          currentText += (wordIndex === 0 ? "" : " ") + words[wordIndex];
+          setMessages(prev => prev.map(m => m.id === aiMsgId ? { ...m, text: currentText } : m));
+          wordIndex++;
+        } else {
+          clearInterval(timer);
+        }
+      }, 25);
+
+      if (supabase && profile?.id) {
+        await supabase.from("ai_conversations").insert({
+          user_id: profile.id,
+          sender: "ai",
+          message: fallbackText
+        });
       }
-    }, 28); // Premium 28ms typewriter streaming speed
+    }
   };
 
   const samplePrompts = [

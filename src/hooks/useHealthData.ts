@@ -53,10 +53,26 @@ export function useHealthData() {
       
       const today = new Date().toISOString().split('T')[0];
 
-      const { data: rawNutrition } = await supabase
-        .from("nutrition_logs")
-        .select("calories, protein_g, carbs_g, fat_g, fiber_g, sugar_g, sodium_mg, date, created_at")
-        .eq("user_id", profile.id);
+      // Concurrent Promise.all Batch Fetching
+      const [
+        { data: rawNutrition },
+        { data: workoutData },
+        { data: hydrationData },
+        { data: sleepData },
+        { data: recoveryData },
+        { data: fatigueData },
+        { data: moodData },
+        { data: stepCountData }
+      ] = await Promise.all([
+        supabase.from("nutrition_logs").select("calories, protein_g, carbs_g, fat_g, date, created_at").eq("user_id", profile.id),
+        supabase.from("workouts").select("calories_burned").eq("user_id", profile.id).gte("created_at", `${today}T00:00:00Z`),
+        supabase.from("hydration_logs").select("amount_ml").eq("user_id", profile.id).gte("created_at", `${today}T00:00:00Z`),
+        supabase.from("sleep_logs").select("*").eq("user_id", profile.id).order("created_at", { ascending: false }).limit(1),
+        supabase.from("recovery_scores").select("*").eq("user_id", profile.id).order("created_at", { ascending: false }).limit(1),
+        supabase.from("fatigue_logs").select("*").eq("user_id", profile.id).order("created_at", { ascending: false }).limit(1),
+        supabase.from("mood_tracking").select("*").eq("user_id", profile.id).order("created_at", { ascending: false }).limit(1),
+        supabase.from("workouts").select("duration_minutes").eq("user_id", profile.id).eq("type", "steps").gte("created_at", `${today}T00:00:00Z`)
+      ]);
 
       const nutritionData = (rawNutrition || []).filter(
         (item: any) => !item.date || item.date === today || (item.created_at && item.created_at.startsWith(today))
@@ -66,69 +82,16 @@ export function useHealthData() {
       const proteinG = nutritionData?.reduce((sum, item) => sum + (Number(item.protein_g) || 0), 0) || 0;
       const carbsG = nutritionData?.reduce((sum, item) => sum + (Number(item.carbs_g) || 0), 0) || 0;
       const fatG = nutritionData?.reduce((sum, item) => sum + (Number(item.fat_g) || 0), 0) || 0;
-      const fiberG = nutritionData?.reduce((sum, item) => sum + (Number(item.fiber_g) || 0), 0) || 0;
-      const sugarG = nutritionData?.reduce((sum, item) => sum + (Number(item.sugar_g) || 0), 0) || 0;
-      const sodiumMg = nutritionData?.reduce((sum, item) => sum + (Number(item.sodium_mg) || 0), 0) || 0;
-
-      // 2. Fetch Workouts
-      const { data: workoutData } = await supabase
-        .from("workouts")
-        .select("calories_burned")
-        .eq("user_id", profile.id)
-        .gte("created_at", `${today}T00:00:00Z`);
+      const fiberG = 0;
+      const sugarG = 0;
+      const sodiumMg = 0;
       const caloriesBurned = workoutData?.reduce((sum, item) => sum + (item.calories_burned || 0), 0) || 0;
-
-      // 3. Fetch Hydration
-      const { data: hydrationData } = await supabase
-        .from("hydration_logs")
-        .select("amount_ml")
-        .eq("user_id", profile.id)
-        .gte("created_at", `${today}T00:00:00Z`);
       const hydrationMl = hydrationData?.reduce((sum, item) => sum + (item.amount_ml || 0), 0) || 0;
-
-      // 4. Fetch Sleep
-      const { data: sleepData } = await supabase
-        .from("sleep_logs")
-        .select("*")
-        .eq("user_id", profile.id)
-        .order("created_at", { ascending: false })
-        .limit(1);
-      const lastSleep = sleepData?.[0] || null;
-
-      // 5. Fetch Recovery/Fatigue/Mood
-      const { data: recoveryData } = await supabase
-        .from("recovery_scores")
-        .select("*")
-        .eq("user_id", profile.id)
-        .order("created_at", { ascending: false })
-        .limit(1);
-      const lastRecovery = recoveryData?.[0] || null;
-
-      const { data: fatigueData } = await supabase
-        .from("fatigue_logs")
-        .select("*")
-        .eq("user_id", profile.id)
-        .order("created_at", { ascending: false })
-        .limit(1);
-      const lastFatigue = fatigueData?.[0] || null;
-
-      const { data: moodData } = await supabase
-        .from("mood_tracking")
-        .select("*")
-        .eq("user_id", profile.id)
-        .order("created_at", { ascending: false })
-        .limit(1);
-      const lastMood = moodData?.[0] || null;
-
-      // 6. Fetch Steps
-      const { data: stepCountData } = await supabase
-        .from("workouts")
-        .select("duration_minutes")
-        .eq("user_id", profile.id)
-        .eq("type", "steps")
-        .gte("created_at", `${today}T00:00:00Z`);
-        
       const realSteps = stepCountData?.reduce((sum, item) => sum + (item.duration_minutes || 0), 0) || 0;
+      const lastSleep = sleepData?.[0] || null;
+      const lastRecovery = recoveryData?.[0] || null;
+      const lastFatigue = fatigueData?.[0] || null;
+      const lastMood = moodData?.[0] || null;
 
       const realMetrics: HealthDigitalTwin = {
         caloriesBurned,
