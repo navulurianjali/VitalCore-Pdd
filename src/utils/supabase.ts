@@ -1,17 +1,12 @@
 import { createBrowserClient } from "@supabase/ssr";
 
-// Resilient fallback URLs to prevent Next.js prerendering crashes during Vercel builds
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://placeholder-url.supabase.co";
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "placeholder-anon-key";
+// Primary shared Supabase credentials connecting Web App and Expo React Native App
+export const SHARED_SUPABASE_URL = "https://bevolemwakfozxuymxsn.supabase.co";
+export const SHARED_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJldm9sZW13YWtmb3p4dXlteHNuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5MTUyNjUsImV4cCI6MjA5NTQ5MTI2NX0.ZRyBiaR7vhG8O2FEdPEQOBErLrSF5AxK_PASy87Odlk";
 
-// Supabase is the primary and exclusive database source
-export const isSupabaseConfigured = !!process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || SHARED_SUPABASE_URL;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || SHARED_SUPABASE_ANON_KEY;
 
-if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-  console.warn(
-    "⚠️ VitalCore warning: Supabase URL or Anon Key is missing from your environment variables. Please check your .env.local configuration."
-  );
-}
+export const isSupabaseConfigured = true;
 
 export const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey);
-
