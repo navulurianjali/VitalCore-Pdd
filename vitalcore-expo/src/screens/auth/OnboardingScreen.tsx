@@ -15,6 +15,7 @@ import {
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
+import { CustomTextInput } from '../../components/CustomTextInput';
 import {
   User,
   Scale,
@@ -304,40 +305,32 @@ export default function OnboardingScreen({ navigation }: any) {
           {step === 1 && (
             <View style={[styles.stepCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
               <View style={styles.stepHeader}>
-                <View style={[styles.stepIconBg, { backgroundColor: 'rgba(59, 130, 246, 0.15)' }]}>
-                  <User size={24} color="#60a5fa" />
+                <View style={[styles.stepIconBg, { backgroundColor: colors.primaryLight }]}>
+                  <User size={24} color={colors.primary} />
                 </View>
                 <View style={{ flex: 1 }}>
-                  <Text style={styles.stepTitle}>Personal Details</Text>
-                  <Text style={styles.stepSubtitle}>Let's start with your basic information.</Text>
+                  <Text style={[styles.stepTitle, { color: colors.text }]}>Personal Details</Text>
+                  <Text style={[styles.stepSubtitle, { color: colors.textMuted }]}>Let's start with your basic information.</Text>
                 </View>
               </View>
 
-              <View style={styles.inputGroup}>
-                <Text style={styles.label}>Full Name</Text>
-                <View style={[styles.inputWithIcon, { backgroundColor: colors.inputBg, borderColor: colors.inputBorder }]}>
-                  <User size={18} color="#64748b" style={styles.inputIcon} />
-                  <TextInput
-                    style={styles.textInput}
-                    placeholder="e.g. John Doe"
-                    placeholderTextColor="#64748b"
-                    value={fullName}
-                    onChangeText={setFullName}
-                  />
-                </View>
-              </View>
+              <CustomTextInput
+                label="Full Name"
+                placeholder="e.g. John Doe"
+                value={fullName}
+                onChangeText={setFullName}
+                leftIcon={<User size={18} color={colors.textMuted} />}
+                containerStyle={styles.inputGroup}
+              />
 
-              <View style={styles.inputGroup}>
-                <Text style={[styles.label, { color: colors.text }]}>Age (years)</Text>
-                <TextInput
-                  style={[styles.textInputSolo, { backgroundColor: colors.inputBg, borderColor: colors.inputBorder, color: colors.text }]}
-                  placeholder="e.g. 28"
-                  placeholderTextColor={colors.textMuted}
-                  value={age}
-                  onChangeText={setAge}
-                  keyboardType="numeric"
-                />
-              </View>
+              <CustomTextInput
+                label="Age (years)"
+                placeholder="e.g. 28"
+                value={age}
+                onChangeText={setAge}
+                keyboardType="numeric"
+                containerStyle={styles.inputGroup}
+              />
 
               <View style={styles.inputGroup}>
                 <Text style={[styles.label, { color: colors.text }]}>Biological Sex / Gender</Text>
@@ -347,11 +340,20 @@ export default function OnboardingScreen({ navigation }: any) {
                       key={g}
                       style={[
                         styles.genderCard,
-                        gender === g && styles.genderCardActive,
+                        {
+                          backgroundColor: gender === g ? colors.primaryLight : colors.surface,
+                          borderColor: gender === g ? colors.primary : colors.cardBorder,
+                        },
                       ]}
                       onPress={() => setGender(g)}
                     >
-                      <Text style={[styles.genderText, gender === g && styles.genderTextActive]}>
+                      <Text
+                        style={[
+                          styles.genderText,
+                          { color: gender === g ? colors.primary : colors.textMuted },
+                          gender === g && { fontWeight: '700' },
+                        ]}
+                      >
                         {g === 'male' ? '♂️ Male' : g === 'female' ? '♀️ Female' : '⚧️ Other'}
                       </Text>
                     </TouchableOpacity>
@@ -360,7 +362,7 @@ export default function OnboardingScreen({ navigation }: any) {
               </View>
 
               <TouchableOpacity
-                style={[styles.primaryBtn, !isStep1Valid && styles.disabledBtn]}
+                style={[styles.primaryBtn, { backgroundColor: colors.primary }, !isStep1Valid && styles.disabledBtn]}
                 onPress={handleNextFromStep1}
                 disabled={!isStep1Valid}
               >
@@ -384,41 +386,33 @@ export default function OnboardingScreen({ navigation }: any) {
               </View>
 
               <View style={styles.metricsRow}>
-                <View style={[styles.inputGroup, { flex: 1 }]}>
-                  <Text style={[styles.label, { color: colors.text }]}>Height (cm)</Text>
-                  <View style={[styles.inputWithIcon, { backgroundColor: colors.inputBg, borderColor: colors.inputBorder }]}>
-                    <Ruler size={18} color="#64748b" style={styles.inputIcon} />
-                    <TextInput
-                      style={[styles.textInput, { color: colors.text }]}
-                      placeholder="175"
-                      placeholderTextColor={colors.textMuted}
-                      value={heightCm}
-                      onChangeText={setHeightCm}
-                      keyboardType="numeric"
-                    />
-                  </View>
+                <View style={{ flex: 1, marginRight: 8 }}>
+                  <CustomTextInput
+                    label="Height (cm)"
+                    placeholder="175"
+                    value={heightCm}
+                    onChangeText={setHeightCm}
+                    keyboardType="numeric"
+                    leftIcon={<Ruler size={18} color={colors.textMuted} />}
+                  />
                 </View>
 
-                <View style={[styles.inputGroup, { flex: 1 }]}>
-                  <Text style={[styles.label, { color: colors.text }]}>Weight (kg)</Text>
-                  <View style={[styles.inputWithIcon, { backgroundColor: colors.inputBg, borderColor: colors.inputBorder }]}>
-                    <Scale size={18} color="#64748b" style={styles.inputIcon} />
-                    <TextInput
-                      style={[styles.textInput, { color: colors.text }]}
-                      placeholder="70"
-                      placeholderTextColor={colors.textMuted}
-                      value={weightKg}
-                      onChangeText={setWeightKg}
-                      keyboardType="numeric"
-                    />
-                  </View>
+                <View style={{ flex: 1, marginLeft: 8 }}>
+                  <CustomTextInput
+                    label="Weight (kg)"
+                    placeholder="70"
+                    value={weightKg}
+                    onChangeText={setWeightKg}
+                    keyboardType="numeric"
+                    leftIcon={<Scale size={18} color={colors.textMuted} />}
+                  />
                 </View>
               </View>
 
               {/* Dynamic Live BMI Gauge Card */}
-              <View style={styles.bmiPreviewCard}>
+              <View style={[styles.bmiPreviewCard, { backgroundColor: colors.surface, borderColor: colors.cardBorder }]}>
                 <View style={styles.bmiHeader}>
-                  <Text style={styles.bmiTitle}>Body Mass Index (BMI)</Text>
+                  <Text style={[styles.bmiTitle, { color: colors.text }]}>Body Mass Index (BMI)</Text>
                   <View style={[styles.bmiBadge, { backgroundColor: `${bmiCategory.color}22` }]}>
                     <Text style={[styles.bmiBadgeText, { color: bmiCategory.color }]}>
                       {bmiCategory.label}
@@ -426,14 +420,14 @@ export default function OnboardingScreen({ navigation }: any) {
                   </View>
                 </View>
 
-                <Text style={styles.bmiScoreText}>{bmiVal > 0 ? bmiVal : '--'}</Text>
-                <Text style={styles.bmiNote}>
+                <Text style={[styles.bmiScoreText, { color: colors.text }]}>{bmiVal > 0 ? bmiVal : '--'}</Text>
+                <Text style={[styles.bmiNote, { color: colors.textMuted }]}>
                   Auto-calculated using standard clinical BMI reference parameters.
                 </Text>
               </View>
 
               <TouchableOpacity
-                style={[styles.primaryBtn, !isStep2Valid && styles.disabledBtn]}
+                style={[styles.primaryBtn, { backgroundColor: colors.primary }, !isStep2Valid && styles.disabledBtn]}
                 onPress={handleNextFromStep2}
                 disabled={!isStep2Valid}
               >
@@ -466,7 +460,10 @@ export default function OnboardingScreen({ navigation }: any) {
                       key={item.label}
                       style={[
                         styles.goalCard,
-                        isSelected && { borderColor: item.color, backgroundColor: `${item.color}15` },
+                        {
+                          backgroundColor: isSelected ? `${item.color}18` : colors.surface,
+                          borderColor: isSelected ? item.color : colors.cardBorder,
+                        },
                       ]}
                       onPress={() => toggleGoal(item.label)}
                     >
@@ -483,7 +480,7 @@ export default function OnboardingScreen({ navigation }: any) {
               </View>
 
               <TouchableOpacity
-                style={[styles.primaryBtn, !isStep3Valid && styles.disabledBtn]}
+                style={[styles.primaryBtn, { backgroundColor: colors.primary }, !isStep3Valid && styles.disabledBtn]}
                 onPress={() => setStep(4)}
                 disabled={!isStep3Valid}
               >
@@ -512,12 +509,23 @@ export default function OnboardingScreen({ navigation }: any) {
                   return (
                     <TouchableOpacity
                       key={option.label}
-                      style={[styles.radioCard, isSelected && styles.radioCardActive]}
+                      style={[
+                        styles.radioCard,
+                        {
+                          backgroundColor: isSelected ? colors.primaryLight : colors.surface,
+                          borderColor: isSelected ? colors.primary : colors.cardBorder,
+                        },
+                      ]}
                       onPress={() => setFoodPreference(option.label)}
                     >
                       <View style={styles.radioLeft}>
-                        <View style={[styles.radioOuter, isSelected && styles.radioOuterActive]}>
-                          {isSelected && <View style={styles.radioInner} />}
+                        <View
+                          style={[
+                            styles.radioOuter,
+                            { borderColor: isSelected ? colors.primary : colors.textMuted },
+                          ]}
+                        >
+                          {isSelected && <View style={[styles.radioInner, { backgroundColor: colors.primary }]} />}
                         </View>
                         <View>
                           <Text style={[styles.radioTitle, { color: colors.text }]}>{option.label}</Text>
@@ -530,7 +538,7 @@ export default function OnboardingScreen({ navigation }: any) {
               </View>
 
               <TouchableOpacity
-                style={[styles.primaryBtn, !isStep4Valid && styles.disabledBtn]}
+                style={[styles.primaryBtn, { backgroundColor: colors.primary }, !isStep4Valid && styles.disabledBtn]}
                 onPress={() => setStep(5)}
                 disabled={!isStep4Valid}
               >
@@ -559,7 +567,7 @@ export default function OnboardingScreen({ navigation }: any) {
                 {['Diabetes', 'Hypertension', 'Asthma', 'Thyroid', 'PCOS', 'None'].map((chip) => (
                   <TouchableOpacity
                     key={chip}
-                    style={styles.chipItem}
+                    style={[styles.chipItem, { backgroundColor: colors.surface, borderColor: colors.cardBorder }]}
                     onPress={() => {
                       if (chip === 'None') setMedicalConditions('None');
                       else {
@@ -568,55 +576,40 @@ export default function OnboardingScreen({ navigation }: any) {
                       }
                     }}
                   >
-                    <Text style={[styles.chipText, { color: colors.text }]}>+ {chip}</Text>
+                    <Text style={[styles.chipText, { color: colors.primary }]}>+ {chip}</Text>
                   </TouchableOpacity>
                 ))}
               </View>
 
-              <View style={styles.inputGroup}>
-                <Text style={[styles.label, { color: colors.text }]}>Existing Medical Conditions</Text>
-                <View style={[styles.inputWithIcon, { backgroundColor: colors.inputBg, borderColor: colors.inputBorder }]}>
-                  <Stethoscope size={18} color="#64748b" style={styles.inputIcon} />
-                  <TextInput
-                    style={[styles.textInput, { color: colors.text }]}
-                    placeholder="e.g. Hypertension, Asthma, or None"
-                    placeholderTextColor={colors.textMuted}
-                    value={medicalConditions}
-                    onChangeText={setMedicalConditions}
-                  />
-                </View>
-              </View>
+              <CustomTextInput
+                label="Existing Medical Conditions"
+                placeholder="e.g. Hypertension, Asthma, or None"
+                value={medicalConditions}
+                onChangeText={setMedicalConditions}
+                leftIcon={<Stethoscope size={18} color={colors.textMuted} />}
+                containerStyle={styles.inputGroup}
+              />
 
-              <View style={styles.inputGroup}>
-                <Text style={[styles.label, { color: colors.text }]}>Current Medications</Text>
-                <View style={[styles.inputWithIcon, { backgroundColor: colors.inputBg, borderColor: colors.inputBorder }]}>
-                  <Pill size={18} color="#64748b" style={styles.inputIcon} />
-                  <TextInput
-                    style={[styles.textInput, { color: colors.text }]}
-                    placeholder="e.g. Metformin 500mg, Vitamin D, or None"
-                    placeholderTextColor={colors.textMuted}
-                    value={medications}
-                    onChangeText={setMedications}
-                  />
-                </View>
-              </View>
+              <CustomTextInput
+                label="Current Medications"
+                placeholder="e.g. Metformin 500mg, Vitamin D, or None"
+                value={medications}
+                onChangeText={setMedications}
+                leftIcon={<Pill size={18} color={colors.textMuted} />}
+                containerStyle={styles.inputGroup}
+              />
 
-              <View style={styles.inputGroup}>
-                <Text style={[styles.label, { color: colors.text }]}>Food or Drug Allergies</Text>
-                <View style={[styles.inputWithIcon, { backgroundColor: colors.inputBg, borderColor: colors.inputBorder }]}>
-                  <AlertTriangle size={18} color="#64748b" style={styles.inputIcon} />
-                  <TextInput
-                    style={[styles.textInput, { color: colors.text }]}
-                    placeholder="e.g. Peanuts, Penicillin, Lactose, or None"
-                    placeholderTextColor={colors.textMuted}
-                    value={allergies}
-                    onChangeText={setAllergies}
-                  />
-                </View>
-              </View>
+              <CustomTextInput
+                label="Food or Drug Allergies"
+                placeholder="e.g. Peanuts, Penicillin, Lactose, or None"
+                value={allergies}
+                onChangeText={setAllergies}
+                leftIcon={<AlertTriangle size={18} color={colors.textMuted} />}
+                containerStyle={styles.inputGroup}
+              />
 
               <TouchableOpacity
-                style={[styles.primaryBtn, !isStep5Valid && styles.disabledBtn]}
+                style={[styles.primaryBtn, { backgroundColor: colors.primary }, !isStep5Valid && styles.disabledBtn]}
                 onPress={() => setStep(6)}
                 disabled={!isStep5Valid}
               >
@@ -647,12 +640,23 @@ export default function OnboardingScreen({ navigation }: any) {
                     return (
                       <TouchableOpacity
                         key={act.label}
-                        style={[styles.radioCard, isSelected && styles.radioCardActive]}
+                        style={[
+                          styles.radioCard,
+                          {
+                            backgroundColor: isSelected ? colors.primaryLight : colors.surface,
+                            borderColor: isSelected ? colors.primary : colors.cardBorder,
+                          },
+                        ]}
                         onPress={() => setActivityLevel(act.label)}
                       >
                         <View style={styles.radioLeft}>
-                          <View style={[styles.radioOuter, isSelected && styles.radioOuterActive]}>
-                            {isSelected && <View style={styles.radioInner} />}
+                          <View
+                            style={[
+                              styles.radioOuter,
+                              { borderColor: isSelected ? colors.primary : colors.textMuted },
+                            ]}
+                          >
+                            {isSelected && <View style={[styles.radioInner, { backgroundColor: colors.primary }]} />}
                           </View>
                           <View>
                             <Text style={[styles.radioTitle, { color: colors.text }]}>{act.label}</Text>
@@ -665,23 +669,18 @@ export default function OnboardingScreen({ navigation }: any) {
                 </View>
               </View>
 
-              <View style={styles.inputGroup}>
-                <Text style={[styles.label, { color: colors.text }]}>Average Daily Sleep (hours)</Text>
-                <View style={[styles.inputWithIcon, { backgroundColor: colors.inputBg, borderColor: colors.inputBorder }]}>
-                  <Moon size={18} color="#64748b" style={styles.inputIcon} />
-                  <TextInput
-                    style={[styles.textInput, { color: colors.text }]}
-                    placeholder="7.5"
-                    placeholderTextColor={colors.textMuted}
-                    value={sleepDuration}
-                    onChangeText={setSleepDuration}
-                    keyboardType="numeric"
-                  />
-                </View>
-              </View>
+              <CustomTextInput
+                label="Average Daily Sleep (hours)"
+                placeholder="7.5"
+                value={sleepDuration}
+                onChangeText={setSleepDuration}
+                keyboardType="numeric"
+                leftIcon={<Moon size={18} color={colors.textMuted} />}
+                containerStyle={styles.inputGroup}
+              />
 
               <TouchableOpacity
-                style={[styles.primaryBtn, !isStep6Valid && styles.disabledBtn]}
+                style={[styles.primaryBtn, { backgroundColor: colors.primary }, !isStep6Valid && styles.disabledBtn]}
                 onPress={() => setStep(7)}
                 disabled={!isStep6Valid}
               >
@@ -699,71 +698,75 @@ export default function OnboardingScreen({ navigation }: any) {
                   <Sparkles size={24} color="#60a5fa" />
                 </View>
                 <View style={{ flex: 1 }}>
-                  <Text style={styles.stepTitle}>Calculated Health Targets</Text>
-                  <Text style={styles.stepSubtitle}>
+                  <Text style={[styles.stepTitle, { color: colors.text }]}>Calculated Health Targets</Text>
+                  <Text style={[styles.stepSubtitle, { color: colors.textMuted }]}>
                     Personalized targets calculated via Mifflin-St Jeor formula.
                   </Text>
                 </View>
               </View>
 
               <View style={styles.targetsGrid}>
-                <View style={[styles.targetCard, { borderColor: 'rgba(239, 68, 68, 0.3)' }]}>
+                <View style={[styles.targetCard, { backgroundColor: colors.surface, borderColor: 'rgba(239, 68, 68, 0.3)' }]}>
                   <Flame size={20} color="#ef4444" />
-                  <Text style={styles.targetLabel}>Calories</Text>
+                  <Text style={[styles.targetLabel, { color: colors.textMuted }]}>Calories</Text>
                   {isEditingTargets ? (
-                    <TextInput
-                      style={styles.targetEditInput}
+                    <CustomTextInput
                       value={calorieGoal}
                       onChangeText={setCalorieGoal}
                       keyboardType="numeric"
+                      height={36}
+                      inputStyle={{ textAlign: 'center', fontSize: 13 }}
                     />
                   ) : (
-                    <Text style={styles.targetValue}>{calorieGoal} kcal</Text>
+                    <Text style={[styles.targetValue, { color: colors.text }]}>{calorieGoal} kcal</Text>
                   )}
                 </View>
 
-                <View style={[styles.targetCard, { borderColor: 'rgba(139, 92, 246, 0.3)' }]}>
+                <View style={[styles.targetCard, { backgroundColor: colors.surface, borderColor: 'rgba(139, 92, 246, 0.3)' }]}>
                   <Dumbbell size={20} color="#8b5cf6" />
-                  <Text style={styles.targetLabel}>Protein</Text>
+                  <Text style={[styles.targetLabel, { color: colors.textMuted }]}>Protein</Text>
                   {isEditingTargets ? (
-                    <TextInput
-                      style={styles.targetEditInput}
+                    <CustomTextInput
                       value={proteinGoal}
                       onChangeText={setProteinGoal}
                       keyboardType="numeric"
+                      height={36}
+                      inputStyle={{ textAlign: 'center', fontSize: 13 }}
                     />
                   ) : (
-                    <Text style={styles.targetValue}>{proteinGoal} g</Text>
+                    <Text style={[styles.targetValue, { color: colors.text }]}>{proteinGoal} g</Text>
                   )}
                 </View>
 
-                <View style={[styles.targetCard, { borderColor: 'rgba(6, 182, 212, 0.3)' }]}>
+                <View style={[styles.targetCard, { backgroundColor: colors.surface, borderColor: 'rgba(6, 182, 212, 0.3)' }]}>
                   <Droplets size={20} color="#06b6d4" />
-                  <Text style={styles.targetLabel}>Water</Text>
+                  <Text style={[styles.targetLabel, { color: colors.textMuted }]}>Water</Text>
                   {isEditingTargets ? (
-                    <TextInput
-                      style={styles.targetEditInput}
+                    <CustomTextInput
                       value={waterGoal}
                       onChangeText={setWaterGoal}
                       keyboardType="numeric"
+                      height={36}
+                      inputStyle={{ textAlign: 'center', fontSize: 13 }}
                     />
                   ) : (
-                    <Text style={styles.targetValue}>{waterGoal} ml</Text>
+                    <Text style={[styles.targetValue, { color: colors.text }]}>{waterGoal} ml</Text>
                   )}
                 </View>
 
-                <View style={[styles.targetCard, { borderColor: 'rgba(16, 185, 129, 0.3)' }]}>
+                <View style={[styles.targetCard, { backgroundColor: colors.surface, borderColor: 'rgba(16, 185, 129, 0.3)' }]}>
                   <Activity size={20} color="#10b981" />
-                  <Text style={styles.targetLabel}>Steps</Text>
+                  <Text style={[styles.targetLabel, { color: colors.textMuted }]}>Steps</Text>
                   {isEditingTargets ? (
-                    <TextInput
-                      style={styles.targetEditInput}
+                    <CustomTextInput
                       value={stepGoal}
                       onChangeText={setStepGoal}
                       keyboardType="numeric"
+                      height={36}
+                      inputStyle={{ textAlign: 'center', fontSize: 13 }}
                     />
                   ) : (
-                    <Text style={styles.targetValue}>{stepGoal} steps</Text>
+                    <Text style={[styles.targetValue, { color: colors.text }]}>{stepGoal} steps</Text>
                   )}
                 </View>
               </View>
@@ -772,14 +775,14 @@ export default function OnboardingScreen({ navigation }: any) {
                 style={styles.toggleEditBtn}
                 onPress={() => setIsEditingTargets(!isEditingTargets)}
               >
-                <Edit3 size={16} color="#3b82f6" style={{ marginRight: 6 }} />
-                <Text style={styles.toggleEditText}>
+                <Edit3 size={16} color={colors.primary} style={{ marginRight: 6 }} />
+                <Text style={[styles.toggleEditText, { color: colors.primary }]}>
                   {isEditingTargets ? 'Lock Calculated Targets' : 'Customize Daily Targets'}
                 </Text>
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={[styles.saveBtn, loading && styles.disabledBtn]}
+                style={[styles.saveBtn, { backgroundColor: colors.success || '#10b981' }, loading && styles.disabledBtn]}
                 onPress={handleFinishOnboarding}
                 disabled={loading}
               >
@@ -803,7 +806,6 @@ export default function OnboardingScreen({ navigation }: any) {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#0f172a',
   },
   container: {
     flex: 1,
@@ -813,7 +815,6 @@ const styles = StyleSheet.create({
     paddingTop: 12,
     paddingBottom: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#1e293b',
   },
   topRow: {
     flexDirection: 'row',
@@ -825,7 +826,6 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: '#1e293b',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -837,43 +837,35 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   stepBadge: {
-    backgroundColor: 'rgba(59, 130, 246, 0.15)',
     paddingHorizontal: 12,
     paddingVertical: 4,
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: 'rgba(59, 130, 246, 0.3)',
   },
   stepBadgeText: {
-    color: '#60a5fa',
     fontSize: 13,
     fontWeight: '700',
   },
   percentText: {
-    color: '#94a3b8',
     fontSize: 13,
     fontWeight: '700',
   },
   progressTrackBg: {
     height: 6,
     borderRadius: 3,
-    backgroundColor: '#1e293b',
     overflow: 'hidden',
   },
   progressTrackFill: {
     height: '100%',
-    backgroundColor: '#3b82f6',
     borderRadius: 3,
   },
   scrollContent: {
     padding: 20,
   },
   stepCard: {
-    backgroundColor: '#1e293b',
     borderRadius: 24,
     padding: 22,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
   },
   stepHeader: {
     flexDirection: 'row',
@@ -891,19 +883,16 @@ const styles = StyleSheet.create({
   stepTitle: {
     fontSize: 22,
     fontWeight: '800',
-    color: '#f8fafc',
     marginBottom: 2,
   },
   stepSubtitle: {
     fontSize: 13,
-    color: '#94a3b8',
     lineHeight: 18,
   },
   inputGroup: {
     marginBottom: 16,
   },
   label: {
-    color: '#cbd5e1',
     fontSize: 14,
     fontWeight: '600',
     marginBottom: 8,
@@ -936,36 +925,23 @@ const styles = StyleSheet.create({
   },
   genderCard: {
     flex: 1,
-    backgroundColor: '#0f172a',
     paddingVertical: 12,
     borderRadius: 14,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#334155',
-  },
-  genderCardActive: {
-    borderColor: '#3b82f6',
-    backgroundColor: 'rgba(59, 130, 246, 0.15)',
   },
   genderText: {
-    color: '#94a3b8',
     fontSize: 14,
     fontWeight: '600',
-  },
-  genderTextActive: {
-    color: '#60a5fa',
-    fontWeight: '700',
   },
   metricsRow: {
     flexDirection: 'row',
     gap: 12,
   },
   bmiPreviewCard: {
-    backgroundColor: '#0f172a',
     borderRadius: 18,
     padding: 16,
     borderWidth: 1,
-    borderColor: '#334155',
     marginBottom: 20,
     marginTop: 4,
   },
@@ -976,7 +952,6 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   bmiTitle: {
-    color: '#cbd5e1',
     fontSize: 14,
     fontWeight: '600',
   },
@@ -992,12 +967,10 @@ const styles = StyleSheet.create({
   bmiScoreText: {
     fontSize: 32,
     fontWeight: '800',
-    color: '#f8fafc',
     marginBottom: 4,
   },
   bmiNote: {
     fontSize: 12,
-    color: '#64748b',
   },
   goalsGrid: {
     flexDirection: 'row',
@@ -1007,11 +980,9 @@ const styles = StyleSheet.create({
   },
   goalCard: {
     width: '48%',
-    backgroundColor: '#0f172a',
     borderRadius: 16,
     padding: 12,
     borderWidth: 1,
-    borderColor: '#334155',
     alignItems: 'center',
     position: 'relative',
   },
@@ -1024,7 +995,6 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   goalText: {
-    color: '#f1f5f9',
     fontSize: 13,
     fontWeight: '600',
     textAlign: 'center',
@@ -1039,15 +1009,9 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   radioCard: {
-    backgroundColor: '#0f172a',
     borderRadius: 16,
     padding: 14,
     borderWidth: 1,
-    borderColor: '#334155',
-  },
-  radioCardActive: {
-    borderColor: '#3b82f6',
-    backgroundColor: 'rgba(59, 130, 246, 0.12)',
   },
   radioLeft: {
     flexDirection: 'row',
@@ -1058,29 +1022,22 @@ const styles = StyleSheet.create({
     height: 20,
     borderRadius: 10,
     borderWidth: 2,
-    borderColor: '#64748b',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
-  },
-  radioOuterActive: {
-    borderColor: '#3b82f6',
   },
   radioInner: {
     width: 10,
     height: 10,
     borderRadius: 5,
-    backgroundColor: '#3b82f6',
   },
   radioTitle: {
     fontSize: 15,
     fontWeight: '700',
-    color: '#f8fafc',
     marginBottom: 2,
   },
   radioSub: {
     fontSize: 12,
-    color: '#94a3b8',
   },
   chipRow: {
     flexDirection: 'row',
@@ -1089,15 +1046,12 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   chipItem: {
-    backgroundColor: '#0f172a',
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: '#334155',
   },
   chipText: {
-    color: '#60a5fa',
     fontSize: 12,
     fontWeight: '600',
   },
@@ -1109,33 +1063,18 @@ const styles = StyleSheet.create({
   },
   targetCard: {
     width: '48%',
-    backgroundColor: '#0f172a',
     borderRadius: 16,
     padding: 14,
     borderWidth: 1,
   },
   targetLabel: {
     fontSize: 12,
-    color: '#94a3b8',
     fontWeight: '600',
     marginTop: 6,
   },
   targetValue: {
     fontSize: 18,
     fontWeight: '800',
-    color: '#f8fafc',
-    marginTop: 4,
-  },
-  targetEditInput: {
-    backgroundColor: '#1e293b',
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#3b82f6',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    color: '#f8fafc',
-    fontSize: 16,
-    fontWeight: '700',
     marginTop: 4,
   },
   toggleEditBtn: {
@@ -1146,7 +1085,6 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   toggleEditText: {
-    color: '#3b82f6',
     fontSize: 14,
     fontWeight: '600',
   },
@@ -1154,14 +1092,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#3b82f6',
     paddingVertical: 16,
     borderRadius: 16,
     marginTop: 10,
     elevation: 4,
-    shadowColor: '#3b82f6',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
+    shadowOpacity: 0.2,
     shadowRadius: 8,
   },
   primaryBtnText: {
@@ -1173,13 +1109,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#10b981',
     paddingVertical: 16,
     borderRadius: 16,
     elevation: 4,
-    shadowColor: '#10b981',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
+    shadowOpacity: 0.2,
     shadowRadius: 8,
   },
   saveBtnText: {

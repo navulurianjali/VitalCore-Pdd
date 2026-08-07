@@ -11,7 +11,9 @@ import {
   Alert,
 } from 'react-native';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 import { supabase } from '../../services/supabase';
+import { CustomTextInput } from '../../components/CustomTextInput';
 
 interface CommunityPost {
   id: string;
@@ -25,6 +27,7 @@ interface CommunityPost {
 
 export default function CommunityScreen({ navigation }: any) {
   const { profile, user } = useAuth();
+  const { colors } = useTheme();
   const [postText, setPostText] = useState('');
   const [posts, setPosts] = useState<CommunityPost[]>([]);
   const [loading, setLoading] = useState(true);
@@ -108,27 +111,27 @@ export default function CommunityScreen({ navigation }: any) {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
       <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.header}>
           <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
-            <Text style={styles.backBtnText}>← Back</Text>
+            <Text style={[styles.backBtnText, { color: colors.primary }]}>← Back</Text>
           </TouchableOpacity>
-          <Text style={styles.title}>👥 Community Feed</Text>
+          <Text style={[styles.title, { color: colors.text }]}>👥 Community Feed</Text>
         </View>
 
         {/* Share Post Card */}
-        <View style={styles.createCard}>
-          <TextInput
-            style={styles.postInput}
+        <View style={[styles.createCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
+          <CustomTextInput
             placeholder="Share a health update, milestone, or question with the community..."
-            placeholderTextColor="#64748b"
             value={postText}
             onChangeText={setPostText}
             multiline
+            height={80}
+            containerStyle={{ marginBottom: 12 }}
           />
           <TouchableOpacity
-            style={[styles.postButton, (!postText.trim() || submitting) && styles.disabledBtn]}
+            style={[styles.postButton, { backgroundColor: colors.primary }, (!postText.trim() || submitting) && styles.disabledBtn]}
             onPress={handleCreatePost}
             disabled={!postText.trim() || submitting}
           >
@@ -143,37 +146,37 @@ export default function CommunityScreen({ navigation }: any) {
         {/* Feed List */}
         {loading ? (
           <View style={styles.loadingBox}>
-            <ActivityIndicator size="large" color="#3b82f6" />
-            <Text style={styles.loadingText}>Fetching community feed...</Text>
+            <ActivityIndicator size="large" color={colors.primary} />
+            <Text style={[styles.loadingText, { color: colors.textMuted }]}>Fetching community feed...</Text>
           </View>
         ) : posts.length === 0 ? (
           <View style={styles.emptyBox}>
-            <Text style={styles.emptyText}>No community posts yet. Be the first to share an update!</Text>
+            <Text style={[styles.emptyText, { color: colors.textMuted }]}>No community posts yet. Be the first to share an update!</Text>
           </View>
         ) : (
           posts.map((post) => (
-            <View key={post.id} style={styles.postCard}>
+            <View key={post.id} style={[styles.postCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
               <View style={styles.postHeader}>
-                <View style={styles.avatar}>
+                <View style={[styles.avatar, { backgroundColor: colors.primary }]}>
                   <Text style={styles.avatarText}>
                     {post.author_name ? post.author_name.charAt(0).toUpperCase() : 'U'}
                   </Text>
                 </View>
                 <View style={styles.authorCol}>
-                  <Text style={styles.authorName}>{post.author_name}</Text>
-                  <Text style={styles.authorHandle}>
+                  <Text style={[styles.authorName, { color: colors.text }]}>{post.author_name}</Text>
+                  <Text style={[styles.authorHandle, { color: colors.textMuted }]}>
                     @{post.username} • {new Date(post.created_at).toLocaleDateString()}
                   </Text>
                 </View>
               </View>
-              <Text style={styles.postContent}>{post.content}</Text>
+              <Text style={[styles.postContent, { color: colors.text }]}>{post.content}</Text>
 
-              <View style={styles.postFooter}>
+              <View style={[styles.postFooter, { borderTopColor: colors.cardBorder }]}>
                 <TouchableOpacity
                   style={styles.likeBtn}
                   onPress={() => handleLikePost(post.id, post.likes)}
                 >
-                  <Text style={styles.likeText}>❤️ {post.likes} Likes</Text>
+                  <Text style={[styles.likeText, { color: colors.primary }]}>❤️ {post.likes} Likes</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -187,7 +190,6 @@ export default function CommunityScreen({ navigation }: any) {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#0f172a',
   },
   container: {
     padding: 20,
@@ -201,36 +203,20 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   backBtnText: {
-    color: '#3b82f6',
     fontSize: 16,
     fontWeight: 'bold',
   },
   title: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#f8fafc',
   },
   createCard: {
-    backgroundColor: '#1e293b',
     borderRadius: 16,
     padding: 16,
     borderWidth: 1,
-    borderColor: '#334155',
     marginBottom: 20,
   },
-  postInput: {
-    backgroundColor: '#0f172a',
-    borderRadius: 10,
-    padding: 12,
-    color: '#f8fafc',
-    fontSize: 14,
-    minHeight: 70,
-    textAlignVertical: 'top',
-    borderWidth: 1,
-    borderColor: '#334155',
-  },
   postButton: {
-    backgroundColor: '#3b82f6',
     borderRadius: 8,
     paddingVertical: 10,
     alignItems: 'center',
@@ -251,7 +237,6 @@ const styles = StyleSheet.create({
     padding: 30,
   },
   loadingText: {
-    color: '#94a3b8',
     marginTop: 12,
     fontSize: 14,
   },
@@ -260,17 +245,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   emptyText: {
-    color: '#94a3b8',
     fontSize: 14,
     textAlign: 'center',
   },
   postCard: {
-    backgroundColor: '#1e293b',
     borderRadius: 14,
     padding: 16,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: '#334155',
   },
   postHeader: {
     flexDirection: 'row',
@@ -281,7 +263,6 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#3b82f6',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 10,
@@ -295,16 +276,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   authorName: {
-    color: '#f8fafc',
     fontSize: 15,
     fontWeight: 'bold',
   },
   authorHandle: {
-    color: '#94a3b8',
     fontSize: 12,
   },
   postContent: {
-    color: '#cbd5e1',
     fontSize: 14,
     lineHeight: 20,
   },
@@ -312,13 +290,11 @@ const styles = StyleSheet.create({
     marginTop: 12,
     paddingTop: 10,
     borderTopWidth: 1,
-    borderTopColor: '#334155',
   },
   likeBtn: {
     paddingVertical: 4,
   },
   likeText: {
-    color: '#3b82f6',
     fontSize: 13,
     fontWeight: 'bold',
   },

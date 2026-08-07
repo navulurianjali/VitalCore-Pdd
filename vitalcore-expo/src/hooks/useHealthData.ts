@@ -37,15 +37,17 @@ export function useHealthData(): HealthDataResult {
       setLoading(true);
       setError(null);
 
-      const today = new Date().toISOString().split('T')[0];
+      const d = new Date();
+      const localToday = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+      const utcToday = d.toISOString().split('T')[0];
 
       // 1. Fetch Today's Nutrition Logs
       const { data: nutritionData } = await supabase
         .from('nutrition_logs')
-        .select('calories')
+        .select('calories, protein_g, carbs_g, fat_g')
         .eq('user_id', profile.id)
-        .eq('date', today);
-      
+        .or(`date.eq.${localToday},date.eq.${utcToday}`);
+
       const loggedNutritionCount = nutritionData?.length || 0;
       setHasLoggedNutrition(loggedNutritionCount > 0);
       const caloriesConsumed = nutritionData?.reduce((sum, item) => sum + (Number(item.calories) || 0), 0) || 0;
@@ -55,8 +57,8 @@ export function useHealthData(): HealthDataResult {
         .from('workouts')
         .select('calories_burned, duration_minutes, type')
         .eq('user_id', profile.id)
-        .gte('created_at', `${today}T00:00:00Z`);
-      
+        .gte('created_at', `${utcToday}T00:00:00Z`);
+
       const loggedWorkoutCount = workoutData?.length || 0;
       setHasLoggedWorkouts(loggedWorkoutCount > 0);
       const caloriesBurned = workoutData?.reduce((sum, item) => sum + (Number(item.calories_burned) || 0), 0) || 0;
@@ -69,7 +71,7 @@ export function useHealthData(): HealthDataResult {
         .from('hydration_logs')
         .select('amount_ml')
         .eq('user_id', profile.id)
-        .gte('created_at', `${today}T00:00:00Z`);
+        .gte('created_at', `${utcToday}T00:00:00Z`);
       
       const loggedHydrationCount = hydrationData?.length || 0;
       setHasLoggedHydration(loggedHydrationCount > 0);

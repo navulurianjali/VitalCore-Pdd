@@ -14,7 +14,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { validateEmail, validatePassword, evaluatePassword } from '../../utils/validation';
-import { User, Mail, Lock, AlertCircle, ArrowLeft, Sun, Moon, Check, X, Eye, EyeOff } from 'lucide-react-native';
+import { User, Mail, Lock, AlertCircle, ArrowLeft, Sun, Moon, Check, X, Eye, EyeOff, Calendar } from 'lucide-react-native';
+import { CustomTextInput } from '../../components/CustomTextInput';
 
 export default function RegisterScreen({ navigation }: any) {
   const { signUp } = useAuth();
@@ -23,6 +24,7 @@ export default function RegisterScreen({ navigation }: any) {
   const [fullName, setFullName] = useState('');
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
+  const [dateOfBirth, setDateOfBirth] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -50,6 +52,23 @@ export default function RegisterScreen({ navigation }: any) {
       return;
     }
 
+    if (!dateOfBirth.trim()) {
+      setErrorMessage('Date of Birth is required.');
+      return;
+    }
+
+    const dobRegex = /^\d{4}-\d{2}-\d{2}$/;
+    if (!dobRegex.test(dateOfBirth.trim())) {
+      setErrorMessage('Date of Birth must be in YYYY-MM-DD format (e.g. 1998-05-24).');
+      return;
+    }
+
+    const dobDate = new Date(dateOfBirth.trim());
+    if (isNaN(dobDate.getTime()) || dobDate > new Date()) {
+      setErrorMessage('Please enter a valid Date of Birth in the past.');
+      return;
+    }
+
     const passCheck = validatePassword(password);
     if (!passCheck.isValid) {
       setErrorMessage(passCheck.message || 'Password does not meet security requirements.');
@@ -67,7 +86,8 @@ export default function RegisterScreen({ navigation }: any) {
         email.trim(),
         password,
         fullName.trim(),
-        username.trim()
+        username.trim(),
+        dateOfBirth.trim()
       );
 
       if (error) {
@@ -130,79 +150,76 @@ export default function RegisterScreen({ navigation }: any) {
               </View>
             )}
 
-            <View style={styles.inputGroup}>
-              <Text style={[styles.label, { color: colors.textMuted }]}>Full Name</Text>
-              <View style={[styles.inputWithIcon, { backgroundColor: colors.background, borderColor: colors.border }]}>
-                <User size={18} color={colors.textMuted} style={styles.inputIcon} />
-                <TextInput
-                  style={[styles.textInput, { color: colors.text }]}
-                  placeholder="John Doe"
-                  placeholderTextColor={colors.textMuted}
-                  value={fullName}
-                  onChangeText={(val) => {
-                    setFullName(val);
-                    setErrorMessage('');
-                  }}
-                />
-              </View>
-            </View>
+            <CustomTextInput
+              label="Full Name"
+              placeholder="John Doe"
+              value={fullName}
+              onChangeText={(val) => {
+                setFullName(val);
+                setErrorMessage('');
+              }}
+              leftIcon={<User size={18} color={colors.textMuted} />}
+              containerStyle={styles.inputGroup}
+            />
+
+            <CustomTextInput
+              label="Username"
+              placeholder="johndoe"
+              value={username}
+              onChangeText={(val) => {
+                setUsername(val.toLowerCase());
+                setErrorMessage('');
+              }}
+              autoCapitalize="none"
+              leftIcon={<User size={18} color={colors.textMuted} />}
+              containerStyle={styles.inputGroup}
+            />
+
+            <CustomTextInput
+              label="Email Address"
+              placeholder="name@example.com"
+              value={email}
+              onChangeText={(val) => {
+                setEmail(val);
+                setErrorMessage('');
+              }}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              leftIcon={<Mail size={18} color={colors.textMuted} />}
+              containerStyle={styles.inputGroup}
+            />
+
+            <CustomTextInput
+              label="Date of Birth *"
+              placeholder="YYYY-MM-DD (e.g. 1998-05-24)"
+              value={dateOfBirth}
+              onChangeText={(val) => {
+                setDateOfBirth(val);
+                setErrorMessage('');
+              }}
+              keyboardType="numbers-and-punctuation"
+              autoCapitalize="none"
+              leftIcon={<Calendar size={18} color={colors.textMuted} />}
+              containerStyle={styles.inputGroup}
+            />
 
             <View style={styles.inputGroup}>
-              <Text style={[styles.label, { color: colors.textMuted }]}>Username</Text>
-              <View style={[styles.inputWithIcon, { backgroundColor: colors.background, borderColor: colors.border }]}>
-                <User size={18} color={colors.textMuted} style={styles.inputIcon} />
-                <TextInput
-                  style={[styles.textInput, { color: colors.text }]}
-                  placeholder="johndoe"
-                  placeholderTextColor={colors.textMuted}
-                  value={username}
-                  onChangeText={(val) => {
-                    setUsername(val.toLowerCase());
-                    setErrorMessage('');
-                  }}
-                  autoCapitalize="none"
-                />
-              </View>
-            </View>
-
-            <View style={styles.inputGroup}>
-              <Text style={[styles.label, { color: colors.textMuted }]}>Email Address</Text>
-              <View style={[styles.inputWithIcon, { backgroundColor: colors.background, borderColor: colors.border }]}>
-                <Mail size={18} color={colors.textMuted} style={styles.inputIcon} />
-                <TextInput
-                  style={[styles.textInput, { color: colors.text }]}
-                  placeholder="name@example.com"
-                  placeholderTextColor={colors.textMuted}
-                  value={email}
-                  onChangeText={(val) => {
-                    setEmail(val);
-                    setErrorMessage('');
-                  }}
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                />
-              </View>
-            </View>
-
-            <View style={styles.inputGroup}>
-              <Text style={[styles.label, { color: colors.textMuted }]}>Password</Text>
-              <View style={[styles.inputWithIcon, { backgroundColor: colors.background, borderColor: colors.border }]}>
-                <Lock size={18} color={colors.textMuted} style={styles.inputIcon} />
-                <TextInput
-                  style={[styles.textInput, { color: colors.text }]}
-                  placeholder="••••••••"
-                  placeholderTextColor={colors.textMuted}
-                  value={password}
-                  onChangeText={(val) => {
-                    setPassword(val);
-                    setErrorMessage('');
-                  }}
-                  secureTextEntry={!showPassword}
-                />
-                <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={{ padding: 4 }}>
-                  {showPassword ? <EyeOff size={18} color={colors.textMuted} /> : <Eye size={18} color={colors.textMuted} />}
-                </TouchableOpacity>
-              </View>
+              <CustomTextInput
+                label="Password"
+                placeholder="••••••••"
+                value={password}
+                onChangeText={(val) => {
+                  setPassword(val);
+                  setErrorMessage('');
+                }}
+                secureTextEntry={!showPassword}
+                leftIcon={<Lock size={18} color={colors.textMuted} />}
+                rightIcon={
+                  <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={{ padding: 4 }}>
+                    {showPassword ? <EyeOff size={18} color={colors.textMuted} /> : <Eye size={18} color={colors.textMuted} />}
+                  </TouchableOpacity>
+                }
+              />
 
               {/* Password Strength Gauge */}
               {password.length > 0 && (
@@ -250,26 +267,23 @@ export default function RegisterScreen({ navigation }: any) {
               )}
             </View>
 
-            <View style={styles.inputGroup}>
-              <Text style={[styles.label, { color: colors.textMuted }]}>Confirm Password</Text>
-              <View style={[styles.inputWithIcon, { backgroundColor: colors.background, borderColor: colors.border }]}>
-                <Lock size={18} color={colors.textMuted} style={styles.inputIcon} />
-                <TextInput
-                  style={[styles.textInput, { color: colors.text }]}
-                  placeholder="••••••••"
-                  placeholderTextColor={colors.textMuted}
-                  value={confirmPassword}
-                  onChangeText={(val) => {
-                    setConfirmPassword(val);
-                    setErrorMessage('');
-                  }}
-                  secureTextEntry={!showConfirmPassword}
-                />
+            <CustomTextInput
+              label="Confirm Password"
+              placeholder="••••••••"
+              value={confirmPassword}
+              onChangeText={(val) => {
+                setConfirmPassword(val);
+                setErrorMessage('');
+              }}
+              secureTextEntry={!showConfirmPassword}
+              leftIcon={<Lock size={18} color={colors.textMuted} />}
+              rightIcon={
                 <TouchableOpacity onPress={() => setShowConfirmPassword(!showConfirmPassword)} style={{ padding: 4 }}>
                   {showConfirmPassword ? <EyeOff size={18} color={colors.textMuted} /> : <Eye size={18} color={colors.textMuted} />}
                 </TouchableOpacity>
-              </View>
-            </View>
+              }
+              containerStyle={styles.inputGroup}
+            />
 
             <TouchableOpacity
               style={[styles.primaryButton, { backgroundColor: colors.primary }, loading && styles.disabledButton]}

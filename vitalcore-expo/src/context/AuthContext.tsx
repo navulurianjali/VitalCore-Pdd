@@ -90,7 +90,7 @@ interface AuthContextProps {
   profile: UserProfile | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
-  signUp: (email: string, password: string, fullName: string, username: string) => Promise<{ error: Error | null }>;
+  signUp: (email: string, password: string, fullName: string, username: string, dateOfBirth: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
   updateProfile: (updates: Partial<UserProfile>) => Promise<{ error: Error | null }>;
   refetchProfile: () => Promise<void>;
@@ -131,11 +131,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           const email = authData.user.email || '';
           const fullName = authData.user.user_metadata?.full_name || 'User';
           const username = authData.user.user_metadata?.username || `user_${uid.substring(0, 6)}`;
+          const dob = authData.user.user_metadata?.date_of_birth || null;
 
           const newProfile = {
             id: uid,
             full_name: fullName,
             username: username,
+            date_of_birth: dob,
             active_mode: 'wellness' as const,
             onboarding_completed: false,
             soreness_level: 0,
@@ -199,17 +201,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return { error };
   };
 
-  const signUp = async (email: string, password: string, fullName: string, username: string) => {
-    const { error } = await supabase.auth.signUp({
+  const signUp = async (email: string, password: string, fullName: string, username: string, dateOfBirth: string) => {
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         data: {
           full_name: fullName,
           username: username,
+          date_of_birth: dateOfBirth,
         },
       },
     });
+
+    if (data?.user && !error) {
+      await supabase.from('profiles').upsert({
+        id: data.user.id,
+        full_name: fullName,
+        username: username,
+        date_of_birth: dateOfBirth,
+        active_mode: 'wellness',
+        onboarding_completed: false,
+      });
+    }
+
     return { error };
   };
 

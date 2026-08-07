@@ -14,6 +14,7 @@ import {
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { supabase } from '../../services/supabase';
+import { CustomTextInput } from '../../components/CustomTextInput';
 
 interface ChallengeItem {
   id: string;
@@ -316,20 +317,20 @@ export default function ChallengesScreen({ navigation }: any) {
                 </TouchableOpacity>
               </View>
 
-              <Text style={[styles.label, { color: colors.textMuted, marginTop: 12 }]}>Challenge Name</Text>
-              <TextInput
-                style={[styles.input, { color: colors.text, borderColor: colors.cardBorder }]}
+              <CustomTextInput
+                label="Challenge Name"
                 value={newTitle}
                 onChangeText={setNewTitle}
                 placeholder="e.g. 7-Day Morning Electrolyte Sprint"
+                containerStyle={{ marginTop: 12 }}
               />
 
-              <Text style={[styles.label, { color: colors.textMuted, marginTop: 10 }]}>Description</Text>
-              <TextInput
-                style={[styles.input, { color: colors.text, borderColor: colors.cardBorder }]}
+              <CustomTextInput
+                label="Description"
                 value={newDesc}
                 onChangeText={setNewDesc}
                 placeholder="e.g. Drink warm water with lemon daily."
+                containerStyle={{ marginTop: 10 }}
               />
 
               <View style={{ flexDirection: 'row', justifyContent: 'flex-end', gap: 10, marginTop: 16 }}>

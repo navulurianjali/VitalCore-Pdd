@@ -16,6 +16,7 @@ import { Search } from 'lucide-react-native';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { supabase } from '../../services/supabase';
+import { CustomTextInput } from '../../components/CustomTextInput';
 import {
   FoodItem,
   SearchStatus,
@@ -62,7 +63,7 @@ export default function CalorieTrackerScreen({ navigation }: any) {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<FoodItem[]>([]);
   const [searchStatus, setSearchStatus] = useState<SearchStatus>('idle');
-  const [searchSource, setSearchSource] = useState<'database' | 'api' | 'none'>('none');
+  const [searchSource, setSearchSource] = useState<'database' | 'dataset' | 'api' | 'none'>('none');
   const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Selected food + quantity in grams
@@ -70,7 +71,14 @@ export default function CalorieTrackerScreen({ navigation }: any) {
   const [gramsInput, setGramsInput] = useState('100');
   const [saving, setSaving] = useState(false);
 
-  const todayStr = new Date().toISOString().split('T')[0];
+  const getLocalDateString = (d: Date = new Date()): string => {
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  const todayStr = getLocalDateString();
   const grams = Math.max(1, parseInt(gramsInput, 10) || 100);
 
   // ─────────────────────────────────────────────────────────────
@@ -79,14 +87,19 @@ export default function CalorieTrackerScreen({ navigation }: any) {
   const fetchLogs = async () => {
     if (!user?.id) { setLoading(false); return; }
     try {
-      setLoading(true);
+      const utcTodayStr = new Date().toISOString().split('T')[0];
       const { data, error } = await supabase
         .from('nutrition_logs')
         .select('*')
         .eq('user_id', user.id)
-        .eq('date', todayStr)
+        .or(`date.eq.${todayStr},date.eq.${utcTodayStr}`)
         .order('created_at', { ascending: true });
-      if (data && !error) setLogs(data as LoggedFood[]);
+
+      if (error) {
+        console.error('Error fetching nutrition logs from Supabase:', error);
+      } else if (data) {
+        setLogs(data as LoggedFood[]);
+      }
     } catch (e) {
       console.error('Error fetching logs:', e);
     } finally {
@@ -119,7 +132,6 @@ export default function CalorieTrackerScreen({ navigation }: any) {
     setSearchResults(results);
     setSearchSource(source);
 
-    // Auto-select top result if nothing selected yet
     if (results.length > 0 && !selectedFood) {
       setSelectedFood(results[0]);
     }
@@ -156,55 +168,108 @@ export default function CalorieTrackerScreen({ navigation }: any) {
     setModalOpen(true);
   };
 
+  const formatLogTime = (isoString?: string) => {
+    if (!isoString) return '';
+    try {
+      const d = new Date(isoString);
+      return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    } catch {
+      return '';
+    }
+  };
+
   // ─────────────────────────────────────────────────────────────
-  // Save food log
+  // Save food log (Instant UI update + Supabase sync)
   // ─────────────────────────────────────────────────────────────
   const handleSaveFood = async () => {
-    if (!user?.id || !selectedFood) return;
+    if (!user?.id) {
+      Alert.alert('Session Error', 'User is not logged in. Please sign in to log food.');
+      return;
+    }
+    if (!selectedFood) {
+      Alert.alert('Selection Error', 'Please select a food item to log.');
+      return;
+    }
+
     try {
       setSaving(true);
       const nutrition = calculateNutrition(selectedFood, grams);
       const formattedName = `${selectedFood.name} (${grams}g)`;
 
+      // Payload strictly matches live Supabase nutrition_logs schema columns:
+      // user_id, date, meal_type, food_name, calories, protein_g, carbs_g, fat_g
       const logData = {
         meal_type: activeMealType,
         food_name: formattedName,
-        calories: nutrition.calories,
-        protein_g: nutrition.protein,
-        carbs_g: nutrition.carbs,
-        fat_g: nutrition.fat,
-        fiber_g: nutrition.fiber,
-        sugar_g: nutrition.sugar,
-        sodium_mg: nutrition.sodium,
-        serving_size: `${grams}g`,
+        calories: Math.round(nutrition.calories),
+        protein_g: Number(nutrition.protein) || 0,
+        carbs_g: Number(nutrition.carbs) || 0,
+        fat_g: Number(nutrition.fat) || 0,
       };
 
-      const tempId = editingLogId || `temp-${Date.now()}`;
-      const newLogEntry: LoggedFood = { id: tempId, ...logData };
-
-      // Optimistic UI update
-      if (editingLogId) {
-        setLogs(prev => prev.map(item => item.id === editingLogId ? { ...item, ...newLogEntry } : item));
-      } else {
-        setLogs(prev => [...prev, newLogEntry]);
-      }
-      setModalOpen(false);
+      console.log('[CalorieTracker] Inserting logData to Supabase:', logData);
 
       if (editingLogId) {
-        const { error } = await supabase.from('nutrition_logs').update(logData).eq('id', editingLogId);
-        if (error) console.error('Update error:', error);
+        const { data, error } = await supabase
+          .from('nutrition_logs')
+          .update(logData)
+          .eq('id', editingLogId)
+          .select('*');
+
+        if (error) {
+          console.error('[CalorieTracker] Update error from Supabase:', error);
+          Alert.alert('Update Failed', `Could not update food entry: ${error.message}`);
+          return;
+        }
+
+        if (data && data.length > 0) {
+          const updatedRow = data[0] as LoggedFood;
+          setLogs(prev => prev.map(item => item.id === editingLogId ? updatedRow : item));
+        }
       } else {
-        const { error } = await supabase.from('nutrition_logs').insert({
+        const payload = {
           user_id: user.id,
           date: todayStr,
           ...logData,
-        });
-        if (error) console.error('Insert error:', error);
+        };
+        const { data, error } = await supabase
+          .from('nutrition_logs')
+          .insert(payload)
+          .select('*');
+
+        if (error) {
+          console.error('[CalorieTracker] Insert error from Supabase:', error);
+          Alert.alert('Save Failed', `Failed to save food log to Supabase: ${error.message} (Code: ${error.code})`);
+          return;
+        }
+
+        console.log('[CalorieTracker] Successfully inserted nutrition log:', data);
+
+        if (data && data.length > 0) {
+          const insertedRow = data[0] as LoggedFood;
+          setLogs(prev => [...prev.filter(l => l.id !== insertedRow.id), insertedRow]);
+        } else {
+          // Fallback local row if select returns empty
+          const fallbackRow: LoggedFood = {
+            id: `local-log-${Date.now()}`,
+            meal_type: activeMealType,
+            food_name: formattedName,
+            calories: Math.round(nutrition.calories),
+            protein_g: Number(nutrition.protein) || 0,
+            carbs_g: Number(nutrition.carbs) || 0,
+            fat_g: Number(nutrition.fat) || 0,
+            created_at: new Date().toISOString(),
+          };
+          setLogs(prev => [...prev, fallbackRow]);
+        }
       }
+
+      setModalOpen(false);
+      Alert.alert('Food Logged', `Successfully logged ${formattedName}!`);
       fetchLogs();
     } catch (e: any) {
-      console.error('Save error:', e);
-      fetchLogs();
+      console.error('[CalorieTracker] Save error exception:', e);
+      Alert.alert('Save Exception', e?.message || 'An unexpected error occurred while saving food.');
     } finally {
       setSaving(false);
     }
@@ -214,12 +279,21 @@ export default function CalorieTrackerScreen({ navigation }: any) {
   // Delete log
   // ─────────────────────────────────────────────────────────────
   const handleDeleteLog = async (id: string) => {
+    console.log('[CalorieTracker] Deleting log ID:', id);
     setLogs(prev => prev.filter(item => item.id !== id));
     try {
       const { error } = await supabase.from('nutrition_logs').delete().eq('id', id);
-      if (error) { console.error('Delete error:', error); fetchLogs(); }
-    } catch (e) {
-      console.error('Delete error:', e); fetchLogs();
+      if (error) {
+        console.error('[CalorieTracker] Delete error from Supabase:', error);
+        Alert.alert('Delete Failed', error.message || 'Could not delete entry.');
+        fetchLogs();
+      } else {
+        console.log('[CalorieTracker] Successfully deleted log ID:', id);
+      }
+    } catch (e: any) {
+      console.error('[CalorieTracker] Delete error exception:', e);
+      Alert.alert('Delete Failed', e?.message || 'Failed to delete food entry.');
+      fetchLogs();
     }
   };
 
@@ -241,11 +315,12 @@ export default function CalorieTrackerScreen({ navigation }: any) {
 
   // Search status badge
   const getStatusLabel = () => {
-    if (searchStatus === 'searching-db') return '🔍 Searching database...';
-    if (searchStatus === 'searching-api') return '🌐 Searching online...';
-    if (searchStatus === 'not-found') return '❌ Not found in database or API';
-    if (searchSource === 'api' && searchResults.length > 0) return '🌐 Results from online search';
-    if (searchSource === 'database' && searchResults.length > 0) return '📦 Results from food database';
+    if (searchStatus === 'searching-local') return '📦 Searching local datasets...';
+    if (searchStatus === 'searching-api') return '🌐 Searching online API...';
+    if (searchStatus === 'not-found') return '❌ Food not found.';
+    if (searchSource === 'database' && searchResults.length > 0) return '⚡ Results from Supabase database';
+    if (searchSource === 'dataset' && searchResults.length > 0) return '📦 Results from Food_Coded & Indian Nutrition datasets';
+    if (searchSource === 'api' && searchResults.length > 0) return '🌐 Results from online API search';
     return '';
   };
 
@@ -354,7 +429,7 @@ export default function CalorieTrackerScreen({ navigation }: any) {
                       <Text style={[styles.logItemName, { color: colors.text }]}>{item.food_name}</Text>
                       <Text style={[styles.logItemMeta, { color: colors.textMuted }]}>
                         {item.calories} kcal • P: {item.protein_g}g • C: {item.carbs_g}g • F: {item.fat_g}g
-                        {item.fiber_g ? ` • Fiber: ${item.fiber_g}g` : ''}
+                        {item.created_at ? ` • ${formatLogTime(item.created_at)}` : ''}
                       </Text>
                     </View>
                     <View style={styles.actionRow}>
@@ -389,20 +464,19 @@ export default function CalorieTrackerScreen({ navigation }: any) {
             </View>
 
             {/* Search Input */}
-            <View style={[styles.searchInputContainer, { borderColor: colors.navBorder, backgroundColor: colors.background }]}>
-              <Search size={18} color={colors.textMuted} style={styles.searchIcon} />
-              <TextInput
-                style={[styles.searchInput, { color: colors.text }]}
-                placeholder="Search food (e.g. Rice, Idli, Chicken...)"
-                placeholderTextColor={colors.textMuted}
-                value={searchQuery}
-                onChangeText={setSearchQuery}
-                autoCorrect={false}
-              />
-              {(searchStatus === 'searching-db' || searchStatus === 'searching-api') && (
-                <ActivityIndicator size="small" color={colors.primary} style={{ marginLeft: 8 }} />
-              )}
-            </View>
+            <CustomTextInput
+              placeholder="Search food (e.g. Rice, Idli, Chicken...)"
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              autoCorrect={false}
+              leftIcon={<Search size={18} color={colors.textMuted} />}
+              rightIcon={
+                (searchStatus === 'searching-local' || searchStatus === 'searching-api') ? (
+                  <ActivityIndicator size="small" color={colors.primary} />
+                ) : undefined
+              }
+              containerStyle={{ marginBottom: 12 }}
+            />
 
             {/* Status badge */}
             {getStatusLabel() !== '' && (
@@ -454,12 +528,14 @@ export default function CalorieTrackerScreen({ navigation }: any) {
                   >
                     <Text style={[styles.qBtnText, { color: colors.text }]}>−</Text>
                   </TouchableOpacity>
-                  <TextInput
-                    style={[styles.qValInput, { color: colors.text, borderColor: colors.navBorder }]}
+                  <CustomTextInput
                     value={gramsInput}
                     onChangeText={v => setGramsInput(v.replace(/[^0-9]/g, ''))}
                     keyboardType="numeric"
                     maxLength={5}
+                    height={40}
+                    containerStyle={{ width: 80 }}
+                    inputStyle={{ textAlign: 'center' }}
                   />
                   <Text style={[styles.qUnit, { color: colors.textMuted }]}>g</Text>
                   <TouchableOpacity

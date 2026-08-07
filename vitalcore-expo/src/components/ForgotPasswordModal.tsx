@@ -13,6 +13,7 @@ import { Mail, X, CheckCircle2 } from 'lucide-react-native';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { validateEmail } from '../utils/validation';
+import { CustomTextInput } from './CustomTextInput';
 
 interface ForgotPasswordModalProps {
   visible: boolean;
@@ -94,24 +95,19 @@ export default function ForgotPasswordModal({ visible, onClose }: ForgotPassword
                 </View>
               ) : null}
 
-              <View style={styles.inputGroup}>
-                <Text style={[styles.label, { color: colors.textMuted }]}>Registered Email</Text>
-                <View style={[styles.inputWithIcon, { backgroundColor: colors.background, borderColor: colors.border }]}>
-                  <Mail size={18} color={colors.textMuted} style={styles.icon} />
-                  <TextInput
-                    style={[styles.input, { color: colors.text }]}
-                    placeholder="user@example.com"
-                    placeholderTextColor={colors.textMuted}
-                    value={email}
-                    onChangeText={(val) => {
-                      setEmail(val);
-                      setErrorMsg('');
-                    }}
-                    autoCapitalize="none"
-                    keyboardType="email-address"
-                  />
-                </View>
-              </View>
+              <CustomTextInput
+                label="Registered Email"
+                placeholder="user@example.com"
+                value={email}
+                onChangeText={(val) => {
+                  setEmail(val);
+                  setErrorMsg('');
+                }}
+                autoCapitalize="none"
+                keyboardType="email-address"
+                leftIcon={<Mail size={18} color={colors.textMuted} />}
+                containerStyle={styles.inputGroup}
+              />
 
               <TouchableOpacity
                 style={[styles.primaryBtn, { backgroundColor: colors.primary }, loading && styles.disabledBtn]}

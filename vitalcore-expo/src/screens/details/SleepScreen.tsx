@@ -16,6 +16,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { useHealthData } from '../../hooks/useHealthData';
 import { supabase } from '../../services/supabase';
+import { CustomTextInput } from '../../components/CustomTextInput';
 
 interface SleepEntry {
   id: string;
@@ -253,40 +254,34 @@ export default function SleepScreen({ navigation }: any) {
                 <Text style={[styles.modalTitle, { color: colors.text }]}>🌙 Log Nightly Sleep</Text>
 
                 <View style={styles.row}>
-                  <View style={[styles.inputGroup, { flex: 1, marginRight: 8 }]}>
-                    <Text style={[styles.inputLabel, { color: colors.textMuted }]}>Bedtime</Text>
-                    <TextInput
-                      style={[styles.input, { backgroundColor: colors.inputBg, borderColor: colors.inputBorder, color: colors.text }]}
+                  <View style={{ flex: 1, marginRight: 8 }}>
+                    <CustomTextInput
+                      label="Bedtime"
                       value={bedtime}
                       onChangeText={setBedtime}
                       placeholder="22:30"
-                      placeholderTextColor="#64748b"
                     />
                   </View>
 
-                  <View style={[styles.inputGroup, { flex: 1, marginLeft: 8 }]}>
-                    <Text style={[styles.inputLabel, { color: colors.textMuted }]}>Wake Time</Text>
-                    <TextInput
-                      style={[styles.input, { backgroundColor: colors.inputBg, borderColor: colors.inputBorder, color: colors.text }]}
+                  <View style={{ flex: 1, marginLeft: 8 }}>
+                    <CustomTextInput
+                      label="Wake Time"
                       value={wakeTime}
                       onChangeText={setWakeTime}
                       placeholder="06:30"
-                      placeholderTextColor="#64748b"
                     />
                   </View>
                 </View>
 
-                <View style={styles.inputGroup}>
-                  <Text style={[styles.inputLabel, { color: colors.textMuted }]}>Sleep Duration (hours)</Text>
-                  <TextInput
-                    style={[styles.input, { backgroundColor: colors.inputBg, borderColor: colors.inputBorder, color: colors.text }]}
-                    value={hours}
-                    onChangeText={setHours}
-                    keyboardType="numeric"
-                  />
-                </View>
+                <CustomTextInput
+                  label="Sleep Duration (hours)"
+                  value={hours}
+                  onChangeText={setHours}
+                  keyboardType="numeric"
+                  containerStyle={{ marginTop: 10 }}
+                />
 
-                <Text style={[styles.inputLabel, { color: colors.textMuted }]}>Sleep Quality Rating: {quality}/10</Text>
+                <Text style={[styles.inputLabel, { color: colors.textMuted, marginTop: 10 }]}>Sleep Quality Rating: {quality}/10</Text>
                 <View style={styles.ratingRow}>
                   {[5, 6, 7, 8, 9, 10].map((r) => (
                     <TouchableOpacity
@@ -324,15 +319,13 @@ export default function SleepScreen({ navigation }: any) {
                   ))}
                 </View>
 
-                <View style={styles.inputGroup}>
-                  <Text style={[styles.inputLabel, { color: colors.textMuted }]}>Night Wakings count</Text>
-                  <TextInput
-                    style={[styles.input, { backgroundColor: colors.inputBg, borderColor: colors.inputBorder, color: colors.text }]}
-                    value={String(wakings)}
-                    onChangeText={(t) => setWakings(parseInt(t) || 0)}
-                    keyboardType="numeric"
-                  />
-                </View>
+                <CustomTextInput
+                  label="Night Wakings count"
+                  value={String(wakings)}
+                  onChangeText={(t) => setWakings(parseInt(t) || 0)}
+                  keyboardType="numeric"
+                  containerStyle={{ marginTop: 10 }}
+                />
 
                 <TouchableOpacity
                   style={[styles.saveBtn, { backgroundColor: colors.primary }, logging && { opacity: 0.5 }]}

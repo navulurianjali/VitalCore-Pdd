@@ -15,7 +15,9 @@ import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { useHealthData } from '../../hooks/useHealthData';
 import { supabase, BASE_API_URL, getAuthHeaders } from '../../services/supabase';
+import { generateAICoachResponse } from '../../services/aiCoachService';
 import { Send, Bot, Sparkles, AlertCircle } from 'lucide-react-native';
+import { CustomTextInput } from '../../components/CustomTextInput';
 
 interface Message {
   id: string;
@@ -96,7 +98,8 @@ export default function AICoachScreen() {
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     };
 
-    setMessages((prev) => [...prev, userMsg]);
+    const currentHistory = [...messages, userMsg];
+    setMessages(currentHistory);
     setLoading(true);
 
     try {
@@ -110,29 +113,31 @@ export default function AICoachScreen() {
     }
 
     try {
-      const headers = await getAuthHeaders();
-      const response = await fetch(`${BASE_API_URL}/api/ai-coach`, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify({
-          message: userPrompt,
-          history: messages.map((m) => ({ sender: m.sender, text: m.text })),
-          digitalTwin: metrics,
-        }),
-      });
+      const historyForService = currentHistory.map((m) => ({
+        sender: m.sender,
+        text: m.text,
+      }));
 
-      let aiReplyText = '';
-      if (response.ok) {
-        const data = await response.json();
-        aiReplyText = data.reply;
-      } else {
-        const errData = await response.json().catch(() => ({}));
-        aiReplyText = errData.error || 'The AI Coach server encountered an issue. Please try again.';
-      }
-
-      if (!aiReplyText) {
-        aiReplyText = `Based on your health data (Hydration: ${metrics?.hydrationMl || 0}ml, Sleep: ${metrics?.sleepHours || 0}h), maintaining your logged targets will support your body energy today.`;
-      }
+      const aiReplyText = await generateAICoachResponse(
+        userPrompt,
+        historyForService,
+        {
+          full_name: profile?.full_name,
+          age: profile?.age || (profile?.date_of_birth ? new Date().getFullYear() - new Date(profile.date_of_birth).getFullYear() : 28),
+          gender: profile?.gender,
+          weight_kg: profile?.weight_kg,
+          height_cm: profile?.height_cm,
+          bmi: profile?.bmi,
+          fitness_level: profile?.fitness_level,
+          fitness_goal: profile?.fitness_goal,
+          dietary_preferences: profile?.dietary_preferences,
+          allergies: profile?.allergies,
+          chronic_conditions: profile?.chronic_conditions,
+          previous_injuries: profile?.previous_injuries,
+          sleep_problems: profile?.sleep_problems,
+        },
+        metrics
+      );
 
       const aiMsg: Message = {
         id: (Date.now() + 1).toString(),
@@ -153,15 +158,15 @@ export default function AICoachScreen() {
         console.warn('Failed to save AI reply to Supabase:', e);
       }
     } catch (err: any) {
-      console.error('AI Coach network error:', err);
-      const fallbackReplyText = `Based on your health data (${metrics?.hydrationMl || 0}ml water, ${metrics?.sleepHours || 0}h sleep), maintaining consistent hydration and physical activity will optimize your health progress today.`;
-      const fallbackMsg: Message = {
+      console.error('AI Coach Error:', err);
+      const errorMsgText = `⚠️ ${err?.message || 'Failed to generate AI response. Please try again.'}`;
+      const errorMsg: Message = {
         id: (Date.now() + 1).toString(),
         sender: 'ai',
-        text: fallbackReplyText,
+        text: errorMsgText,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       };
-      setMessages((prev) => [...prev, fallbackMsg]);
+      setMessages((prev) => [...prev, errorMsg]);
     } finally {
       setLoading(false);
     }
@@ -241,12 +246,13 @@ export default function AICoachScreen() {
 
         {/* Input Bar */}
         <View style={[styles.inputBar, { backgroundColor: colors.background, borderTopColor: colors.cardBorder }]}>
-          <TextInput
-            style={[styles.textInput, { backgroundColor: colors.inputBg, borderColor: colors.inputBorder, color: colors.text }]}
+          <CustomTextInput
             placeholder="Ask your AI Coach..."
-            placeholderTextColor="#64748b"
             value={inputText}
             onChangeText={setInputText}
+            containerStyle={{ flex: 1 }}
+            inputContainerStyle={{ borderRadius: 24, paddingHorizontal: 16 }}
+            onSubmitEditing={handleSend}
           />
           <TouchableOpacity
             style={[

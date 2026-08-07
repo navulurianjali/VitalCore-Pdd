@@ -6,8 +6,8 @@ import { GlassCard } from "@/components/ui/GlassCard";
 import { Button } from "@/components/ui/Button";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/utils/supabase";
-import { FOOD_DATABASE, searchFoodDatabase, calculateNutrition, FoodItem } from "@/utils/foodDatabase";
-import { Utensils, Plus, Trash2, Edit2, Search, X, Flame, CheckCircle, PieChart, Sparkles } from "lucide-react";
+import { FOOD_DATABASE, searchFoodDatabase, smartFoodSearch, calculateNutrition, FoodItem, SearchStatus } from "@/utils/foodDatabase";
+import { Utensils, Plus, Trash2, Edit2, Search, X, Flame, CheckCircle, PieChart, Sparkles, Loader2 } from "lucide-react";
 
 interface LoggedFood {
   id: string;
@@ -38,11 +38,41 @@ export default function CalorieTrackerPage() {
 
   // Search & selection inside modal
   const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<FoodItem[]>([]);
+  const [searchStatus, setSearchStatus] = useState<SearchStatus>('idle');
   const [selectedFood, setSelectedFood] = useState<FoodItem | null>(null);
-  const [quantity, setQuantity] = useState<number>(1);
-  const [customFoodName, setCustomFoodName] = useState("");
+  const [grams, setGrams] = useState<number>(100);
 
   const todayStr = new Date().toISOString().split("T")[0];
+
+  // Smart Food Search debounced effect
+  useEffect(() => {
+    let active = true;
+    const doSearch = async () => {
+      if (!searchQuery.trim()) {
+        const defaults = FOOD_DATABASE.slice(0, 12);
+        setSearchResults(defaults);
+        setSearchStatus('idle');
+        if (defaults.length > 0 && !selectedFood) {
+          setSelectedFood(defaults[0]);
+        }
+        return;
+      }
+      const { results } = await smartFoodSearch(searchQuery, setSearchStatus);
+      if (active) {
+        setSearchResults(results);
+        if (results.length > 0) {
+          setSelectedFood(results[0]);
+        }
+      }
+    };
+
+    const timer = setTimeout(doSearch, 250);
+    return () => {
+      active = false;
+      clearTimeout(timer);
+    };
+  }, [searchQuery]);
 
   // Fetch today's food logs from Supabase
   const fetchLogs = async () => {
@@ -97,28 +127,18 @@ export default function CalorieTrackerPage() {
     };
   }, [user?.id]);
 
-  const foodSearchResults = searchFoodDatabase(searchQuery);
-  const currentNutritionPreview = selectedFood ? calculateNutrition(selectedFood, quantity) : null;
-
-  // Auto-select top search result when searching to fix BUG 4
-  useEffect(() => {
-    if (searchQuery.trim() && foodSearchResults.length > 0) {
-      if (!selectedFood || !foodSearchResults.some(f => f.id === selectedFood.id)) {
-        setSelectedFood(foodSearchResults[0]);
-        setCustomFoodName(foodSearchResults[0].name);
-      }
-    }
-  }, [searchQuery]);
+  const foodSearchResults = searchResults.length > 0 ? searchResults : searchFoodDatabase(searchQuery);
+  const currentNutritionPreview = selectedFood ? calculateNutrition(selectedFood, grams) : null;
 
   // Open modal to add food
   const handleOpenAddModal = (mealType: 'breakfast' | 'lunch' | 'dinner' | 'snack') => {
     setActiveMealType(mealType);
     setEditingLogId(null);
     setSearchQuery("");
-    const defaultFood = FOOD_DATABASE.find(f => f.category === mealType) || FOOD_DATABASE[0];
+    const defaultFood = FOOD_DATABASE.slice(0, 10)[0];
     setSelectedFood(defaultFood);
-    setQuantity(1);
-    setCustomFoodName(defaultFood.name);
+    setGrams(100);
+    setSearchStatus('idle');
     setModalOpen(true);
   };
 
@@ -128,13 +148,7 @@ export default function CalorieTrackerPage() {
     setEditingLogId(log.id);
     const matched = FOOD_DATABASE.find(f => log.food_name.toLowerCase().includes(f.name.toLowerCase())) || FOOD_DATABASE[0];
     setSelectedFood(matched);
-    
-    let estQty = 1;
-    if (matched && matched.baseCalories > 0 && log.calories > 0) {
-      estQty = Number((log.calories / matched.baseCalories).toFixed(1));
-    }
-    setQuantity(estQty > 0 ? estQty : 1);
-    setCustomFoodName(matched.name);
+    setGrams(100);
     setModalOpen(true);
   };
 
@@ -142,20 +156,18 @@ export default function CalorieTrackerPage() {
   const handleSaveFood = async () => {
     if (!user?.id || !selectedFood) return;
 
-    const nutrition = calculateNutrition(selectedFood, quantity);
-    const unitStr = selectedFood.servingUnit;
-    const plural = quantity > 1 && !unitStr.endsWith('s') && unitStr !== 'g' && unitStr !== 'ml' ? 's' : '';
-    const formattedName = `${selectedFood.name} (${quantity} ${unitStr}${plural})`;
+    const nutrition = calculateNutrition(selectedFood, grams);
+    const formattedName = `${selectedFood.name} (${grams}g)`;
 
     const tempId = editingLogId || `temp-${Date.now()}`;
     const newLogEntry: LoggedFood = {
       id: tempId,
       meal_type: activeMealType,
       food_name: formattedName,
-      calories: nutrition.calories,
-      protein_g: nutrition.protein,
-      carbs_g: nutrition.carbs,
-      fat_g: nutrition.fat,
+      calories: Math.round(nutrition.calories),
+      protein_g: Number(nutrition.protein) || 0,
+      carbs_g: Number(nutrition.carbs) || 0,
+      fat_g: Number(nutrition.fat) || 0,
     };
 
     if (editingLogId) {
@@ -165,7 +177,6 @@ export default function CalorieTrackerPage() {
     }
     setModalOpen(false);
 
-    // Instant Dashboard sync event (Fix BUG 5)
     window.dispatchEvent(new Event("vitalcore-data-updated"));
 
     try {
@@ -175,10 +186,10 @@ export default function CalorieTrackerPage() {
           .update({
             meal_type: activeMealType,
             food_name: formattedName,
-            calories: nutrition.calories,
-            protein_g: nutrition.protein,
-            carbs_g: nutrition.carbs,
-            fat_g: nutrition.fat,
+            calories: Math.round(nutrition.calories),
+            protein_g: Number(nutrition.protein) || 0,
+            carbs_g: Number(nutrition.carbs) || 0,
+            fat_g: Number(nutrition.fat) || 0,
           })
           .eq("id", editingLogId);
 
@@ -192,10 +203,10 @@ export default function CalorieTrackerPage() {
             date: todayStr,
             meal_type: activeMealType,
             food_name: formattedName,
-            calories: nutrition.calories,
-            protein_g: nutrition.protein,
-            carbs_g: nutrition.carbs,
-            fat_g: nutrition.fat,
+            calories: Math.round(nutrition.calories),
+            protein_g: Number(nutrition.protein) || 0,
+            carbs_g: Number(nutrition.carbs) || 0,
+            fat_g: Number(nutrition.fat) || 0,
           });
 
         if (error) console.error("Insert error:", error);
@@ -553,7 +564,6 @@ export default function CalorieTrackerPage() {
                     if (e.key === 'Enter' && foodSearchResults.length > 0 && !selectedFood) {
                       e.preventDefault();
                       setSelectedFood(foodSearchResults[0]);
-                      setCustomFoodName(foodSearchResults[0].name);
                     }
                   }}
                   placeholder="e.g., Idli, Chapati, Rice, Chicken Curry, Apple..."
@@ -577,7 +587,6 @@ export default function CalorieTrackerPage() {
                       key={food.id}
                       onClick={() => {
                         setSelectedFood(food);
-                        setCustomFoodName(food.name);
                       }}
                       className={`w-full text-left px-3.5 py-3 rounded-xl text-xs font-bold transition-all flex items-center justify-between border hover:scale-[1.005] cursor-pointer ${
                         selectedFood?.id === food.id
@@ -587,7 +596,7 @@ export default function CalorieTrackerPage() {
                     >
                       <span className="font-bold text-foreground">{food.name}</span>
                       <span className="text-[10px] opacity-70 font-semibold tabular-nums bg-foreground/5 px-2 py-1 rounded-lg">
-                        {food.baseCalories} kcal / {food.servingUnit}
+                        {food.per100gCalories || food.baseCalories} kcal / 100g
                       </span>
                     </button>
                   ))}
@@ -600,29 +609,29 @@ export default function CalorieTrackerPage() {
               <div className="space-y-4 pt-2 border-t border-foreground/5">
                 <div className="flex items-center justify-between gap-4">
                   <div className="space-y-1">
-                    <label className="text-xs font-bold text-foreground uppercase">Quantity / Serving Size</label>
+                    <label className="text-xs font-bold text-foreground uppercase">Amount in Grams</label>
                     <p className="text-[11px] text-foreground/60 font-semibold">
-                      Unit: <span className="text-primary font-bold">{selectedFood.servingUnit}</span>
+                      Calculated per: <span className="text-primary font-bold">100g</span>
                     </p>
                   </div>
 
                   <div className="flex items-center gap-2">
                     <button
-                      onClick={() => setQuantity(prev => Math.max(0.5, Number((prev - 0.5).toFixed(1))))}
+                      onClick={() => setGrams(prev => Math.max(10, prev - 25))}
                       className="h-9 w-9 rounded-lg bg-foreground/10 text-foreground font-bold text-base hover:bg-foreground/20 hover:scale-105 active:scale-95 transition-all flex items-center justify-center"
                     >
                       −
                     </button>
                     <input
                       type="number"
-                      step="0.5"
-                      min="0.1"
-                      value={quantity}
-                      onChange={e => setQuantity(parseFloat(e.target.value) || 1)}
-                      className="w-16 text-center py-2 text-xs font-bold rounded-lg bg-foreground/5 border border-foreground/10 text-foreground focus:outline-none focus:border-primary transition-colors"
+                      step="25"
+                      min="10"
+                      value={grams}
+                      onChange={e => setGrams(parseInt(e.target.value, 10) || 100)}
+                      className="w-20 text-center py-2 text-xs font-bold rounded-lg bg-foreground/5 border border-foreground/10 text-foreground focus:outline-none focus:border-primary transition-colors"
                     />
                     <button
-                      onClick={() => setQuantity(prev => Number((prev + 0.5).toFixed(1)))}
+                      onClick={() => setGrams(prev => prev + 25)}
                       className="h-9 w-9 rounded-lg bg-foreground/10 text-foreground font-bold text-base hover:bg-foreground/20 hover:scale-105 active:scale-95 transition-all flex items-center justify-center"
                     >
                       +
