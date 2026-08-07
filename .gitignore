@@ -45,4 +45,9 @@ __pycache__/
 *.pyc
 scratch/
 
+# E2E test reports & logs
+E2E_Test_Report_*.xlsx
+*.log
+automated_test/*.log
+
 
