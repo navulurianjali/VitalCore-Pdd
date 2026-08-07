@@ -23,11 +23,11 @@ def log(msg=""):
 
 # ── Load config ────────────────────────────────────────────────────────────────
 if not INPUT_FILE.exists():
-    log(f"[ERROR] input.json not found at {INPUT_FILE}.")
-    sys.exit(1)
-
-with open(INPUT_FILE, encoding="utf-8") as f:
-    cfg = json.load(f)
+    log(f"[WARN] input.json not found at {INPUT_FILE}. Using default config.")
+    cfg = {"baseUrl": "http://localhost:3000", "user": "", "admin": ""}
+else:
+    with open(INPUT_FILE, encoding="utf-8") as f:
+        cfg = json.load(f)
 
 BASE_URL    = cfg.get("baseUrl", "http://localhost:3000").rstrip("/")
 USER_TOKEN  = cfg.get("user",  "")

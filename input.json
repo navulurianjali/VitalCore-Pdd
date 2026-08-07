@@ -1,0 +1,5 @@
+{
+  "baseUrl": "http://localhost:3000",
+  "user": "test_user_session_token",
+  "admin": "test_admin_session_token"
+}

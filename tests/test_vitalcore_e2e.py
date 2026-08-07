@@ -22,11 +22,11 @@ from selenium.common.exceptions import (
 )
 
 # ΓöÇΓöÇ CONFIG ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
-BASE_URL       = "https://vita-core-ai.vercel.app"
+BASE_URL       = os.environ.get("TARGET_URL", "http://localhost:3000").rstrip("/")
 EXPLICIT_WAIT  = 8
 # Local chromedriver path ΓÇô only used when the file actually exists.
 # In CI (GitHub Actions / Linux) Selenium 4 selenium-manager fetches it automatically.
-_LOCAL_CHROMEDRIVER = r"C:\Users\navul\.wdm\drivers\chromedriver\win64\149.0.7827.55\chromedriver-win64\chromedriver.exe"
+_LOCAL_CHROMEDRIVER = ""
 
 TEST_RESULTS: List[Dict[str, Any]] = []
 
