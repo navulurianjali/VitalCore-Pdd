@@ -6,7 +6,7 @@ on:
   pull_request:
     branches: [ main, master ]
   schedule:
-    - cron: '0 2 * * *' # Daily at 02:00 UTC
+    - cron: '0 2 * * *'
   workflow_dispatch:
 
 permissions:
@@ -24,7 +24,7 @@ jobs:
       - name: Stage 1 - Checkout Repository
         uses: actions/checkout@v4
 
-      # Stage 2: Setup Java
+      # Stage 2: Setup Java 17
       - name: Stage 2 - Setup Java 17
         uses: actions/setup-java@v4
         with:
@@ -41,8 +41,6 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-          cache-dependency-path: 'vitalcore-expo/automation/package-lock.json'
-        continue-on-error: true
 
       - name: Install Node modules in Expo Automation
         run: |
@@ -58,8 +56,8 @@ jobs:
           mkdir -p automation/resources
           touch automation/resources/app-debug.apk
 
-      # Stage 6 & 7: Start Android Emulator & Verify Readiness
-      - name: Stage 6 & 7 - Start Android Emulator and Verify Readiness
+      # Stage 6 to 17: Start Android Emulator, Verify Health, Start Appium & Run 510 E2E Tests
+      - name: Stage 6 to 17 - Android Emulator & Appium E2E Execution
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 33
@@ -69,29 +67,20 @@ jobs:
           script: |
             echo "Stage 7 - Emulator ready! Verifying adb devices..."
             adb devices
+            
+            echo "Stage 8 - Installing built APK..."
+            # adb install -r vitalcore-expo/automation/resources/app-debug.apk || true
 
-      # Stage 8: Install APK
-      - name: Stage 8 - Install APK
-        run: |
-          echo "Installing built APK to target emulator..."
-          # adb install -r vitalcore-expo/automation/resources/app-debug.apk || true
+            echo "Stage 9 & 10 - Installing Appium & Starting Server..."
+            npm install -g appium
+            appium driver install uiautomator2 || true
+            appium --log-level info &
+            sleep 5
+            curl -s http://127.0.0.1:4723/status || true
 
-      # Stage 9 & 10: Start Appium & Verify Health
-      - name: Stage 9 & 10 - Start Appium Server & Verify Health
-        run: |
-          echo "Installing Appium..."
-          npm install -g appium
-          appium driver install uiautomator2 || true
-          appium --log-level info &
-          sleep 5
-          echo "Stage 10 - Appium Health Check"
-          curl -s http://127.0.0.1:4723/status || true
-
-      # Stage 11 - 17: Execute E2E Tests & Generate Reports
-      - name: Stage 11 to 17 - Execute Appium E2E Tests & Generate All Reports
-        run: |
-          cd vitalcore-expo/automation
-          npm test || true
+            echo "Stage 11 to 17 - Executing Appium E2E Test Suite..."
+            cd vitalcore-expo/automation
+            npm test
 
       # Stage 18: Upload Artifacts
       - name: Stage 18 - Upload Execution Artifacts
@@ -109,9 +98,12 @@ jobs:
         run: |
           mkdir -p gh-pages/reports/latest
           mkdir -p gh-pages/reports/history/build-${{ github.run_number }}
+          touch gh-pages/.nojekyll
           
-          cp -r vitalcore-expo/automation/Test\ Results/* gh-pages/reports/latest/ || true
-          cp -r vitalcore-expo/automation/Test\ Results/* gh-pages/reports/history/build-${{ github.run_number }}/ || true
+          if [ -d "vitalcore-expo/automation/Test Results" ]; then
+            cp -r vitalcore-expo/automation/Test\ Results/* gh-pages/reports/latest/ || true
+            cp -r vitalcore-expo/automation/Test\ Results/* gh-pages/reports/history/build-${{ github.run_number }}/ || true
+          fi
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3

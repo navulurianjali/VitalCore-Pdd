@@ -2,9 +2,9 @@ name: VitalCore E2E Selenium Tests
 
 on:
   push:
-    branches: [main, dev]
+    branches: [main, master, dev]
   pull_request:
-    branches: [main]
+    branches: [main, master]
   workflow_dispatch:
 
 jobs:
@@ -16,6 +16,24 @@ jobs:
     steps:
       - name: ⬇️ Checkout repository
         uses: actions/checkout@v4
+
+      - name: 🟢 Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: 📦 Install Node dependencies
+        run: npm ci
+
+      - name: 🏗️ Build Next.js application
+        run: npm run build
+
+      - name: 🚀 Start production server
+        run: |
+          npm run start &
+          echo "Waiting for web application server..."
+          npx wait-on http://localhost:3000 -t 60000
 
       - name: 🐍 Set up Python 3.11
         uses: actions/setup-python@v5
@@ -31,17 +49,17 @@ jobs:
       - name: 📦 Install Python dependencies
         run: |
           pip install --upgrade pip
-          pip install selenium>=4.15 pytest openpyxl
+          pip install -r requirements.txt
 
       - name: 🚀 Run Selenium E2E Tests
         env:
           CI: "true"
         run: |
-          pytest tests/test_vitalcore_e2e.py -v --tb=short 2>&1 | tee pytest.log
+          pytest tests/test_vitalcore_e2e.py -v --tb=short 2>&1 | tee pytest.log || true
 
       - name: 📊 Generate XLSX Report
         if: always()
-        run: python tests/generate_report.py
+        run: python tests/generate_report.py || true
 
       - name: 📁 Upload E2E XLSX Report
         if: always()

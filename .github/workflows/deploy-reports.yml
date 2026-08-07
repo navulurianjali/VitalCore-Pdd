@@ -7,6 +7,11 @@ on:
       - completed
   workflow_dispatch:
 
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
 jobs:
   deploy-reports:
     runs-on: ubuntu-latest
@@ -14,8 +19,29 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Deploy Pages
+      - name: Download Test Results Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: VitalCore-Appium-Test-Results
+          path: download-artifacts
+        continue-on-error: true
+
+      - name: Prepare GitHub Pages Directory Structure
+        run: |
+          mkdir -p gh-pages/reports/latest
+          mkdir -p gh-pages/reports/history/build-${{ github.run_number }}
+          if [ -d "download-artifacts" ]; then
+            cp -r download-artifacts/* gh-pages/reports/latest/ || true
+            cp -r download-artifacts/* gh-pages/reports/history/build-${{ github.run_number }}/ || true
+          elif [ -d "vitalcore-expo/automation/Test Results" ]; then
+            cp -r vitalcore-expo/automation/Test\ Results/* gh-pages/reports/latest/ || true
+            cp -r vitalcore-expo/automation/Test\ Results/* gh-pages/reports/history/build-${{ github.run_number }}/ || true
+          fi
+          touch gh-pages/.nojekyll
+
+      - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./gh-pages
+          force_orphan: true

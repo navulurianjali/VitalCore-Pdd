@@ -113,6 +113,8 @@ export default function LoginScreen({ navigation }: any) {
               <View style={[styles.inputWithIcon, { backgroundColor: colors.background, borderColor: colors.border }]}>
                 <Mail size={18} color={colors.textMuted} style={styles.inputIcon} />
                 <TextInput
+                  testID="email_input"
+                  accessibilityLabel="email_input"
                   style={[styles.textInput, { color: colors.text }]}
                   placeholder="name@example.com"
                   placeholderTextColor={colors.textMuted}
@@ -130,13 +132,15 @@ export default function LoginScreen({ navigation }: any) {
             <View style={styles.inputGroup}>
               <View style={styles.labelRow}>
                 <Text style={[styles.label, { color: colors.textMuted }]}>Password</Text>
-                <TouchableOpacity onPress={() => setForgotModalVisible(true)}>
+                <TouchableOpacity testID="forgot_password_button" accessibilityLabel="forgot_password_button" onPress={() => setForgotModalVisible(true)}>
                   <Text style={[styles.forgotText, { color: colors.primary }]}>Forgot?</Text>
                 </TouchableOpacity>
               </View>
               <View style={[styles.inputWithIcon, { backgroundColor: colors.background, borderColor: colors.border }]}>
                 <Lock size={18} color={colors.textMuted} style={styles.inputIcon} />
                 <TextInput
+                  testID="password_input"
+                  accessibilityLabel="password_input"
                   style={[styles.textInput, { color: colors.text }]}
                   placeholder="••••••••"
                   placeholderTextColor={colors.textMuted}
@@ -147,13 +151,15 @@ export default function LoginScreen({ navigation }: any) {
                   }}
                   secureTextEntry={!showPassword}
                 />
-                <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={{ padding: 4 }}>
+                <TouchableOpacity testID="toggle_password_visibility" accessibilityLabel="toggle_password_visibility" onPress={() => setShowPassword(!showPassword)} style={{ padding: 4 }}>
                   {showPassword ? <EyeOff size={18} color={colors.textMuted} /> : <Eye size={18} color={colors.textMuted} />}
                 </TouchableOpacity>
               </View>
             </View>
 
             <TouchableOpacity
+              testID="remember_me_checkbox"
+              accessibilityLabel="remember_me_checkbox"
               style={styles.rememberRow}
               onPress={() => setRememberMe(!rememberMe)}
             >
@@ -164,6 +170,8 @@ export default function LoginScreen({ navigation }: any) {
             </TouchableOpacity>
 
             <TouchableOpacity
+              testID="login_button"
+              accessibilityLabel="login_button"
               style={[styles.primaryButton, { backgroundColor: colors.primary }, loading && styles.disabledButton]}
               onPress={handleLogin}
               disabled={loading}
@@ -177,7 +185,7 @@ export default function LoginScreen({ navigation }: any) {
 
             <View style={styles.footerRow}>
               <Text style={[styles.footerText, { color: colors.textMuted }]}>Don't have an account?</Text>
-              <TouchableOpacity onPress={() => navigation.navigate('Register')}>
+              <TouchableOpacity testID="register_link" accessibilityLabel="register_link" onPress={() => navigation.navigate('Register')}>
                 <Text style={[styles.linkText, { color: colors.primary }]}> Sign Up</Text>
               </TouchableOpacity>
             </View>

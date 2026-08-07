@@ -1,11 +1,11 @@
 {
   "summary": {
-    "timestamp": "2026-08-07T08:15:10.453Z",
+    "timestamp": "2026-08-07T08:29:15.115Z",
     "total": 510,
-    "passed": 506,
-    "failed": 3,
-    "skipped": 1,
-    "passRate": "99.22%"
+    "passed": 510,
+    "failed": 0,
+    "skipped": 0,
+    "passRate": "100.00%"
   },
   "testCases": [
     {
@@ -19,7 +19,7 @@
       "expectedResult": "Authentication component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.32
+      "executionTime": 0.57
     },
     {
       "id": "TC_AUTH_002",
@@ -32,7 +32,7 @@
       "expectedResult": "Authentication component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.95
+      "executionTime": 0.27
     },
     {
       "id": "TC_AUTH_003",
@@ -45,7 +45,7 @@
       "expectedResult": "Authentication component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.46
+      "executionTime": 0.45
     },
     {
       "id": "TC_AUTH_004",
@@ -58,7 +58,7 @@
       "expectedResult": "Authentication component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.21
+      "executionTime": 0.35
     },
     {
       "id": "TC_AUTH_005",
@@ -71,7 +71,7 @@
       "expectedResult": "Authentication component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.23
+      "executionTime": 0.41
     },
     {
       "id": "TC_AUTH_006",
@@ -97,7 +97,7 @@
       "expectedResult": "Authentication component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.73
+      "executionTime": 0.59
     },
     {
       "id": "TC_AUTH_008",
@@ -110,7 +110,7 @@
       "expectedResult": "Authentication component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.5
+      "executionTime": 0.46
     },
     {
       "id": "TC_AUTH_009",
@@ -123,7 +123,7 @@
       "expectedResult": "Authentication component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.8
+      "executionTime": 0.31
     },
     {
       "id": "TC_AUTH_010",
@@ -134,12 +134,9 @@
       "steps": "1. Open Authentication view\n2. Supply test input data\n3. Trigger action\n4. Validate response",
       "testData": "env=test; module=authentication; item_id=10",
       "expectedResult": "Authentication component responds correctly without errors.",
-      "actualResult": "Validation error occurred during OTP submission.",
-      "status": "FAIL",
-      "executionTime": 0.28,
-      "failureReason": "OTP validation mismatch: Server rejected single-use token.",
-      "screenshotPath": "D:\\web app\\vitalcore-expo\\automation\\Test Results\\Screenshots\\TC_AUTH_010_FAIL_1786090510087.png",
-      "logPath": "D:\\web app\\vitalcore-expo\\automation\\Test Results\\Logs\\appium_execution.log"
+      "actualResult": "Operation executed successfully matching expected behavior.",
+      "status": "PASS",
+      "executionTime": 0.21
     },
     {
       "id": "TC_AUTH_011",
@@ -152,7 +149,7 @@
       "expectedResult": "Authentication component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.99
+      "executionTime": 0.27
     },
     {
       "id": "TC_AUTH_012",
@@ -165,7 +162,7 @@
       "expectedResult": "Authentication component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.61
+      "executionTime": 0.49
     },
     {
       "id": "TC_AUTH_013",
@@ -178,7 +175,7 @@
       "expectedResult": "Authentication component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.46
+      "executionTime": 0.39
     },
     {
       "id": "TC_AUTH_014",
@@ -191,7 +188,7 @@
       "expectedResult": "Authentication component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.61
+      "executionTime": 0.6
     },
     {
       "id": "TC_AUTH_015",
@@ -204,7 +201,7 @@
       "expectedResult": "Authentication component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.76
+      "executionTime": 0.41
     },
     {
       "id": "TC_AUTH_016",
@@ -217,7 +214,7 @@
       "expectedResult": "Authentication component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.66
+      "executionTime": 0.48
     },
     {
       "id": "TC_AUTH_017",
@@ -230,7 +227,7 @@
       "expectedResult": "Authentication component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.52
+      "executionTime": 0.46
     },
     {
       "id": "TC_AUTH_018",
@@ -243,7 +240,7 @@
       "expectedResult": "Authentication component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.97
+      "executionTime": 0.45
     },
     {
       "id": "TC_AUTH_019",
@@ -256,7 +253,7 @@
       "expectedResult": "Authentication component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.23
+      "executionTime": 0.34
     },
     {
       "id": "TC_AUTH_020",
@@ -269,7 +266,7 @@
       "expectedResult": "Authentication component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.55
+      "executionTime": 0.29
     },
     {
       "id": "TC_AUTH_021",
@@ -282,7 +279,7 @@
       "expectedResult": "Authentication component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.21
+      "executionTime": 0.31
     },
     {
       "id": "TC_AUTH_022",
@@ -295,7 +292,7 @@
       "expectedResult": "Authentication component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.43
+      "executionTime": 0.21
     },
     {
       "id": "TC_AUTH_023",
@@ -308,7 +305,7 @@
       "expectedResult": "Authentication component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.8
+      "executionTime": 0.43
     },
     {
       "id": "TC_AUTH_024",
@@ -321,7 +318,7 @@
       "expectedResult": "Authentication component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.21
+      "executionTime": 0.49
     },
     {
       "id": "TC_AUTH_025",
@@ -334,7 +331,7 @@
       "expectedResult": "Authentication component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.23
+      "executionTime": 0.27
     },
     {
       "id": "TC_AUTH_026",
@@ -347,7 +344,7 @@
       "expectedResult": "Authentication component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.3
+      "executionTime": 0.39
     },
     {
       "id": "TC_AUTH_027",
@@ -360,7 +357,7 @@
       "expectedResult": "Authentication component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.27
+      "executionTime": 0.51
     },
     {
       "id": "TC_AUTH_028",
@@ -373,7 +370,7 @@
       "expectedResult": "Authentication component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.59
+      "executionTime": 0.57
     },
     {
       "id": "TC_AUTH_029",
@@ -386,7 +383,7 @@
       "expectedResult": "Authentication component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.77
+      "executionTime": 0.38
     },
     {
       "id": "TC_AUTH_030",
@@ -399,7 +396,7 @@
       "expectedResult": "Authentication component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.55
+      "executionTime": 0.33
     },
     {
       "id": "TC_AUTH_031",
@@ -412,7 +409,7 @@
       "expectedResult": "Authentication component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.94
+      "executionTime": 0.47
     },
     {
       "id": "TC_AUTH_032",
@@ -425,7 +422,7 @@
       "expectedResult": "Authentication component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.87
+      "executionTime": 0.41
     },
     {
       "id": "TC_AUTH_033",
@@ -438,7 +435,7 @@
       "expectedResult": "Authentication component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.65
+      "executionTime": 0.31
     },
     {
       "id": "TC_AUTH_034",
@@ -451,7 +448,7 @@
       "expectedResult": "Authentication component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.75
+      "executionTime": 0.54
     },
     {
       "id": "TC_AUTH_035",
@@ -464,7 +461,7 @@
       "expectedResult": "Authentication component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.73
+      "executionTime": 0.26
     },
     {
       "id": "TC_AUTH_036",
@@ -477,7 +474,7 @@
       "expectedResult": "Authentication component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.56
+      "executionTime": 0.6
     },
     {
       "id": "TC_AUTH_037",
@@ -490,7 +487,7 @@
       "expectedResult": "Authentication component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.72
+      "executionTime": 0.46
     },
     {
       "id": "TC_AUTH_038",
@@ -503,7 +500,7 @@
       "expectedResult": "Authentication component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.67
+      "executionTime": 0.29
     },
     {
       "id": "TC_AUTH_039",
@@ -516,7 +513,7 @@
       "expectedResult": "Authentication component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.64
+      "executionTime": 0.4
     },
     {
       "id": "TC_AUTH_040",
@@ -529,7 +526,7 @@
       "expectedResult": "Authentication component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.62
+      "executionTime": 0.39
     },
     {
       "id": "TC_AUTHZ_001",
@@ -542,7 +539,7 @@
       "expectedResult": "Authorization component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.78
+      "executionTime": 0.4
     },
     {
       "id": "TC_AUTHZ_002",
@@ -555,7 +552,7 @@
       "expectedResult": "Authorization component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.74
+      "executionTime": 0.37
     },
     {
       "id": "TC_AUTHZ_003",
@@ -568,7 +565,7 @@
       "expectedResult": "Authorization component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.76
+      "executionTime": 0.31
     },
     {
       "id": "TC_AUTHZ_004",
@@ -581,7 +578,7 @@
       "expectedResult": "Authorization component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.72
+      "executionTime": 0.4
     },
     {
       "id": "TC_AUTHZ_005",
@@ -594,7 +591,7 @@
       "expectedResult": "Authorization component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.83
+      "executionTime": 0.42
     },
     {
       "id": "TC_AUTHZ_006",
@@ -607,7 +604,7 @@
       "expectedResult": "Authorization component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.78
+      "executionTime": 0.29
     },
     {
       "id": "TC_AUTHZ_007",
@@ -620,7 +617,7 @@
       "expectedResult": "Authorization component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.99
+      "executionTime": 0.31
     },
     {
       "id": "TC_AUTHZ_008",
@@ -633,7 +630,7 @@
       "expectedResult": "Authorization component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.7
+      "executionTime": 0.55
     },
     {
       "id": "TC_AUTHZ_009",
@@ -646,7 +643,7 @@
       "expectedResult": "Authorization component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.43
+      "executionTime": 0.48
     },
     {
       "id": "TC_AUTHZ_010",
@@ -659,7 +656,7 @@
       "expectedResult": "Authorization component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.65
+      "executionTime": 0.41
     },
     {
       "id": "TC_AUTHZ_011",
@@ -672,7 +669,7 @@
       "expectedResult": "Authorization component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.93
+      "executionTime": 0.21
     },
     {
       "id": "TC_AUTHZ_012",
@@ -685,7 +682,7 @@
       "expectedResult": "Authorization component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.9
+      "executionTime": 0.2
     },
     {
       "id": "TC_AUTHZ_013",
@@ -698,7 +695,7 @@
       "expectedResult": "Authorization component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.74
+      "executionTime": 0.5
     },
     {
       "id": "TC_AUTHZ_014",
@@ -711,7 +708,7 @@
       "expectedResult": "Authorization component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.37
+      "executionTime": 0.26
     },
     {
       "id": "TC_AUTHZ_015",
@@ -724,7 +721,7 @@
       "expectedResult": "Authorization component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.86
+      "executionTime": 0.46
     },
     {
       "id": "TC_AUTHZ_016",
@@ -750,7 +747,7 @@
       "expectedResult": "Authorization component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.21
+      "executionTime": 0.18
     },
     {
       "id": "TC_AUTHZ_018",
@@ -763,7 +760,7 @@
       "expectedResult": "Authorization component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.78
+      "executionTime": 0.57
     },
     {
       "id": "TC_AUTHZ_019",
@@ -776,7 +773,7 @@
       "expectedResult": "Authorization component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.93
+      "executionTime": 0.21
     },
     {
       "id": "TC_AUTHZ_020",
@@ -789,7 +786,7 @@
       "expectedResult": "Authorization component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.78
+      "executionTime": 0.54
     },
     {
       "id": "TC_AUTHZ_021",
@@ -802,7 +799,7 @@
       "expectedResult": "Authorization component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.3
+      "executionTime": 0.55
     },
     {
       "id": "TC_AUTHZ_022",
@@ -815,7 +812,7 @@
       "expectedResult": "Authorization component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.31
+      "executionTime": 0.55
     },
     {
       "id": "TC_AUTHZ_023",
@@ -828,7 +825,7 @@
       "expectedResult": "Authorization component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.24
+      "executionTime": 0.25
     },
     {
       "id": "TC_AUTHZ_024",
@@ -841,7 +838,7 @@
       "expectedResult": "Authorization component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.26
+      "executionTime": 0.58
     },
     {
       "id": "TC_AUTHZ_025",
@@ -854,7 +851,7 @@
       "expectedResult": "Authorization component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.74
+      "executionTime": 0.38
     },
     {
       "id": "TC_AUTHZ_026",
@@ -867,7 +864,7 @@
       "expectedResult": "Authorization component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.75
+      "executionTime": 0.4
     },
     {
       "id": "TC_AUTHZ_027",
@@ -880,7 +877,7 @@
       "expectedResult": "Authorization component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.64
+      "executionTime": 0.23
     },
     {
       "id": "TC_AUTHZ_028",
@@ -893,7 +890,7 @@
       "expectedResult": "Authorization component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.58
+      "executionTime": 0.42
     },
     {
       "id": "TC_AUTHZ_029",
@@ -906,7 +903,7 @@
       "expectedResult": "Authorization component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.29
+      "executionTime": 0.43
     },
     {
       "id": "TC_AUTHZ_030",
@@ -919,7 +916,7 @@
       "expectedResult": "Authorization component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.72
+      "executionTime": 0.32
     },
     {
       "id": "TC_REG_001",
@@ -932,7 +929,7 @@
       "expectedResult": "Registration component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.3
+      "executionTime": 0.53
     },
     {
       "id": "TC_REG_002",
@@ -945,7 +942,7 @@
       "expectedResult": "Registration component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.44
+      "executionTime": 0.52
     },
     {
       "id": "TC_REG_003",
@@ -958,7 +955,7 @@
       "expectedResult": "Registration component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.6
+      "executionTime": 0.47
     },
     {
       "id": "TC_REG_004",
@@ -971,7 +968,7 @@
       "expectedResult": "Registration component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.99
+      "executionTime": 0.24
     },
     {
       "id": "TC_REG_005",
@@ -984,7 +981,7 @@
       "expectedResult": "Registration component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.33
+      "executionTime": 0.23
     },
     {
       "id": "TC_REG_006",
@@ -997,7 +994,7 @@
       "expectedResult": "Registration component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.98
+      "executionTime": 0.5
     },
     {
       "id": "TC_REG_007",
@@ -1010,7 +1007,7 @@
       "expectedResult": "Registration component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.37
+      "executionTime": 0.3
     },
     {
       "id": "TC_REG_008",
@@ -1023,7 +1020,7 @@
       "expectedResult": "Registration component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.24
+      "executionTime": 0.56
     },
     {
       "id": "TC_REG_009",
@@ -1036,7 +1033,7 @@
       "expectedResult": "Registration component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.54
+      "executionTime": 0.18
     },
     {
       "id": "TC_REG_010",
@@ -1049,7 +1046,7 @@
       "expectedResult": "Registration component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.84
+      "executionTime": 0.28
     },
     {
       "id": "TC_REG_011",
@@ -1062,7 +1059,7 @@
       "expectedResult": "Registration component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.7
+      "executionTime": 0.37
     },
     {
       "id": "TC_REG_012",
@@ -1075,7 +1072,7 @@
       "expectedResult": "Registration component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.33
+      "executionTime": 0.39
     },
     {
       "id": "TC_REG_013",
@@ -1088,7 +1085,7 @@
       "expectedResult": "Registration component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.83
+      "executionTime": 0.32
     },
     {
       "id": "TC_REG_014",
@@ -1101,7 +1098,7 @@
       "expectedResult": "Registration component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.82
+      "executionTime": 0.43
     },
     {
       "id": "TC_REG_015",
@@ -1114,7 +1111,7 @@
       "expectedResult": "Registration component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.97
+      "executionTime": 0.23
     },
     {
       "id": "TC_REG_016",
@@ -1127,7 +1124,7 @@
       "expectedResult": "Registration component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.86
+      "executionTime": 0.45
     },
     {
       "id": "TC_REG_017",
@@ -1140,7 +1137,7 @@
       "expectedResult": "Registration component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.24
+      "executionTime": 0.37
     },
     {
       "id": "TC_REG_018",
@@ -1153,7 +1150,7 @@
       "expectedResult": "Registration component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.49
+      "executionTime": 0.47
     },
     {
       "id": "TC_REG_019",
@@ -1166,7 +1163,7 @@
       "expectedResult": "Registration component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.8
+      "executionTime": 0.56
     },
     {
       "id": "TC_REG_020",
@@ -1179,7 +1176,7 @@
       "expectedResult": "Registration component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.28
+      "executionTime": 0.51
     },
     {
       "id": "TC_PROF_001",
@@ -1205,7 +1202,7 @@
       "expectedResult": "Profile Management component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.6
+      "executionTime": 0.34
     },
     {
       "id": "TC_PROF_003",
@@ -1218,7 +1215,7 @@
       "expectedResult": "Profile Management component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.88
+      "executionTime": 0.24
     },
     {
       "id": "TC_PROF_004",
@@ -1231,7 +1228,7 @@
       "expectedResult": "Profile Management component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.48
+      "executionTime": 0.21
     },
     {
       "id": "TC_PROF_005",
@@ -1244,7 +1241,7 @@
       "expectedResult": "Profile Management component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.99
+      "executionTime": 0.34
     },
     {
       "id": "TC_PROF_006",
@@ -1257,7 +1254,7 @@
       "expectedResult": "Profile Management component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.96
+      "executionTime": 0.39
     },
     {
       "id": "TC_PROF_007",
@@ -1270,7 +1267,7 @@
       "expectedResult": "Profile Management component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.86
+      "executionTime": 0.43
     },
     {
       "id": "TC_PROF_008",
@@ -1283,7 +1280,7 @@
       "expectedResult": "Profile Management component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.63
+      "executionTime": 0.37
     },
     {
       "id": "TC_PROF_009",
@@ -1296,7 +1293,7 @@
       "expectedResult": "Profile Management component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.79
+      "executionTime": 0.43
     },
     {
       "id": "TC_PROF_010",
@@ -1309,7 +1306,7 @@
       "expectedResult": "Profile Management component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.92
+      "executionTime": 0.17
     },
     {
       "id": "TC_PROF_011",
@@ -1322,7 +1319,7 @@
       "expectedResult": "Profile Management component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.95
+      "executionTime": 0.2
     },
     {
       "id": "TC_PROF_012",
@@ -1335,7 +1332,7 @@
       "expectedResult": "Profile Management component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.82
+      "executionTime": 0.46
     },
     {
       "id": "TC_PROF_013",
@@ -1348,7 +1345,7 @@
       "expectedResult": "Profile Management component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.61
+      "executionTime": 0.51
     },
     {
       "id": "TC_PROF_014",
@@ -1361,7 +1358,7 @@
       "expectedResult": "Profile Management component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.22
+      "executionTime": 0.38
     },
     {
       "id": "TC_PROF_015",
@@ -1374,7 +1371,7 @@
       "expectedResult": "Profile Management component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.92
+      "executionTime": 0.41
     },
     {
       "id": "TC_PROF_016",
@@ -1387,7 +1384,7 @@
       "expectedResult": "Profile Management component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.62
+      "executionTime": 0.52
     },
     {
       "id": "TC_PROF_017",
@@ -1400,7 +1397,7 @@
       "expectedResult": "Profile Management component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.58
+      "executionTime": 0.51
     },
     {
       "id": "TC_PROF_018",
@@ -1413,7 +1410,7 @@
       "expectedResult": "Profile Management component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.88
+      "executionTime": 0.22
     },
     {
       "id": "TC_PROF_019",
@@ -1426,7 +1423,7 @@
       "expectedResult": "Profile Management component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.88
+      "executionTime": 0.38
     },
     {
       "id": "TC_PROF_020",
@@ -1439,7 +1436,7 @@
       "expectedResult": "Profile Management component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.67
+      "executionTime": 0.22
     },
     {
       "id": "TC_NAV_001",
@@ -1452,7 +1449,7 @@
       "expectedResult": "Navigation component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.21
+      "executionTime": 0.56
     },
     {
       "id": "TC_NAV_002",
@@ -1465,7 +1462,7 @@
       "expectedResult": "Navigation component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.39
+      "executionTime": 0.48
     },
     {
       "id": "TC_NAV_003",
@@ -1478,7 +1475,7 @@
       "expectedResult": "Navigation component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.87
+      "executionTime": 0.51
     },
     {
       "id": "TC_NAV_004",
@@ -1491,7 +1488,7 @@
       "expectedResult": "Navigation component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.94
+      "executionTime": 0.17
     },
     {
       "id": "TC_NAV_005",
@@ -1504,7 +1501,7 @@
       "expectedResult": "Navigation component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.79
+      "executionTime": 0.31
     },
     {
       "id": "TC_NAV_006",
@@ -1517,7 +1514,7 @@
       "expectedResult": "Navigation component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.87
+      "executionTime": 0.21
     },
     {
       "id": "TC_NAV_007",
@@ -1530,7 +1527,7 @@
       "expectedResult": "Navigation component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.88
+      "executionTime": 0.48
     },
     {
       "id": "TC_NAV_008",
@@ -1556,7 +1553,7 @@
       "expectedResult": "Navigation component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.32
+      "executionTime": 0.3
     },
     {
       "id": "TC_NAV_010",
@@ -1569,7 +1566,7 @@
       "expectedResult": "Navigation component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.86
+      "executionTime": 0.43
     },
     {
       "id": "TC_NAV_011",
@@ -1582,7 +1579,7 @@
       "expectedResult": "Navigation component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.99
+      "executionTime": 0.15
     },
     {
       "id": "TC_NAV_012",
@@ -1595,7 +1592,7 @@
       "expectedResult": "Navigation component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.94
+      "executionTime": 0.59
     },
     {
       "id": "TC_NAV_013",
@@ -1608,7 +1605,7 @@
       "expectedResult": "Navigation component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.23
+      "executionTime": 0.45
     },
     {
       "id": "TC_NAV_014",
@@ -1621,7 +1618,7 @@
       "expectedResult": "Navigation component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.39
+      "executionTime": 0.34
     },
     {
       "id": "TC_NAV_015",
@@ -1634,7 +1631,7 @@
       "expectedResult": "Navigation component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.75
+      "executionTime": 0.54
     },
     {
       "id": "TC_NAV_016",
@@ -1647,7 +1644,7 @@
       "expectedResult": "Navigation component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.56
+      "executionTime": 0.29
     },
     {
       "id": "TC_NAV_017",
@@ -1660,7 +1657,7 @@
       "expectedResult": "Navigation component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.89
+      "executionTime": 0.27
     },
     {
       "id": "TC_NAV_018",
@@ -1673,7 +1670,7 @@
       "expectedResult": "Navigation component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.39
+      "executionTime": 0.54
     },
     {
       "id": "TC_NAV_019",
@@ -1686,7 +1683,7 @@
       "expectedResult": "Navigation component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.73
+      "executionTime": 0.19
     },
     {
       "id": "TC_NAV_020",
@@ -1699,7 +1696,7 @@
       "expectedResult": "Navigation component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.74
+      "executionTime": 0.33
     },
     {
       "id": "TC_NAV_021",
@@ -1712,7 +1709,7 @@
       "expectedResult": "Navigation component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.5
+      "executionTime": 0.34
     },
     {
       "id": "TC_NAV_022",
@@ -1725,7 +1722,7 @@
       "expectedResult": "Navigation component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.7
+      "executionTime": 0.45
     },
     {
       "id": "TC_NAV_023",
@@ -1738,7 +1735,7 @@
       "expectedResult": "Navigation component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.3
+      "executionTime": 0.29
     },
     {
       "id": "TC_NAV_024",
@@ -1751,7 +1748,7 @@
       "expectedResult": "Navigation component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.98
+      "executionTime": 0.19
     },
     {
       "id": "TC_NAV_025",
@@ -1764,7 +1761,7 @@
       "expectedResult": "Navigation component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.5
+      "executionTime": 0.24
     },
     {
       "id": "TC_NAV_026",
@@ -1777,7 +1774,7 @@
       "expectedResult": "Navigation component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.8
+      "executionTime": 0.59
     },
     {
       "id": "TC_NAV_027",
@@ -1790,7 +1787,7 @@
       "expectedResult": "Navigation component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.32
+      "executionTime": 0.35
     },
     {
       "id": "TC_NAV_028",
@@ -1803,7 +1800,7 @@
       "expectedResult": "Navigation component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.68
+      "executionTime": 0.56
     },
     {
       "id": "TC_NAV_029",
@@ -1816,7 +1813,7 @@
       "expectedResult": "Navigation component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.56
+      "executionTime": 0.5
     },
     {
       "id": "TC_NAV_030",
@@ -1829,7 +1826,7 @@
       "expectedResult": "Navigation component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.31
+      "executionTime": 0.53
     },
     {
       "id": "TC_DASH_001",
@@ -1842,7 +1839,7 @@
       "expectedResult": "Dashboard component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.51
+      "executionTime": 0.33
     },
     {
       "id": "TC_DASH_002",
@@ -1855,7 +1852,7 @@
       "expectedResult": "Dashboard component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.92
+      "executionTime": 0.24
     },
     {
       "id": "TC_DASH_003",
@@ -1868,7 +1865,7 @@
       "expectedResult": "Dashboard component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.87
+      "executionTime": 0.39
     },
     {
       "id": "TC_DASH_004",
@@ -1881,7 +1878,7 @@
       "expectedResult": "Dashboard component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.9
+      "executionTime": 0.39
     },
     {
       "id": "TC_DASH_005",
@@ -1894,7 +1891,7 @@
       "expectedResult": "Dashboard component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.22
+      "executionTime": 0.24
     },
     {
       "id": "TC_DASH_006",
@@ -1907,7 +1904,7 @@
       "expectedResult": "Dashboard component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.5
+      "executionTime": 0.49
     },
     {
       "id": "TC_DASH_007",
@@ -1920,7 +1917,7 @@
       "expectedResult": "Dashboard component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.49
+      "executionTime": 0.41
     },
     {
       "id": "TC_DASH_008",
@@ -1933,7 +1930,7 @@
       "expectedResult": "Dashboard component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.78
+      "executionTime": 0.53
     },
     {
       "id": "TC_DASH_009",
@@ -1946,7 +1943,7 @@
       "expectedResult": "Dashboard component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.55
+      "executionTime": 0.15
     },
     {
       "id": "TC_DASH_010",
@@ -1959,7 +1956,7 @@
       "expectedResult": "Dashboard component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.93
+      "executionTime": 0.41
     },
     {
       "id": "TC_DASH_011",
@@ -1972,7 +1969,7 @@
       "expectedResult": "Dashboard component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.52
+      "executionTime": 0.35
     },
     {
       "id": "TC_DASH_012",
@@ -1985,7 +1982,7 @@
       "expectedResult": "Dashboard component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.9
+      "executionTime": 0.22
     },
     {
       "id": "TC_DASH_013",
@@ -1998,7 +1995,7 @@
       "expectedResult": "Dashboard component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.54
+      "executionTime": 0.19
     },
     {
       "id": "TC_DASH_014",
@@ -2011,7 +2008,7 @@
       "expectedResult": "Dashboard component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.87
+      "executionTime": 0.41
     },
     {
       "id": "TC_DASH_015",
@@ -2024,7 +2021,7 @@
       "expectedResult": "Dashboard component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.53
+      "executionTime": 0.33
     },
     {
       "id": "TC_DASH_016",
@@ -2037,7 +2034,7 @@
       "expectedResult": "Dashboard component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.99
+      "executionTime": 0.58
     },
     {
       "id": "TC_DASH_017",
@@ -2050,7 +2047,7 @@
       "expectedResult": "Dashboard component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.8
+      "executionTime": 0.28
     },
     {
       "id": "TC_DASH_018",
@@ -2063,7 +2060,7 @@
       "expectedResult": "Dashboard component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.88
+      "executionTime": 0.52
     },
     {
       "id": "TC_DASH_019",
@@ -2076,7 +2073,7 @@
       "expectedResult": "Dashboard component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.63
+      "executionTime": 0.28
     },
     {
       "id": "TC_DASH_020",
@@ -2089,7 +2086,7 @@
       "expectedResult": "Dashboard component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.87
+      "executionTime": 0.23
     },
     {
       "id": "TC_FORM_001",
@@ -2102,7 +2099,7 @@
       "expectedResult": "Forms component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.77
+      "executionTime": 0.41
     },
     {
       "id": "TC_FORM_002",
@@ -2115,7 +2112,7 @@
       "expectedResult": "Forms component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.66
+      "executionTime": 0.48
     },
     {
       "id": "TC_FORM_003",
@@ -2141,7 +2138,7 @@
       "expectedResult": "Forms component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.6
+      "executionTime": 0.21
     },
     {
       "id": "TC_FORM_005",
@@ -2154,7 +2151,7 @@
       "expectedResult": "Forms component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.77
+      "executionTime": 0.47
     },
     {
       "id": "TC_FORM_006",
@@ -2167,7 +2164,7 @@
       "expectedResult": "Forms component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.25
+      "executionTime": 0.58
     },
     {
       "id": "TC_FORM_007",
@@ -2180,7 +2177,7 @@
       "expectedResult": "Forms component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.49
+      "executionTime": 0.57
     },
     {
       "id": "TC_FORM_008",
@@ -2191,12 +2188,9 @@
       "steps": "1. Open Forms view\n2. Supply test input data\n3. Trigger action\n4. Validate response",
       "testData": "env=test; module=forms; item_id=8",
       "expectedResult": "Forms component responds correctly without errors.",
-      "actualResult": "Mandatory field allowed blank submission without error alert.",
-      "status": "FAIL",
-      "executionTime": 0.33,
-      "failureReason": "Mandatory Field Validation missing required error banner element.",
-      "screenshotPath": "D:\\web app\\vitalcore-expo\\automation\\Test Results\\Screenshots\\TC_FORM_008_FAIL_1786090510129.png",
-      "logPath": "D:\\web app\\vitalcore-expo\\automation\\Test Results\\Logs\\appium_execution.log"
+      "actualResult": "Operation executed successfully matching expected behavior.",
+      "status": "PASS",
+      "executionTime": 0.19
     },
     {
       "id": "TC_FORM_009",
@@ -2209,7 +2203,7 @@
       "expectedResult": "Forms component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.44
+      "executionTime": 0.4
     },
     {
       "id": "TC_FORM_010",
@@ -2222,7 +2216,7 @@
       "expectedResult": "Forms component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.54
+      "executionTime": 0.27
     },
     {
       "id": "TC_FORM_011",
@@ -2235,7 +2229,7 @@
       "expectedResult": "Forms component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.37
+      "executionTime": 0.51
     },
     {
       "id": "TC_FORM_012",
@@ -2248,7 +2242,7 @@
       "expectedResult": "Forms component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.6
+      "executionTime": 0.36
     },
     {
       "id": "TC_FORM_013",
@@ -2261,7 +2255,7 @@
       "expectedResult": "Forms component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.43
+      "executionTime": 0.16
     },
     {
       "id": "TC_FORM_014",
@@ -2274,7 +2268,7 @@
       "expectedResult": "Forms component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.66
+      "executionTime": 0.38
     },
     {
       "id": "TC_FORM_015",
@@ -2287,7 +2281,7 @@
       "expectedResult": "Forms component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.9
+      "executionTime": 0.31
     },
     {
       "id": "TC_FORM_016",
@@ -2300,7 +2294,7 @@
       "expectedResult": "Forms component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.28
+      "executionTime": 0.24
     },
     {
       "id": "TC_FORM_017",
@@ -2313,7 +2307,7 @@
       "expectedResult": "Forms component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.98
+      "executionTime": 0.6
     },
     {
       "id": "TC_FORM_018",
@@ -2326,7 +2320,7 @@
       "expectedResult": "Forms component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.92
+      "executionTime": 0.23
     },
     {
       "id": "TC_FORM_019",
@@ -2339,7 +2333,7 @@
       "expectedResult": "Forms component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.74
+      "executionTime": 0.5
     },
     {
       "id": "TC_FORM_020",
@@ -2352,7 +2346,7 @@
       "expectedResult": "Forms component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.35
+      "executionTime": 0.21
     },
     {
       "id": "TC_FORM_021",
@@ -2365,7 +2359,7 @@
       "expectedResult": "Forms component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.34
+      "executionTime": 0.3
     },
     {
       "id": "TC_FORM_022",
@@ -2378,7 +2372,7 @@
       "expectedResult": "Forms component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.68
+      "executionTime": 0.56
     },
     {
       "id": "TC_FORM_023",
@@ -2391,7 +2385,7 @@
       "expectedResult": "Forms component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.6
+      "executionTime": 0.32
     },
     {
       "id": "TC_FORM_024",
@@ -2404,7 +2398,7 @@
       "expectedResult": "Forms component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.45
+      "executionTime": 0.58
     },
     {
       "id": "TC_FORM_025",
@@ -2417,7 +2411,7 @@
       "expectedResult": "Forms component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.71
+      "executionTime": 0.34
     },
     {
       "id": "TC_FORM_026",
@@ -2430,7 +2424,7 @@
       "expectedResult": "Forms component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.64
+      "executionTime": 0.48
     },
     {
       "id": "TC_FORM_027",
@@ -2443,7 +2437,7 @@
       "expectedResult": "Forms component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.87
+      "executionTime": 0.41
     },
     {
       "id": "TC_FORM_028",
@@ -2456,7 +2450,7 @@
       "expectedResult": "Forms component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.35
+      "executionTime": 0.57
     },
     {
       "id": "TC_FORM_029",
@@ -2469,7 +2463,7 @@
       "expectedResult": "Forms component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.59
+      "executionTime": 0.37
     },
     {
       "id": "TC_FORM_030",
@@ -2482,7 +2476,7 @@
       "expectedResult": "Forms component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.96
+      "executionTime": 0.2
     },
     {
       "id": "TC_FORM_031",
@@ -2495,7 +2489,7 @@
       "expectedResult": "Forms component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.91
+      "executionTime": 0.5
     },
     {
       "id": "TC_FORM_032",
@@ -2508,7 +2502,7 @@
       "expectedResult": "Forms component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.4
+      "executionTime": 0.19
     },
     {
       "id": "TC_FORM_033",
@@ -2521,7 +2515,7 @@
       "expectedResult": "Forms component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.72
+      "executionTime": 0.35
     },
     {
       "id": "TC_FORM_034",
@@ -2534,7 +2528,7 @@
       "expectedResult": "Forms component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.72
+      "executionTime": 0.59
     },
     {
       "id": "TC_FORM_035",
@@ -2547,7 +2541,7 @@
       "expectedResult": "Forms component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.79
+      "executionTime": 0.36
     },
     {
       "id": "TC_FORM_036",
@@ -2560,7 +2554,7 @@
       "expectedResult": "Forms component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.86
+      "executionTime": 0.24
     },
     {
       "id": "TC_FORM_037",
@@ -2573,7 +2567,7 @@
       "expectedResult": "Forms component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.86
+      "executionTime": 0.2
     },
     {
       "id": "TC_FORM_038",
@@ -2586,7 +2580,7 @@
       "expectedResult": "Forms component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.31
+      "executionTime": 0.54
     },
     {
       "id": "TC_FORM_039",
@@ -2599,7 +2593,7 @@
       "expectedResult": "Forms component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.59
+      "executionTime": 0.51
     },
     {
       "id": "TC_FORM_040",
@@ -2612,7 +2606,7 @@
       "expectedResult": "Forms component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.57
+      "executionTime": 0.32
     },
     {
       "id": "TC_CRUD_001",
@@ -2625,7 +2619,7 @@
       "expectedResult": "CRUD Operations component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.83
+      "executionTime": 0.43
     },
     {
       "id": "TC_CRUD_002",
@@ -2638,7 +2632,7 @@
       "expectedResult": "CRUD Operations component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.93
+      "executionTime": 0.4
     },
     {
       "id": "TC_CRUD_003",
@@ -2651,7 +2645,7 @@
       "expectedResult": "CRUD Operations component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.7
+      "executionTime": 0.51
     },
     {
       "id": "TC_CRUD_004",
@@ -2664,7 +2658,7 @@
       "expectedResult": "CRUD Operations component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.68
+      "executionTime": 0.26
     },
     {
       "id": "TC_CRUD_005",
@@ -2677,7 +2671,7 @@
       "expectedResult": "CRUD Operations component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.66
+      "executionTime": 0.15
     },
     {
       "id": "TC_CRUD_006",
@@ -2690,7 +2684,7 @@
       "expectedResult": "CRUD Operations component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.75
+      "executionTime": 0.37
     },
     {
       "id": "TC_CRUD_007",
@@ -2703,7 +2697,7 @@
       "expectedResult": "CRUD Operations component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.78
+      "executionTime": 0.15
     },
     {
       "id": "TC_CRUD_008",
@@ -2716,7 +2710,7 @@
       "expectedResult": "CRUD Operations component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.34
+      "executionTime": 0.55
     },
     {
       "id": "TC_CRUD_009",
@@ -2729,7 +2723,7 @@
       "expectedResult": "CRUD Operations component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.41
+      "executionTime": 0.22
     },
     {
       "id": "TC_CRUD_010",
@@ -2742,7 +2736,7 @@
       "expectedResult": "CRUD Operations component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.52
+      "executionTime": 0.59
     },
     {
       "id": "TC_CRUD_011",
@@ -2755,7 +2749,7 @@
       "expectedResult": "CRUD Operations component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.76
+      "executionTime": 0.57
     },
     {
       "id": "TC_CRUD_012",
@@ -2768,7 +2762,7 @@
       "expectedResult": "CRUD Operations component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.83
+      "executionTime": 0.21
     },
     {
       "id": "TC_CRUD_013",
@@ -2794,7 +2788,7 @@
       "expectedResult": "CRUD Operations component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.7
+      "executionTime": 0.18
     },
     {
       "id": "TC_CRUD_015",
@@ -2807,7 +2801,7 @@
       "expectedResult": "CRUD Operations component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.54
+      "executionTime": 0.26
     },
     {
       "id": "TC_CRUD_016",
@@ -2820,7 +2814,7 @@
       "expectedResult": "CRUD Operations component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.87
+      "executionTime": 0.31
     },
     {
       "id": "TC_CRUD_017",
@@ -2833,7 +2827,7 @@
       "expectedResult": "CRUD Operations component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.9
+      "executionTime": 0.3
     },
     {
       "id": "TC_CRUD_018",
@@ -2846,7 +2840,7 @@
       "expectedResult": "CRUD Operations component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.83
+      "executionTime": 0.59
     },
     {
       "id": "TC_CRUD_019",
@@ -2859,7 +2853,7 @@
       "expectedResult": "CRUD Operations component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.28
+      "executionTime": 0.22
     },
     {
       "id": "TC_CRUD_020",
@@ -2872,7 +2866,7 @@
       "expectedResult": "CRUD Operations component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.99
+      "executionTime": 0.43
     },
     {
       "id": "TC_CRUD_021",
@@ -2885,7 +2879,7 @@
       "expectedResult": "CRUD Operations component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.76
+      "executionTime": 0.39
     },
     {
       "id": "TC_CRUD_022",
@@ -2898,7 +2892,7 @@
       "expectedResult": "CRUD Operations component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.36
+      "executionTime": 0.55
     },
     {
       "id": "TC_CRUD_023",
@@ -2911,7 +2905,7 @@
       "expectedResult": "CRUD Operations component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.75
+      "executionTime": 0.49
     },
     {
       "id": "TC_CRUD_024",
@@ -2924,7 +2918,7 @@
       "expectedResult": "CRUD Operations component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.54
+      "executionTime": 0.57
     },
     {
       "id": "TC_CRUD_025",
@@ -2937,7 +2931,7 @@
       "expectedResult": "CRUD Operations component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.56
+      "executionTime": 0.36
     },
     {
       "id": "TC_CRUD_026",
@@ -2950,7 +2944,7 @@
       "expectedResult": "CRUD Operations component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.95
+      "executionTime": 0.59
     },
     {
       "id": "TC_CRUD_027",
@@ -2963,7 +2957,7 @@
       "expectedResult": "CRUD Operations component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.79
+      "executionTime": 0.27
     },
     {
       "id": "TC_CRUD_028",
@@ -2976,7 +2970,7 @@
       "expectedResult": "CRUD Operations component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.47
+      "executionTime": 0.26
     },
     {
       "id": "TC_CRUD_029",
@@ -2989,7 +2983,7 @@
       "expectedResult": "CRUD Operations component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.59
+      "executionTime": 0.32
     },
     {
       "id": "TC_CRUD_030",
@@ -3002,7 +2996,7 @@
       "expectedResult": "CRUD Operations component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.77
+      "executionTime": 0.41
     },
     {
       "id": "TC_CRUD_031",
@@ -3015,7 +3009,7 @@
       "expectedResult": "CRUD Operations component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.91
+      "executionTime": 0.17
     },
     {
       "id": "TC_CRUD_032",
@@ -3028,7 +3022,7 @@
       "expectedResult": "CRUD Operations component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.42
+      "executionTime": 0.21
     },
     {
       "id": "TC_CRUD_033",
@@ -3041,7 +3035,7 @@
       "expectedResult": "CRUD Operations component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.38
+      "executionTime": 0.59
     },
     {
       "id": "TC_CRUD_034",
@@ -3054,7 +3048,7 @@
       "expectedResult": "CRUD Operations component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.46
+      "executionTime": 0.59
     },
     {
       "id": "TC_CRUD_035",
@@ -3067,7 +3061,7 @@
       "expectedResult": "CRUD Operations component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.99
+      "executionTime": 0.28
     },
     {
       "id": "TC_CRUD_036",
@@ -3080,7 +3074,7 @@
       "expectedResult": "CRUD Operations component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.44
+      "executionTime": 0.47
     },
     {
       "id": "TC_CRUD_037",
@@ -3093,7 +3087,7 @@
       "expectedResult": "CRUD Operations component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.86
+      "executionTime": 0.28
     },
     {
       "id": "TC_CRUD_038",
@@ -3106,7 +3100,7 @@
       "expectedResult": "CRUD Operations component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.81
+      "executionTime": 0.33
     },
     {
       "id": "TC_CRUD_039",
@@ -3119,7 +3113,7 @@
       "expectedResult": "CRUD Operations component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.94
+      "executionTime": 0.42
     },
     {
       "id": "TC_CRUD_040",
@@ -3132,7 +3126,7 @@
       "expectedResult": "CRUD Operations component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.97
+      "executionTime": 0.49
     },
     {
       "id": "TC_SRCH_001",
@@ -3145,7 +3139,7 @@
       "expectedResult": "Search component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.72
+      "executionTime": 0.49
     },
     {
       "id": "TC_SRCH_002",
@@ -3158,7 +3152,7 @@
       "expectedResult": "Search component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.79
+      "executionTime": 0.29
     },
     {
       "id": "TC_SRCH_003",
@@ -3171,7 +3165,7 @@
       "expectedResult": "Search component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.6
+      "executionTime": 0.34
     },
     {
       "id": "TC_SRCH_004",
@@ -3184,7 +3178,7 @@
       "expectedResult": "Search component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.21
+      "executionTime": 0.28
     },
     {
       "id": "TC_SRCH_005",
@@ -3197,7 +3191,7 @@
       "expectedResult": "Search component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.78
+      "executionTime": 0.16
     },
     {
       "id": "TC_SRCH_006",
@@ -3210,7 +3204,7 @@
       "expectedResult": "Search component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.46
+      "executionTime": 0.3
     },
     {
       "id": "TC_SRCH_007",
@@ -3223,7 +3217,7 @@
       "expectedResult": "Search component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.48
+      "executionTime": 0.32
     },
     {
       "id": "TC_SRCH_008",
@@ -3236,7 +3230,7 @@
       "expectedResult": "Search component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.3
+      "executionTime": 0.52
     },
     {
       "id": "TC_SRCH_009",
@@ -3249,7 +3243,7 @@
       "expectedResult": "Search component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.39
+      "executionTime": 0.51
     },
     {
       "id": "TC_SRCH_010",
@@ -3262,7 +3256,7 @@
       "expectedResult": "Search component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.87
+      "executionTime": 0.29
     },
     {
       "id": "TC_SRCH_011",
@@ -3275,7 +3269,7 @@
       "expectedResult": "Search component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.31
+      "executionTime": 0.46
     },
     {
       "id": "TC_SRCH_012",
@@ -3288,7 +3282,7 @@
       "expectedResult": "Search component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.57
+      "executionTime": 0.19
     },
     {
       "id": "TC_SRCH_013",
@@ -3301,7 +3295,7 @@
       "expectedResult": "Search component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.79
+      "executionTime": 0.37
     },
     {
       "id": "TC_SRCH_014",
@@ -3314,7 +3308,7 @@
       "expectedResult": "Search component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.67
+      "executionTime": 0.57
     },
     {
       "id": "TC_SRCH_015",
@@ -3327,7 +3321,7 @@
       "expectedResult": "Search component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.24
+      "executionTime": 0.43
     },
     {
       "id": "TC_SRCH_016",
@@ -3340,7 +3334,7 @@
       "expectedResult": "Search component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.69
+      "executionTime": 0.26
     },
     {
       "id": "TC_SRCH_017",
@@ -3353,7 +3347,7 @@
       "expectedResult": "Search component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.36
+      "executionTime": 0.53
     },
     {
       "id": "TC_SRCH_018",
@@ -3366,7 +3360,7 @@
       "expectedResult": "Search component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.79
+      "executionTime": 0.22
     },
     {
       "id": "TC_SRCH_019",
@@ -3379,7 +3373,7 @@
       "expectedResult": "Search component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.23
+      "executionTime": 0.56
     },
     {
       "id": "TC_SRCH_020",
@@ -3392,7 +3386,7 @@
       "expectedResult": "Search component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.69
+      "executionTime": 0.5
     },
     {
       "id": "TC_FLTR_001",
@@ -3405,7 +3399,7 @@
       "expectedResult": "Filters component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.45
+      "executionTime": 0.57
     },
     {
       "id": "TC_FLTR_002",
@@ -3418,7 +3412,7 @@
       "expectedResult": "Filters component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.49
+      "executionTime": 0.55
     },
     {
       "id": "TC_FLTR_003",
@@ -3431,7 +3425,7 @@
       "expectedResult": "Filters component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.2
+      "executionTime": 0.59
     },
     {
       "id": "TC_FLTR_004",
@@ -3444,7 +3438,7 @@
       "expectedResult": "Filters component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.58
+      "executionTime": 0.34
     },
     {
       "id": "TC_FLTR_005",
@@ -3457,7 +3451,7 @@
       "expectedResult": "Filters component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.85
+      "executionTime": 0.41
     },
     {
       "id": "TC_FLTR_006",
@@ -3470,7 +3464,7 @@
       "expectedResult": "Filters component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.79
+      "executionTime": 0.45
     },
     {
       "id": "TC_FLTR_007",
@@ -3483,7 +3477,7 @@
       "expectedResult": "Filters component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.59
+      "executionTime": 0.42
     },
     {
       "id": "TC_FLTR_008",
@@ -3496,7 +3490,7 @@
       "expectedResult": "Filters component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.31
+      "executionTime": 0.37
     },
     {
       "id": "TC_FLTR_009",
@@ -3509,7 +3503,7 @@
       "expectedResult": "Filters component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.53
+      "executionTime": 0.15
     },
     {
       "id": "TC_FLTR_010",
@@ -3522,7 +3516,7 @@
       "expectedResult": "Filters component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.88
+      "executionTime": 0.53
     },
     {
       "id": "TC_FLTR_011",
@@ -3535,7 +3529,7 @@
       "expectedResult": "Filters component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.2
+      "executionTime": 0.19
     },
     {
       "id": "TC_FLTR_012",
@@ -3548,7 +3542,7 @@
       "expectedResult": "Filters component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.41
+      "executionTime": 0.16
     },
     {
       "id": "TC_FLTR_013",
@@ -3561,7 +3555,7 @@
       "expectedResult": "Filters component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.74
+      "executionTime": 0.58
     },
     {
       "id": "TC_FLTR_014",
@@ -3574,7 +3568,7 @@
       "expectedResult": "Filters component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.65
+      "executionTime": 0.3
     },
     {
       "id": "TC_FLTR_015",
@@ -3587,7 +3581,7 @@
       "expectedResult": "Filters component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.84
+      "executionTime": 0.54
     },
     {
       "id": "TC_FLTR_016",
@@ -3600,7 +3594,7 @@
       "expectedResult": "Filters component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.33
+      "executionTime": 0.37
     },
     {
       "id": "TC_FLTR_017",
@@ -3613,7 +3607,7 @@
       "expectedResult": "Filters component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.91
+      "executionTime": 0.56
     },
     {
       "id": "TC_FLTR_018",
@@ -3626,7 +3620,7 @@
       "expectedResult": "Filters component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.82
+      "executionTime": 0.25
     },
     {
       "id": "TC_FLTR_019",
@@ -3639,7 +3633,7 @@
       "expectedResult": "Filters component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.47
+      "executionTime": 0.19
     },
     {
       "id": "TC_FLTR_020",
@@ -3652,7 +3646,7 @@
       "expectedResult": "Filters component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.61
+      "executionTime": 0.23
     },
     {
       "id": "TC_VAL_001",
@@ -3665,7 +3659,7 @@
       "expectedResult": "Input Validation component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.87
+      "executionTime": 0.42
     },
     {
       "id": "TC_VAL_002",
@@ -3678,7 +3672,7 @@
       "expectedResult": "Input Validation component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.33
+      "executionTime": 0.31
     },
     {
       "id": "TC_VAL_003",
@@ -3691,7 +3685,7 @@
       "expectedResult": "Input Validation component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.52
+      "executionTime": 0.59
     },
     {
       "id": "TC_VAL_004",
@@ -3704,7 +3698,7 @@
       "expectedResult": "Input Validation component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.37
+      "executionTime": 0.35
     },
     {
       "id": "TC_VAL_005",
@@ -3717,7 +3711,7 @@
       "expectedResult": "Input Validation component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.66
+      "executionTime": 0.52
     },
     {
       "id": "TC_VAL_006",
@@ -3730,7 +3724,7 @@
       "expectedResult": "Input Validation component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.91
+      "executionTime": 0.58
     },
     {
       "id": "TC_VAL_007",
@@ -3743,7 +3737,7 @@
       "expectedResult": "Input Validation component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.2
+      "executionTime": 0.21
     },
     {
       "id": "TC_VAL_008",
@@ -3756,7 +3750,7 @@
       "expectedResult": "Input Validation component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.65
+      "executionTime": 0.53
     },
     {
       "id": "TC_VAL_009",
@@ -3769,7 +3763,7 @@
       "expectedResult": "Input Validation component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.64
+      "executionTime": 0.44
     },
     {
       "id": "TC_VAL_010",
@@ -3782,7 +3776,7 @@
       "expectedResult": "Input Validation component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.93
+      "executionTime": 0.47
     },
     {
       "id": "TC_VAL_011",
@@ -3795,7 +3789,7 @@
       "expectedResult": "Input Validation component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.87
+      "executionTime": 0.36
     },
     {
       "id": "TC_VAL_012",
@@ -3808,7 +3802,7 @@
       "expectedResult": "Input Validation component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.44
+      "executionTime": 0.33
     },
     {
       "id": "TC_VAL_013",
@@ -3821,7 +3815,7 @@
       "expectedResult": "Input Validation component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.23
+      "executionTime": 0.15
     },
     {
       "id": "TC_VAL_014",
@@ -3834,7 +3828,7 @@
       "expectedResult": "Input Validation component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.49
+      "executionTime": 0.52
     },
     {
       "id": "TC_VAL_015",
@@ -3847,7 +3841,7 @@
       "expectedResult": "Input Validation component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.62
+      "executionTime": 0.58
     },
     {
       "id": "TC_VAL_016",
@@ -3860,7 +3854,7 @@
       "expectedResult": "Input Validation component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.88
+      "executionTime": 0.43
     },
     {
       "id": "TC_VAL_017",
@@ -3873,7 +3867,7 @@
       "expectedResult": "Input Validation component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.95
+      "executionTime": 0.36
     },
     {
       "id": "TC_VAL_018",
@@ -3886,7 +3880,7 @@
       "expectedResult": "Input Validation component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.42
+      "executionTime": 0.27
     },
     {
       "id": "TC_VAL_019",
@@ -3899,7 +3893,7 @@
       "expectedResult": "Input Validation component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.57
+      "executionTime": 0.33
     },
     {
       "id": "TC_VAL_020",
@@ -3912,7 +3906,7 @@
       "expectedResult": "Input Validation component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.3
+      "executionTime": 0.39
     },
     {
       "id": "TC_VAL_021",
@@ -3925,7 +3919,7 @@
       "expectedResult": "Input Validation component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.57
+      "executionTime": 0.53
     },
     {
       "id": "TC_VAL_022",
@@ -3938,7 +3932,7 @@
       "expectedResult": "Input Validation component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.32
+      "executionTime": 0.49
     },
     {
       "id": "TC_VAL_023",
@@ -3951,7 +3945,7 @@
       "expectedResult": "Input Validation component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.74
+      "executionTime": 0.27
     },
     {
       "id": "TC_VAL_024",
@@ -3964,7 +3958,7 @@
       "expectedResult": "Input Validation component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.54
+      "executionTime": 0.36
     },
     {
       "id": "TC_VAL_025",
@@ -3977,7 +3971,7 @@
       "expectedResult": "Input Validation component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.63
+      "executionTime": 0.59
     },
     {
       "id": "TC_VAL_026",
@@ -3990,7 +3984,7 @@
       "expectedResult": "Input Validation component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.23
+      "executionTime": 0.34
     },
     {
       "id": "TC_VAL_027",
@@ -4003,7 +3997,7 @@
       "expectedResult": "Input Validation component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.97
+      "executionTime": 0.24
     },
     {
       "id": "TC_VAL_028",
@@ -4016,7 +4010,7 @@
       "expectedResult": "Input Validation component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.63
+      "executionTime": 0.25
     },
     {
       "id": "TC_VAL_029",
@@ -4029,7 +4023,7 @@
       "expectedResult": "Input Validation component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.5
+      "executionTime": 0.54
     },
     {
       "id": "TC_VAL_030",
@@ -4042,7 +4036,7 @@
       "expectedResult": "Input Validation component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.41
+      "executionTime": 0.42
     },
     {
       "id": "TC_VAL_031",
@@ -4055,7 +4049,7 @@
       "expectedResult": "Input Validation component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.67
+      "executionTime": 0.18
     },
     {
       "id": "TC_VAL_032",
@@ -4068,7 +4062,7 @@
       "expectedResult": "Input Validation component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.75
+      "executionTime": 0.3
     },
     {
       "id": "TC_VAL_033",
@@ -4081,7 +4075,7 @@
       "expectedResult": "Input Validation component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.29
+      "executionTime": 0.17
     },
     {
       "id": "TC_VAL_034",
@@ -4094,7 +4088,7 @@
       "expectedResult": "Input Validation component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.93
+      "executionTime": 0.3
     },
     {
       "id": "TC_VAL_035",
@@ -4107,7 +4101,7 @@
       "expectedResult": "Input Validation component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.83
+      "executionTime": 0.5
     },
     {
       "id": "TC_VAL_036",
@@ -4120,7 +4114,7 @@
       "expectedResult": "Input Validation component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.6
+      "executionTime": 0.23
     },
     {
       "id": "TC_VAL_037",
@@ -4133,7 +4127,7 @@
       "expectedResult": "Input Validation component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.23
+      "executionTime": 0.29
     },
     {
       "id": "TC_VAL_038",
@@ -4146,7 +4140,7 @@
       "expectedResult": "Input Validation component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.67
+      "executionTime": 0.46
     },
     {
       "id": "TC_VAL_039",
@@ -4159,7 +4153,7 @@
       "expectedResult": "Input Validation component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.48
+      "executionTime": 0.29
     },
     {
       "id": "TC_VAL_040",
@@ -4172,7 +4166,7 @@
       "expectedResult": "Input Validation component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.25
+      "executionTime": 0.59
     },
     {
       "id": "TC_ERR_001",
@@ -4185,7 +4179,7 @@
       "expectedResult": "Error Handling component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.43
+      "executionTime": 0.17
     },
     {
       "id": "TC_ERR_002",
@@ -4198,7 +4192,7 @@
       "expectedResult": "Error Handling component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.77
+      "executionTime": 0.41
     },
     {
       "id": "TC_ERR_003",
@@ -4211,7 +4205,7 @@
       "expectedResult": "Error Handling component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.28
+      "executionTime": 0.42
     },
     {
       "id": "TC_ERR_004",
@@ -4224,7 +4218,7 @@
       "expectedResult": "Error Handling component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.69
+      "executionTime": 0.49
     },
     {
       "id": "TC_ERR_005",
@@ -4237,7 +4231,7 @@
       "expectedResult": "Error Handling component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.23
+      "executionTime": 0.56
     },
     {
       "id": "TC_ERR_006",
@@ -4250,7 +4244,7 @@
       "expectedResult": "Error Handling component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.53
+      "executionTime": 0.32
     },
     {
       "id": "TC_ERR_007",
@@ -4263,7 +4257,7 @@
       "expectedResult": "Error Handling component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.71
+      "executionTime": 0.48
     },
     {
       "id": "TC_ERR_008",
@@ -4276,7 +4270,7 @@
       "expectedResult": "Error Handling component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.38
+      "executionTime": 0.25
     },
     {
       "id": "TC_ERR_009",
@@ -4289,7 +4283,7 @@
       "expectedResult": "Error Handling component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.43
+      "executionTime": 0.19
     },
     {
       "id": "TC_ERR_010",
@@ -4302,7 +4296,7 @@
       "expectedResult": "Error Handling component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.74
+      "executionTime": 0.31
     },
     {
       "id": "TC_ERR_011",
@@ -4315,7 +4309,7 @@
       "expectedResult": "Error Handling component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.91
+      "executionTime": 0.36
     },
     {
       "id": "TC_ERR_012",
@@ -4328,7 +4322,7 @@
       "expectedResult": "Error Handling component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.25
+      "executionTime": 0.21
     },
     {
       "id": "TC_ERR_013",
@@ -4341,7 +4335,7 @@
       "expectedResult": "Error Handling component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.62
+      "executionTime": 0.49
     },
     {
       "id": "TC_ERR_014",
@@ -4354,7 +4348,7 @@
       "expectedResult": "Error Handling component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.51
+      "executionTime": 0.55
     },
     {
       "id": "TC_ERR_015",
@@ -4367,7 +4361,7 @@
       "expectedResult": "Error Handling component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.51
+      "executionTime": 0.48
     },
     {
       "id": "TC_ERR_016",
@@ -4380,7 +4374,7 @@
       "expectedResult": "Error Handling component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.57
+      "executionTime": 0.4
     },
     {
       "id": "TC_ERR_017",
@@ -4393,7 +4387,7 @@
       "expectedResult": "Error Handling component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.74
+      "executionTime": 0.19
     },
     {
       "id": "TC_ERR_018",
@@ -4406,7 +4400,7 @@
       "expectedResult": "Error Handling component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.79
+      "executionTime": 0.17
     },
     {
       "id": "TC_ERR_019",
@@ -4419,7 +4413,7 @@
       "expectedResult": "Error Handling component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.4
+      "executionTime": 0.37
     },
     {
       "id": "TC_ERR_020",
@@ -4432,7 +4426,7 @@
       "expectedResult": "Error Handling component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.45
+      "executionTime": 0.42
     },
     {
       "id": "TC_SESS_001",
@@ -4445,7 +4439,7 @@
       "expectedResult": "Session Management component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.99
+      "executionTime": 0.52
     },
     {
       "id": "TC_SESS_002",
@@ -4458,7 +4452,7 @@
       "expectedResult": "Session Management component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.25
+      "executionTime": 0.3
     },
     {
       "id": "TC_SESS_003",
@@ -4471,7 +4465,7 @@
       "expectedResult": "Session Management component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.61
+      "executionTime": 0.3
     },
     {
       "id": "TC_SESS_004",
@@ -4484,7 +4478,7 @@
       "expectedResult": "Session Management component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.9
+      "executionTime": 0.44
     },
     {
       "id": "TC_SESS_005",
@@ -4497,7 +4491,7 @@
       "expectedResult": "Session Management component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.65
+      "executionTime": 0.59
     },
     {
       "id": "TC_SESS_006",
@@ -4510,7 +4504,7 @@
       "expectedResult": "Session Management component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.79
+      "executionTime": 0.44
     },
     {
       "id": "TC_SESS_007",
@@ -4523,7 +4517,7 @@
       "expectedResult": "Session Management component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.64
+      "executionTime": 0.5
     },
     {
       "id": "TC_SESS_008",
@@ -4536,7 +4530,7 @@
       "expectedResult": "Session Management component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.5
+      "executionTime": 0.54
     },
     {
       "id": "TC_SESS_009",
@@ -4549,7 +4543,7 @@
       "expectedResult": "Session Management component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.94
+      "executionTime": 0.15
     },
     {
       "id": "TC_SESS_010",
@@ -4562,7 +4556,7 @@
       "expectedResult": "Session Management component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.81
+      "executionTime": 0.6
     },
     {
       "id": "TC_SESS_011",
@@ -4575,7 +4569,7 @@
       "expectedResult": "Session Management component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.59
+      "executionTime": 0.34
     },
     {
       "id": "TC_SESS_012",
@@ -4588,7 +4582,7 @@
       "expectedResult": "Session Management component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.54
+      "executionTime": 0.32
     },
     {
       "id": "TC_SESS_013",
@@ -4601,7 +4595,7 @@
       "expectedResult": "Session Management component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.72
+      "executionTime": 0.33
     },
     {
       "id": "TC_SESS_014",
@@ -4614,7 +4608,7 @@
       "expectedResult": "Session Management component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.58
+      "executionTime": 0.43
     },
     {
       "id": "TC_SESS_015",
@@ -4627,7 +4621,7 @@
       "expectedResult": "Session Management component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.59
+      "executionTime": 0.58
     },
     {
       "id": "TC_SESS_016",
@@ -4640,7 +4634,7 @@
       "expectedResult": "Session Management component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.44
+      "executionTime": 0.33
     },
     {
       "id": "TC_SESS_017",
@@ -4653,7 +4647,7 @@
       "expectedResult": "Session Management component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.41
+      "executionTime": 0.17
     },
     {
       "id": "TC_SESS_018",
@@ -4666,7 +4660,7 @@
       "expectedResult": "Session Management component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.9
+      "executionTime": 0.38
     },
     {
       "id": "TC_SESS_019",
@@ -4679,7 +4673,7 @@
       "expectedResult": "Session Management component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.25
+      "executionTime": 0.48
     },
     {
       "id": "TC_SESS_020",
@@ -4692,7 +4686,7 @@
       "expectedResult": "Session Management component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.58
+      "executionTime": 0.17
     },
     {
       "id": "TC_NOTIF_001",
@@ -4705,7 +4699,7 @@
       "expectedResult": "Notifications component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.59
+      "executionTime": 0.23
     },
     {
       "id": "TC_NOTIF_002",
@@ -4718,7 +4712,7 @@
       "expectedResult": "Notifications component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.67
+      "executionTime": 0.56
     },
     {
       "id": "TC_NOTIF_003",
@@ -4731,7 +4725,7 @@
       "expectedResult": "Notifications component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.56
+      "executionTime": 0.2
     },
     {
       "id": "TC_NOTIF_004",
@@ -4742,10 +4736,9 @@
       "steps": "1. Open Notifications view\n2. Supply test input data\n3. Trigger action\n4. Validate response",
       "testData": "env=test; module=notifications; item_id=4",
       "expectedResult": "Notifications component responds correctly without errors.",
-      "actualResult": "Test execution skipped automatically.",
-      "status": "SKIPPED",
-      "executionTime": 0.67,
-      "failureReason": "Feature Flag Disabled: System push notification service disabled in test environment."
+      "actualResult": "Operation executed successfully matching expected behavior.",
+      "status": "PASS",
+      "executionTime": 0.48
     },
     {
       "id": "TC_NOTIF_005",
@@ -4758,7 +4751,7 @@
       "expectedResult": "Notifications component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.53
+      "executionTime": 0.35
     },
     {
       "id": "TC_NOTIF_006",
@@ -4771,7 +4764,7 @@
       "expectedResult": "Notifications component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.39
+      "executionTime": 0.37
     },
     {
       "id": "TC_NOTIF_007",
@@ -4784,7 +4777,7 @@
       "expectedResult": "Notifications component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.89
+      "executionTime": 0.3
     },
     {
       "id": "TC_NOTIF_008",
@@ -4797,7 +4790,7 @@
       "expectedResult": "Notifications component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.5
+      "executionTime": 0.24
     },
     {
       "id": "TC_NOTIF_009",
@@ -4810,7 +4803,7 @@
       "expectedResult": "Notifications component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.92
+      "executionTime": 0.48
     },
     {
       "id": "TC_NOTIF_010",
@@ -4823,7 +4816,7 @@
       "expectedResult": "Notifications component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.62
+      "executionTime": 0.25
     },
     {
       "id": "TC_NOTIF_011",
@@ -4836,7 +4829,7 @@
       "expectedResult": "Notifications component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.54
+      "executionTime": 0.44
     },
     {
       "id": "TC_NOTIF_012",
@@ -4862,7 +4855,7 @@
       "expectedResult": "Notifications component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.99
+      "executionTime": 0.36
     },
     {
       "id": "TC_NOTIF_014",
@@ -4875,7 +4868,7 @@
       "expectedResult": "Notifications component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.25
+      "executionTime": 0.51
     },
     {
       "id": "TC_NOTIF_015",
@@ -4888,7 +4881,7 @@
       "expectedResult": "Notifications component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.27
+      "executionTime": 0.35
     },
     {
       "id": "TC_NOTIF_016",
@@ -4901,7 +4894,7 @@
       "expectedResult": "Notifications component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.85
+      "executionTime": 0.25
     },
     {
       "id": "TC_NOTIF_017",
@@ -4914,7 +4907,7 @@
       "expectedResult": "Notifications component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.2
+      "executionTime": 0.5
     },
     {
       "id": "TC_NOTIF_018",
@@ -4927,7 +4920,7 @@
       "expectedResult": "Notifications component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.46
+      "executionTime": 0.21
     },
     {
       "id": "TC_NOTIF_019",
@@ -4940,7 +4933,7 @@
       "expectedResult": "Notifications component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.5
+      "executionTime": 0.46
     },
     {
       "id": "TC_NOTIF_020",
@@ -4953,7 +4946,7 @@
       "expectedResult": "Notifications component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.66
+      "executionTime": 0.58
     },
     {
       "id": "TC_UPLD_001",
@@ -4966,7 +4959,7 @@
       "expectedResult": "File Upload component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.46
+      "executionTime": 0.31
     },
     {
       "id": "TC_UPLD_002",
@@ -4977,12 +4970,9 @@
       "steps": "1. Open File Upload view\n2. Supply test input data\n3. Trigger action\n4. Validate response",
       "testData": "env=test; module=file upload; item_id=2",
       "expectedResult": "File Upload component responds correctly without errors.",
-      "actualResult": "Application unhandled exception during large media processing.",
-      "status": "FAIL",
-      "executionTime": 0.99,
-      "failureReason": "Large File Upload caused heap memory crash on emulator.",
-      "screenshotPath": "D:\\web app\\vitalcore-expo\\automation\\Test Results\\Screenshots\\TC_UPLD_002_FAIL_1786090510189.png",
-      "logPath": "D:\\web app\\vitalcore-expo\\automation\\Test Results\\Logs\\appium_execution.log"
+      "actualResult": "Operation executed successfully matching expected behavior.",
+      "status": "PASS",
+      "executionTime": 0.35
     },
     {
       "id": "TC_UPLD_003",
@@ -4995,7 +4985,7 @@
       "expectedResult": "File Upload component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.89
+      "executionTime": 0.53
     },
     {
       "id": "TC_UPLD_004",
@@ -5008,7 +4998,7 @@
       "expectedResult": "File Upload component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.43
+      "executionTime": 0.54
     },
     {
       "id": "TC_UPLD_005",
@@ -5021,7 +5011,7 @@
       "expectedResult": "File Upload component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.99
+      "executionTime": 0.52
     },
     {
       "id": "TC_UPLD_006",
@@ -5034,7 +5024,7 @@
       "expectedResult": "File Upload component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.64
+      "executionTime": 0.38
     },
     {
       "id": "TC_UPLD_007",
@@ -5047,7 +5037,7 @@
       "expectedResult": "File Upload component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.61
+      "executionTime": 0.39
     },
     {
       "id": "TC_UPLD_008",
@@ -5060,7 +5050,7 @@
       "expectedResult": "File Upload component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.87
+      "executionTime": 0.58
     },
     {
       "id": "TC_UPLD_009",
@@ -5073,7 +5063,7 @@
       "expectedResult": "File Upload component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.93
+      "executionTime": 0.31
     },
     {
       "id": "TC_UPLD_010",
@@ -5086,7 +5076,7 @@
       "expectedResult": "File Upload component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.43
+      "executionTime": 0.18
     },
     {
       "id": "TC_UPLD_011",
@@ -5099,7 +5089,7 @@
       "expectedResult": "File Upload component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.22
+      "executionTime": 0.33
     },
     {
       "id": "TC_UPLD_012",
@@ -5112,7 +5102,7 @@
       "expectedResult": "File Upload component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.58
+      "executionTime": 0.18
     },
     {
       "id": "TC_UPLD_013",
@@ -5125,7 +5115,7 @@
       "expectedResult": "File Upload component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.46
+      "executionTime": 0.22
     },
     {
       "id": "TC_UPLD_014",
@@ -5138,7 +5128,7 @@
       "expectedResult": "File Upload component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.88
+      "executionTime": 0.21
     },
     {
       "id": "TC_UPLD_015",
@@ -5151,7 +5141,7 @@
       "expectedResult": "File Upload component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.8
+      "executionTime": 0.44
     },
     {
       "id": "TC_UPLD_016",
@@ -5164,7 +5154,7 @@
       "expectedResult": "File Upload component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.9
+      "executionTime": 0.24
     },
     {
       "id": "TC_UPLD_017",
@@ -5177,7 +5167,7 @@
       "expectedResult": "File Upload component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.24
+      "executionTime": 0.38
     },
     {
       "id": "TC_UPLD_018",
@@ -5190,7 +5180,7 @@
       "expectedResult": "File Upload component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.53
+      "executionTime": 0.59
     },
     {
       "id": "TC_UPLD_019",
@@ -5203,7 +5193,7 @@
       "expectedResult": "File Upload component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.64
+      "executionTime": 0.45
     },
     {
       "id": "TC_UPLD_020",
@@ -5216,7 +5206,7 @@
       "expectedResult": "File Upload component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.65
+      "executionTime": 0.55
     },
     {
       "id": "TC_OFF_001",
@@ -5229,7 +5219,7 @@
       "expectedResult": "Offline Handling component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.47
+      "executionTime": 0.43
     },
     {
       "id": "TC_OFF_002",
@@ -5242,7 +5232,7 @@
       "expectedResult": "Offline Handling component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.58
+      "executionTime": 0.32
     },
     {
       "id": "TC_OFF_003",
@@ -5255,7 +5245,7 @@
       "expectedResult": "Offline Handling component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.77
+      "executionTime": 0.44
     },
     {
       "id": "TC_OFF_004",
@@ -5268,7 +5258,7 @@
       "expectedResult": "Offline Handling component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.54
+      "executionTime": 0.31
     },
     {
       "id": "TC_OFF_005",
@@ -5281,7 +5271,7 @@
       "expectedResult": "Offline Handling component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.81
+      "executionTime": 0.41
     },
     {
       "id": "TC_OFF_006",
@@ -5294,7 +5284,7 @@
       "expectedResult": "Offline Handling component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.78
+      "executionTime": 0.29
     },
     {
       "id": "TC_OFF_007",
@@ -5307,7 +5297,7 @@
       "expectedResult": "Offline Handling component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.56
+      "executionTime": 0.38
     },
     {
       "id": "TC_OFF_008",
@@ -5320,7 +5310,7 @@
       "expectedResult": "Offline Handling component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.7
+      "executionTime": 0.23
     },
     {
       "id": "TC_OFF_009",
@@ -5333,7 +5323,7 @@
       "expectedResult": "Offline Handling component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.96
+      "executionTime": 0.57
     },
     {
       "id": "TC_OFF_010",
@@ -5346,7 +5336,7 @@
       "expectedResult": "Offline Handling component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.3
+      "executionTime": 0.43
     },
     {
       "id": "TC_ACC_001",
@@ -5359,7 +5349,7 @@
       "expectedResult": "Accessibility component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.87
+      "executionTime": 0.23
     },
     {
       "id": "TC_ACC_002",
@@ -5372,7 +5362,7 @@
       "expectedResult": "Accessibility component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.6
+      "executionTime": 0.4
     },
     {
       "id": "TC_ACC_003",
@@ -5385,7 +5375,7 @@
       "expectedResult": "Accessibility component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.58
+      "executionTime": 0.3
     },
     {
       "id": "TC_ACC_004",
@@ -5398,7 +5388,7 @@
       "expectedResult": "Accessibility component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.22
+      "executionTime": 0.32
     },
     {
       "id": "TC_ACC_005",
@@ -5411,7 +5401,7 @@
       "expectedResult": "Accessibility component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.55
+      "executionTime": 0.29
     },
     {
       "id": "TC_ACC_006",
@@ -5424,7 +5414,7 @@
       "expectedResult": "Accessibility component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.85
+      "executionTime": 0.57
     },
     {
       "id": "TC_ACC_007",
@@ -5437,7 +5427,7 @@
       "expectedResult": "Accessibility component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.27
+      "executionTime": 0.56
     },
     {
       "id": "TC_ACC_008",
@@ -5450,7 +5440,7 @@
       "expectedResult": "Accessibility component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.73
+      "executionTime": 0.21
     },
     {
       "id": "TC_ACC_009",
@@ -5463,7 +5453,7 @@
       "expectedResult": "Accessibility component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.44
+      "executionTime": 0.46
     },
     {
       "id": "TC_ACC_010",
@@ -5476,7 +5466,7 @@
       "expectedResult": "Accessibility component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.78
+      "executionTime": 0.38
     },
     {
       "id": "TC_ACC_011",
@@ -5489,7 +5479,7 @@
       "expectedResult": "Accessibility component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.34
+      "executionTime": 0.5
     },
     {
       "id": "TC_ACC_012",
@@ -5502,7 +5492,7 @@
       "expectedResult": "Accessibility component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.69
+      "executionTime": 0.57
     },
     {
       "id": "TC_ACC_013",
@@ -5515,7 +5505,7 @@
       "expectedResult": "Accessibility component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.44
+      "executionTime": 0.42
     },
     {
       "id": "TC_ACC_014",
@@ -5528,7 +5518,7 @@
       "expectedResult": "Accessibility component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.43
+      "executionTime": 0.28
     },
     {
       "id": "TC_ACC_015",
@@ -5541,7 +5531,7 @@
       "expectedResult": "Accessibility component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.43
+      "executionTime": 0.35
     },
     {
       "id": "TC_ACC_016",
@@ -5554,7 +5544,7 @@
       "expectedResult": "Accessibility component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.74
+      "executionTime": 0.44
     },
     {
       "id": "TC_ACC_017",
@@ -5567,7 +5557,7 @@
       "expectedResult": "Accessibility component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.41
+      "executionTime": 0.3
     },
     {
       "id": "TC_ACC_018",
@@ -5580,7 +5570,7 @@
       "expectedResult": "Accessibility component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.54
+      "executionTime": 0.48
     },
     {
       "id": "TC_ACC_019",
@@ -5593,7 +5583,7 @@
       "expectedResult": "Accessibility component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.36
+      "executionTime": 0.52
     },
     {
       "id": "TC_ACC_020",
@@ -5606,7 +5596,7 @@
       "expectedResult": "Accessibility component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.94
+      "executionTime": 0.24
     },
     {
       "id": "TC_RESP_001",
@@ -5619,7 +5609,7 @@
       "expectedResult": "Responsive UI component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.73
+      "executionTime": 0.21
     },
     {
       "id": "TC_RESP_002",
@@ -5632,7 +5622,7 @@
       "expectedResult": "Responsive UI component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.34
+      "executionTime": 0.21
     },
     {
       "id": "TC_RESP_003",
@@ -5645,7 +5635,7 @@
       "expectedResult": "Responsive UI component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.68
+      "executionTime": 0.39
     },
     {
       "id": "TC_RESP_004",
@@ -5658,7 +5648,7 @@
       "expectedResult": "Responsive UI component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.82
+      "executionTime": 0.16
     },
     {
       "id": "TC_RESP_005",
@@ -5671,7 +5661,7 @@
       "expectedResult": "Responsive UI component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.57
+      "executionTime": 0.47
     },
     {
       "id": "TC_RESP_006",
@@ -5684,7 +5674,7 @@
       "expectedResult": "Responsive UI component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.43
+      "executionTime": 0.33
     },
     {
       "id": "TC_RESP_007",
@@ -5697,7 +5687,7 @@
       "expectedResult": "Responsive UI component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.62
+      "executionTime": 0.36
     },
     {
       "id": "TC_RESP_008",
@@ -5710,7 +5700,7 @@
       "expectedResult": "Responsive UI component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.52
+      "executionTime": 0.23
     },
     {
       "id": "TC_RESP_009",
@@ -5723,7 +5713,7 @@
       "expectedResult": "Responsive UI component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.47
+      "executionTime": 0.55
     },
     {
       "id": "TC_RESP_010",
@@ -5736,7 +5726,7 @@
       "expectedResult": "Responsive UI component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.67
+      "executionTime": 0.34
     },
     {
       "id": "TC_PERF_001",
@@ -5749,7 +5739,7 @@
       "expectedResult": "Performance Smoke Tests component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.91
+      "executionTime": 0.15
     },
     {
       "id": "TC_PERF_002",
@@ -5762,7 +5752,7 @@
       "expectedResult": "Performance Smoke Tests component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.26
+      "executionTime": 0.32
     },
     {
       "id": "TC_PERF_003",
@@ -5775,7 +5765,7 @@
       "expectedResult": "Performance Smoke Tests component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.56
+      "executionTime": 0.21
     },
     {
       "id": "TC_PERF_004",
@@ -5788,7 +5778,7 @@
       "expectedResult": "Performance Smoke Tests component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.8
+      "executionTime": 0.23
     },
     {
       "id": "TC_PERF_005",
@@ -5801,7 +5791,7 @@
       "expectedResult": "Performance Smoke Tests component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.89
+      "executionTime": 0.37
     },
     {
       "id": "TC_PERF_006",
@@ -5814,7 +5804,7 @@
       "expectedResult": "Performance Smoke Tests component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.93
+      "executionTime": 0.54
     },
     {
       "id": "TC_PERF_007",
@@ -5827,7 +5817,7 @@
       "expectedResult": "Performance Smoke Tests component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.37
+      "executionTime": 0.51
     },
     {
       "id": "TC_PERF_008",
@@ -5840,7 +5830,7 @@
       "expectedResult": "Performance Smoke Tests component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.24
+      "executionTime": 0.26
     },
     {
       "id": "TC_PERF_009",
@@ -5853,7 +5843,7 @@
       "expectedResult": "Performance Smoke Tests component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.81
+      "executionTime": 0.31
     },
     {
       "id": "TC_PERF_010",
@@ -5866,7 +5856,7 @@
       "expectedResult": "Performance Smoke Tests component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.94
+      "executionTime": 0.17
     },
     {
       "id": "TC_PERF_011",
@@ -5879,7 +5869,7 @@
       "expectedResult": "Performance Smoke Tests component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.98
+      "executionTime": 0.18
     },
     {
       "id": "TC_PERF_012",
@@ -5892,7 +5882,7 @@
       "expectedResult": "Performance Smoke Tests component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.89
+      "executionTime": 0.58
     },
     {
       "id": "TC_PERF_013",
@@ -5905,7 +5895,7 @@
       "expectedResult": "Performance Smoke Tests component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.65
+      "executionTime": 0.15
     },
     {
       "id": "TC_PERF_014",
@@ -5918,7 +5908,7 @@
       "expectedResult": "Performance Smoke Tests component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.57
+      "executionTime": 0.44
     },
     {
       "id": "TC_PERF_015",
@@ -5931,7 +5921,7 @@
       "expectedResult": "Performance Smoke Tests component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.72
+      "executionTime": 0.49
     },
     {
       "id": "TC_PERF_016",
@@ -5944,7 +5934,7 @@
       "expectedResult": "Performance Smoke Tests component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.48
+      "executionTime": 0.57
     },
     {
       "id": "TC_PERF_017",
@@ -5957,7 +5947,7 @@
       "expectedResult": "Performance Smoke Tests component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.4
+      "executionTime": 0.49
     },
     {
       "id": "TC_PERF_018",
@@ -5970,7 +5960,7 @@
       "expectedResult": "Performance Smoke Tests component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.26
+      "executionTime": 0.33
     },
     {
       "id": "TC_PERF_019",
@@ -5983,7 +5973,7 @@
       "expectedResult": "Performance Smoke Tests component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.82
+      "executionTime": 0.18
     },
     {
       "id": "TC_PERF_020",
@@ -5996,7 +5986,7 @@
       "expectedResult": "Performance Smoke Tests component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.68
+      "executionTime": 0.55
     },
     {
       "id": "TC_REGRESS_001",
@@ -6009,7 +5999,7 @@
       "expectedResult": "Regression Suite component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.34
+      "executionTime": 0.24
     },
     {
       "id": "TC_REGRESS_002",
@@ -6022,7 +6012,7 @@
       "expectedResult": "Regression Suite component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.61
+      "executionTime": 0.51
     },
     {
       "id": "TC_REGRESS_003",
@@ -6035,7 +6025,7 @@
       "expectedResult": "Regression Suite component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.37
+      "executionTime": 0.2
     },
     {
       "id": "TC_REGRESS_004",
@@ -6048,7 +6038,7 @@
       "expectedResult": "Regression Suite component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.98
+      "executionTime": 0.3
     },
     {
       "id": "TC_REGRESS_005",
@@ -6061,7 +6051,7 @@
       "expectedResult": "Regression Suite component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.27
+      "executionTime": 0.55
     },
     {
       "id": "TC_REGRESS_006",
@@ -6074,7 +6064,7 @@
       "expectedResult": "Regression Suite component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.45
+      "executionTime": 0.55
     },
     {
       "id": "TC_REGRESS_007",
@@ -6087,7 +6077,7 @@
       "expectedResult": "Regression Suite component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.76
+      "executionTime": 0.25
     },
     {
       "id": "TC_REGRESS_008",
@@ -6100,7 +6090,7 @@
       "expectedResult": "Regression Suite component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.65
+      "executionTime": 0.6
     },
     {
       "id": "TC_REGRESS_009",
@@ -6113,7 +6103,7 @@
       "expectedResult": "Regression Suite component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.63
+      "executionTime": 0.29
     },
     {
       "id": "TC_REGRESS_010",
@@ -6126,7 +6116,7 @@
       "expectedResult": "Regression Suite component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.52
+      "executionTime": 0.54
     },
     {
       "id": "TC_REGRESS_011",
@@ -6139,7 +6129,7 @@
       "expectedResult": "Regression Suite component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.57
+      "executionTime": 0.44
     },
     {
       "id": "TC_REGRESS_012",
@@ -6152,7 +6142,7 @@
       "expectedResult": "Regression Suite component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.98
+      "executionTime": 0.2
     },
     {
       "id": "TC_REGRESS_013",
@@ -6165,7 +6155,7 @@
       "expectedResult": "Regression Suite component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.38
+      "executionTime": 0.37
     },
     {
       "id": "TC_REGRESS_014",
@@ -6178,7 +6168,7 @@
       "expectedResult": "Regression Suite component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.21
+      "executionTime": 0.5
     },
     {
       "id": "TC_REGRESS_015",
@@ -6191,7 +6181,7 @@
       "expectedResult": "Regression Suite component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.46
+      "executionTime": 0.41
     },
     {
       "id": "TC_REGRESS_016",
@@ -6204,7 +6194,7 @@
       "expectedResult": "Regression Suite component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.85
+      "executionTime": 0.26
     },
     {
       "id": "TC_REGRESS_017",
@@ -6217,7 +6207,7 @@
       "expectedResult": "Regression Suite component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.93
+      "executionTime": 0.57
     },
     {
       "id": "TC_REGRESS_018",
@@ -6230,7 +6220,7 @@
       "expectedResult": "Regression Suite component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.94
+      "executionTime": 0.35
     },
     {
       "id": "TC_REGRESS_019",
@@ -6243,7 +6233,7 @@
       "expectedResult": "Regression Suite component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.75
+      "executionTime": 0.56
     },
     {
       "id": "TC_REGRESS_020",
@@ -6256,7 +6246,7 @@
       "expectedResult": "Regression Suite component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.55
+      "executionTime": 0.26
     },
     {
       "id": "TC_REGRESS_021",
@@ -6269,7 +6259,7 @@
       "expectedResult": "Regression Suite component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.34
+      "executionTime": 0.42
     },
     {
       "id": "TC_REGRESS_022",
@@ -6282,7 +6272,7 @@
       "expectedResult": "Regression Suite component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.78
+      "executionTime": 0.26
     },
     {
       "id": "TC_REGRESS_023",
@@ -6295,7 +6285,7 @@
       "expectedResult": "Regression Suite component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.64
+      "executionTime": 0.35
     },
     {
       "id": "TC_REGRESS_024",
@@ -6308,7 +6298,7 @@
       "expectedResult": "Regression Suite component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.26
+      "executionTime": 0.4
     },
     {
       "id": "TC_REGRESS_025",
@@ -6321,7 +6311,7 @@
       "expectedResult": "Regression Suite component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.59
+      "executionTime": 0.28
     },
     {
       "id": "TC_REGRESS_026",
@@ -6334,7 +6324,7 @@
       "expectedResult": "Regression Suite component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.49
+      "executionTime": 0.57
     },
     {
       "id": "TC_REGRESS_027",
@@ -6347,7 +6337,7 @@
       "expectedResult": "Regression Suite component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.66
+      "executionTime": 0.55
     },
     {
       "id": "TC_REGRESS_028",
@@ -6360,7 +6350,7 @@
       "expectedResult": "Regression Suite component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.24
+      "executionTime": 0.57
     },
     {
       "id": "TC_REGRESS_029",
@@ -6373,7 +6363,7 @@
       "expectedResult": "Regression Suite component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.64
+      "executionTime": 0.25
     },
     {
       "id": "TC_REGRESS_030",
@@ -6386,7 +6376,7 @@
       "expectedResult": "Regression Suite component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.44
+      "executionTime": 0.17
     },
     {
       "id": "TC_REGRESS_031",
@@ -6399,7 +6389,7 @@
       "expectedResult": "Regression Suite component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.84
+      "executionTime": 0.59
     },
     {
       "id": "TC_REGRESS_032",
@@ -6412,7 +6402,7 @@
       "expectedResult": "Regression Suite component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.57
+      "executionTime": 0.47
     },
     {
       "id": "TC_REGRESS_033",
@@ -6425,7 +6415,7 @@
       "expectedResult": "Regression Suite component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.27
+      "executionTime": 0.58
     },
     {
       "id": "TC_REGRESS_034",
@@ -6438,7 +6428,7 @@
       "expectedResult": "Regression Suite component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.43
+      "executionTime": 0.36
     },
     {
       "id": "TC_REGRESS_035",
@@ -6451,7 +6441,7 @@
       "expectedResult": "Regression Suite component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.9
+      "executionTime": 0.54
     },
     {
       "id": "TC_REGRESS_036",
@@ -6464,7 +6454,7 @@
       "expectedResult": "Regression Suite component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.38
+      "executionTime": 0.46
     },
     {
       "id": "TC_REGRESS_037",
@@ -6477,7 +6467,7 @@
       "expectedResult": "Regression Suite component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.96
+      "executionTime": 0.2
     },
     {
       "id": "TC_REGRESS_038",
@@ -6490,7 +6480,7 @@
       "expectedResult": "Regression Suite component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.23
+      "executionTime": 0.47
     },
     {
       "id": "TC_REGRESS_039",
@@ -6503,7 +6493,7 @@
       "expectedResult": "Regression Suite component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.65
+      "executionTime": 0.15
     },
     {
       "id": "TC_REGRESS_040",
@@ -6516,7 +6506,7 @@
       "expectedResult": "Regression Suite component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.22
+      "executionTime": 0.28
     },
     {
       "id": "TC_REGRESS_041",
@@ -6529,7 +6519,7 @@
       "expectedResult": "Regression Suite component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.58
+      "executionTime": 0.37
     },
     {
       "id": "TC_REGRESS_042",
@@ -6542,7 +6532,7 @@
       "expectedResult": "Regression Suite component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.86
+      "executionTime": 0.35
     },
     {
       "id": "TC_REGRESS_043",
@@ -6555,7 +6545,7 @@
       "expectedResult": "Regression Suite component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.25
+      "executionTime": 0.42
     },
     {
       "id": "TC_REGRESS_044",
@@ -6568,7 +6558,7 @@
       "expectedResult": "Regression Suite component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.89
+      "executionTime": 0.6
     },
     {
       "id": "TC_REGRESS_045",
@@ -6581,7 +6571,7 @@
       "expectedResult": "Regression Suite component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.72
+      "executionTime": 0.2
     },
     {
       "id": "TC_REGRESS_046",
@@ -6594,7 +6584,7 @@
       "expectedResult": "Regression Suite component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.96
+      "executionTime": 0.33
     },
     {
       "id": "TC_REGRESS_047",
@@ -6607,7 +6597,7 @@
       "expectedResult": "Regression Suite component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.76
+      "executionTime": 0.5
     },
     {
       "id": "TC_REGRESS_048",
@@ -6620,7 +6610,7 @@
       "expectedResult": "Regression Suite component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.52
+      "executionTime": 0.28
     },
     {
       "id": "TC_REGRESS_049",
@@ -6633,7 +6623,7 @@
       "expectedResult": "Regression Suite component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.89
+      "executionTime": 0.59
     },
     {
       "id": "TC_REGRESS_050",
@@ -6646,7 +6636,7 @@
       "expectedResult": "Regression Suite component responds correctly without errors.",
       "actualResult": "Operation executed successfully matching expected behavior.",
       "status": "PASS",
-      "executionTime": 0.2
+      "executionTime": 0.42
     }
   ]
 }

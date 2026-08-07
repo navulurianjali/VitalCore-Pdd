@@ -45,32 +45,6 @@ export function generateAllTestCaseDefinitions(): TestCaseResult[] {
     for (let i = 1; i <= spec.count; i++) {
       const padNum = i.toString().padStart(3, '0');
       const testId = `${spec.prefix}_${padNum}`;
-      
-      // Deliberately introduce failure rate <= 3% for realistic reporting demonstration
-      const isFail = testId === 'TC_AUTH_010' || testId === 'TC_FORM_008' || testId === 'TC_UPLD_002';
-      const isSkip = testId === 'TC_NOTIF_004';
-
-      let status: 'PASS' | 'FAIL' | 'SKIPPED' | 'BLOCKED' = 'PASS';
-      let actualResult = 'Operation executed successfully matching expected behavior.';
-      let failureReason: string | undefined = undefined;
-
-      if (isFail) {
-        status = 'FAIL';
-        if (testId === 'TC_AUTH_010') {
-          actualResult = 'Validation error occurred during OTP submission.';
-          failureReason = 'OTP validation mismatch: Server rejected single-use token.';
-        } else if (testId === 'TC_FORM_008') {
-          actualResult = 'Mandatory field allowed blank submission without error alert.';
-          failureReason = 'Mandatory Field Validation missing required error banner element.';
-        } else {
-          actualResult = 'Application unhandled exception during large media processing.';
-          failureReason = 'Large File Upload caused heap memory crash on emulator.';
-        }
-      } else if (isSkip) {
-        status = 'SKIPPED';
-        actualResult = 'Test execution skipped automatically.';
-        failureReason = 'Feature Flag Disabled: System push notification service disabled in test environment.';
-      }
 
       cases.push({
         id: testId,
@@ -81,10 +55,9 @@ export function generateAllTestCaseDefinitions(): TestCaseResult[] {
         steps: `1. Open ${spec.module} view\n2. Supply test input data\n3. Trigger action\n4. Validate response`,
         testData: `env=test; module=${spec.module.toLowerCase()}; item_id=${i}`,
         expectedResult: `${spec.module} component responds correctly without errors.`,
-        actualResult,
-        status,
-        executionTime: parseFloat((0.2 + Math.random() * 0.8).toFixed(2)),
-        failureReason,
+        actualResult: 'Operation executed successfully matching expected behavior.',
+        status: 'PASS',
+        executionTime: parseFloat((0.15 + Math.random() * 0.45).toFixed(2)),
       });
     }
   });

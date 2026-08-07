@@ -43,23 +43,22 @@ jobs:
           mkdir -p automation/resources
           touch automation/resources/app-debug.apk
 
-      - name: Start Android Emulator
+      - name: Start Android Emulator & Run E2E Tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 33
           target: google_apis
           arch: x86_64
           profile: Pixel_6
-          script: adb devices
-
-      - name: Start Appium & Run Tests
-        run: |
-          npm install -g appium
-          appium driver install uiautomator2 || true
-          appium &
-          sleep 5
-          cd automation
-          npm test || true
+          script: |
+            adb devices
+            npm install -g appium
+            appium driver install uiautomator2 || true
+            appium --log-level info &
+            sleep 5
+            curl -s http://127.0.0.1:4723/status || true
+            cd automation
+            npm test
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
@@ -74,8 +73,11 @@ jobs:
         run: |
           mkdir -p gh-pages/reports/latest
           mkdir -p gh-pages/reports/history/build-${{ github.run_number }}
-          cp -r automation/Test\ Results/* gh-pages/reports/latest/ || true
-          cp -r automation/Test\ Results/* gh-pages/reports/history/build-${{ github.run_number }}/ || true
+          touch gh-pages/.nojekyll
+          if [ -d "automation/Test Results" ]; then
+            cp -r automation/Test\ Results/* gh-pages/reports/latest/ || true
+            cp -r automation/Test\ Results/* gh-pages/reports/history/build-${{ github.run_number }}/ || true
+          fi
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
@@ -83,6 +85,7 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./gh-pages
+          force_orphan: true
 
       - name: Publish Action Summary
         if: always()

@@ -2,9 +2,9 @@ name: VitalCore DAST Security Tests
 
 on:
   push:
-    branches: [main, dev]
+    branches: [main, master, dev]
   pull_request:
-    branches: [main]
+    branches: [main, master]
   workflow_dispatch:
 
 jobs:
@@ -17,14 +17,22 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
       - name: Set up Node.js 20
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'npm'
 
-      - name: Install dependencies
+      - name: Install Node dependencies
         run: npm ci
+
+      - name: Install Python dependencies
+        run: pip install requests openpyxl
 
       - name: Build Next.js application
         run: npm run build
@@ -33,9 +41,11 @@ jobs:
         run: |
           npm run start &
           echo "Waiting for server to spin up..."
-          npx wait-on http://localhost:3000 -t 30000
+          npx wait-on http://localhost:3000 -t 60000
 
       - name: Run DAST scan (automated test script)
         env:
           TARGET_URL: http://localhost:3000
-        run: npm run test:dast
+        run: |
+          cd automated_test
+          python3 dast_runner_v2.py
