@@ -39,6 +39,8 @@ jobs:
         run: |
           cd vitalcore-expo
           npm install --legacy-peer-deps
+          # Verify ts-node is installed locally
+          ls node_modules/.bin/ts-node || npm install ts-node@10.9.2 --save-dev
 
       - name: Install Appium 2.x & UiAutomator2 Driver
         run: |
@@ -56,7 +58,8 @@ jobs:
           script: |
             echo "Emulator booted successfully! Running 315 Appium E2E Automation Specs..."
             cd vitalcore-expo
-            npx ts-node e2e/run-reports.ts
+            # Use locally installed ts-node with explicit tsconfig to avoid module resolution errors
+            ./node_modules/.bin/ts-node --project e2e/tsconfig.json e2e/run-reports.ts
 
       - name: Upload Test Execution Reports (HTML, Excel, JSON)
         uses: actions/upload-artifact@v4
