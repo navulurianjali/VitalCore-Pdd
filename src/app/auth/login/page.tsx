@@ -7,11 +7,10 @@ import { Activity, ShieldCheck, Mail, Lock } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import Button from "@/components/ui/Button";
 import GlassCard from "@/components/ui/GlassCard";
-
-import { supabase } from "@/utils/supabase";
+import Input from "@/components/ui/Input";
 
 export default function LoginPage() {
-  const { signIn, isMockMode } = useAuth();
+  const { signIn } = useAuth();
   const router = useRouter();
 
   const [email, setEmail] = useState("");
@@ -19,58 +18,32 @@ export default function LoginPage() {
   const [errorMsg, setErrorMsg] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const RFC_EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
-
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    const cleanEmail = email.trim();
-    if (!cleanEmail || !password) return;
-
-    if (!RFC_EMAIL_REGEX.test(cleanEmail)) {
-      setErrorMsg("Please enter a valid RFC-compliant email address.");
-      return;
-    }
-
     setLoading(true);
     setErrorMsg("");
 
     try {
-      const { error } = await signIn(cleanEmail, password);
+      const { error } = await signIn(email, password);
       if (error) {
         setErrorMsg(error.message);
       } else {
-        if (supabase) {
-          const { data: userData } = await supabase.auth.getUser();
-          const uid = userData?.user?.id;
-          if (uid) {
-            const { data: prof } = await supabase
-              .from("profiles")
-              .select("onboarding_completed")
-              .eq("id", uid)
-              .single();
-
-            if (!prof || prof.onboarding_completed !== true) {
-              router.push("/auth/onboarding");
-              return;
-            }
-          }
-        }
         router.push("/dashboard");
       }
     } catch (err: any) {
-      setErrorMsg(err.message || "An unexpected error occurred during secure sign-in.");
+      setErrorMsg("An unexpected authentication error occurred.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="flex-1 flex items-center justify-center bg-background px-4 py-20 relative overflow-hidden auth-page">
+    <div className="flex-1 flex items-center justify-center bg-background px-4 py-16 relative overflow-hidden auth-page">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(139,92,246,0.05),transparent_60%)]" />
       
-      <div className="w-full max-w-[440px] relative z-10 space-y-6">
+      <div className="w-full max-w-[420px] relative z-10 space-y-6">
         
-        {/* Logo */}
+        {/* Logo Header */}
         <div className="text-center space-y-2">
           <Link href="/" className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-primary text-white shadow-lg shadow-primary/20 hover:scale-105 transition-transform">
             <Activity className="h-5 w-5" />
@@ -82,7 +55,7 @@ export default function LoginPage() {
           </p>
         </div>
 
-        <GlassCard glowColor="violet" className="border border-foreground/10 shadow-xl">
+        <GlassCard glowColor="violet" className="border border-foreground/10 shadow-xl p-6">
           
           {errorMsg && (
             <div className="mb-4 rounded-xl border border-rose-500/20 bg-rose-500/10 px-4 py-3 text-[13px] text-rose-400 font-medium flex items-center gap-2">
@@ -93,39 +66,31 @@ export default function LoginPage() {
 
           <form onSubmit={handleLogin} className="space-y-4">
             
-            <div className="space-y-1.5">
-              <label className="auth-label">Email Address</label>
-              <div className="relative">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-foreground/30 pointer-events-none" />
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full text-foreground placeholder-foreground/35 focus:outline-none input-with-icon"
-                  placeholder="name@email.com"
-                />
-              </div>
-            </div>
+            <Input
+              label="Email Address"
+              icon={Mail}
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="name@email.com"
+            />
 
             <div className="space-y-1.5">
               <div className="flex justify-between items-center">
-                <label className="auth-label">Password</label>
-                <Link href="/auth/forgot-password" className="auth-link text-primary hover:underline">
+                <label className="text-xs font-semibold text-foreground/80">Password</label>
+                <Link href="/auth/forgot-password" className="text-xs text-primary hover:underline font-medium">
                   Forgot Password?
                 </Link>
               </div>
-              <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-foreground/30 pointer-events-none" />
-                <input
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full text-foreground placeholder-foreground/35 focus:outline-none input-with-icon"
-                  placeholder="••••••••"
-                />
-              </div>
+              <Input
+                icon={Lock}
+                type="password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+              />
             </div>
 
             <Button variant="primary" type="submit" isLoading={loading} className="w-full mt-2 font-semibold">

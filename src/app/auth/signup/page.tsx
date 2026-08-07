@@ -7,6 +7,7 @@ import { Activity, ShieldCheck, Mail, Lock, User, CheckCircle, AlertCircle } fro
 import { useAuth } from "@/context/AuthContext";
 import Button from "@/components/ui/Button";
 import GlassCard from "@/components/ui/GlassCard";
+import Input from "@/components/ui/Input";
 
 // Strict RFC 5322 compliant email regex
 const RFC_EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
@@ -121,96 +122,56 @@ export default function SignupPage() {
           <form onSubmit={handleSignup} className="space-y-4" noValidate>
             
             {/* Full Name Field */}
-            <div className="space-y-1.5">
-              <label className="auth-label text-xs font-bold text-foreground/80">Full Name</label>
-              <div className="relative">
-                <User className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground/30 pointer-events-none" />
-                <input
-                  type="text"
-                  required
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  onBlur={() => handleBlur("fullName")}
-                  className={`w-full text-xs pl-11 pr-4 py-3 rounded-xl border bg-foreground/5 text-foreground focus:outline-none transition-colors ${
-                    touched.fullName && !isFullNameValid
-                      ? "border-rose-500/50 focus:border-rose-500"
-                      : "border-foreground/10 focus:border-primary"
-                  }`}
-                  placeholder="John Doe"
-                />
-              </div>
-              {touched.fullName && !isFullNameValid && (
-                <p className="text-[11px] text-rose-400 font-medium">Please enter your full name (at least 2 characters).</p>
-              )}
-            </div>
+            <Input
+              label="Full Name"
+              icon={User}
+              type="text"
+              required
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              onBlur={() => handleBlur("fullName")}
+              error={touched.fullName && !isFullNameValid ? "Please enter your full name (at least 2 characters)." : undefined}
+              placeholder="John Doe"
+            />
 
             {/* Username Field */}
-            <div className="space-y-1.5">
-              <label className="auth-label text-xs font-bold text-foreground/80">Username</label>
-              <div className="relative">
-                <User className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground/30 pointer-events-none" />
-                <input
-                  type="text"
-                  required
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  onBlur={() => handleBlur("username")}
-                  className={`w-full text-xs pl-11 pr-4 py-3 rounded-xl border bg-foreground/5 text-foreground focus:outline-none transition-colors ${
-                    touched.username && !isUsernameValid
-                      ? "border-rose-500/50 focus:border-rose-500"
-                      : "border-foreground/10 focus:border-primary"
-                  }`}
-                  placeholder="johndoe_health"
-                />
-              </div>
-              {touched.username && !isUsernameValid && (
-                <p className="text-[11px] text-rose-400 font-medium">Username must be at least 3 alphanumeric characters/underscores.</p>
-              )}
-            </div>
+            <Input
+              label="Username"
+              icon={User}
+              type="text"
+              required
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              onBlur={() => handleBlur("username")}
+              error={touched.username && !isUsernameValid ? "Username must be at least 3 alphanumeric characters/underscores." : undefined}
+              placeholder="johndoe_health"
+            />
 
-            {/* RFC Email Field */}
-            <div className="space-y-1.5">
-              <label className="auth-label text-xs font-bold text-foreground/80">Email Address</label>
-              <div className="relative">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground/30 pointer-events-none" />
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  onBlur={() => handleBlur("email")}
-                  className={`w-full text-xs pl-11 pr-4 py-3 rounded-xl border bg-foreground/5 text-foreground focus:outline-none transition-colors ${
-                    touched.email && !isEmailValid
-                      ? "border-rose-500/50 focus:border-rose-500"
-                      : "border-foreground/10 focus:border-primary"
-                  }`}
-                  placeholder="name@domain.com"
-                />
-              </div>
-              {touched.email && !isEmailValid && (
-                <p className="text-[11px] text-rose-400 font-medium">Invalid email format. Enter a valid email (e.g. user@domain.com).</p>
-              )}
-            </div>
+            {/* Email Field */}
+            <Input
+              label="Email Address"
+              icon={Mail}
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              onBlur={() => handleBlur("email")}
+              error={touched.email && !isEmailValid ? "Invalid email format. Enter a valid email (e.g. user@domain.com)." : undefined}
+              placeholder="name@domain.com"
+            />
 
             {/* Password Field & Requirements Tracker */}
             <div className="space-y-1.5">
-              <label className="auth-label text-xs font-bold text-foreground/80">Password</label>
-              <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground/30 pointer-events-none" />
-                <input
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  onBlur={() => handleBlur("password")}
-                  className={`w-full text-xs pl-11 pr-4 py-3 rounded-xl border bg-foreground/5 text-foreground focus:outline-none transition-colors ${
-                    touched.password && !isPasswordStrong
-                      ? "border-rose-500/50 focus:border-rose-500"
-                      : "border-foreground/10 focus:border-primary"
-                  }`}
-                  placeholder="••••••••"
-                />
-              </div>
+              <Input
+                label="Password"
+                icon={Lock}
+                type="password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                onBlur={() => handleBlur("password")}
+                placeholder="••••••••"
+              />
 
               {/* Real-time Password Checklist */}
               {password.length > 0 && (
@@ -235,28 +196,17 @@ export default function SignupPage() {
             </div>
 
             {/* Confirm Password Field */}
-            <div className="space-y-1.5">
-              <label className="auth-label text-xs font-bold text-foreground/80">Confirm Password</label>
-              <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground/30 pointer-events-none" />
-                <input
-                  type="password"
-                  required
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  onBlur={() => handleBlur("confirmPassword")}
-                  className={`w-full text-xs pl-11 pr-4 py-3 rounded-xl border bg-foreground/5 text-foreground focus:outline-none transition-colors ${
-                    touched.confirmPassword && !isConfirmPasswordValid
-                      ? "border-rose-500/50 focus:border-rose-500"
-                      : "border-foreground/10 focus:border-primary"
-                  }`}
-                  placeholder="••••••••"
-                />
-              </div>
-              {touched.confirmPassword && !isConfirmPasswordValid && (
-                <p className="text-[11px] text-rose-400 font-medium">Passwords do not match.</p>
-              )}
-            </div>
+            <Input
+              label="Confirm Password"
+              icon={Lock}
+              type="password"
+              required
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              onBlur={() => handleBlur("confirmPassword")}
+              error={touched.confirmPassword && !isConfirmPasswordValid ? "Passwords do not match." : undefined}
+              placeholder="••••••••"
+            />
 
             <Button
               variant="primary"

@@ -154,24 +154,38 @@ input[type="number"],
 input[type="time"],
 input[type="email"],
 input[type="password"],
+input[type="date"],
 select,
 textarea {
-  min-height: 38px !important;
-  height: 38px !important;
-  background-color: var(--muted-bg) !important;
-  border: 1px solid var(--border) !important;
-  color: var(--foreground) !important;
-  border-radius: 8px !important;
-  font-size: 0.875rem !important;
-  font-weight: 400 !important;
-  padding: 0 0.875rem;
+  min-height: 38px;
+  background-color: var(--muted-bg);
+  border: 1px solid var(--border);
+  color: var(--foreground);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 400;
+  padding-left: 0.875rem;
+  padding-right: 0.875rem;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
   width: 100%;
   outline: none;
 }
 
-.input-with-icon {
+.input-with-icon,
+input.input-with-icon,
+input.pl-10,
+input.pl-11,
+input.pl-12,
+.has-left-icon input {
   padding-left: 2.75rem !important;
+}
+
+.input-with-right-icon,
+input.input-with-right-icon,
+input.pr-10,
+input.pr-11,
+input.pr-12 {
+  padding-right: 2.75rem !important;
 }
 
 textarea {
