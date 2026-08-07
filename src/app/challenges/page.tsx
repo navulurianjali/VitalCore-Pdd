@@ -8,7 +8,7 @@ import {
   Target, Users, CheckCircle, 
   Activity, Plus, Flame, RefreshCw, X,
   Droplets, Moon, Utensils, Smile, Sparkles, Award, Star,
-  Clock, ArrowRight, ChevronRight
+  Clock, ArrowRight, ChevronRight, Trophy, Zap
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/utils/supabase";
@@ -64,6 +64,44 @@ export const PREDEFINED_CHALLENGES: ChallengeItem[] = [
   { id: "c-hab-3", title: "Morning Sun Exposure", description: "Get 15 minutes of direct morning sunlight within 1 hour of waking.", category: "Healthy Habits", difficulty: "Easy", xp_reward: 200, duration_days: 21, participants_count: 310 },
   { id: "c-hab-4", title: "Probiotic Gut Health", description: "Consume daily fermented probiotic foods (curd, yogurt, kefir) for 14 days.", category: "Healthy Habits", difficulty: "Easy", xp_reward: 200, duration_days: 14, participants_count: 170 }
 ];
+
+// Circular SVG Progress Ring Component
+const ProgressRing = ({ percentage = 0, size = 42, strokeWidth = 4, color = "#f97316" }: { percentage: number; size?: number; strokeWidth?: number; color?: string }) => {
+  const radius = (size - strokeWidth) / 2;
+  const circumference = 2 * Math.PI * radius;
+  const strokeDashoffset = circumference - (percentage / 100) * circumference;
+
+  return (
+    <div className="relative flex items-center justify-center shrink-0" style={{ width: size, height: size }}>
+      <svg width={size} height={size} className="rotate-[-90deg]">
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          stroke="currentColor"
+          strokeWidth={strokeWidth}
+          className="text-foreground/10"
+          fill="transparent"
+        />
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          stroke={color}
+          strokeWidth={strokeWidth}
+          strokeDasharray={circumference}
+          strokeDashoffset={strokeDashoffset}
+          strokeLinecap="round"
+          fill="transparent"
+          className="transition-all duration-500 ease-out"
+        />
+      </svg>
+      <span className="absolute text-[10px] font-black text-foreground tabular-nums">
+        {Math.round(percentage)}%
+      </span>
+    </div>
+  );
+};
 
 export default function HealthyHabitsPage() {
   const { profile } = useAuth();
@@ -251,7 +289,7 @@ export default function HealthyHabitsPage() {
     return uniqueChallenges.filter(c => c.category === selectedCategory);
   }, [selectedCategory, uniqueChallenges]);
 
-  // 2. RECOMMENDATION ENGINE: 3-4 Personalized picks based on user profile & goals
+  // 2. RECOMMENDATION ENGINE: 3 Personalized picks based on user profile & goals
   const recommendedChallenges = useMemo(() => {
     const goal = (profile?.fitness_goal || "").toLowerCase();
     const unjoined = uniqueChallenges.filter(c => !hasJoined(c.id));
@@ -265,6 +303,15 @@ export default function HealthyHabitsPage() {
     }
     return unjoined.slice(0, 3);
   }, [uniqueChallenges, profile?.fitness_goal, userChallenges]);
+
+  // Stats row calculations
+  const completedCount = useMemo(() => {
+    return userChallenges.filter(uc => (uc.progress_percentage || 0) >= 100).length;
+  }, [userChallenges]);
+
+  const totalXp = useMemo(() => {
+    return userChallenges.reduce((sum, uc) => sum + (uc.challenge?.xp_reward || 200), 0) + (profile?.xp || 450);
+  }, [userChallenges, profile?.xp]);
 
   const getCategoryIcon = (cat: string) => {
     switch (cat) {
@@ -281,149 +328,199 @@ export default function HealthyHabitsPage() {
     <DashboardLayout>
       <div className="space-y-6 max-w-6xl mx-auto pb-12 font-sans">
         
-        {/* HEADER & ACTION BAR */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-foreground/5 border border-foreground/8 shadow-sm backdrop-blur-md">
-          <div className="space-y-0.5">
-            <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight flex items-center gap-2 text-foreground">
-              <Award className="h-6 w-6 text-emerald-500 shrink-0" />
-              Health Challenges & Sprints
-            </h1>
-            <p className="text-xs text-foreground/60 font-medium">
-              Join evidence-based health sprints, earn XP, and build sustainable habits.
-            </p>
+        {/* HEADER & STATISTICS WIDGET ROW */}
+        <div className="space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-3xl bg-background/60 backdrop-blur-md border border-foreground/8 shadow-sm">
+            <div className="space-y-0.5">
+              <h1 className="text-xl sm:text-2xl font-black tracking-tight text-foreground flex items-center gap-2">
+                Health Challenges
+              </h1>
+              <p className="text-xs text-foreground/60 font-medium">
+                Track active habit sprints, earn XP, and unlock milestones.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2 shrink-0">
+              <Button
+                onClick={fetchChallenges}
+                variant="glass"
+                size="sm"
+                className="text-xs font-semibold py-2 px-3 flex items-center gap-1.5 rounded-xl border border-foreground/10"
+              >
+                <RefreshCw className={`h-3.5 w-3.5 ${loadingChallenges ? "animate-spin" : ""}`} />
+                Sync
+              </Button>
+              <Button
+                onClick={() => setShowCreateModal(true)}
+                variant="primary"
+                className="py-2 px-3.5 text-xs font-bold bg-primary text-white flex items-center gap-1.5 shadow-sm rounded-xl"
+              >
+                <Plus className="h-4 w-4" />
+                Create Challenge
+              </Button>
+            </div>
           </div>
 
-          <div className="flex items-center gap-2 shrink-0">
-            <Button
-              onClick={fetchChallenges}
-              variant="glass"
-              size="sm"
-              className="text-xs font-semibold py-2 px-3 flex items-center gap-1.5"
-            >
-              <RefreshCw className={`h-3.5 w-3.5 ${loadingChallenges ? "animate-spin" : ""}`} />
-              Refresh
-            </Button>
-            <Button
-              onClick={() => setShowCreateModal(true)}
-              variant="primary"
-              className="py-2 px-3.5 text-xs font-bold bg-primary text-white flex items-center gap-1.5 shadow-sm rounded-xl"
-            >
-              <Plus className="h-4 w-4" />
-              Create Challenge
-            </Button>
+          {/* STATS ROW WIDGETS */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div className="p-3.5 rounded-2xl bg-background/50 border border-foreground/8 shadow-sm flex items-center gap-3">
+              <div className="p-2.5 rounded-xl bg-orange-500/10 text-orange-500 shrink-0">
+                <Trophy className="h-5 w-5" />
+              </div>
+              <div>
+                <span className="text-[10px] font-extrabold text-foreground/50 uppercase tracking-wider block">Active</span>
+                <span className="text-base font-black text-foreground tabular-nums">{userChallenges.length}</span>
+              </div>
+            </div>
+
+            <div className="p-3.5 rounded-2xl bg-background/50 border border-foreground/8 shadow-sm flex items-center gap-3">
+              <div className="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-500 shrink-0">
+                <Award className="h-5 w-5" />
+              </div>
+              <div>
+                <span className="text-[10px] font-extrabold text-foreground/50 uppercase tracking-wider block">Completed</span>
+                <span className="text-base font-black text-foreground tabular-nums">{completedCount}</span>
+              </div>
+            </div>
+
+            <div className="p-3.5 rounded-2xl bg-background/50 border border-foreground/8 shadow-sm flex items-center gap-3">
+              <div className="p-2.5 rounded-xl bg-rose-500/10 text-rose-500 shrink-0">
+                <Flame className="h-5 w-5" />
+              </div>
+              <div>
+                <span className="text-[10px] font-extrabold text-foreground/50 uppercase tracking-wider block">Streak</span>
+                <span className="text-base font-black text-foreground tabular-nums">{profile?.streak_days || 7} Days</span>
+              </div>
+            </div>
+
+            <div className="p-3.5 rounded-2xl bg-background/50 border border-foreground/8 shadow-sm flex items-center gap-3">
+              <div className="p-2.5 rounded-xl bg-amber-500/10 text-amber-500 shrink-0">
+                <Zap className="h-5 w-5" />
+              </div>
+              <div>
+                <span className="text-[10px] font-extrabold text-foreground/50 uppercase tracking-wider block">Total XP</span>
+                <span className="text-base font-black text-foreground tabular-nums">{totalXp} XP</span>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* SECTION 1: ACTIVE CHALLENGES (Compact Cards) */}
+        {/* SECTION 1: ACTIVE CHALLENGES (Small Horizontal Dashboard Widgets) */}
         {userChallenges.length > 0 && (
           <section className="space-y-3">
-            <div className="flex items-center justify-between">
-              <h2 className="text-sm font-extrabold text-foreground tracking-wide flex items-center gap-2 uppercase">
-                <Flame className="h-4 w-4 text-orange-500" />
-                Active Challenges ({userChallenges.length})
-              </h2>
-            </div>
+            <h2 className="text-xs font-extrabold text-foreground/70 uppercase tracking-wider flex items-center gap-1.5">
+              <Flame className="h-4 w-4 text-orange-500" />
+              Active Challenges ({userChallenges.length})
+            </h2>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
               {userChallenges.map((uc: any, idx: number) => {
                 const ch = uc.challenge || {};
                 const chId = uc.challenge_id || ch.id;
                 const progress = uc.progress_percentage || 0;
+                const IconComp = getCategoryIcon(ch.category);
 
                 return (
-                  <GlassCard key={idx} className="p-4 space-y-3 border-l-4 border-l-orange-500 rounded-2xl shadow-sm hover:scale-[1.01] transition-transform">
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="space-y-0.5 flex-1 min-w-0">
-                        <div className="flex items-center gap-1.5">
-                          <span className="px-2 py-0.5 rounded-full bg-orange-500/10 text-orange-500 text-[10px] font-bold">
-                            {ch.category || "Active"}
-                          </span>
-                          <span className="text-[10px] font-semibold text-foreground/50">{ch.duration_days || 7} Days</span>
-                        </div>
-                        <h4 className="font-bold text-xs text-foreground truncate mt-1">{ch.title || "Custom Challenge"}</h4>
+                  <div 
+                    key={idx} 
+                    className="p-3.5 rounded-2xl bg-background/80 backdrop-blur-md border border-foreground/8 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 flex items-center gap-3 group relative"
+                  >
+                    <ProgressRing percentage={progress} size={46} strokeWidth={4} color="#f97316" />
+
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1.5 mb-0.5">
+                        <span className="text-[9px] font-extrabold text-orange-500 bg-orange-500/10 px-1.5 py-0.5 rounded-md flex items-center gap-1">
+                          <IconComp className="h-2.5 w-2.5" />
+                          {ch.category || "Active"}
+                        </span>
+                        <span className="text-[9px] font-semibold text-foreground/40">{ch.duration_days || 7}d left</span>
                       </div>
+                      <h4 className="font-extrabold text-xs text-foreground truncate group-hover:text-primary transition-colors">
+                        {ch.title || "Custom Challenge"}
+                      </h4>
+                      <span className="text-[10px] font-semibold text-foreground/50">🏆 +{ch.xp_reward || 200} XP</span>
+                    </div>
+
+                    <div className="flex items-center gap-1 shrink-0">
+                      <button
+                        onClick={() => setSelectedChallengeModal(ch)}
+                        className="p-1.5 rounded-xl bg-foreground/5 hover:bg-foreground/10 text-foreground/70 transition-all text-xs"
+                        title="Details"
+                      >
+                        <ChevronRight className="h-4 w-4" />
+                      </button>
                       <button
                         onClick={() => handleLeaveChallenge(chId)}
-                        className="text-[10px] font-bold text-foreground/40 hover:text-rose-500 transition-colors p-1"
-                        title="Leave challenge"
+                        className="p-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 transition-all text-xs"
+                        title="Leave"
                       >
-                        <X className="h-3.5 w-3.5" />
+                        <X className="h-4 w-4" />
                       </button>
                     </div>
-
-                    {/* Progress Bar & Details Row */}
-                    <div className="space-y-1.5 pt-1 border-t border-foreground/5">
-                      <div className="flex items-center justify-between text-[10px] font-bold">
-                        <span className="text-foreground/60">Progress</span>
-                        <span className="text-orange-500 tabular-nums">{progress}%</span>
-                      </div>
-                      <div className="w-full bg-foreground/10 h-1.5 rounded-full overflow-hidden">
-                        <div className="bg-orange-500 h-full rounded-full transition-all duration-300" style={{ width: `${progress}%` }} />
-                      </div>
-
-                      <div className="flex items-center justify-between pt-1">
-                        <button
-                          onClick={() => setSelectedChallengeModal(ch)}
-                          className="text-[10px] font-bold text-primary hover:underline flex items-center gap-0.5"
-                        >
-                          View Details <ChevronRight className="h-3 w-3" />
-                        </button>
-                        <span className="text-[10px] font-semibold text-foreground/50">🏆 +{ch.xp_reward || 200} XP</span>
-                      </div>
-                    </div>
-                  </GlassCard>
+                  </div>
                 );
               })}
             </div>
           </section>
         )}
 
-        {/* SECTION 2: ⭐ RECOMMENDED FOR YOU (Personalized 3-4 Picks) */}
+        {/* SECTION 2: ⭐ RECOMMENDED FOR YOU (Large Featured Glass Cards) */}
         {recommendedChallenges.length > 0 && (
           <section className="space-y-3">
             <div className="flex items-center justify-between">
-              <h2 className="text-sm font-extrabold text-foreground tracking-wide flex items-center gap-2 uppercase">
+              <h2 className="text-xs font-extrabold text-foreground/70 uppercase tracking-wider flex items-center gap-1.5">
                 <Star className="h-4 w-4 text-amber-400 fill-amber-400" />
                 Recommended For You
               </h2>
-              <span className="text-[11px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
-                Matched to Your Goals
+              <span className="text-[10px] font-extrabold text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20">
+                Matched to Goals
               </span>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {recommendedChallenges.map((ch: ChallengeItem) => {
                 const IconComp = getCategoryIcon(ch.category);
                 return (
-                  <GlassCard key={ch.id} className="p-4 flex flex-col justify-between space-y-3 border-amber-500/20 bg-amber-500/5 hover:scale-[1.01] transition-transform">
-                    <div className="space-y-2">
+                  <div 
+                    key={ch.id} 
+                    className="relative overflow-hidden p-5 rounded-3xl bg-gradient-to-br from-amber-500/10 via-background/90 to-primary/5 border border-amber-500/20 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between space-y-4 group"
+                  >
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl pointer-events-none group-hover:bg-amber-500/20 transition-all" />
+
+                    <div className="space-y-3 relative z-10">
                       <div className="flex items-center justify-between">
-                        <span className="px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-500 text-[10px] font-bold flex items-center gap-1">
-                          <IconComp className="h-3 w-3" />
-                          {ch.category}
+                        <span className="px-2.5 py-1 rounded-xl bg-amber-500/20 text-amber-600 dark:text-amber-300 text-[9px] font-extrabold tracking-wider uppercase flex items-center gap-1.5 border border-amber-500/30">
+                          <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
+                          Goal Match
                         </span>
-                        <span className="text-[10px] font-extrabold text-amber-500">🏆 +{ch.xp_reward} XP</span>
+                        <span className="text-xs font-black text-amber-500 tabular-nums">🏆 +{ch.xp_reward} XP</span>
                       </div>
-                      <div>
-                        <h3 className="font-bold text-xs text-foreground line-clamp-1">{ch.title}</h3>
-                        <p className="text-[11px] text-foreground/60 font-medium line-clamp-2 mt-0.5 leading-tight">
-                          {ch.description}
-                        </p>
+
+                      <div className="flex items-start gap-3">
+                        <div className="p-3 rounded-2xl bg-amber-500/15 text-amber-500 shrink-0">
+                          <IconComp className="h-6 w-6" />
+                        </div>
+                        <div className="space-y-1 min-w-0">
+                          <h3 className="font-extrabold text-sm text-foreground leading-snug group-hover:text-amber-500 transition-colors line-clamp-1">
+                            {ch.title}
+                          </h3>
+                          <p className="text-xs text-foreground/70 font-medium leading-relaxed line-clamp-2">
+                            {ch.description}
+                          </p>
+                        </div>
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-between pt-2 border-t border-foreground/5">
-                      <span className="text-[10px] font-semibold text-foreground/50">{ch.duration_days} Days • {ch.difficulty}</span>
-                      <Button
+                    <div className="flex items-center justify-between pt-3 border-t border-amber-500/15 relative z-10">
+                      <span className="text-[11px] font-bold text-foreground/50">{ch.duration_days} Days • {ch.difficulty}</span>
+                      <button
                         onClick={() => handleJoinChallenge(ch)}
-                        variant="primary"
-                        size="sm"
-                        className="py-1 px-2.5 text-[11px] font-bold bg-amber-500 text-black hover:bg-amber-400 border-none shadow-sm rounded-lg"
+                        className="px-4 py-2 rounded-xl text-xs font-black bg-amber-500 hover:bg-amber-400 text-black shadow-md hover:shadow-amber-500/25 transition-all flex items-center gap-1 cursor-pointer"
                       >
-                        Join Now
-                      </Button>
+                        Join Challenge <ArrowRight className="h-3.5 w-3.5" />
+                      </button>
                     </div>
-                  </GlassCard>
+                  </div>
                 );
               })}
             </div>
@@ -432,16 +529,11 @@ export default function HealthyHabitsPage() {
 
         {/* SECTION 3: CHALLENGE LIBRARY (Modern Segmented Control + Compact Grid) */}
         <section id="challenge-library" className="space-y-4 pt-2">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div>
-              <h2 className="text-sm font-extrabold text-foreground tracking-wide flex items-center gap-2 uppercase">
-                <Target className="h-4 w-4 text-primary" />
-                Challenge Library
-              </h2>
-              <p className="text-[11px] text-foreground/60 font-medium">
-                {filteredChallenges.length} challenges available
-              </p>
-            </div>
+          <div className="flex items-center justify-between">
+            <h2 className="text-xs font-extrabold text-foreground/70 uppercase tracking-wider flex items-center gap-1.5">
+              <Target className="h-4 w-4 text-primary" />
+              Challenge Library ({filteredChallenges.length})
+            </h2>
           </div>
 
           {/* MODERN SEGMENTED CONTROL / PILL CATEGORY FILTER */}
@@ -452,7 +544,7 @@ export default function HealthyHabitsPage() {
                 <button
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}
-                  className={`px-3.5 py-1.5 rounded-xl shrink-0 transition-all text-xs ${
+                  className={`px-3.5 py-1.5 rounded-xl shrink-0 transition-all text-xs cursor-pointer ${
                     isSelected 
                       ? "bg-primary text-white font-bold shadow-sm" 
                       : "text-foreground/70 hover:text-foreground hover:bg-foreground/5 font-medium"
@@ -465,50 +557,55 @@ export default function HealthyHabitsPage() {
           </div>
 
           {/* COMPACT CHALLENGES GRID */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
             {filteredChallenges.map((ch: ChallengeItem) => {
               const IconComp = getCategoryIcon(ch.category);
               const joined = hasJoined(ch.id);
 
               return (
-                <GlassCard key={ch.id} className="p-4 space-y-3 flex flex-col justify-between hover:scale-[1.008] transition-transform duration-150 shadow-sm border-foreground/8">
+                <div 
+                  key={ch.id} 
+                  className="p-3.5 rounded-2xl bg-background/60 backdrop-blur-md border border-foreground/8 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 flex flex-col justify-between space-y-3 group"
+                >
                   <div className="space-y-2">
-                    {/* Category Badge & XP */}
                     <div className="flex items-center justify-between">
-                      <span className="px-2 py-0.5 rounded-md bg-primary/10 text-primary text-[10px] font-bold flex items-center gap-1">
-                        <IconComp className="h-3 w-3" />
+                      <span className="px-2 py-0.5 rounded-lg bg-foreground/5 text-foreground/70 text-[10px] font-bold flex items-center gap-1">
+                        <IconComp className="h-3 w-3 text-primary" />
                         {ch.category}
                       </span>
-                      <span className="text-[10px] font-bold text-amber-500 tabular-nums">
-                        🏆 +{ch.xp_reward} XP
-                      </span>
+                      <span className="text-[10px] font-black text-amber-500 tabular-nums">🏆 +{ch.xp_reward} XP</span>
                     </div>
 
-                    {/* Title & Description */}
                     <div>
-                      <h3 className="font-bold text-xs text-foreground leading-snug line-clamp-1">{ch.title}</h3>
-                      <p className="text-[11px] text-foreground/60 font-medium mt-1 leading-normal line-clamp-2">{ch.description}</p>
+                      <h3 className="font-extrabold text-xs text-foreground group-hover:text-primary transition-colors line-clamp-1">
+                        {ch.title}
+                      </h3>
+                      <p className="text-[11px] text-foreground/60 font-medium mt-1 leading-normal line-clamp-2">
+                        {ch.description}
+                      </p>
                     </div>
                   </div>
 
-                  {/* Metadata & Join Button */}
-                  <div className="space-y-2.5 pt-2 border-t border-foreground/5">
+                  <div className="space-y-2 pt-2 border-t border-foreground/5">
                     <div className="flex items-center justify-between text-[10px] font-semibold text-foreground/50">
                       <span>{ch.duration_days} Days • {ch.difficulty}</span>
                       <span>{ch.participants_count || 120}+ Active</span>
                     </div>
 
                     {joined ? (
-                      <div className="w-full text-center text-xs font-bold py-1.5 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center justify-center gap-1">
+                      <div className="w-full text-center text-[11px] font-extrabold py-1.5 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center justify-center gap-1">
                         <CheckCircle className="h-3.5 w-3.5" /> Joined & Active
                       </div>
                     ) : (
-                      <Button onClick={() => handleJoinChallenge(ch)} variant="primary" className="w-full text-xs font-bold py-2 bg-primary text-white rounded-xl shadow-sm">
+                      <button
+                        onClick={() => handleJoinChallenge(ch)}
+                        className="w-full py-1.5 text-[11px] font-extrabold bg-primary hover:bg-primary/90 text-white rounded-xl shadow-sm transition-all cursor-pointer"
+                      >
                         Join Challenge
-                      </Button>
+                      </button>
                     )}
                   </div>
-                </GlassCard>
+                </div>
               );
             })}
           </div>
