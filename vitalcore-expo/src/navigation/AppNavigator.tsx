@@ -24,6 +24,7 @@ import CalorieTrackerScreen from '../screens/details/CalorieTrackerScreen';
 import FutureLabScreen from '../screens/details/FutureLabScreen';
 import CommunityScreen from '../screens/details/CommunityScreen';
 import ChallengesScreen from '../screens/details/ChallengesScreen';
+import HealthyHabitsScreen from '../screens/details/HealthyHabitsScreen';
 import SettingsScreen from '../screens/details/SettingsScreen';
 import CameraScreen from '../screens/details/CameraScreen';
 
@@ -63,6 +64,18 @@ function MainTabNavigator() {
           tabBarIcon: ({ color, focused }) => (
             <View style={[styles.iconContainer, focused && styles.iconActive]}>
               <Text style={{ fontSize: 18, color }}>🏠</Text>
+            </View>
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Habits"
+        component={HealthyHabitsScreen}
+        options={{
+          tabBarLabel: 'Habits',
+          tabBarIcon: ({ color, focused }) => (
+            <View style={[styles.iconContainer, focused && styles.iconActive]}>
+              <Text style={{ fontSize: 18, color }}>🎯</Text>
             </View>
           ),
         }}
@@ -130,12 +143,13 @@ export default function AppNavigator() {
           <Stack.Screen name="FutureLabDetail" component={FutureLabScreen} />
           <Stack.Screen name="CommunityDetail" component={CommunityScreen} />
           <Stack.Screen name="ChallengesDetail" component={ChallengesScreen} />
+          <Stack.Screen name="HealthyHabits" component={HealthyHabitsScreen} />
+          <Stack.Screen name="HealthyHabitsDetail" component={HealthyHabitsScreen} />
           <Stack.Screen name="SettingsDetail" component={SettingsScreen} />
           <Stack.Screen name="CameraDetail" component={CameraScreen} />
         </>
       )}
     </Stack.Navigator>
-
   );
 }
 
@@ -158,20 +172,20 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   iconContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
     padding: 2,
+    borderRadius: 8,
   },
   iconActive: {
     transform: [{ scale: 1.1 }],
   },
   loadingScreen: {
     flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
+    justifyContent: 'center',
+    gap: 12,
   },
   loadingText: {
-    marginTop: 12,
     fontSize: 14,
+    fontWeight: '500',
   },
 });
