@@ -67,10 +67,15 @@ export default function AICoachScreen() {
           }));
           setMessages(loaded);
         } else {
+          const isBrandNew = !metrics || !metrics.hasTelemetry || metrics.trackingDaysCount === 0;
+          const welcomeText = isBrandNew
+            ? "Welcome! Start logging your daily health activities. I'll learn your habits over time and provide personalized recommendations once enough data is available."
+            : `Hello ${profile?.full_name?.split(' ')[0] || 'there'}! Today you have logged ${metrics?.hydrationMl || 0}ml water, ${metrics?.caloriesConsumed || 0} kcal, and ${metrics?.sleepHours || 0}h sleep. How can I assist your health goals today?`;
+
           const welcomeMsg: Message = {
             id: 'welcome',
             sender: 'ai',
-            text: `Hello ${profile?.full_name?.split(' ')[0] || 'there'}! I am your AI Health Companion. Today you have logged ${metrics?.hydrationMl || 0}ml water, ${metrics?.caloriesConsumed || 0} kcal, and ${metrics?.sleepHours || 0}h sleep. How can I assist your health goals today?`,
+            text: welcomeText,
             timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
           };
           setMessages([welcomeMsg]);

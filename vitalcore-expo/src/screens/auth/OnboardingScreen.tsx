@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   StyleSheet,
   View,
@@ -37,7 +37,33 @@ import {
   Sparkles,
   Heart,
   Edit3,
+  Search,
+  Check,
+  ShieldCheck,
 } from 'lucide-react-native';
+
+export const COMMON_MEDICAL_CONDITIONS = [
+  "None",
+  "Diabetes",
+  "Hypertension",
+  "Heart Disease",
+  "Asthma",
+  "Arthritis",
+  "High Cholesterol",
+  "Thyroid Disorder",
+  "Obesity",
+  "Osteoporosis",
+  "Kidney Disease",
+  "Liver Disease",
+  "PCOS",
+  "Depression",
+  "Anxiety",
+  "Sleep Apnea",
+  "Back Pain",
+  "Knee Pain",
+  "Pregnancy",
+  "Other"
+];
 
 export default function OnboardingScreen({ navigation }: any) {
   const insets = useSafeAreaInsets();
@@ -96,10 +122,35 @@ export default function OnboardingScreen({ navigation }: any) {
     { label: 'No Preference', desc: 'Flexible dietary intake' },
   ];
 
-  // STEP 5: Medical Info
-  const [medicalConditions, setMedicalConditions] = useState(profile?.medical_conditions || '');
+  // STEP 5: Medical Info (Searchable Multi-Select)
+  const [selectedMedicalConditions, setSelectedMedicalConditions] = useState<string[]>(["None"]);
+  const [medicalSearchQuery, setMedicalSearchQuery] = useState('');
+  const [customOtherCondition, setCustomOtherCondition] = useState('');
   const [medications, setMedications] = useState(profile?.medications || '');
   const [allergies, setAllergies] = useState(profile?.allergies || '');
+
+  const filteredMedicalOptions = useMemo(() => {
+    if (!medicalSearchQuery.trim()) return COMMON_MEDICAL_CONDITIONS;
+    return COMMON_MEDICAL_CONDITIONS.filter(c => c.toLowerCase().includes(medicalSearchQuery.toLowerCase().trim()));
+  }, [medicalSearchQuery]);
+
+  const toggleMedicalCondition = (cond: string) => {
+    if (cond === "None") {
+      setSelectedMedicalConditions(["None"]);
+      setCustomOtherCondition('');
+      return;
+    }
+
+    setSelectedMedicalConditions(prev => {
+      const withoutNone = prev.filter(c => c !== "None");
+      if (withoutNone.includes(cond)) {
+        const next = withoutNone.filter(c => c !== cond);
+        return next.length === 0 ? ["None"] : next;
+      } else {
+        return [...withoutNone, cond];
+      }
+    });
+  };
 
   // STEP 6: Lifestyle
   const [activityLevel, setActivityLevel] = useState(profile?.activity_level || '');
@@ -159,7 +210,7 @@ export default function OnboardingScreen({ navigation }: any) {
   const isStep2Valid = heightCm.trim() !== '' && weightKg.trim() !== '' && parseFloat(heightCm) >= 50 && parseFloat(weightKg) >= 10;
   const isStep3Valid = goals.length > 0;
   const isStep4Valid = foodPreference !== '';
-  const isStep5Valid = medicalConditions.trim() !== '';
+  const isStep5Valid = selectedMedicalConditions.length > 0;
   const isStep6Valid = activityLevel !== '' && sleepDuration.trim() !== '' && parseFloat(sleepDuration) > 0;
   const isStep7Valid = calorieGoal.trim() !== '' && proteinGoal.trim() !== '' && waterGoal.trim() !== '' && stepGoal.trim() !== '';
 
@@ -179,24 +230,27 @@ export default function OnboardingScreen({ navigation }: any) {
     setStep(3);
   };
 
-  const handleFinishOnboarding = async () => {
-    console.log('[ONBOARDING] Save & Get Started Pressed');
+  const handleCompleteOnboarding = async () => {
+    if (!isStep7Valid) {
+      Alert.alert('Validation Required', 'Please ensure all daily health targets are non-empty numbers.');
+      return;
+    }
 
-    if (loading) return;
-
+    setLoading(true);
     try {
-      setLoading(true);
+      const a = parseInt(age, 10);
+      const w = parseFloat(weightKg);
+      const h = parseFloat(heightCm);
 
-      const activeUserId = user?.id || profile?.id;
-      if (!activeUserId) {
-        Alert.alert('Session Error', 'No active user session found. Please log in again.');
-        setLoading(false);
-        return;
+      const isElderlyAuto = a >= 60;
+      const assignedMode: 'wellness' | 'elderly' = isElderlyAuto ? 'elderly' : 'wellness';
+
+      const finalMedicalArray = selectedMedicalConditions.filter(c => c !== "Other");
+      if (selectedMedicalConditions.includes("Other") && customOtherCondition.trim()) {
+        finalMedicalArray.push(`Other: ${customOtherCondition.trim()}`);
       }
+      const medicalConditionsString = finalMedicalArray.join(", ");
 
-      const w = isNaN(parseFloat(weightKg)) ? 70 : parseFloat(weightKg);
-      const h = isNaN(parseFloat(heightCm)) ? 175 : parseFloat(heightCm);
-      const a = isNaN(parseInt(age, 10)) ? 25 : parseInt(age, 10);
       const calTarget = isNaN(parseInt(calorieGoal, 10)) ? 2000 : parseInt(calorieGoal, 10);
       const protTarget = isNaN(parseInt(proteinGoal, 10)) ? 110 : parseInt(proteinGoal, 10);
       const waterTarget = isNaN(parseInt(waterGoal, 10)) ? 2500 : parseInt(waterGoal, 10);
@@ -213,7 +267,7 @@ export default function OnboardingScreen({ navigation }: any) {
         fitness_goal: goals.length > 0 ? goals.join(', ') : 'Healthy Lifestyle',
         food_preference: foodPreference || 'No Preference',
         dietary_preferences: foodPreference || 'No Preference',
-        medical_conditions: medicalConditions.trim() || 'None',
+        medical_conditions: medicalConditionsString,
         medications: medications.trim() || 'None',
         allergies: allergies.trim() || 'None',
         activity_level: activityLevel || 'Moderately Active',
@@ -222,6 +276,8 @@ export default function OnboardingScreen({ navigation }: any) {
         protein_goal: protTarget,
         water_goal: waterTarget,
         step_goal: stepTarget,
+        active_mode: assignedMode,
+        is_auto_assigned_mode: isElderlyAuto,
         onboarding_completed: true,
       };
 
@@ -278,45 +334,37 @@ export default function OnboardingScreen({ navigation }: any) {
               <View style={{ width: 36 }} />
             )}
 
-            <View style={[styles.stepBadge, { backgroundColor: colors.primaryLight }]}>
-              <Text style={[styles.stepBadgeText, { color: colors.primary }]}>Step {step} of 7</Text>
+            <View style={styles.badgeStep}>
+              <Text style={[styles.badgeStepText, { color: colors.primary }]}>Step {step} of 7</Text>
             </View>
 
-            <TouchableOpacity style={[styles.themeBtn, { backgroundColor: colors.surface }]} onPress={toggleTheme}>
+            <TouchableOpacity style={[styles.iconBackButton, { backgroundColor: colors.surface }]} onPress={toggleTheme}>
               {isDark ? <Sun size={18} color="#fbbf24" /> : <Moon size={18} color="#6366f1" />}
             </TouchableOpacity>
           </View>
 
-          {/* Animated Track */}
-          <View style={[styles.progressTrackBg, { backgroundColor: colors.surface }]}>
-            <View style={[styles.progressTrackFill, { width: `${progressPercent}%`, backgroundColor: colors.primary }]} />
+          <View style={[styles.progressBarBg, { backgroundColor: colors.surface }]}>
+            <View style={[styles.progressBarFill, { width: `${progressPercent}%`, backgroundColor: colors.primary }]} />
           </View>
         </View>
 
-        <ScrollView
-          contentContainerStyle={[
-            styles.scrollContent,
-            { paddingBottom: Math.max(insets.bottom + 24, 32) },
-          ]}
-          showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled"
-        >
-          {/* STEP 1: Personal Info */}
+        <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+          {/* STEP 1: Personal Profile */}
           {step === 1 && (
             <View style={[styles.stepCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
               <View style={styles.stepHeader}>
-                <View style={[styles.stepIconBg, { backgroundColor: colors.primaryLight }]}>
+                <View style={[styles.stepIconBg, { backgroundColor: 'rgba(16, 185, 129, 0.15)' }]}>
                   <User size={24} color={colors.primary} />
                 </View>
                 <View style={{ flex: 1 }}>
-                  <Text style={[styles.stepTitle, { color: colors.text }]}>Personal Details</Text>
-                  <Text style={[styles.stepSubtitle, { color: colors.textMuted }]}>Let's start with your basic information.</Text>
+                  <Text style={[styles.stepTitle, { color: colors.text }]}>Personal Profile</Text>
+                  <Text style={[styles.stepSubtitle, { color: colors.textMuted }]}>Let us personalize your preventive care protocol.</Text>
                 </View>
               </View>
 
               <CustomTextInput
-                label="Full Name"
-                placeholder="e.g. John Doe"
+                label="Full Name *"
+                placeholder="Enter your full name"
                 value={fullName}
                 onChangeText={setFullName}
                 leftIcon={<User size={18} color={colors.textMuted} />}
@@ -324,40 +372,43 @@ export default function OnboardingScreen({ navigation }: any) {
               />
 
               <CustomTextInput
-                label="Age (years)"
+                label="Age (Years) *"
                 placeholder="e.g. 28"
                 value={age}
                 onChangeText={setAge}
                 keyboardType="numeric"
+                leftIcon={<Activity size={18} color={colors.textMuted} />}
                 containerStyle={styles.inputGroup}
               />
+              {age.trim() !== '' && parseInt(age, 10) >= 60 && (
+                <Text style={{ fontSize: 11, fontWeight: 'bold', color: colors.primary, marginTop: -6, marginBottom: 12 }}>
+                  👵 Elderly Mode will be auto-assigned upon setup.
+                </Text>
+              )}
 
               <View style={styles.inputGroup}>
-                <Text style={[styles.label, { color: colors.text }]}>Biological Sex / Gender</Text>
+                <Text style={[styles.label, { color: colors.text }]}>Biological Sex *</Text>
                 <View style={styles.genderRow}>
-                  {['male', 'female', 'other'].map((g) => (
-                    <TouchableOpacity
-                      key={g}
-                      style={[
-                        styles.genderCard,
-                        {
-                          backgroundColor: gender === g ? colors.primaryLight : colors.surface,
-                          borderColor: gender === g ? colors.primary : colors.cardBorder,
-                        },
-                      ]}
-                      onPress={() => setGender(g)}
-                    >
-                      <Text
+                  {['male', 'female', 'other'].map((g) => {
+                    const isSelected = gender === g;
+                    return (
+                      <TouchableOpacity
+                        key={g}
                         style={[
-                          styles.genderText,
-                          { color: gender === g ? colors.primary : colors.textMuted },
-                          gender === g && { fontWeight: '700' },
+                          styles.genderBtn,
+                          {
+                            backgroundColor: isSelected ? colors.primaryLight : colors.surface,
+                            borderColor: isSelected ? colors.primary : colors.cardBorder,
+                          },
                         ]}
+                        onPress={() => setGender(g)}
                       >
-                        {g === 'male' ? '♂️ Male' : g === 'female' ? '♀️ Female' : '⚧️ Other'}
-                      </Text>
-                    </TouchableOpacity>
-                  ))}
+                        <Text style={[styles.genderText, { color: isSelected ? colors.primary : colors.text }]}>
+                          {g.charAt(0).toUpperCase() + g.slice(1)}
+                        </Text>
+                      </TouchableOpacity>
+                    );
+                  })}
                 </View>
               </View>
 
@@ -376,68 +427,59 @@ export default function OnboardingScreen({ navigation }: any) {
           {step === 2 && (
             <View style={[styles.stepCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
               <View style={styles.stepHeader}>
-                <View style={[styles.stepIconBg, { backgroundColor: 'rgba(16, 185, 129, 0.15)' }]}>
-                  <Scale size={24} color="#34d399" />
+                <View style={[styles.stepIconBg, { backgroundColor: 'rgba(59, 130, 246, 0.15)' }]}>
+                  <Scale size={24} color="#60a5fa" />
                 </View>
                 <View style={{ flex: 1 }}>
-                  <Text style={[styles.stepTitle, { color: colors.text }]}>Body Metrics</Text>
-                  <Text style={[styles.stepSubtitle, { color: colors.textMuted }]}>Used for accurate macro & calorie target calculations.</Text>
+                  <Text style={[styles.stepTitle, { color: colors.text }]}>Body Metrics & BMI</Text>
+                  <Text style={[styles.stepSubtitle, { color: colors.textMuted }]}>Used to calculate BMR and energy baselines.</Text>
                 </View>
               </View>
 
-              <View style={styles.metricsRow}>
-                <View style={{ flex: 1, marginRight: 8 }}>
-                  <CustomTextInput
-                    label="Height (cm)"
-                    placeholder="175"
-                    value={heightCm}
-                    onChangeText={setHeightCm}
-                    keyboardType="numeric"
-                    leftIcon={<Ruler size={18} color={colors.textMuted} />}
-                  />
-                </View>
+              <CustomTextInput
+                label="Height (cm) *"
+                placeholder="e.g. 175"
+                value={heightCm}
+                onChangeText={setHeightCm}
+                keyboardType="numeric"
+                leftIcon={<Ruler size={18} color={colors.textMuted} />}
+                containerStyle={styles.inputGroup}
+              />
 
-                <View style={{ flex: 1, marginLeft: 8 }}>
-                  <CustomTextInput
-                    label="Weight (kg)"
-                    placeholder="70"
-                    value={weightKg}
-                    onChangeText={setWeightKg}
-                    keyboardType="numeric"
-                    leftIcon={<Scale size={18} color={colors.textMuted} />}
-                  />
-                </View>
-              </View>
+              <CustomTextInput
+                label="Weight (kg) *"
+                placeholder="e.g. 70"
+                value={weightKg}
+                onChangeText={setWeightKg}
+                keyboardType="numeric"
+                leftIcon={<Scale size={18} color={colors.textMuted} />}
+                containerStyle={styles.inputGroup}
+              />
 
-              {/* Dynamic Live BMI Gauge Card */}
-              <View style={[styles.bmiPreviewCard, { backgroundColor: colors.surface, borderColor: colors.cardBorder }]}>
-                <View style={styles.bmiHeader}>
-                  <Text style={[styles.bmiTitle, { color: colors.text }]}>Body Mass Index (BMI)</Text>
-                  <View style={[styles.bmiBadge, { backgroundColor: `${bmiCategory.color}22` }]}>
-                    <Text style={[styles.bmiBadgeText, { color: bmiCategory.color }]}>
-                      {bmiCategory.label}
-                    </Text>
+              {bmiVal > 0 && (
+                <View style={[styles.bmiBox, { backgroundColor: colors.surface, borderColor: colors.cardBorder }]}>
+                  <View style={{ flex: 1 }}>
+                    <Text style={[styles.bmiLabel, { color: colors.textMuted }]}>Calculated BMI</Text>
+                    <Text style={[styles.bmiValue, { color: colors.text }]}>{bmiVal} <Text style={{ fontSize: 13, fontWeight: 'normal' }}>kg/m²</Text></Text>
+                  </View>
+                  <View style={[styles.bmiTag, { backgroundColor: bmiCategory.color + '22', borderColor: bmiCategory.color }]}>
+                    <Text style={[styles.bmiTagText, { color: bmiCategory.color }]}>{bmiCategory.label}</Text>
                   </View>
                 </View>
-
-                <Text style={[styles.bmiScoreText, { color: colors.text }]}>{bmiVal > 0 ? bmiVal : '--'}</Text>
-                <Text style={[styles.bmiNote, { color: colors.textMuted }]}>
-                  Auto-calculated using standard clinical BMI reference parameters.
-                </Text>
-              </View>
+              )}
 
               <TouchableOpacity
                 style={[styles.primaryBtn, { backgroundColor: colors.primary }, !isStep2Valid && styles.disabledBtn]}
                 onPress={handleNextFromStep2}
                 disabled={!isStep2Valid}
               >
-                <Text style={styles.primaryBtnText}>Continue to Health Goals</Text>
+                <Text style={styles.primaryBtnText}>Continue to Goals</Text>
                 <ArrowRight size={20} color="#ffffff" style={{ marginLeft: 8 }} />
               </TouchableOpacity>
             </View>
           )}
 
-          {/* STEP 3: Health Goals */}
+          {/* STEP 3: Primary Health Goals */}
           {step === 3 && (
             <View style={[styles.stepCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
               <View style={styles.stepHeader}>
@@ -445,35 +487,30 @@ export default function OnboardingScreen({ navigation }: any) {
                   <Target size={24} color="#f87171" />
                 </View>
                 <View style={{ flex: 1 }}>
-                  <Text style={[styles.stepTitle, { color: colors.text }]}>Health Goals</Text>
-                  <Text style={[styles.stepSubtitle, { color: colors.textMuted }]}>Select all targets you want VitaCore AI to optimize.</Text>
+                  <Text style={[styles.stepTitle, { color: colors.text }]}>Primary Health Goals</Text>
+                  <Text style={[styles.stepSubtitle, { color: colors.textMuted }]}>Select one or more objectives.</Text>
                 </View>
               </View>
 
-              <View style={styles.goalsGrid}>
-                {availableGoals.map((item) => {
-                  const IconComp = item.icon;
-                  const isSelected = goals.includes(item.label);
-
+              <View style={styles.gridGoals}>
+                {availableGoals.map((g) => {
+                  const isSelected = goals.includes(g.label);
+                  const IconComp = g.icon;
                   return (
                     <TouchableOpacity
-                      key={item.label}
+                      key={g.label}
                       style={[
                         styles.goalCard,
                         {
-                          backgroundColor: isSelected ? `${item.color}18` : colors.surface,
-                          borderColor: isSelected ? item.color : colors.cardBorder,
+                          backgroundColor: isSelected ? colors.primaryLight : colors.surface,
+                          borderColor: isSelected ? colors.primary : colors.cardBorder,
                         },
                       ]}
-                      onPress={() => toggleGoal(item.label)}
+                      onPress={() => toggleGoal(g.label)}
                     >
-                      <View style={[styles.goalIconCircle, { backgroundColor: `${item.color}22` }]}>
-                        <IconComp size={20} color={item.color} />
-                      </View>
-                      <Text style={[styles.goalText, { color: colors.text }]}>{item.label}</Text>
-                      {isSelected && (
-                        <CheckCircle2 size={16} color={item.color} style={styles.checkPos} />
-                      )}
+                      <IconComp size={20} color={isSelected ? colors.primary : g.color} />
+                      <Text style={[styles.goalText, { color: isSelected ? colors.primary : colors.text }]}>{g.label}</Text>
+                      {isSelected && <CheckCircle2 size={16} color={colors.primary} style={styles.goalCheck} />}
                     </TouchableOpacity>
                   );
                 })}
@@ -490,7 +527,7 @@ export default function OnboardingScreen({ navigation }: any) {
             </View>
           )}
 
-          {/* STEP 4: Dietary Preferences */}
+          {/* STEP 4: Food Preference */}
           {step === 4 && (
             <View style={[styles.stepCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
               <View style={styles.stepHeader}>
@@ -498,17 +535,17 @@ export default function OnboardingScreen({ navigation }: any) {
                   <Apple size={24} color="#34d399" />
                 </View>
                 <View style={{ flex: 1 }}>
-                  <Text style={[styles.stepTitle, { color: colors.text }]}>Food & Diet Preference</Text>
-                  <Text style={[styles.stepSubtitle, { color: colors.textMuted }]}>Guides AI meal suggestions and macro distributions.</Text>
+                  <Text style={[styles.stepTitle, { color: colors.text }]}>Dietary Preferences</Text>
+                  <Text style={[styles.stepSubtitle, { color: colors.textMuted }]}>Helps AI tailor personalized food recommendations.</Text>
                 </View>
               </View>
 
               <View style={styles.radioList}>
-                {foodOptions.map((option) => {
-                  const isSelected = foodPreference === option.label;
+                {foodOptions.map((opt) => {
+                  const isSelected = foodPreference === opt.label;
                   return (
                     <TouchableOpacity
-                      key={option.label}
+                      key={opt.label}
                       style={[
                         styles.radioCard,
                         {
@@ -516,7 +553,7 @@ export default function OnboardingScreen({ navigation }: any) {
                           borderColor: isSelected ? colors.primary : colors.cardBorder,
                         },
                       ]}
-                      onPress={() => setFoodPreference(option.label)}
+                      onPress={() => setFoodPreference(opt.label)}
                     >
                       <View style={styles.radioLeft}>
                         <View
@@ -528,8 +565,8 @@ export default function OnboardingScreen({ navigation }: any) {
                           {isSelected && <View style={[styles.radioInner, { backgroundColor: colors.primary }]} />}
                         </View>
                         <View>
-                          <Text style={[styles.radioTitle, { color: colors.text }]}>{option.label}</Text>
-                          <Text style={[styles.radioSub, { color: colors.textMuted }]}>{option.desc}</Text>
+                          <Text style={[styles.radioTitle, { color: colors.text }]}>{opt.label}</Text>
+                          <Text style={[styles.radioSub, { color: colors.textMuted }]}>{opt.desc}</Text>
                         </View>
                       </View>
                     </TouchableOpacity>
@@ -542,13 +579,13 @@ export default function OnboardingScreen({ navigation }: any) {
                 onPress={() => setStep(5)}
                 disabled={!isStep4Valid}
               >
-                <Text style={styles.primaryBtnText}>Continue to Medical Info</Text>
+                <Text style={styles.primaryBtnText}>Continue to Medical History</Text>
                 <ArrowRight size={20} color="#ffffff" style={{ marginLeft: 8 }} />
               </TouchableOpacity>
             </View>
           )}
 
-          {/* STEP 5: Medical Information */}
+          {/* STEP 5: Medical History (Searchable Multi-Select) */}
           {step === 5 && (
             <View style={[styles.stepCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
               <View style={styles.stepHeader}>
@@ -557,38 +594,56 @@ export default function OnboardingScreen({ navigation }: any) {
                 </View>
                 <View style={{ flex: 1 }}>
                   <Text style={[styles.stepTitle, { color: colors.text }]}>Medical History</Text>
-                  <Text style={[styles.stepSubtitle, { color: colors.textMuted }]}>Optional details for safety & personalized AI guardrails.</Text>
+                  <Text style={[styles.stepSubtitle, { color: colors.textMuted }]}>Select all existing medical conditions that apply.</Text>
                 </View>
               </View>
 
-              {/* Quick condition chips */}
-              <Text style={[styles.label, { color: colors.text }]}>Quick Add Medical Conditions</Text>
-              <View style={styles.chipRow}>
-                {['Diabetes', 'Hypertension', 'Asthma', 'Thyroid', 'PCOS', 'None'].map((chip) => (
-                  <TouchableOpacity
-                    key={chip}
-                    style={[styles.chipItem, { backgroundColor: colors.surface, borderColor: colors.cardBorder }]}
-                    onPress={() => {
-                      if (chip === 'None') setMedicalConditions('None');
-                      else {
-                        const current = medicalConditions ? medicalConditions.split(', ') : [];
-                        if (!current.includes(chip)) setMedicalConditions([...current, chip].join(', '));
-                      }
-                    }}
-                  >
-                    <Text style={[styles.chipText, { color: colors.primary }]}>+ {chip}</Text>
-                  </TouchableOpacity>
-                ))}
+              {/* Search Box */}
+              <View style={[styles.searchBox, { backgroundColor: colors.surface, borderColor: colors.cardBorder }]}>
+                <Search size={16} color={colors.textMuted} style={{ marginRight: 8 }} />
+                <TextInput
+                  style={[styles.searchInput, { color: colors.text }]}
+                  placeholder="Search conditions..."
+                  placeholderTextColor={colors.textMuted}
+                  value={medicalSearchQuery}
+                  onChangeText={setMedicalSearchQuery}
+                />
               </View>
 
-              <CustomTextInput
-                label="Existing Medical Conditions"
-                placeholder="e.g. Hypertension, Asthma, or None"
-                value={medicalConditions}
-                onChangeText={setMedicalConditions}
-                leftIcon={<Stethoscope size={18} color={colors.textMuted} />}
-                containerStyle={styles.inputGroup}
-              />
+              {/* Conditions Chip Grid */}
+              <View style={styles.chipGrid}>
+                {filteredMedicalOptions.map((chip) => {
+                  const isSelected = selectedMedicalConditions.includes(chip);
+                  return (
+                    <TouchableOpacity
+                      key={chip}
+                      style={[
+                        styles.medicalChip,
+                        {
+                          backgroundColor: isSelected ? colors.primary : colors.surface,
+                          borderColor: isSelected ? colors.primary : colors.cardBorder,
+                        },
+                      ]}
+                      onPress={() => toggleMedicalCondition(chip)}
+                    >
+                      <Text style={{ fontSize: 11, fontWeight: 'bold', color: isSelected ? '#ffffff' : colors.text }}>
+                        {isSelected ? `✓ ${chip}` : `+ ${chip}`}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+
+              {selectedMedicalConditions.includes("Other") && (
+                <CustomTextInput
+                  label="Specify Other Condition"
+                  placeholder="e.g. Chronic Migraines, Vertigo"
+                  value={customOtherCondition}
+                  onChangeText={setCustomOtherCondition}
+                  leftIcon={<Stethoscope size={18} color={colors.textMuted} />}
+                  containerStyle={styles.inputGroup}
+                />
+              )}
 
               <CustomTextInput
                 label="Current Medications"
@@ -756,7 +811,7 @@ export default function OnboardingScreen({ navigation }: any) {
 
                 <View style={[styles.targetCard, { backgroundColor: colors.surface, borderColor: 'rgba(16, 185, 129, 0.3)' }]}>
                   <Activity size={20} color="#10b981" />
-                  <Text style={[styles.targetLabel, { color: colors.textMuted }]}>Steps</Text>
+                  <Text style={[styles.targetLabel, { color: colors.textMuted }]}>Daily Steps</Text>
                   {isEditingTargets ? (
                     <CustomTextInput
                       value={stepGoal}
@@ -771,27 +826,35 @@ export default function OnboardingScreen({ navigation }: any) {
                 </View>
               </View>
 
+              {parseInt(age, 10) >= 60 && (
+                <View style={{ backgroundColor: 'rgba(16, 185, 129, 0.1)', padding: 10, borderRadius: 10, marginVertical: 10 }}>
+                  <Text style={{ fontSize: 11, fontWeight: 'bold', color: colors.primary }}>
+                    👵 Elderly Mode automatically selected for smooth navigation & low-impact protocols.
+                  </Text>
+                </View>
+              )}
+
               <TouchableOpacity
-                style={styles.toggleEditBtn}
+                style={[styles.editTargetsBtn, { borderColor: colors.cardBorder }]}
                 onPress={() => setIsEditingTargets(!isEditingTargets)}
               >
-                <Edit3 size={16} color={colors.primary} style={{ marginRight: 6 }} />
-                <Text style={[styles.toggleEditText, { color: colors.primary }]}>
-                  {isEditingTargets ? 'Lock Calculated Targets' : 'Customize Daily Targets'}
+                <Edit3 size={16} color={colors.primary} />
+                <Text style={[styles.editTargetsText, { color: colors.primary }]}>
+                  {isEditingTargets ? 'Done Editing' : 'Customize Target Numbers'}
                 </Text>
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={[styles.saveBtn, { backgroundColor: colors.success || '#10b981' }, loading && styles.disabledBtn]}
-                onPress={handleFinishOnboarding}
-                disabled={loading}
+                style={[styles.primaryBtn, { backgroundColor: colors.primary }, !isStep7Valid && styles.disabledBtn]}
+                onPress={handleCompleteOnboarding}
+                disabled={loading || !isStep7Valid}
               >
                 {loading ? (
-                  <ActivityIndicator color="#ffffff" size="small" />
+                  <ActivityIndicator color="#ffffff" />
                 ) : (
                   <>
-                    <Text style={styles.saveBtnText}>Save & Get Started</Text>
-                    <CheckCircle2 size={22} color="#ffffff" style={{ marginLeft: 8 }} />
+                    <Text style={styles.primaryBtnText}>Complete Setup & Launch Dashboard</Text>
+                    <CheckCircle2 size={20} color="#ffffff" style={{ marginLeft: 8 }} />
                   </>
                 )}
               </TouchableOpacity>
@@ -804,324 +867,56 @@ export default function OnboardingScreen({ navigation }: any) {
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-  },
-  container: {
-    flex: 1,
-  },
-  headerBar: {
-    paddingHorizontal: 20,
-    paddingTop: 12,
-    paddingBottom: 16,
-    borderBottomWidth: 1,
-  },
-  topRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 10,
-  },
-  iconBackButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  themeBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  stepBadge: {
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 14,
-    borderWidth: 1,
-  },
-  stepBadgeText: {
-    fontSize: 13,
-    fontWeight: '700',
-  },
-  percentText: {
-    fontSize: 13,
-    fontWeight: '700',
-  },
-  progressTrackBg: {
-    height: 6,
-    borderRadius: 3,
-    overflow: 'hidden',
-  },
-  progressTrackFill: {
-    height: '100%',
-    borderRadius: 3,
-  },
-  scrollContent: {
-    padding: 20,
-  },
-  stepCard: {
-    borderRadius: 24,
-    padding: 22,
-    borderWidth: 1,
-  },
-  stepHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  stepIconBg: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 14,
-  },
-  stepTitle: {
-    fontSize: 22,
-    fontWeight: '800',
-    marginBottom: 2,
-  },
-  stepSubtitle: {
-    fontSize: 13,
-    lineHeight: 18,
-  },
-  inputGroup: {
-    marginBottom: 16,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: '600',
-    marginBottom: 8,
-  },
-  inputWithIcon: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderRadius: 14,
-    borderWidth: 1,
-    paddingHorizontal: 14,
-  },
-  inputIcon: {
-    marginRight: 10,
-  },
-  textInput: {
-    flex: 1,
-    paddingVertical: 14,
-    fontSize: 16,
-  },
-  textInputSolo: {
-    borderRadius: 14,
-    borderWidth: 1,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    fontSize: 16,
-  },
-  genderRow: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-  genderCard: {
-    flex: 1,
-    paddingVertical: 12,
-    borderRadius: 14,
-    alignItems: 'center',
-    borderWidth: 1,
-  },
-  genderText: {
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  metricsRow: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-  bmiPreviewCard: {
-    borderRadius: 18,
-    padding: 16,
-    borderWidth: 1,
-    marginBottom: 20,
-    marginTop: 4,
-  },
-  bmiHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  bmiTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  bmiBadge: {
-    paddingHorizontal: 10,
-    paddingVertical: 3,
-    borderRadius: 10,
-  },
-  bmiBadgeText: {
-    fontSize: 12,
-    fontWeight: '700',
-  },
-  bmiScoreText: {
-    fontSize: 32,
-    fontWeight: '800',
-    marginBottom: 4,
-  },
-  bmiNote: {
-    fontSize: 12,
-  },
-  goalsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 10,
-    marginBottom: 20,
-  },
-  goalCard: {
-    width: '48%',
-    borderRadius: 16,
-    padding: 12,
-    borderWidth: 1,
-    alignItems: 'center',
-    position: 'relative',
-  },
-  goalIconCircle: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  goalText: {
-    fontSize: 13,
-    fontWeight: '600',
-    textAlign: 'center',
-  },
-  checkPos: {
-    position: 'absolute',
-    top: 8,
-    right: 8,
-  },
-  radioList: {
-    gap: 10,
-    marginBottom: 16,
-  },
-  radioCard: {
-    borderRadius: 16,
-    padding: 14,
-    borderWidth: 1,
-  },
-  radioLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  radioOuter: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    borderWidth: 2,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 12,
-  },
-  radioInner: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-  },
-  radioTitle: {
-    fontSize: 15,
-    fontWeight: '700',
-    marginBottom: 2,
-  },
-  radioSub: {
-    fontSize: 12,
-  },
-  chipRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-    marginBottom: 16,
-  },
-  chipItem: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 14,
-    borderWidth: 1,
-  },
-  chipText: {
-    fontSize: 12,
-    fontWeight: '600',
-  },
-  targetsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 10,
-    marginBottom: 16,
-  },
-  targetCard: {
-    width: '48%',
-    borderRadius: 16,
-    padding: 14,
-    borderWidth: 1,
-  },
-  targetLabel: {
-    fontSize: 12,
-    fontWeight: '600',
-    marginTop: 6,
-  },
-  targetValue: {
-    fontSize: 18,
-    fontWeight: '800',
-    marginTop: 4,
-  },
-  toggleEditBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 10,
-    marginBottom: 16,
-  },
-  toggleEditText: {
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  primaryBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 16,
-    borderRadius: 16,
-    marginTop: 10,
-    elevation: 4,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-  },
-  primaryBtnText: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: '700',
-  },
-  saveBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 16,
-    borderRadius: 16,
-    elevation: 4,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-  },
-  saveBtnText: {
-    color: '#ffffff',
-    fontSize: 17,
-    fontWeight: '800',
-  },
-  disabledBtn: {
-    opacity: 0.6,
-  },
+  safeArea: { flex: 1 },
+  container: { flex: 1 },
+  headerBar: { paddingHorizontal: 20, paddingTop: 8, paddingBottom: 14, borderBottomWidth: 1 },
+  topRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 },
+  iconBackButton: { width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center' },
+  badgeStep: { paddingHorizontal: 12, paddingVertical: 4, borderRadius: 12, backgroundColor: 'rgba(16, 185, 129, 0.12)' },
+  badgeStepText: { fontSize: 12, fontWeight: 'bold' },
+  progressBarBg: { height: 6, borderRadius: 3, width: '100%', overflow: 'hidden' },
+  progressBarFill: { height: '100%', borderRadius: 3 },
+  scrollContent: { padding: 18 },
+  stepCard: { borderRadius: 20, padding: 18, borderWidth: 1 },
+  stepHeader: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 18 },
+  stepIconBg: { width: 44, height: 44, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
+  stepTitle: { fontSize: 17, fontWeight: 'bold' },
+  stepSubtitle: { fontSize: 12, marginTop: 2 },
+  inputGroup: { marginBottom: 14 },
+  genderRow: { flexDirection: 'row', gap: 10, marginTop: 6 },
+  genderBtn: { flex: 1, paddingVertical: 12, borderRadius: 12, borderWidth: 1, alignItems: 'center' },
+  genderText: { fontSize: 13, fontWeight: 'bold' },
+  primaryBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 14, borderRadius: 14, marginTop: 10 },
+  primaryBtnText: { color: '#ffffff', fontSize: 14, fontWeight: 'bold' },
+  disabledBtn: { opacity: 0.5 },
+  label: { fontSize: 12, fontWeight: 'bold', marginBottom: 6 },
+  bmiBox: { flexDirection: 'row', alignItems: 'center', padding: 14, borderRadius: 14, borderWidth: 1, marginBottom: 14 },
+  bmiLabel: { fontSize: 11, fontWeight: 'bold', textTransform: 'uppercase' },
+  bmiValue: { fontSize: 20, fontWeight: 'bold', marginTop: 2 },
+  bmiTag: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12, borderWidth: 1 },
+  bmiTagText: { fontSize: 11, fontWeight: 'bold' },
+  gridGoals: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 14 },
+  goalCard: { width: '48%', padding: 12, borderRadius: 14, borderWidth: 1, position: 'relative' },
+  goalText: { fontSize: 12, fontWeight: 'bold', marginTop: 8 },
+  goalCheck: { position: 'absolute', top: 10, right: 10 },
+  radioList: { gap: 10, marginBottom: 14 },
+  radioCard: { padding: 14, borderRadius: 14, borderWidth: 1 },
+  radioLeft: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  radioOuter: { width: 20, height: 20, borderRadius: 10, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
+  radioInner: { width: 10, height: 10, borderRadius: 5 },
+  radioTitle: { fontSize: 13, fontWeight: 'bold' },
+  radioSub: { fontSize: 11, marginTop: 2 },
+  searchBox: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 12, borderWidth: 1, marginBottom: 10 },
+  searchInput: { flex: 1, fontSize: 13, fontWeight: 'bold', padding: 0 },
+  chipGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginBottom: 12 },
+  medicalChip: { paddingHorizontal: 10, paddingVertical: 6, borderRadius: 10, borderWidth: 1 },
+  chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginBottom: 12 },
+  chipItem: { paddingHorizontal: 10, paddingVertical: 6, borderRadius: 10, borderWidth: 1 },
+  chipText: { fontSize: 11, fontWeight: 'bold' },
+  targetsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 14 },
+  targetCard: { width: '48%', padding: 12, borderRadius: 14, borderWidth: 1, alignItems: 'center' },
+  targetLabel: { fontSize: 11, fontWeight: 'bold', marginTop: 4 },
+  targetValue: { fontSize: 15, fontWeight: 'bold', marginTop: 4 },
+  editTargetsBtn: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 10, borderRadius: 12, borderWidth: 1, gap: 6, marginBottom: 10 },
+  editTargetsText: { fontSize: 12, fontWeight: 'bold' },
 });

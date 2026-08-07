@@ -72,12 +72,17 @@ export default function AICoachPage() {
   }, [profile?.id, historyLoaded]);
 
   useEffect(() => {
-    if (metrics && messages.length === 0 && historyLoaded) {
+    if (messages.length === 0 && historyLoaded) {
+      const isBrandNew = !metrics || !metrics.hasTelemetry || metrics.trackingDaysCount === 0;
+      const initialWelcomeText = isBrandNew
+        ? "Welcome! Start logging your daily health activities. I'll learn your habits over time and provide personalized recommendations once enough data is available."
+        : `Hi ${profile?.full_name || "friend"}! I hope you're having a wonderful day. I've had a look at your recent activity – your wellness score is looking great at ${metrics.stabilityScore}%. How are you feeling today?`;
+
       setMessages([
         {
-          id: "msg-welcome",
+          id: "welcome-msg",
           sender: "ai",
-          text: `Hi ${profile?.full_name || "friend"}! I hope you're having a wonderful day. I've had a look at your recent activity – your wellness score is looking great at ${metrics.stabilityScore}%, but I'm here to help you improve it further. How are you feeling today?`,
+          text: initialWelcomeText,
           timestamp: new Date()
         }
       ]);

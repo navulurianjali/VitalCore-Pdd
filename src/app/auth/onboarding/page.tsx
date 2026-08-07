@@ -1,13 +1,36 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Activity, ShieldCheck, ArrowRight, ArrowLeft, Sparkles, Heart, Target, Utensils, Stethoscope, Compass, Flame, Droplet, Footprints, Check } from "lucide-react";
+import { Activity, ShieldCheck, ArrowRight, ArrowLeft, Sparkles, Heart, Target, Utensils, Stethoscope, Compass, Flame, Droplet, Footprints, Check, Search, Plus, UserCheck } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import Button from "@/components/ui/Button";
 import GlassCard from "@/components/ui/GlassCard";
 import confetti from "canvas-confetti";
+
+export const COMMON_MEDICAL_CONDITIONS = [
+  "None",
+  "Diabetes",
+  "Hypertension",
+  "Heart Disease",
+  "Asthma",
+  "Arthritis",
+  "High Cholesterol",
+  "Thyroid Disorder",
+  "Obesity",
+  "Osteoporosis",
+  "Kidney Disease",
+  "Liver Disease",
+  "PCOS",
+  "Depression",
+  "Anxiety",
+  "Sleep Apnea",
+  "Back Pain",
+  "Knee Pain",
+  "Pregnancy",
+  "Other"
+];
 
 export default function OnboardingPage() {
   const { profile, updateProfile } = useAuth();
@@ -25,7 +48,7 @@ export default function OnboardingPage() {
   const [height, setHeight] = useState<number | "">(profile?.height_cm || "");
   const [weight, setWeight] = useState<number | "">(profile?.weight_kg || "");
 
-  // Auto calculated BMI (hidden if height or weight is unentered)
+  // Auto calculated BMI
   const heightM = height && Number(height) > 0 ? Number(height) / 100 : 0;
   const bmi = heightM > 0 && weight && Number(weight) > 0 ? Math.round((Number(weight) / (heightM * heightM)) * 10) / 10 : 0;
   
@@ -57,10 +80,35 @@ export default function OnboardingPage() {
   const [foodPreference, setFoodPreference] = useState("Non-Vegetarian");
   const foodOptions = ["Vegetarian", "Non-Vegetarian", "Vegan", "Eggetarian", "No Preference"];
 
-  // STEP 5: Medical Information (Optional)
-  const [medicalConditions, setMedicalConditions] = useState("");
+  // STEP 5: Medical Information (Searchable Multi-Select)
+  const [selectedMedicalConditions, setSelectedMedicalConditions] = useState<string[]>(["None"]);
+  const [medicalSearchQuery, setMedicalSearchQuery] = useState("");
+  const [customOtherCondition, setCustomOtherCondition] = useState("");
   const [medications, setMedications] = useState("");
   const [allergies, setAllergies] = useState("");
+
+  const filteredMedicalOptions = useMemo(() => {
+    if (!medicalSearchQuery.trim()) return COMMON_MEDICAL_CONDITIONS;
+    return COMMON_MEDICAL_CONDITIONS.filter(c => c.toLowerCase().includes(medicalSearchQuery.toLowerCase().trim()));
+  }, [medicalSearchQuery]);
+
+  const toggleMedicalCondition = (cond: string) => {
+    if (cond === "None") {
+      setSelectedMedicalConditions(["None"]);
+      setCustomOtherCondition("");
+      return;
+    }
+
+    setSelectedMedicalConditions(prev => {
+      const withoutNone = prev.filter(c => c !== "None");
+      if (withoutNone.includes(cond)) {
+        const next = withoutNone.filter(c => c !== cond);
+        return next.length === 0 ? ["None"] : next;
+      } else {
+        return [...withoutNone, cond];
+      }
+    });
+  };
 
   // STEP 6: Lifestyle
   const [activityLevel, setActivityLevel] = useState("Moderately Active");
@@ -86,11 +134,9 @@ export default function OnboardingPage() {
       const h = Number(height) || 170;
       const a = Number(age) || 25;
 
-      // BMR (Mifflin-St Jeor)
       let bmr = (10 * w) + (6.25 * h) - (5 * a);
       bmr += (gender === "female" ? -161 : 5);
 
-      // Activity Multiplier
       let mult = 1.375;
       if (activityLevel === "Sedentary") mult = 1.2;
       if (activityLevel === "Lightly Active") mult = 1.375;
@@ -99,23 +145,18 @@ export default function OnboardingPage() {
 
       let calculatedCalories = Math.round(bmr * mult);
 
-      // Goal adjustments
       if (goals.includes("Weight Loss")) calculatedCalories -= 400;
       else if (goals.includes("Weight Gain") || goals.includes("Muscle Gain")) calculatedCalories += 300;
 
       calculatedCalories = Math.max(1200, calculatedCalories);
 
-      // Protein calculation (1.2g - 1.8g per kg)
       let proteinFactor = 1.2;
       if (goals.includes("Muscle Gain") || goals.includes("Strength Building") || goals.includes("Weight Loss")) {
         proteinFactor = 1.8;
       }
       const calculatedProtein = Math.round(w * proteinFactor);
-
-      // Water Goal (35ml per kg)
       const calculatedWater = Math.round((w * 35) / 250) * 250;
 
-      // Step Goal
       let calculatedSteps = 8000;
       if (activityLevel === "Sedentary") calculatedSteps = 6000;
       if (activityLevel === "Moderately Active") calculatedSteps = 10000;
@@ -140,9 +181,20 @@ export default function OnboardingPage() {
   const handleCompleteOnboarding = async () => {
     setLoading(true);
     try {
+      const userAge = age !== "" ? Number(age) : (profile?.age || 0);
+      const isElderlyAuto = userAge >= 60;
+      const assignedMode: "wellness" | "elderly" = isElderlyAuto ? "elderly" : "wellness";
+
+      // Build Medical Conditions string
+      const finalMedicalArray = selectedMedicalConditions.filter(c => c !== "Other");
+      if (selectedMedicalConditions.includes("Other") && customOtherCondition.trim()) {
+        finalMedicalArray.push(`Other: ${customOtherCondition.trim()}`);
+      }
+      const medicalConditionsString = finalMedicalArray.join(", ");
+
       const updates = {
         full_name: fullName.trim() || profile?.full_name || "",
-        age: age !== "" ? Number(age) : null,
+        age: userAge > 0 ? userAge : null,
         gender: gender,
         weight_kg: weight !== "" ? Number(weight) : null,
         height_cm: height !== "" ? Number(height) : null,
@@ -150,7 +202,7 @@ export default function OnboardingPage() {
         fitness_goal: goals.length > 0 ? goals.join(", ") : "",
         food_preference: foodPreference,
         dietary_preferences: foodPreference,
-        medical_conditions: medicalConditions.trim() || "",
+        medical_conditions: medicalConditionsString,
         medications: medications.trim() || "",
         allergies: allergies.trim() || "",
         activity_level: activityLevel,
@@ -159,6 +211,8 @@ export default function OnboardingPage() {
         protein_goal: Number(proteinGoal) || 110,
         water_goal: Number(waterGoal) || 2500,
         step_goal: Number(stepGoal) || 10000,
+        active_mode: assignedMode,
+        is_auto_assigned_mode: isElderlyAuto,
         onboarding_completed: true
       };
 
@@ -218,50 +272,58 @@ export default function OnboardingPage() {
                 className="space-y-4"
               >
                 <h3 className="text-xs font-bold text-emerald-400 flex items-center gap-1.5 uppercase tracking-wider">
-                  <Sparkles className="h-4 w-4" />
-                  Step 1: Personal Information
+                  <UserCheck className="h-4 w-4" /> Personal Information
                 </h3>
 
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-foreground">Full Name</label>
-                  <input
-                    type="text"
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    placeholder="Enter your full name"
-                    className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-foreground/10 bg-foreground/5 text-foreground focus:outline-none focus:border-emerald-500"
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-semibold text-foreground">Age</label>
+                <div className="space-y-3">
+                  <div>
+                    <label className="text-xs font-bold text-foreground">Full Name</label>
                     <input
-                      type="number"
-                      value={age === 0 ? "" : age}
-                      onChange={(e) => setAge(e.target.value === "" ? "" : Number(e.target.value))}
-                      placeholder="e.g. 25"
-                      className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-foreground/10 bg-foreground/5 text-foreground focus:outline-none focus:border-emerald-500"
+                      type="text"
+                      value={fullName}
+                      onChange={e => setFullName(e.target.value)}
+                      placeholder="e.g., Jane Doe"
+                      className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-foreground/10 bg-foreground/5 text-foreground focus:outline-none focus:border-primary mt-1"
                     />
                   </div>
 
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-semibold text-foreground">Gender</label>
-                    <select
-                      value={gender}
-                      onChange={(e) => setGender(e.target.value)}
-                      className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-foreground/10 bg-background text-foreground focus:outline-none focus:border-emerald-500"
-                    >
-                      <option value="male">Male</option>
-                      <option value="female">Female</option>
-                      <option value="other">Other</option>
-                    </select>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-xs font-bold text-foreground">Age (Years)</label>
+                      <input
+                        type="number"
+                        min="1"
+                        max="120"
+                        value={age}
+                        onChange={e => setAge(e.target.value ? parseInt(e.target.value) : "")}
+                        placeholder="e.g. 28"
+                        className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-foreground/10 bg-foreground/5 text-foreground focus:outline-none focus:border-primary mt-1"
+                      />
+                      {age !== "" && Number(age) >= 60 && (
+                        <span className="text-[10px] text-emerald-400 font-bold mt-1 block">
+                          👵 Elderly Mode will be auto-assigned.
+                        </span>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-bold text-foreground">Biological Gender</label>
+                      <select
+                        value={gender}
+                        onChange={e => setGender(e.target.value)}
+                        className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-foreground/10 bg-foreground/5 text-foreground focus:outline-none focus:border-primary mt-1 font-semibold"
+                      >
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="other">Other / Rather not say</option>
+                      </select>
+                    </div>
                   </div>
                 </div>
               </motion.div>
             )}
 
-            {/* STEP 2: Body Information */}
+            {/* STEP 2: Body Metrics & BMI */}
             {step === 2 && (
               <motion.div
                 key="step2"
@@ -271,49 +333,42 @@ export default function OnboardingPage() {
                 className="space-y-4"
               >
                 <h3 className="text-xs font-bold text-emerald-400 flex items-center gap-1.5 uppercase tracking-wider">
-                  <Heart className="h-4 w-4" />
-                  Step 2: Body Information
+                  <Footprints className="h-4 w-4" /> Body Metrics & BMI Calculation
                 </h3>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-semibold text-foreground">Height (cm)</label>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-xs font-bold text-foreground">Height (cm)</label>
                     <input
                       type="number"
-                      value={height === 0 ? "" : height}
-                      onChange={(e) => setHeight(e.target.value === "" ? "" : Number(e.target.value))}
-                      placeholder="e.g. 170"
-                      className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-foreground/10 bg-foreground/5 text-foreground focus:outline-none focus:border-emerald-500"
+                      value={height}
+                      onChange={e => setHeight(e.target.value ? parseInt(e.target.value) : "")}
+                      placeholder="e.g. 175"
+                      className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-foreground/10 bg-foreground/5 text-foreground focus:outline-none focus:border-primary mt-1"
                     />
                   </div>
 
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-semibold text-foreground">Weight (kg)</label>
+                  <div>
+                    <label className="text-xs font-bold text-foreground">Weight (kg)</label>
                     <input
                       type="number"
-                      value={weight === 0 ? "" : weight}
-                      onChange={(e) => setWeight(e.target.value === "" ? "" : Number(e.target.value))}
-                      placeholder="e.g. 68"
-                      className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-foreground/10 bg-foreground/5 text-foreground focus:outline-none focus:border-emerald-500"
+                      value={weight}
+                      onChange={e => setWeight(e.target.value ? parseInt(e.target.value) : "")}
+                      placeholder="e.g. 70"
+                      className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-foreground/10 bg-foreground/5 text-foreground focus:outline-none focus:border-primary mt-1"
                     />
                   </div>
                 </div>
 
-                {/* Automatically Calculated BMI Preview */}
                 {bmi > 0 && (
-                  <div className="rounded-2xl border border-foreground/10 bg-foreground/5 p-4 space-y-2">
-                    <span className="text-[10px] uppercase font-bold text-emerald-400 tracking-wider block">
-                      ⚡ Auto-Calculated Body Mass Index (BMI)
-                    </span>
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <span className="text-2xl font-black text-foreground">{bmi}</span>
-                        <span className="text-xs text-[var(--muted)] font-semibold block">kg/m²</span>
-                      </div>
-                      <span className={`text-xs font-bold px-3 py-1 rounded-full border ${getBmiCategory(bmi).color}`}>
-                        {getBmiCategory(bmi).label}
-                      </span>
+                  <div className="p-4 rounded-2xl bg-foreground/5 border border-foreground/10 flex items-center justify-between">
+                    <div>
+                      <span className="text-[10px] font-bold text-foreground/50 uppercase tracking-wider block">Calculated BMI</span>
+                      <span className="text-xl font-extrabold text-foreground tabular-nums">{bmi} kg/m²</span>
                     </div>
+                    <span className={`px-3 py-1 rounded-full text-xs font-bold border ${getBmiCategory(bmi).color}`}>
+                      {getBmiCategory(bmi).label}
+                    </span>
                   </div>
                 )}
               </motion.div>
@@ -329,23 +384,20 @@ export default function OnboardingPage() {
                 className="space-y-4"
               >
                 <h3 className="text-xs font-bold text-emerald-400 flex items-center gap-1.5 uppercase tracking-wider">
-                  <Target className="h-4 w-4" />
-                  Step 3: What are your primary health goals?
+                  <Target className="h-4 w-4" /> Select Your Primary Health Goals
                 </h3>
-                <p className="text-xs text-[var(--muted)] font-medium">Select one or more goals to align your targets.</p>
 
-                <div className="grid grid-cols-2 gap-2.5 pt-1">
+                <div className="grid grid-cols-2 gap-2.5">
                   {availableGoals.map(g => {
                     const isSelected = goals.includes(g);
                     return (
                       <button
                         key={g}
-                        type="button"
                         onClick={() => toggleGoal(g)}
-                        className={`p-3 rounded-xl text-xs font-bold transition-all border text-left flex items-center justify-between ${
+                        className={`p-3 rounded-2xl text-left text-xs font-bold transition-all border flex items-center justify-between cursor-pointer ${
                           isSelected
                             ? "bg-emerald-500/15 border-emerald-500 text-emerald-400 shadow-sm"
-                            : "bg-foreground/5 border-foreground/10 text-foreground/80 hover:bg-foreground/10"
+                            : "bg-foreground/5 border-foreground/8 text-foreground/70 hover:bg-foreground/10"
                         }`}
                       >
                         <span>{g}</span>
@@ -367,31 +419,32 @@ export default function OnboardingPage() {
                 className="space-y-4"
               >
                 <h3 className="text-xs font-bold text-emerald-400 flex items-center gap-1.5 uppercase tracking-wider">
-                  <Utensils className="h-4 w-4" />
-                  Step 4: Dietary / Food Preference
+                  <Utensils className="h-4 w-4" /> Dietary & Food Preference
                 </h3>
 
-                <div className="space-y-2 pt-1">
-                  {foodOptions.map(opt => (
-                    <button
-                      key={opt}
-                      type="button"
-                      onClick={() => setFoodPreference(opt)}
-                      className={`w-full p-3.5 rounded-2xl text-xs font-bold transition-all border text-left flex items-center justify-between ${
-                        foodPreference === opt
-                          ? "bg-emerald-500/15 border-emerald-500 text-emerald-400 shadow-sm"
-                          : "bg-foreground/5 border-foreground/10 text-foreground/80 hover:bg-foreground/10"
-                      }`}
-                    >
-                      <span>{opt}</span>
-                      {foodPreference === opt && <Check className="h-4 w-4 text-emerald-400" />}
-                    </button>
-                  ))}
+                <div className="space-y-2">
+                  {foodOptions.map(opt => {
+                    const isSelected = foodPreference === opt;
+                    return (
+                      <button
+                        key={opt}
+                        onClick={() => setFoodPreference(opt)}
+                        className={`w-full p-3.5 rounded-2xl text-left text-xs font-bold transition-all border flex items-center justify-between cursor-pointer ${
+                          isSelected
+                            ? "bg-emerald-500/15 border-emerald-500 text-emerald-400 shadow-sm"
+                            : "bg-foreground/5 border-foreground/8 text-foreground/70 hover:bg-foreground/10"
+                        }`}
+                      >
+                        <span>{opt}</span>
+                        {isSelected && <Check className="h-4 w-4 text-emerald-400 shrink-0" />}
+                      </button>
+                    );
+                  })}
                 </div>
               </motion.div>
             )}
 
-            {/* STEP 5: Medical Information */}
+            {/* STEP 5: Medical Information (Searchable Multi-Select) */}
             {step === 5 && (
               <motion.div
                 key="step5"
@@ -400,47 +453,90 @@ export default function OnboardingPage() {
                 exit={{ opacity: 0, x: -20 }}
                 className="space-y-4"
               >
-                <h3 className="text-xs font-bold text-emerald-400 flex items-center gap-1.5 uppercase tracking-wider">
-                  <Stethoscope className="h-4 w-4" />
-                  Step 5: Medical Information (Optional)
-                </h3>
+                <div className="space-y-1">
+                  <h3 className="text-xs font-bold text-emerald-400 flex items-center gap-1.5 uppercase tracking-wider">
+                    <Stethoscope className="h-4 w-4" /> Existing Medical Conditions
+                  </h3>
+                  <p className="text-xs text-foreground/60">
+                    Do you have any existing medical conditions? Select all that apply.
+                  </p>
+                </div>
 
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-foreground">Existing Medical Conditions</label>
+                {/* Search Box */}
+                <div className="relative">
+                  <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-foreground/40 pointer-events-none" />
                   <input
                     type="text"
-                    value={medicalConditions}
-                    onChange={(e) => setMedicalConditions(e.target.value)}
-                    placeholder="e.g. Hypertension, Asthma, Type 2 Diabetes, or None"
-                    className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-foreground/10 bg-foreground/5 text-foreground focus:outline-none focus:border-emerald-500"
+                    value={medicalSearchQuery}
+                    onChange={e => setMedicalSearchQuery(e.target.value)}
+                    placeholder="Search medical conditions..."
+                    className="w-full text-xs pl-9 pr-3.5 py-2.5 rounded-xl border border-foreground/10 bg-foreground/5 text-foreground focus:outline-none focus:border-primary"
                   />
                 </div>
 
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-foreground">Current Medications</label>
-                  <input
-                    type="text"
-                    value={medications}
-                    onChange={(e) => setMedications(e.target.value)}
-                    placeholder="e.g. Vitamin D3, Metformin, or None"
-                    className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-foreground/10 bg-foreground/5 text-foreground focus:outline-none focus:border-emerald-500"
-                  />
+                {/* Condition Pills */}
+                <div className="flex flex-wrap gap-2 max-h-48 overflow-y-auto p-1 border border-foreground/5 rounded-2xl bg-foreground/[0.02]">
+                  {filteredMedicalOptions.map(cond => {
+                    const isSelected = selectedMedicalConditions.includes(cond);
+                    return (
+                      <button
+                        key={cond}
+                        type="button"
+                        onClick={() => toggleMedicalCondition(cond)}
+                        className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all border flex items-center gap-1.5 cursor-pointer ${
+                          isSelected
+                            ? "bg-emerald-500 text-white border-emerald-500 shadow-sm"
+                            : "bg-foreground/5 border-foreground/10 text-foreground/70 hover:bg-foreground/10"
+                        }`}
+                      >
+                        <span>{cond}</span>
+                        {isSelected && <Check className="h-3 w-3" />}
+                      </button>
+                    );
+                  })}
                 </div>
 
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-foreground">Allergies / Sensitivities</label>
-                  <input
-                    type="text"
-                    value={allergies}
-                    onChange={(e) => setAllergies(e.target.value)}
-                    placeholder="e.g. Peanuts, Lactose, Gluten, or None"
-                    className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-foreground/10 bg-foreground/5 text-foreground focus:outline-none focus:border-emerald-500"
-                  />
+                {/* Custom Other Input */}
+                {selectedMedicalConditions.includes("Other") && (
+                  <div className="space-y-1 pt-1">
+                    <label className="text-xs font-bold text-foreground">Specify Other Medical Condition</label>
+                    <input
+                      type="text"
+                      value={customOtherCondition}
+                      onChange={e => setCustomOtherCondition(e.target.value)}
+                      placeholder="e.g. Chronic Migraines, Vertigo..."
+                      className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-foreground/10 bg-foreground/5 text-foreground focus:outline-none focus:border-primary"
+                    />
+                  </div>
+                )}
+
+                <div className="grid grid-cols-2 gap-3 pt-2">
+                  <div>
+                    <label className="text-xs font-bold text-foreground">Active Medications</label>
+                    <input
+                      type="text"
+                      value={medications}
+                      onChange={e => setMedications(e.target.value)}
+                      placeholder="e.g. Metformin, Insulin"
+                      className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-foreground/10 bg-foreground/5 text-foreground focus:outline-none focus:border-primary mt-1"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-bold text-foreground">Known Allergies</label>
+                    <input
+                      type="text"
+                      value={allergies}
+                      onChange={e => setAllergies(e.target.value)}
+                      placeholder="e.g. Penicillin, Peanuts"
+                      className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-foreground/10 bg-foreground/5 text-foreground focus:outline-none focus:border-primary mt-1"
+                    />
+                  </div>
                 </div>
               </motion.div>
             )}
 
-            {/* STEP 6: Lifestyle */}
+            {/* STEP 6: Activity Level */}
             {step === 6 && (
               <motion.div
                 key="step6"
@@ -450,46 +546,35 @@ export default function OnboardingPage() {
                 className="space-y-4"
               >
                 <h3 className="text-xs font-bold text-emerald-400 flex items-center gap-1.5 uppercase tracking-wider">
-                  <Compass className="h-4 w-4" />
-                  Step 6: Lifestyle & Daily Routine
+                  <Compass className="h-4 w-4" /> Activity Level & Sleep
                 </h3>
 
                 <div className="space-y-2">
-                  <label className="text-xs font-semibold text-foreground uppercase tracking-wider block">Activity Level</label>
-                  <div className="space-y-2">
-                    {activityOptions.map(act => (
+                  {activityOptions.map(opt => {
+                    const isSelected = activityLevel === opt.label;
+                    return (
                       <button
-                        key={act.label}
-                        type="button"
-                        onClick={() => setActivityLevel(act.label)}
-                        className={`w-full p-3 rounded-xl text-left border transition-all ${
-                          activityLevel === act.label
-                            ? "bg-emerald-500/15 border-emerald-500 text-emerald-400"
-                            : "bg-foreground/5 border-foreground/10 text-foreground/80 hover:bg-foreground/10"
+                        key={opt.label}
+                        onClick={() => setActivityLevel(opt.label)}
+                        className={`w-full p-3.5 rounded-2xl text-left text-xs font-bold transition-all border flex items-center justify-between cursor-pointer ${
+                          isSelected
+                            ? "bg-emerald-500/15 border-emerald-500 text-emerald-400 shadow-sm"
+                            : "bg-foreground/5 border-foreground/8 text-foreground/70 hover:bg-foreground/10"
                         }`}
                       >
-                        <div className="text-xs font-bold">{act.label}</div>
-                        <div className="text-[11px] opacity-70 font-medium">{act.desc}</div>
+                        <div>
+                          <p className="font-bold text-foreground">{opt.label}</p>
+                          <p className="text-[11px] text-foreground/50 font-normal mt-0.5">{opt.desc}</p>
+                        </div>
+                        {isSelected && <Check className="h-4 w-4 text-emerald-400 shrink-0" />}
                       </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="space-y-1.5 pt-2">
-                  <label className="text-xs font-semibold text-foreground">Typical Sleep Duration (Hours / Night)</label>
-                  <input
-                    type="number"
-                    step="0.5"
-                    value={sleepDuration === 0 ? "" : sleepDuration}
-                    onChange={(e) => setSleepDuration(e.target.value === "" ? "" : Number(e.target.value))}
-                    placeholder="e.g. 7.5"
-                    className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-foreground/10 bg-foreground/5 text-foreground focus:outline-none focus:border-emerald-500"
-                  />
+                    );
+                  })}
                 </div>
               </motion.div>
             )}
 
-            {/* STEP 7: Daily Targets */}
+            {/* STEP 7: Final Target Confirmation */}
             {step === 7 && (
               <motion.div
                 key="step7"
@@ -498,110 +583,104 @@ export default function OnboardingPage() {
                 exit={{ opacity: 0, x: -20 }}
                 className="space-y-4"
               >
-                <h3 className="text-xs font-bold text-emerald-400 flex items-center gap-1.5 uppercase tracking-wider">
-                  <Flame className="h-4 w-4" />
-                  Step 7: Personal Daily Targets
-                </h3>
-                <p className="text-xs text-[var(--muted)] font-medium">
-                  We've calculated personalized baseline targets for you. Feel free to tweak them before saving!
-                </p>
+                <div className="space-y-1">
+                  <h3 className="text-xs font-bold text-emerald-400 flex items-center gap-1.5 uppercase tracking-wider">
+                    <Sparkles className="h-4 w-4" /> Suggested Daily Targets
+                  </h3>
+                  <p className="text-xs text-foreground/60">
+                    Calibrated specifically for your bio-metrics & goals. You can customize them anytime.
+                  </p>
+                </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-                  
-                  {/* Calorie Goal */}
-                  <div className="p-3.5 rounded-2xl bg-foreground/5 border border-foreground/10 space-y-1.5">
-                    <label className="text-[11px] font-bold text-amber-400 flex items-center gap-1 uppercase">
-                      <Flame className="h-3.5 w-3.5" />
-                      Daily Calorie Target (kcal)
-                    </label>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="p-3.5 rounded-2xl bg-foreground/5 border border-foreground/10 space-y-1">
+                    <span className="text-[10px] font-bold text-foreground/50 uppercase tracking-wider flex items-center gap-1">
+                      <Flame className="h-3 w-3 text-orange-500" /> Daily Calories
+                    </span>
                     <input
                       type="number"
                       value={calorieGoal}
-                      onChange={(e) => setCalorieGoal(Number(e.target.value))}
-                      className="w-full text-sm font-bold px-3 py-1.5 rounded-lg border border-foreground/10 bg-background text-foreground focus:outline-none"
+                      onChange={e => setCalorieGoal(Number(e.target.value))}
+                      className="w-full text-lg font-black text-foreground bg-transparent border-none p-0 focus:outline-none tabular-nums"
                     />
+                    <span className="text-[10px] text-foreground/40 font-semibold block">kcal / day</span>
                   </div>
 
-                  {/* Protein Goal */}
-                  <div className="p-3.5 rounded-2xl bg-foreground/5 border border-foreground/10 space-y-1.5">
-                    <label className="text-[11px] font-bold text-emerald-400 flex items-center gap-1 uppercase">
-                      <Utensils className="h-3.5 w-3.5" />
-                      Daily Protein Target (grams)
-                    </label>
+                  <div className="p-3.5 rounded-2xl bg-foreground/5 border border-foreground/10 space-y-1">
+                    <span className="text-[10px] font-bold text-foreground/50 uppercase tracking-wider flex items-center gap-1">
+                      <Utensils className="h-3 w-3 text-emerald-500" /> Daily Protein
+                    </span>
                     <input
                       type="number"
                       value={proteinGoal}
-                      onChange={(e) => setProteinGoal(Number(e.target.value))}
-                      className="w-full text-sm font-bold px-3 py-1.5 rounded-lg border border-foreground/10 bg-background text-foreground focus:outline-none"
+                      onChange={e => setProteinGoal(Number(e.target.value))}
+                      className="w-full text-lg font-black text-foreground bg-transparent border-none p-0 focus:outline-none tabular-nums"
                     />
+                    <span className="text-[10px] text-foreground/40 font-semibold block">grams / day</span>
                   </div>
 
-                  {/* Water Goal */}
-                  <div className="p-3.5 rounded-2xl bg-foreground/5 border border-foreground/10 space-y-1.5">
-                    <label className="text-[11px] font-bold text-cyan-400 flex items-center gap-1 uppercase">
-                      <Droplet className="h-3.5 w-3.5" />
-                      Daily Water Target (ml)
-                    </label>
+                  <div className="p-3.5 rounded-2xl bg-foreground/5 border border-foreground/10 space-y-1">
+                    <span className="text-[10px] font-bold text-foreground/50 uppercase tracking-wider flex items-center gap-1">
+                      <Droplet className="h-3 w-3 text-blue-500" /> Daily Hydration
+                    </span>
                     <input
                       type="number"
                       step="250"
                       value={waterGoal}
-                      onChange={(e) => setWaterGoal(Number(e.target.value))}
-                      className="w-full text-sm font-bold px-3 py-1.5 rounded-lg border border-foreground/10 bg-background text-foreground focus:outline-none"
+                      onChange={e => setWaterGoal(Number(e.target.value))}
+                      className="w-full text-lg font-black text-foreground bg-transparent border-none p-0 focus:outline-none tabular-nums"
                     />
+                    <span className="text-[10px] text-foreground/40 font-semibold block">ml / day</span>
                   </div>
 
-                  {/* Step Goal */}
-                  <div className="p-3.5 rounded-2xl bg-foreground/5 border border-foreground/10 space-y-1.5">
-                    <label className="text-[11px] font-bold text-violet-400 flex items-center gap-1 uppercase">
-                      <Footprints className="h-3.5 w-3.5" />
-                      Daily Step Target (steps)
-                    </label>
+                  <div className="p-3.5 rounded-2xl bg-foreground/5 border border-foreground/10 space-y-1">
+                    <span className="text-[10px] font-bold text-foreground/50 uppercase tracking-wider flex items-center gap-1">
+                      <Footprints className="h-3 w-3 text-purple-500" /> Daily Step Target
+                    </span>
                     <input
                       type="number"
                       step="500"
                       value={stepGoal}
-                      onChange={(e) => setStepGoal(Number(e.target.value))}
-                      className="w-full text-sm font-bold px-3 py-1.5 rounded-lg border border-foreground/10 bg-background text-foreground focus:outline-none"
+                      onChange={e => setStepGoal(Number(e.target.value))}
+                      className="w-full text-lg font-black text-foreground bg-transparent border-none p-0 focus:outline-none tabular-nums"
                     />
+                    <span className="text-[10px] text-foreground/40 font-semibold block">steps / day</span>
                   </div>
-
                 </div>
+
+                {age !== "" && Number(age) >= 60 && (
+                  <div className="p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-xs font-bold text-emerald-400 flex items-center gap-2">
+                    <ShieldCheck className="h-4 w-4 shrink-0" />
+                    <span>Elderly Mode automatically selected for smooth navigation & low-impact protocols.</span>
+                  </div>
+                )}
               </motion.div>
             )}
 
           </AnimatePresence>
 
           {/* Navigation Controls */}
-          <div className="pt-6 mt-6 border-t border-foreground/5 flex justify-between gap-3">
+          <div className="flex items-center justify-between pt-6 border-t border-foreground/10 mt-6">
             {step > 1 ? (
-              <Button variant="glass" onClick={handleBack} className="flex items-center gap-1.5">
-                <ArrowLeft className="h-4 w-4" />
-                <span>Back</span>
+              <Button onClick={handleBack} variant="glass" size="sm" className="text-xs font-bold flex items-center gap-1">
+                <ArrowLeft className="h-4 w-4" /> Back
               </Button>
             ) : (
               <div />
             )}
 
             {step < 7 ? (
-              <Button 
-                variant="primary" 
-                onClick={handleNext} 
-                disabled={step === 3 && goals.length === 0}
-                className="flex items-center gap-1.5 ml-auto"
-              >
-                <span>Continue</span>
-                <ArrowRight className="h-4 w-4" />
+              <Button onClick={handleNext} variant="primary" size="sm" className="text-xs font-bold bg-emerald-500 hover:bg-emerald-600 text-white flex items-center gap-1">
+                Continue <ArrowRight className="h-4 w-4" />
               </Button>
             ) : (
-              <Button 
-                variant="primary" 
-                onClick={handleCompleteOnboarding} 
-                isLoading={loading} 
-                className="flex items-center gap-1.5 ml-auto shadow-lg shadow-emerald-500/20"
+              <Button
+                onClick={handleCompleteOnboarding}
+                variant="primary"
+                isLoading={loading}
+                className="text-xs font-bold bg-emerald-500 hover:bg-emerald-600 text-white py-2.5 px-6 shadow-md shadow-emerald-500/20"
               >
-                <span>Save Profile & Get Started ✨</span>
-                <ShieldCheck className="h-4 w-4" />
+                Complete Setup & Launch
               </Button>
             )}
           </div>
