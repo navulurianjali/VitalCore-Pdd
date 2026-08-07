@@ -1,0 +1,20 @@
+{
+  "name": "vitalcore-appium-automation",
+  "version": "1.0.0",
+  "description": "Enterprise Appium E2E Automation Framework for VitalCore Expo App",
+  "main": "runners/runSuites.ts",
+  "scripts": {
+    "test": "npx ts-node runners/runSuites.ts",
+    "test:ci": "npx ts-node runners/runSuites.ts --ci",
+    "build": "tsc --noEmit"
+  },
+  "dependencies": {
+    "exceljs": "^4.4.0",
+    "webdriverio": "^8.32.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0"
+  }
+}

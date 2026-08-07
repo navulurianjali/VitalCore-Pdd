@@ -1,0 +1,85 @@
+
+========================================================================
+  VitalCore Expo  ·  API Baseline / Load Test Report
+========================================================================
+  Timestamp      : 2026-08-06T22:39:00.754352
+  Virtual Users  : 100
+  Duration       : 192.55 s
+  Total Requests : 19,429
+  Overall RPS    : 100.91 req/s
+========================================================================
+
+  ── OVERALL RESPONSE TIMES ──────────────────────────────────────
+  Avg   : 189.42 ms    Min : 0.0 ms    Max : 134156.0 ms
+  P50   : 156.0 ms    P90 : 218.0 ms
+  P95   : 250.0 ms    P99 : 420.72 ms
+
+========================================================================
+  ── PER-ENDPOINT BREAKDOWN ──────────────────────────────────────
+========================================================================
+
+  Endpoint   : GET  /api/health
+  Calls      : 2,151   Errors: 2   Success: 99.91%
+  Avg: 106.78 ms  |  Min: 46.0 ms  |  Max: 1797.0 ms
+  P50: 78.0 ms  |  P90: 187.0 ms  |  P95: 219.0 ms  |  P99: 336.28 ms
+  Status Codes: HTTP 404: 2149
+  ------------------------------------------------------------------------
+
+  Endpoint   : GET  /api/nutrition/search
+  Calls      : 2,164   Errors: 1   Success: 99.95%
+  Avg: 161.69 ms  |  Min: 46.0 ms  |  Max: 134109.0 ms
+  P50: 78.0 ms  |  P90: 156.0 ms  |  P95: 188.0 ms  |  P99: 271.7 ms
+  Status Codes: HTTP 404: 2163
+  ------------------------------------------------------------------------
+
+  Endpoint   : GET  /api/user/profile
+  Calls      : 2,153   Errors: 2   Success: 99.91%
+  Avg: 159.33 ms  |  Min: 46.0 ms  |  Max: 133015.0 ms
+  P50: 78.0 ms  |  P90: 156.0 ms  |  P95: 187.0 ms  |  P99: 273.5 ms
+  Status Codes: HTTP 404: 2151
+  ------------------------------------------------------------------------
+
+  Endpoint   : GET  /health
+  Calls      : 2,167   Errors: 0   Success: 100.0%
+  Avg: 115.65 ms  |  Min: 0.0 ms  |  Max: 134078.0 ms
+  P50: 47.0 ms  |  P90: 94.0 ms  |  P95: 125.0 ms  |  P99: 219.0 ms
+  Status Codes: HTTP 401: 2167
+  ------------------------------------------------------------------------
+
+  Endpoint   : GET  meal_logs (anon, limit 1)
+  Calls      : 2,164   Errors: 1   Success: 99.95%
+  Avg: 267.49 ms  |  Min: 156.0 ms  |  Max: 134156.0 ms
+  P50: 188.0 ms  |  P90: 250.0 ms  |  P95: 281.0 ms  |  P99: 531.0 ms
+  Status Codes: HTTP 404: 2163
+  ------------------------------------------------------------------------
+
+  Endpoint   : GET  profiles (anon, limit 1)
+  Calls      : 2,166   Errors: 3   Success: 99.86%
+  Avg: 263.26 ms  |  Min: 156.0 ms  |  Max: 134125.0 ms
+  P50: 187.0 ms  |  P90: 235.0 ms  |  P95: 266.0 ms  |  P99: 506.08 ms
+  Status Codes: HTTP 200: 2163
+  ------------------------------------------------------------------------
+
+  Endpoint   : GET  sleep_logs (anon, limit 1)
+  Calls      : 2,151   Errors: 5   Success: 99.77%
+  Avg: 200.27 ms  |  Min: 156.0 ms  |  Max: 1328.0 ms
+  P50: 187.0 ms  |  P90: 234.0 ms  |  P95: 265.0 ms  |  P99: 485.0 ms
+  Status Codes: HTTP 200: 2146
+  ------------------------------------------------------------------------
+
+  Endpoint   : GET  workout_logs (anon, limit 1)
+  Calls      : 2,154   Errors: 5   Success: 99.77%
+  Avg: 202.03 ms  |  Min: 141.0 ms  |  Max: 1297.0 ms
+  P50: 188.0 ms  |  P90: 250.0 ms  |  P95: 266.0 ms  |  P99: 484.0 ms
+  Status Codes: HTTP 404: 2149
+  ------------------------------------------------------------------------
+
+  Endpoint   : POST /api/ai-coach/chat
+  Calls      : 2,159   Errors: 1   Success: 99.95%
+  Avg: 227.95 ms  |  Min: 46.0 ms  |  Max: 134156.0 ms
+  P50: 93.0 ms  |  P90: 172.0 ms  |  P95: 204.0 ms  |  P99: 287.45 ms
+  Status Codes: HTTP 404: 2158
+  ------------------------------------------------------------------------
+
+  Reports saved -> load_test_report.txt  &  load_test_report.json
+

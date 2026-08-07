@@ -1,0 +1,21 @@
+name: Deploy Automation Reports to GitHub Pages
+
+on:
+  workflow_run:
+    workflows: ["Android Appium E2E Automation Pipeline"]
+    types:
+      - completed
+  workflow_dispatch:
+
+jobs:
+  deploy-reports:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Deploy Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./gh-pages

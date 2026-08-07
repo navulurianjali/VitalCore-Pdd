@@ -1,0 +1,163 @@
+{
+  "test_name": "VitalCore Expo \u2013 API Baseline / Load Test",
+  "timestamp": "2026-08-06T22:39:00.754352",
+  "virtual_users": 100,
+  "duration_s": 192.55,
+  "total_requests": 19429,
+  "rps": 100.91,
+  "endpoints": [
+    {
+      "endpoint": "GET  /api/health",
+      "total_calls": 2151,
+      "errors": 2,
+      "success_rate_%": 99.91,
+      "avg_ms": 106.78,
+      "min_ms": 46.0,
+      "max_ms": 1797.0,
+      "p50_ms": 78.0,
+      "p90_ms": 187.0,
+      "p95_ms": 219.0,
+      "p99_ms": 336.28,
+      "status_codes": {
+        "404": 2149
+      }
+    },
+    {
+      "endpoint": "GET  /api/nutrition/search",
+      "total_calls": 2164,
+      "errors": 1,
+      "success_rate_%": 99.95,
+      "avg_ms": 161.69,
+      "min_ms": 46.0,
+      "max_ms": 134109.0,
+      "p50_ms": 78.0,
+      "p90_ms": 156.0,
+      "p95_ms": 188.0,
+      "p99_ms": 271.7,
+      "status_codes": {
+        "404": 2163
+      }
+    },
+    {
+      "endpoint": "GET  /api/user/profile",
+      "total_calls": 2153,
+      "errors": 2,
+      "success_rate_%": 99.91,
+      "avg_ms": 159.33,
+      "min_ms": 46.0,
+      "max_ms": 133015.0,
+      "p50_ms": 78.0,
+      "p90_ms": 156.0,
+      "p95_ms": 187.0,
+      "p99_ms": 273.5,
+      "status_codes": {
+        "404": 2151
+      }
+    },
+    {
+      "endpoint": "GET  /health",
+      "total_calls": 2167,
+      "errors": 0,
+      "success_rate_%": 100.0,
+      "avg_ms": 115.65,
+      "min_ms": 0.0,
+      "max_ms": 134078.0,
+      "p50_ms": 47.0,
+      "p90_ms": 94.0,
+      "p95_ms": 125.0,
+      "p99_ms": 219.0,
+      "status_codes": {
+        "401": 2167
+      }
+    },
+    {
+      "endpoint": "GET  meal_logs (anon, limit 1)",
+      "total_calls": 2164,
+      "errors": 1,
+      "success_rate_%": 99.95,
+      "avg_ms": 267.49,
+      "min_ms": 156.0,
+      "max_ms": 134156.0,
+      "p50_ms": 188.0,
+      "p90_ms": 250.0,
+      "p95_ms": 281.0,
+      "p99_ms": 531.0,
+      "status_codes": {
+        "404": 2163
+      }
+    },
+    {
+      "endpoint": "GET  profiles (anon, limit 1)",
+      "total_calls": 2166,
+      "errors": 3,
+      "success_rate_%": 99.86,
+      "avg_ms": 263.26,
+      "min_ms": 156.0,
+      "max_ms": 134125.0,
+      "p50_ms": 187.0,
+      "p90_ms": 235.0,
+      "p95_ms": 266.0,
+      "p99_ms": 506.08,
+      "status_codes": {
+        "200": 2163
+      }
+    },
+    {
+      "endpoint": "GET  sleep_logs (anon, limit 1)",
+      "total_calls": 2151,
+      "errors": 5,
+      "success_rate_%": 99.77,
+      "avg_ms": 200.27,
+      "min_ms": 156.0,
+      "max_ms": 1328.0,
+      "p50_ms": 187.0,
+      "p90_ms": 234.0,
+      "p95_ms": 265.0,
+      "p99_ms": 485.0,
+      "status_codes": {
+        "200": 2146
+      }
+    },
+    {
+      "endpoint": "GET  workout_logs (anon, limit 1)",
+      "total_calls": 2154,
+      "errors": 5,
+      "success_rate_%": 99.77,
+      "avg_ms": 202.03,
+      "min_ms": 141.0,
+      "max_ms": 1297.0,
+      "p50_ms": 188.0,
+      "p90_ms": 250.0,
+      "p95_ms": 266.0,
+      "p99_ms": 484.0,
+      "status_codes": {
+        "404": 2149
+      }
+    },
+    {
+      "endpoint": "POST /api/ai-coach/chat",
+      "total_calls": 2159,
+      "errors": 1,
+      "success_rate_%": 99.95,
+      "avg_ms": 227.95,
+      "min_ms": 46.0,
+      "max_ms": 134156.0,
+      "p50_ms": 93.0,
+      "p90_ms": 172.0,
+      "p95_ms": 204.0,
+      "p99_ms": 287.45,
+      "status_codes": {
+        "404": 2158
+      }
+    }
+  ],
+  "overall": {
+    "avg_ms": 189.42,
+    "min_ms": 0.0,
+    "max_ms": 134156.0,
+    "p50_ms": 156.0,
+    "p90_ms": 218.0,
+    "p95_ms": 250.0,
+    "p99_ms": 420.72
+  }
+}

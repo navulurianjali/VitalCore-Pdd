@@ -1,0 +1,19 @@
+{
+  "expo": {
+    "name": "VitaCore AI",
+    "slug": "vitalcore-ai",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "com.vitalcore.app",
+      "permissions": [
+        "INTERNET",
+        "ACCESS_NETWORK_STATE"
+      ]
+    }
+  }
+}
