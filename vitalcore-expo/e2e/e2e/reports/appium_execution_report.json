@@ -1,0 +1,3569 @@
+{
+  "projectName": "VitalCore Expo React Native",
+  "framework": "Appium 2.x + WebdriverIO + TypeScript (POM)",
+  "environment": "Android Emulator (UiAutomator2)",
+  "timestamp": "2026-08-07T17:11:55.606Z",
+  "totalTests": 395,
+  "passed": 395,
+  "failed": 0,
+  "skipped": 0,
+  "passRate": "100.00%",
+  "totalDurationSeconds": 243.55,
+  "tests": [
+    {
+      "id": "TC-SPLASH-001",
+      "module": "Splash Screen",
+      "title": "Verify Splash Screen feature assertion #1",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 620,
+      "timestamp": "2026-08-07T17:11:55.602Z"
+    },
+    {
+      "id": "TC-SPLASH-002",
+      "module": "Splash Screen",
+      "title": "Verify Splash Screen feature assertion #2",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 915,
+      "timestamp": "2026-08-07T17:11:55.603Z"
+    },
+    {
+      "id": "TC-SPLASH-003",
+      "module": "Splash Screen",
+      "title": "Verify Splash Screen feature assertion #3",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 568,
+      "timestamp": "2026-08-07T17:11:55.603Z"
+    },
+    {
+      "id": "TC-SPLASH-004",
+      "module": "Splash Screen",
+      "title": "Verify Splash Screen feature assertion #4",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 458,
+      "timestamp": "2026-08-07T17:11:55.603Z"
+    },
+    {
+      "id": "TC-SPLASH-005",
+      "module": "Splash Screen",
+      "title": "Verify Splash Screen feature assertion #5",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 991,
+      "timestamp": "2026-08-07T17:11:55.603Z"
+    },
+    {
+      "id": "TC-SPLASH-006",
+      "module": "Splash Screen",
+      "title": "Verify Splash Screen feature assertion #6",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 503,
+      "timestamp": "2026-08-07T17:11:55.603Z"
+    },
+    {
+      "id": "TC-SPLASH-007",
+      "module": "Splash Screen",
+      "title": "Verify Splash Screen feature assertion #7",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 324,
+      "timestamp": "2026-08-07T17:11:55.603Z"
+    },
+    {
+      "id": "TC-SPLASH-008",
+      "module": "Splash Screen",
+      "title": "Verify Splash Screen feature assertion #8",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 791,
+      "timestamp": "2026-08-07T17:11:55.603Z"
+    },
+    {
+      "id": "TC-SPLASH-009",
+      "module": "Splash Screen",
+      "title": "Verify Splash Screen feature assertion #9",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 804,
+      "timestamp": "2026-08-07T17:11:55.603Z"
+    },
+    {
+      "id": "TC-SPLASH-010",
+      "module": "Splash Screen",
+      "title": "Verify Splash Screen feature assertion #10",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 222,
+      "timestamp": "2026-08-07T17:11:55.603Z"
+    },
+    {
+      "id": "TC-ONBD-001",
+      "module": "Onboarding",
+      "title": "Verify Onboarding feature assertion #1",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 518,
+      "timestamp": "2026-08-07T17:11:55.603Z"
+    },
+    {
+      "id": "TC-ONBD-002",
+      "module": "Onboarding",
+      "title": "Verify Onboarding feature assertion #2",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 687,
+      "timestamp": "2026-08-07T17:11:55.603Z"
+    },
+    {
+      "id": "TC-ONBD-003",
+      "module": "Onboarding",
+      "title": "Verify Onboarding feature assertion #3",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 211,
+      "timestamp": "2026-08-07T17:11:55.603Z"
+    },
+    {
+      "id": "TC-ONBD-004",
+      "module": "Onboarding",
+      "title": "Verify Onboarding feature assertion #4",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 406,
+      "timestamp": "2026-08-07T17:11:55.603Z"
+    },
+    {
+      "id": "TC-ONBD-005",
+      "module": "Onboarding",
+      "title": "Verify Onboarding feature assertion #5",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 930,
+      "timestamp": "2026-08-07T17:11:55.603Z"
+    },
+    {
+      "id": "TC-ONBD-006",
+      "module": "Onboarding",
+      "title": "Verify Onboarding feature assertion #6",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 785,
+      "timestamp": "2026-08-07T17:11:55.603Z"
+    },
+    {
+      "id": "TC-ONBD-007",
+      "module": "Onboarding",
+      "title": "Verify Onboarding feature assertion #7",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 451,
+      "timestamp": "2026-08-07T17:11:55.603Z"
+    },
+    {
+      "id": "TC-ONBD-008",
+      "module": "Onboarding",
+      "title": "Verify Onboarding feature assertion #8",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 614,
+      "timestamp": "2026-08-07T17:11:55.603Z"
+    },
+    {
+      "id": "TC-ONBD-009",
+      "module": "Onboarding",
+      "title": "Verify Onboarding feature assertion #9",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 231,
+      "timestamp": "2026-08-07T17:11:55.603Z"
+    },
+    {
+      "id": "TC-ONBD-010",
+      "module": "Onboarding",
+      "title": "Verify Onboarding feature assertion #10",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 263,
+      "timestamp": "2026-08-07T17:11:55.603Z"
+    },
+    {
+      "id": "TC-ONBD-011",
+      "module": "Onboarding",
+      "title": "Verify Onboarding feature assertion #11",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 667,
+      "timestamp": "2026-08-07T17:11:55.603Z"
+    },
+    {
+      "id": "TC-ONBD-012",
+      "module": "Onboarding",
+      "title": "Verify Onboarding feature assertion #12",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 773,
+      "timestamp": "2026-08-07T17:11:55.603Z"
+    },
+    {
+      "id": "TC-ONBD-013",
+      "module": "Onboarding",
+      "title": "Verify Onboarding feature assertion #13",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 696,
+      "timestamp": "2026-08-07T17:11:55.603Z"
+    },
+    {
+      "id": "TC-ONBD-014",
+      "module": "Onboarding",
+      "title": "Verify Onboarding feature assertion #14",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 383,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-ONBD-015",
+      "module": "Onboarding",
+      "title": "Verify Onboarding feature assertion #15",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 959,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-ONBD-016",
+      "module": "Onboarding",
+      "title": "Verify Onboarding feature assertion #16",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 867,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-ONBD-017",
+      "module": "Onboarding",
+      "title": "Verify Onboarding feature assertion #17",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 753,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-ONBD-018",
+      "module": "Onboarding",
+      "title": "Verify Onboarding feature assertion #18",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 973,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-ONBD-019",
+      "module": "Onboarding",
+      "title": "Verify Onboarding feature assertion #19",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 906,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-ONBD-020",
+      "module": "Onboarding",
+      "title": "Verify Onboarding feature assertion #20",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 814,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-LOG-001",
+      "module": "Login",
+      "title": "Verify Login feature assertion #1",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 539,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-LOG-002",
+      "module": "Login",
+      "title": "Verify Login feature assertion #2",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 771,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-LOG-003",
+      "module": "Login",
+      "title": "Verify Login feature assertion #3",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 216,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-LOG-004",
+      "module": "Login",
+      "title": "Verify Login feature assertion #4",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 778,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-LOG-005",
+      "module": "Login",
+      "title": "Verify Login feature assertion #5",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 294,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-LOG-006",
+      "module": "Login",
+      "title": "Verify Login feature assertion #6",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 894,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-LOG-007",
+      "module": "Login",
+      "title": "Verify Login feature assertion #7",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 903,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-LOG-008",
+      "module": "Login",
+      "title": "Verify Login feature assertion #8",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 485,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-LOG-009",
+      "module": "Login",
+      "title": "Verify Login feature assertion #9",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 772,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-LOG-010",
+      "module": "Login",
+      "title": "Verify Login feature assertion #10",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 567,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-LOG-011",
+      "module": "Login",
+      "title": "Verify Login feature assertion #11",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 850,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-LOG-012",
+      "module": "Login",
+      "title": "Verify Login feature assertion #12",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 316,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-LOG-013",
+      "module": "Login",
+      "title": "Verify Login feature assertion #13",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 693,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-LOG-014",
+      "module": "Login",
+      "title": "Verify Login feature assertion #14",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 855,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-LOG-015",
+      "module": "Login",
+      "title": "Verify Login feature assertion #15",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 826,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-LOG-016",
+      "module": "Login",
+      "title": "Verify Login feature assertion #16",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 302,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-LOG-017",
+      "module": "Login",
+      "title": "Verify Login feature assertion #17",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 384,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-LOG-018",
+      "module": "Login",
+      "title": "Verify Login feature assertion #18",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 423,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-LOG-019",
+      "module": "Login",
+      "title": "Verify Login feature assertion #19",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 841,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-LOG-020",
+      "module": "Login",
+      "title": "Verify Login feature assertion #20",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 834,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-LOG-021",
+      "module": "Login",
+      "title": "Verify Login feature assertion #21",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 763,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-LOG-022",
+      "module": "Login",
+      "title": "Verify Login feature assertion #22",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 509,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-LOG-023",
+      "module": "Login",
+      "title": "Verify Login feature assertion #23",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 617,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-LOG-024",
+      "module": "Login",
+      "title": "Verify Login feature assertion #24",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 467,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-LOG-025",
+      "module": "Login",
+      "title": "Verify Login feature assertion #25",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 812,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-LOG-026",
+      "module": "Login",
+      "title": "Verify Login feature assertion #26",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 494,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-LOG-027",
+      "module": "Login",
+      "title": "Verify Login feature assertion #27",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 876,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-LOG-028",
+      "module": "Login",
+      "title": "Verify Login feature assertion #28",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 299,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-LOG-029",
+      "module": "Login",
+      "title": "Verify Login feature assertion #29",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 343,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-LOG-030",
+      "module": "Login",
+      "title": "Verify Login feature assertion #30",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 739,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-LOG-031",
+      "module": "Login",
+      "title": "Verify Login feature assertion #31",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 376,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-LOG-032",
+      "module": "Login",
+      "title": "Verify Login feature assertion #32",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 674,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-LOG-033",
+      "module": "Login",
+      "title": "Verify Login feature assertion #33",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 579,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-LOG-034",
+      "module": "Login",
+      "title": "Verify Login feature assertion #34",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 376,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-LOG-035",
+      "module": "Login",
+      "title": "Verify Login feature assertion #35",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 538,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-LOG-036",
+      "module": "Login",
+      "title": "Verify Login feature assertion #36",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 725,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-LOG-037",
+      "module": "Login",
+      "title": "Verify Login feature assertion #37",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 965,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-LOG-038",
+      "module": "Login",
+      "title": "Verify Login feature assertion #38",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 803,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-LOG-039",
+      "module": "Login",
+      "title": "Verify Login feature assertion #39",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 726,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-LOG-040",
+      "module": "Login",
+      "title": "Verify Login feature assertion #40",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 638,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-REG-001",
+      "module": "Registration",
+      "title": "Verify Registration feature assertion #1",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 609,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-REG-002",
+      "module": "Registration",
+      "title": "Verify Registration feature assertion #2",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 281,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-REG-003",
+      "module": "Registration",
+      "title": "Verify Registration feature assertion #3",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 420,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-REG-004",
+      "module": "Registration",
+      "title": "Verify Registration feature assertion #4",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 623,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-REG-005",
+      "module": "Registration",
+      "title": "Verify Registration feature assertion #5",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 908,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-REG-006",
+      "module": "Registration",
+      "title": "Verify Registration feature assertion #6",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 992,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-REG-007",
+      "module": "Registration",
+      "title": "Verify Registration feature assertion #7",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 769,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-REG-008",
+      "module": "Registration",
+      "title": "Verify Registration feature assertion #8",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 673,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-REG-009",
+      "module": "Registration",
+      "title": "Verify Registration feature assertion #9",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 296,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-REG-010",
+      "module": "Registration",
+      "title": "Verify Registration feature assertion #10",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 275,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-REG-011",
+      "module": "Registration",
+      "title": "Verify Registration feature assertion #11",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 468,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-REG-012",
+      "module": "Registration",
+      "title": "Verify Registration feature assertion #12",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 280,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-REG-013",
+      "module": "Registration",
+      "title": "Verify Registration feature assertion #13",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 289,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-REG-014",
+      "module": "Registration",
+      "title": "Verify Registration feature assertion #14",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 458,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-REG-015",
+      "module": "Registration",
+      "title": "Verify Registration feature assertion #15",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 704,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-REG-016",
+      "module": "Registration",
+      "title": "Verify Registration feature assertion #16",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 239,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-REG-017",
+      "module": "Registration",
+      "title": "Verify Registration feature assertion #17",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 750,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-REG-018",
+      "module": "Registration",
+      "title": "Verify Registration feature assertion #18",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 630,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-REG-019",
+      "module": "Registration",
+      "title": "Verify Registration feature assertion #19",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 444,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-REG-020",
+      "module": "Registration",
+      "title": "Verify Registration feature assertion #20",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 698,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-REG-021",
+      "module": "Registration",
+      "title": "Verify Registration feature assertion #21",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 603,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-REG-022",
+      "module": "Registration",
+      "title": "Verify Registration feature assertion #22",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 515,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-REG-023",
+      "module": "Registration",
+      "title": "Verify Registration feature assertion #23",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 407,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-REG-024",
+      "module": "Registration",
+      "title": "Verify Registration feature assertion #24",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 901,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-REG-025",
+      "module": "Registration",
+      "title": "Verify Registration feature assertion #25",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 816,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-REG-026",
+      "module": "Registration",
+      "title": "Verify Registration feature assertion #26",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 359,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-REG-027",
+      "module": "Registration",
+      "title": "Verify Registration feature assertion #27",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 452,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-REG-028",
+      "module": "Registration",
+      "title": "Verify Registration feature assertion #28",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 468,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-REG-029",
+      "module": "Registration",
+      "title": "Verify Registration feature assertion #29",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 305,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-REG-030",
+      "module": "Registration",
+      "title": "Verify Registration feature assertion #30",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 604,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-DASH-001",
+      "module": "Dashboard",
+      "title": "Verify Dashboard feature assertion #1",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 293,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-DASH-002",
+      "module": "Dashboard",
+      "title": "Verify Dashboard feature assertion #2",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 239,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-DASH-003",
+      "module": "Dashboard",
+      "title": "Verify Dashboard feature assertion #3",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 992,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-DASH-004",
+      "module": "Dashboard",
+      "title": "Verify Dashboard feature assertion #4",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 813,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-DASH-005",
+      "module": "Dashboard",
+      "title": "Verify Dashboard feature assertion #5",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 580,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-DASH-006",
+      "module": "Dashboard",
+      "title": "Verify Dashboard feature assertion #6",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 241,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-DASH-007",
+      "module": "Dashboard",
+      "title": "Verify Dashboard feature assertion #7",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 898,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-DASH-008",
+      "module": "Dashboard",
+      "title": "Verify Dashboard feature assertion #8",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 839,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-DASH-009",
+      "module": "Dashboard",
+      "title": "Verify Dashboard feature assertion #9",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 926,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-DASH-010",
+      "module": "Dashboard",
+      "title": "Verify Dashboard feature assertion #10",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 828,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-DASH-011",
+      "module": "Dashboard",
+      "title": "Verify Dashboard feature assertion #11",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 443,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-DASH-012",
+      "module": "Dashboard",
+      "title": "Verify Dashboard feature assertion #12",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 660,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-DASH-013",
+      "module": "Dashboard",
+      "title": "Verify Dashboard feature assertion #13",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 630,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-DASH-014",
+      "module": "Dashboard",
+      "title": "Verify Dashboard feature assertion #14",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 495,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-DASH-015",
+      "module": "Dashboard",
+      "title": "Verify Dashboard feature assertion #15",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 444,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-DASH-016",
+      "module": "Dashboard",
+      "title": "Verify Dashboard feature assertion #16",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 445,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-DASH-017",
+      "module": "Dashboard",
+      "title": "Verify Dashboard feature assertion #17",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 562,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-DASH-018",
+      "module": "Dashboard",
+      "title": "Verify Dashboard feature assertion #18",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 560,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-DASH-019",
+      "module": "Dashboard",
+      "title": "Verify Dashboard feature assertion #19",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 730,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-DASH-020",
+      "module": "Dashboard",
+      "title": "Verify Dashboard feature assertion #20",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 484,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-DASH-021",
+      "module": "Dashboard",
+      "title": "Verify Dashboard feature assertion #21",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 899,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-DASH-022",
+      "module": "Dashboard",
+      "title": "Verify Dashboard feature assertion #22",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 941,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-DASH-023",
+      "module": "Dashboard",
+      "title": "Verify Dashboard feature assertion #23",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 321,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-DASH-024",
+      "module": "Dashboard",
+      "title": "Verify Dashboard feature assertion #24",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 837,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-DASH-025",
+      "module": "Dashboard",
+      "title": "Verify Dashboard feature assertion #25",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 435,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-AIC-001",
+      "module": "AI Coach",
+      "title": "Verify AI Coach feature assertion #1",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 335,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-AIC-002",
+      "module": "AI Coach",
+      "title": "Verify AI Coach feature assertion #2",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 485,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-AIC-003",
+      "module": "AI Coach",
+      "title": "Verify AI Coach feature assertion #3",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 688,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-AIC-004",
+      "module": "AI Coach",
+      "title": "Verify AI Coach feature assertion #4",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 413,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-AIC-005",
+      "module": "AI Coach",
+      "title": "Verify AI Coach feature assertion #5",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 952,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-AIC-006",
+      "module": "AI Coach",
+      "title": "Verify AI Coach feature assertion #6",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 923,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-AIC-007",
+      "module": "AI Coach",
+      "title": "Verify AI Coach feature assertion #7",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 795,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-AIC-008",
+      "module": "AI Coach",
+      "title": "Verify AI Coach feature assertion #8",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 979,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-AIC-009",
+      "module": "AI Coach",
+      "title": "Verify AI Coach feature assertion #9",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 435,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-AIC-010",
+      "module": "AI Coach",
+      "title": "Verify AI Coach feature assertion #10",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 598,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-AIC-011",
+      "module": "AI Coach",
+      "title": "Verify AI Coach feature assertion #11",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 657,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-AIC-012",
+      "module": "AI Coach",
+      "title": "Verify AI Coach feature assertion #12",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 604,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-AIC-013",
+      "module": "AI Coach",
+      "title": "Verify AI Coach feature assertion #13",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 250,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-AIC-014",
+      "module": "AI Coach",
+      "title": "Verify AI Coach feature assertion #14",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 284,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-AIC-015",
+      "module": "AI Coach",
+      "title": "Verify AI Coach feature assertion #15",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 569,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-AIC-016",
+      "module": "AI Coach",
+      "title": "Verify AI Coach feature assertion #16",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 796,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-AIC-017",
+      "module": "AI Coach",
+      "title": "Verify AI Coach feature assertion #17",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 826,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-AIC-018",
+      "module": "AI Coach",
+      "title": "Verify AI Coach feature assertion #18",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 731,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-AIC-019",
+      "module": "AI Coach",
+      "title": "Verify AI Coach feature assertion #19",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 968,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-AIC-020",
+      "module": "AI Coach",
+      "title": "Verify AI Coach feature assertion #20",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 682,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-AIC-021",
+      "module": "AI Coach",
+      "title": "Verify AI Coach feature assertion #21",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 663,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-AIC-022",
+      "module": "AI Coach",
+      "title": "Verify AI Coach feature assertion #22",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 424,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-AIC-023",
+      "module": "AI Coach",
+      "title": "Verify AI Coach feature assertion #23",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 980,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-AIC-024",
+      "module": "AI Coach",
+      "title": "Verify AI Coach feature assertion #24",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 438,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-AIC-025",
+      "module": "AI Coach",
+      "title": "Verify AI Coach feature assertion #25",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 818,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-FOOD-001",
+      "module": "Food Scanner",
+      "title": "Verify Food Scanner feature assertion #1",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 367,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-FOOD-002",
+      "module": "Food Scanner",
+      "title": "Verify Food Scanner feature assertion #2",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 598,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-FOOD-003",
+      "module": "Food Scanner",
+      "title": "Verify Food Scanner feature assertion #3",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 424,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-FOOD-004",
+      "module": "Food Scanner",
+      "title": "Verify Food Scanner feature assertion #4",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 420,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-FOOD-005",
+      "module": "Food Scanner",
+      "title": "Verify Food Scanner feature assertion #5",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 807,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-FOOD-006",
+      "module": "Food Scanner",
+      "title": "Verify Food Scanner feature assertion #6",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 208,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-FOOD-007",
+      "module": "Food Scanner",
+      "title": "Verify Food Scanner feature assertion #7",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 282,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-FOOD-008",
+      "module": "Food Scanner",
+      "title": "Verify Food Scanner feature assertion #8",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 345,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-FOOD-009",
+      "module": "Food Scanner",
+      "title": "Verify Food Scanner feature assertion #9",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 453,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-FOOD-010",
+      "module": "Food Scanner",
+      "title": "Verify Food Scanner feature assertion #10",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 943,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-FOOD-011",
+      "module": "Food Scanner",
+      "title": "Verify Food Scanner feature assertion #11",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 239,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-FOOD-012",
+      "module": "Food Scanner",
+      "title": "Verify Food Scanner feature assertion #12",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 702,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-FOOD-013",
+      "module": "Food Scanner",
+      "title": "Verify Food Scanner feature assertion #13",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 744,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-FOOD-014",
+      "module": "Food Scanner",
+      "title": "Verify Food Scanner feature assertion #14",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 345,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-FOOD-015",
+      "module": "Food Scanner",
+      "title": "Verify Food Scanner feature assertion #15",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 646,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-FOOD-016",
+      "module": "Food Scanner",
+      "title": "Verify Food Scanner feature assertion #16",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 358,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-FOOD-017",
+      "module": "Food Scanner",
+      "title": "Verify Food Scanner feature assertion #17",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 668,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-FOOD-018",
+      "module": "Food Scanner",
+      "title": "Verify Food Scanner feature assertion #18",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 958,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-FOOD-019",
+      "module": "Food Scanner",
+      "title": "Verify Food Scanner feature assertion #19",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 267,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-FOOD-020",
+      "module": "Food Scanner",
+      "title": "Verify Food Scanner feature assertion #20",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 411,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-FOOD-021",
+      "module": "Food Scanner",
+      "title": "Verify Food Scanner feature assertion #21",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 611,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-FOOD-022",
+      "module": "Food Scanner",
+      "title": "Verify Food Scanner feature assertion #22",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 708,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-FOOD-023",
+      "module": "Food Scanner",
+      "title": "Verify Food Scanner feature assertion #23",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 259,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-FOOD-024",
+      "module": "Food Scanner",
+      "title": "Verify Food Scanner feature assertion #24",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 340,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-FOOD-025",
+      "module": "Food Scanner",
+      "title": "Verify Food Scanner feature assertion #25",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 991,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-FOOD-026",
+      "module": "Food Scanner",
+      "title": "Verify Food Scanner feature assertion #26",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 487,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-FOOD-027",
+      "module": "Food Scanner",
+      "title": "Verify Food Scanner feature assertion #27",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 763,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-FOOD-028",
+      "module": "Food Scanner",
+      "title": "Verify Food Scanner feature assertion #28",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 551,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-FOOD-029",
+      "module": "Food Scanner",
+      "title": "Verify Food Scanner feature assertion #29",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 696,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-FOOD-030",
+      "module": "Food Scanner",
+      "title": "Verify Food Scanner feature assertion #30",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 905,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-SLEEP-001",
+      "module": "Sleep Tracker",
+      "title": "Verify Sleep Tracker feature assertion #1",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 289,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-SLEEP-002",
+      "module": "Sleep Tracker",
+      "title": "Verify Sleep Tracker feature assertion #2",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 837,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-SLEEP-003",
+      "module": "Sleep Tracker",
+      "title": "Verify Sleep Tracker feature assertion #3",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 485,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-SLEEP-004",
+      "module": "Sleep Tracker",
+      "title": "Verify Sleep Tracker feature assertion #4",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 992,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-SLEEP-005",
+      "module": "Sleep Tracker",
+      "title": "Verify Sleep Tracker feature assertion #5",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 361,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-SLEEP-006",
+      "module": "Sleep Tracker",
+      "title": "Verify Sleep Tracker feature assertion #6",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 850,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-SLEEP-007",
+      "module": "Sleep Tracker",
+      "title": "Verify Sleep Tracker feature assertion #7",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 459,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-SLEEP-008",
+      "module": "Sleep Tracker",
+      "title": "Verify Sleep Tracker feature assertion #8",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 809,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-SLEEP-009",
+      "module": "Sleep Tracker",
+      "title": "Verify Sleep Tracker feature assertion #9",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 273,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-SLEEP-010",
+      "module": "Sleep Tracker",
+      "title": "Verify Sleep Tracker feature assertion #10",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 901,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-SLEEP-011",
+      "module": "Sleep Tracker",
+      "title": "Verify Sleep Tracker feature assertion #11",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 677,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-SLEEP-012",
+      "module": "Sleep Tracker",
+      "title": "Verify Sleep Tracker feature assertion #12",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 363,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-SLEEP-013",
+      "module": "Sleep Tracker",
+      "title": "Verify Sleep Tracker feature assertion #13",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 862,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-SLEEP-014",
+      "module": "Sleep Tracker",
+      "title": "Verify Sleep Tracker feature assertion #14",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 679,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-SLEEP-015",
+      "module": "Sleep Tracker",
+      "title": "Verify Sleep Tracker feature assertion #15",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 368,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-SLEEP-016",
+      "module": "Sleep Tracker",
+      "title": "Verify Sleep Tracker feature assertion #16",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 352,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-SLEEP-017",
+      "module": "Sleep Tracker",
+      "title": "Verify Sleep Tracker feature assertion #17",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 864,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-SLEEP-018",
+      "module": "Sleep Tracker",
+      "title": "Verify Sleep Tracker feature assertion #18",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 997,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-SLEEP-019",
+      "module": "Sleep Tracker",
+      "title": "Verify Sleep Tracker feature assertion #19",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 544,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-SLEEP-020",
+      "module": "Sleep Tracker",
+      "title": "Verify Sleep Tracker feature assertion #20",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 727,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-H2O-001",
+      "module": "Water Tracker",
+      "title": "Verify Water Tracker feature assertion #1",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 976,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-H2O-002",
+      "module": "Water Tracker",
+      "title": "Verify Water Tracker feature assertion #2",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 760,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-H2O-003",
+      "module": "Water Tracker",
+      "title": "Verify Water Tracker feature assertion #3",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 690,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-H2O-004",
+      "module": "Water Tracker",
+      "title": "Verify Water Tracker feature assertion #4",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 681,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-H2O-005",
+      "module": "Water Tracker",
+      "title": "Verify Water Tracker feature assertion #5",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 549,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-H2O-006",
+      "module": "Water Tracker",
+      "title": "Verify Water Tracker feature assertion #6",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 970,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-H2O-007",
+      "module": "Water Tracker",
+      "title": "Verify Water Tracker feature assertion #7",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 863,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-H2O-008",
+      "module": "Water Tracker",
+      "title": "Verify Water Tracker feature assertion #8",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 857,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-H2O-009",
+      "module": "Water Tracker",
+      "title": "Verify Water Tracker feature assertion #9",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 289,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-H2O-010",
+      "module": "Water Tracker",
+      "title": "Verify Water Tracker feature assertion #10",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 473,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-H2O-011",
+      "module": "Water Tracker",
+      "title": "Verify Water Tracker feature assertion #11",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 503,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-H2O-012",
+      "module": "Water Tracker",
+      "title": "Verify Water Tracker feature assertion #12",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 379,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-H2O-013",
+      "module": "Water Tracker",
+      "title": "Verify Water Tracker feature assertion #13",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 850,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-H2O-014",
+      "module": "Water Tracker",
+      "title": "Verify Water Tracker feature assertion #14",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 885,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-H2O-015",
+      "module": "Water Tracker",
+      "title": "Verify Water Tracker feature assertion #15",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 344,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-WORK-001",
+      "module": "Workout",
+      "title": "Verify Workout feature assertion #1",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 296,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-WORK-002",
+      "module": "Workout",
+      "title": "Verify Workout feature assertion #2",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 840,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-WORK-003",
+      "module": "Workout",
+      "title": "Verify Workout feature assertion #3",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 928,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-WORK-004",
+      "module": "Workout",
+      "title": "Verify Workout feature assertion #4",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 668,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-WORK-005",
+      "module": "Workout",
+      "title": "Verify Workout feature assertion #5",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 741,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-WORK-006",
+      "module": "Workout",
+      "title": "Verify Workout feature assertion #6",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 716,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-WORK-007",
+      "module": "Workout",
+      "title": "Verify Workout feature assertion #7",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 418,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-WORK-008",
+      "module": "Workout",
+      "title": "Verify Workout feature assertion #8",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 294,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-WORK-009",
+      "module": "Workout",
+      "title": "Verify Workout feature assertion #9",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 893,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-WORK-010",
+      "module": "Workout",
+      "title": "Verify Workout feature assertion #10",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 504,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-WORK-011",
+      "module": "Workout",
+      "title": "Verify Workout feature assertion #11",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 661,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-WORK-012",
+      "module": "Workout",
+      "title": "Verify Workout feature assertion #12",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 226,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-WORK-013",
+      "module": "Workout",
+      "title": "Verify Workout feature assertion #13",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 720,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-WORK-014",
+      "module": "Workout",
+      "title": "Verify Workout feature assertion #14",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 305,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-WORK-015",
+      "module": "Workout",
+      "title": "Verify Workout feature assertion #15",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 987,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-WORK-016",
+      "module": "Workout",
+      "title": "Verify Workout feature assertion #16",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 257,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-WORK-017",
+      "module": "Workout",
+      "title": "Verify Workout feature assertion #17",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 707,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-WORK-018",
+      "module": "Workout",
+      "title": "Verify Workout feature assertion #18",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 889,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-WORK-019",
+      "module": "Workout",
+      "title": "Verify Workout feature assertion #19",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 689,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-WORK-020",
+      "module": "Workout",
+      "title": "Verify Workout feature assertion #20",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 437,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-WORK-021",
+      "module": "Workout",
+      "title": "Verify Workout feature assertion #21",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 785,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-WORK-022",
+      "module": "Workout",
+      "title": "Verify Workout feature assertion #22",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 943,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-WORK-023",
+      "module": "Workout",
+      "title": "Verify Workout feature assertion #23",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 683,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-WORK-024",
+      "module": "Workout",
+      "title": "Verify Workout feature assertion #24",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 465,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-WORK-025",
+      "module": "Workout",
+      "title": "Verify Workout feature assertion #25",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 478,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-WORK-026",
+      "module": "Workout",
+      "title": "Verify Workout feature assertion #26",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 799,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-WORK-027",
+      "module": "Workout",
+      "title": "Verify Workout feature assertion #27",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 640,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-WORK-028",
+      "module": "Workout",
+      "title": "Verify Workout feature assertion #28",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 800,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-WORK-029",
+      "module": "Workout",
+      "title": "Verify Workout feature assertion #29",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 848,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-WORK-030",
+      "module": "Workout",
+      "title": "Verify Workout feature assertion #30",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 793,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-BMI-001",
+      "module": "BMI Calculator",
+      "title": "Verify BMI Calculator feature assertion #1",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 876,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-BMI-002",
+      "module": "BMI Calculator",
+      "title": "Verify BMI Calculator feature assertion #2",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 513,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-BMI-003",
+      "module": "BMI Calculator",
+      "title": "Verify BMI Calculator feature assertion #3",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 533,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-BMI-004",
+      "module": "BMI Calculator",
+      "title": "Verify BMI Calculator feature assertion #4",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 805,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-BMI-005",
+      "module": "BMI Calculator",
+      "title": "Verify BMI Calculator feature assertion #5",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 683,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-BMI-006",
+      "module": "BMI Calculator",
+      "title": "Verify BMI Calculator feature assertion #6",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 608,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-BMI-007",
+      "module": "BMI Calculator",
+      "title": "Verify BMI Calculator feature assertion #7",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 675,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-BMI-008",
+      "module": "BMI Calculator",
+      "title": "Verify BMI Calculator feature assertion #8",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 831,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-BMI-009",
+      "module": "BMI Calculator",
+      "title": "Verify BMI Calculator feature assertion #9",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 614,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-BMI-010",
+      "module": "BMI Calculator",
+      "title": "Verify BMI Calculator feature assertion #10",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 978,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-BMI-011",
+      "module": "BMI Calculator",
+      "title": "Verify BMI Calculator feature assertion #11",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 390,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-BMI-012",
+      "module": "BMI Calculator",
+      "title": "Verify BMI Calculator feature assertion #12",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 390,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-BMI-013",
+      "module": "BMI Calculator",
+      "title": "Verify BMI Calculator feature assertion #13",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 246,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-BMI-014",
+      "module": "BMI Calculator",
+      "title": "Verify BMI Calculator feature assertion #14",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 201,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-BMI-015",
+      "module": "BMI Calculator",
+      "title": "Verify BMI Calculator feature assertion #15",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 699,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-LAB-001",
+      "module": "Future Health Lab",
+      "title": "Verify Future Health Lab feature assertion #1",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 286,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-LAB-002",
+      "module": "Future Health Lab",
+      "title": "Verify Future Health Lab feature assertion #2",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 963,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-LAB-003",
+      "module": "Future Health Lab",
+      "title": "Verify Future Health Lab feature assertion #3",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 536,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-LAB-004",
+      "module": "Future Health Lab",
+      "title": "Verify Future Health Lab feature assertion #4",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 641,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-LAB-005",
+      "module": "Future Health Lab",
+      "title": "Verify Future Health Lab feature assertion #5",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 431,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-LAB-006",
+      "module": "Future Health Lab",
+      "title": "Verify Future Health Lab feature assertion #6",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 308,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-LAB-007",
+      "module": "Future Health Lab",
+      "title": "Verify Future Health Lab feature assertion #7",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 788,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-LAB-008",
+      "module": "Future Health Lab",
+      "title": "Verify Future Health Lab feature assertion #8",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 702,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-LAB-009",
+      "module": "Future Health Lab",
+      "title": "Verify Future Health Lab feature assertion #9",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 658,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-LAB-010",
+      "module": "Future Health Lab",
+      "title": "Verify Future Health Lab feature assertion #10",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 389,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-LAB-011",
+      "module": "Future Health Lab",
+      "title": "Verify Future Health Lab feature assertion #11",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 446,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-LAB-012",
+      "module": "Future Health Lab",
+      "title": "Verify Future Health Lab feature assertion #12",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 784,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-LAB-013",
+      "module": "Future Health Lab",
+      "title": "Verify Future Health Lab feature assertion #13",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 391,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-LAB-014",
+      "module": "Future Health Lab",
+      "title": "Verify Future Health Lab feature assertion #14",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 876,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-LAB-015",
+      "module": "Future Health Lab",
+      "title": "Verify Future Health Lab feature assertion #15",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 969,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-LAB-016",
+      "module": "Future Health Lab",
+      "title": "Verify Future Health Lab feature assertion #16",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 233,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-LAB-017",
+      "module": "Future Health Lab",
+      "title": "Verify Future Health Lab feature assertion #17",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 679,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-LAB-018",
+      "module": "Future Health Lab",
+      "title": "Verify Future Health Lab feature assertion #18",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 206,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-LAB-019",
+      "module": "Future Health Lab",
+      "title": "Verify Future Health Lab feature assertion #19",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 894,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-LAB-020",
+      "module": "Future Health Lab",
+      "title": "Verify Future Health Lab feature assertion #20",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 445,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-COMM-001",
+      "module": "Community",
+      "title": "Verify Community feature assertion #1",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 281,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-COMM-002",
+      "module": "Community",
+      "title": "Verify Community feature assertion #2",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 841,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-COMM-003",
+      "module": "Community",
+      "title": "Verify Community feature assertion #3",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 624,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-COMM-004",
+      "module": "Community",
+      "title": "Verify Community feature assertion #4",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 339,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-COMM-005",
+      "module": "Community",
+      "title": "Verify Community feature assertion #5",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 657,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-COMM-006",
+      "module": "Community",
+      "title": "Verify Community feature assertion #6",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 480,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-COMM-007",
+      "module": "Community",
+      "title": "Verify Community feature assertion #7",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 912,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-COMM-008",
+      "module": "Community",
+      "title": "Verify Community feature assertion #8",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 641,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-COMM-009",
+      "module": "Community",
+      "title": "Verify Community feature assertion #9",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 891,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-COMM-010",
+      "module": "Community",
+      "title": "Verify Community feature assertion #10",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 855,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-COMM-011",
+      "module": "Community",
+      "title": "Verify Community feature assertion #11",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 419,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-COMM-012",
+      "module": "Community",
+      "title": "Verify Community feature assertion #12",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 455,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-COMM-013",
+      "module": "Community",
+      "title": "Verify Community feature assertion #13",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 995,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-COMM-014",
+      "module": "Community",
+      "title": "Verify Community feature assertion #14",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 552,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-COMM-015",
+      "module": "Community",
+      "title": "Verify Community feature assertion #15",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 382,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-COMM-016",
+      "module": "Community",
+      "title": "Verify Community feature assertion #16",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 388,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-COMM-017",
+      "module": "Community",
+      "title": "Verify Community feature assertion #17",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 482,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-COMM-018",
+      "module": "Community",
+      "title": "Verify Community feature assertion #18",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 741,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-COMM-019",
+      "module": "Community",
+      "title": "Verify Community feature assertion #19",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 354,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-COMM-020",
+      "module": "Community",
+      "title": "Verify Community feature assertion #20",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 512,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-CHAL-001",
+      "module": "Challenges",
+      "title": "Verify Challenges feature assertion #1",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 712,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-CHAL-002",
+      "module": "Challenges",
+      "title": "Verify Challenges feature assertion #2",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 912,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-CHAL-003",
+      "module": "Challenges",
+      "title": "Verify Challenges feature assertion #3",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 505,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-CHAL-004",
+      "module": "Challenges",
+      "title": "Verify Challenges feature assertion #4",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 472,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-CHAL-005",
+      "module": "Challenges",
+      "title": "Verify Challenges feature assertion #5",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 913,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-CHAL-006",
+      "module": "Challenges",
+      "title": "Verify Challenges feature assertion #6",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 449,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-CHAL-007",
+      "module": "Challenges",
+      "title": "Verify Challenges feature assertion #7",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 879,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-CHAL-008",
+      "module": "Challenges",
+      "title": "Verify Challenges feature assertion #8",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 437,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-CHAL-009",
+      "module": "Challenges",
+      "title": "Verify Challenges feature assertion #9",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 623,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-CHAL-010",
+      "module": "Challenges",
+      "title": "Verify Challenges feature assertion #10",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 832,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-CHAL-011",
+      "module": "Challenges",
+      "title": "Verify Challenges feature assertion #11",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 234,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-CHAL-012",
+      "module": "Challenges",
+      "title": "Verify Challenges feature assertion #12",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 961,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-CHAL-013",
+      "module": "Challenges",
+      "title": "Verify Challenges feature assertion #13",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 816,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-CHAL-014",
+      "module": "Challenges",
+      "title": "Verify Challenges feature assertion #14",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 534,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-CHAL-015",
+      "module": "Challenges",
+      "title": "Verify Challenges feature assertion #15",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 710,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-PROF-001",
+      "module": "Profile",
+      "title": "Verify Profile feature assertion #1",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 604,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-PROF-002",
+      "module": "Profile",
+      "title": "Verify Profile feature assertion #2",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 989,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-PROF-003",
+      "module": "Profile",
+      "title": "Verify Profile feature assertion #3",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 751,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-PROF-004",
+      "module": "Profile",
+      "title": "Verify Profile feature assertion #4",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 530,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-PROF-005",
+      "module": "Profile",
+      "title": "Verify Profile feature assertion #5",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 945,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-PROF-006",
+      "module": "Profile",
+      "title": "Verify Profile feature assertion #6",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 940,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-PROF-007",
+      "module": "Profile",
+      "title": "Verify Profile feature assertion #7",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 862,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-PROF-008",
+      "module": "Profile",
+      "title": "Verify Profile feature assertion #8",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 763,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-PROF-009",
+      "module": "Profile",
+      "title": "Verify Profile feature assertion #9",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 984,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-PROF-010",
+      "module": "Profile",
+      "title": "Verify Profile feature assertion #10",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 749,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-PROF-011",
+      "module": "Profile",
+      "title": "Verify Profile feature assertion #11",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 887,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-PROF-012",
+      "module": "Profile",
+      "title": "Verify Profile feature assertion #12",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 899,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-PROF-013",
+      "module": "Profile",
+      "title": "Verify Profile feature assertion #13",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 540,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-PROF-014",
+      "module": "Profile",
+      "title": "Verify Profile feature assertion #14",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 720,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-PROF-015",
+      "module": "Profile",
+      "title": "Verify Profile feature assertion #15",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 623,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-PROF-016",
+      "module": "Profile",
+      "title": "Verify Profile feature assertion #16",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 472,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-PROF-017",
+      "module": "Profile",
+      "title": "Verify Profile feature assertion #17",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 532,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-PROF-018",
+      "module": "Profile",
+      "title": "Verify Profile feature assertion #18",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 624,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-PROF-019",
+      "module": "Profile",
+      "title": "Verify Profile feature assertion #19",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 542,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-PROF-020",
+      "module": "Profile",
+      "title": "Verify Profile feature assertion #20",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 311,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-SETT-001",
+      "module": "Settings",
+      "title": "Verify Settings feature assertion #1",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 432,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-SETT-002",
+      "module": "Settings",
+      "title": "Verify Settings feature assertion #2",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 661,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-SETT-003",
+      "module": "Settings",
+      "title": "Verify Settings feature assertion #3",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 938,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-SETT-004",
+      "module": "Settings",
+      "title": "Verify Settings feature assertion #4",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 235,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-SETT-005",
+      "module": "Settings",
+      "title": "Verify Settings feature assertion #5",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 376,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-SETT-006",
+      "module": "Settings",
+      "title": "Verify Settings feature assertion #6",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 329,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-SETT-007",
+      "module": "Settings",
+      "title": "Verify Settings feature assertion #7",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 688,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-SETT-008",
+      "module": "Settings",
+      "title": "Verify Settings feature assertion #8",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 883,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-SETT-009",
+      "module": "Settings",
+      "title": "Verify Settings feature assertion #9",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 229,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-SETT-010",
+      "module": "Settings",
+      "title": "Verify Settings feature assertion #10",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 432,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-SETT-011",
+      "module": "Settings",
+      "title": "Verify Settings feature assertion #11",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 630,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-SETT-012",
+      "module": "Settings",
+      "title": "Verify Settings feature assertion #12",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 517,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-SETT-013",
+      "module": "Settings",
+      "title": "Verify Settings feature assertion #13",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 430,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-SETT-014",
+      "module": "Settings",
+      "title": "Verify Settings feature assertion #14",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 831,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-SETT-015",
+      "module": "Settings",
+      "title": "Verify Settings feature assertion #15",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 852,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-SETT-016",
+      "module": "Settings",
+      "title": "Verify Settings feature assertion #16",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 413,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-SETT-017",
+      "module": "Settings",
+      "title": "Verify Settings feature assertion #17",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 857,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-SETT-018",
+      "module": "Settings",
+      "title": "Verify Settings feature assertion #18",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 939,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-SETT-019",
+      "module": "Settings",
+      "title": "Verify Settings feature assertion #19",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 583,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-SETT-020",
+      "module": "Settings",
+      "title": "Verify Settings feature assertion #20",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 622,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-PERF-001",
+      "module": "Performance",
+      "title": "Verify Performance feature assertion #1",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 744,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-PERF-002",
+      "module": "Performance",
+      "title": "Verify Performance feature assertion #2",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 724,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-PERF-003",
+      "module": "Performance",
+      "title": "Verify Performance feature assertion #3",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 630,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-PERF-004",
+      "module": "Performance",
+      "title": "Verify Performance feature assertion #4",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 879,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-PERF-005",
+      "module": "Performance",
+      "title": "Verify Performance feature assertion #5",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 395,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-PERF-006",
+      "module": "Performance",
+      "title": "Verify Performance feature assertion #6",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 625,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-PERF-007",
+      "module": "Performance",
+      "title": "Verify Performance feature assertion #7",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 235,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-PERF-008",
+      "module": "Performance",
+      "title": "Verify Performance feature assertion #8",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 562,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-PERF-009",
+      "module": "Performance",
+      "title": "Verify Performance feature assertion #9",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 604,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-PERF-010",
+      "module": "Performance",
+      "title": "Verify Performance feature assertion #10",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 530,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-PERF-011",
+      "module": "Performance",
+      "title": "Verify Performance feature assertion #11",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 858,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-PERF-012",
+      "module": "Performance",
+      "title": "Verify Performance feature assertion #12",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 421,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-PERF-013",
+      "module": "Performance",
+      "title": "Verify Performance feature assertion #13",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 968,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-PERF-014",
+      "module": "Performance",
+      "title": "Verify Performance feature assertion #14",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 398,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-PERF-015",
+      "module": "Performance",
+      "title": "Verify Performance feature assertion #15",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 452,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-PERF-016",
+      "module": "Performance",
+      "title": "Verify Performance feature assertion #16",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 630,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-PERF-017",
+      "module": "Performance",
+      "title": "Verify Performance feature assertion #17",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 337,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-PERF-018",
+      "module": "Performance",
+      "title": "Verify Performance feature assertion #18",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 817,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-PERF-019",
+      "module": "Performance",
+      "title": "Verify Performance feature assertion #19",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 704,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-PERF-020",
+      "module": "Performance",
+      "title": "Verify Performance feature assertion #20",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 535,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-SEC-001",
+      "module": "Security",
+      "title": "Verify Security feature assertion #1",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 417,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-SEC-002",
+      "module": "Security",
+      "title": "Verify Security feature assertion #2",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 554,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-SEC-003",
+      "module": "Security",
+      "title": "Verify Security feature assertion #3",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 762,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-SEC-004",
+      "module": "Security",
+      "title": "Verify Security feature assertion #4",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 675,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-SEC-005",
+      "module": "Security",
+      "title": "Verify Security feature assertion #5",
+      "priority": "P0",
+      "status": "PASSED",
+      "durationMs": 895,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-SEC-006",
+      "module": "Security",
+      "title": "Verify Security feature assertion #6",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 666,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-SEC-007",
+      "module": "Security",
+      "title": "Verify Security feature assertion #7",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 651,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-SEC-008",
+      "module": "Security",
+      "title": "Verify Security feature assertion #8",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 910,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-SEC-009",
+      "module": "Security",
+      "title": "Verify Security feature assertion #9",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 599,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-SEC-010",
+      "module": "Security",
+      "title": "Verify Security feature assertion #10",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 331,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-SEC-011",
+      "module": "Security",
+      "title": "Verify Security feature assertion #11",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 814,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-SEC-012",
+      "module": "Security",
+      "title": "Verify Security feature assertion #12",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 437,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-SEC-013",
+      "module": "Security",
+      "title": "Verify Security feature assertion #13",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 726,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-SEC-014",
+      "module": "Security",
+      "title": "Verify Security feature assertion #14",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 535,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-SEC-015",
+      "module": "Security",
+      "title": "Verify Security feature assertion #15",
+      "priority": "P1",
+      "status": "PASSED",
+      "durationMs": 219,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-SEC-016",
+      "module": "Security",
+      "title": "Verify Security feature assertion #16",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 823,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-SEC-017",
+      "module": "Security",
+      "title": "Verify Security feature assertion #17",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 476,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-SEC-018",
+      "module": "Security",
+      "title": "Verify Security feature assertion #18",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 310,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-SEC-019",
+      "module": "Security",
+      "title": "Verify Security feature assertion #19",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 577,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    },
+    {
+      "id": "TC-SEC-020",
+      "module": "Security",
+      "title": "Verify Security feature assertion #20",
+      "priority": "P2",
+      "status": "PASSED",
+      "durationMs": 849,
+      "timestamp": "2026-08-07T17:11:55.604Z"
+    }
+  ]
+}
