@@ -6,9 +6,9 @@ import GlassCard from "@/components/ui/GlassCard";
 import Button from "@/components/ui/Button";
 import { 
   Target, Users, CheckCircle, 
-  Activity, Plus, Flame, RefreshCw, X,
+  Activity, Plus, RefreshCw, X,
   Droplets, Moon, Utensils, Smile, Sparkles, Award, Star,
-  Clock, ArrowRight, ChevronRight, Trophy, Zap
+  Clock, ArrowRight, ChevronRight, Trophy, Zap, ShieldCheck, Flame
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/utils/supabase";
@@ -65,8 +65,8 @@ export const PREDEFINED_CHALLENGES: ChallengeItem[] = [
   { id: "c-hab-4", title: "Probiotic Gut Health", description: "Consume daily fermented probiotic foods (curd, yogurt, kefir) for 14 days.", category: "Healthy Habits", difficulty: "Easy", xp_reward: 200, duration_days: 14, participants_count: 170 }
 ];
 
-// Circular SVG Progress Ring Component
-const ProgressRing = ({ percentage = 0, size = 42, strokeWidth = 4, color = "#f97316" }: { percentage: number; size?: number; strokeWidth?: number; color?: string }) => {
+// Circular SVG Progress Ring Component (Primary Teal Design System)
+const ProgressRing = ({ percentage = 0, size = 42, strokeWidth = 3.5 }: { percentage: number; size?: number; strokeWidth?: number }) => {
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (percentage / 100) * circumference;
@@ -80,14 +80,14 @@ const ProgressRing = ({ percentage = 0, size = 42, strokeWidth = 4, color = "#f9
           r={radius}
           stroke="currentColor"
           strokeWidth={strokeWidth}
-          className="text-foreground/10"
+          className="text-foreground/8"
           fill="transparent"
         />
         <circle
           cx={size / 2}
           cy={size / 2}
           r={radius}
-          stroke={color}
+          stroke="hsl(168, 80%, 36%)"
           strokeWidth={strokeWidth}
           strokeDasharray={circumference}
           strokeDashoffset={strokeDashoffset}
@@ -96,7 +96,7 @@ const ProgressRing = ({ percentage = 0, size = 42, strokeWidth = 4, color = "#f9
           className="transition-all duration-500 ease-out"
         />
       </svg>
-      <span className="absolute text-[10px] font-black text-foreground tabular-nums">
+      <span className="absolute text-[10px] font-bold text-foreground tabular-nums">
         {Math.round(percentage)}%
       </span>
     </div>
@@ -330,13 +330,13 @@ export default function HealthyHabitsPage() {
         
         {/* HEADER & STATISTICS WIDGET ROW */}
         <div className="space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-3xl bg-background/60 backdrop-blur-md border border-foreground/8 shadow-sm">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl glass-panel border border-foreground/8 shadow-xs">
             <div className="space-y-0.5">
-              <h1 className="text-xl sm:text-2xl font-black tracking-tight text-foreground flex items-center gap-2">
+              <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
                 Health Challenges
               </h1>
-              <p className="text-xs text-foreground/60 font-medium">
-                Track active habit sprints, earn XP, and unlock milestones.
+              <p className="text-xs text-foreground/60 font-normal">
+                Evidence-based habit protocols and preventative health sprints.
               </p>
             </div>
 
@@ -345,7 +345,7 @@ export default function HealthyHabitsPage() {
                 onClick={fetchChallenges}
                 variant="glass"
                 size="sm"
-                className="text-xs font-semibold py-2 px-3 flex items-center gap-1.5 rounded-xl border border-foreground/10"
+                className="text-xs font-medium py-1.5 px-3 flex items-center gap-1.5 rounded-xl border border-foreground/10 text-foreground/80"
               >
                 <RefreshCw className={`h-3.5 w-3.5 ${loadingChallenges ? "animate-spin" : ""}`} />
                 Sync
@@ -353,7 +353,7 @@ export default function HealthyHabitsPage() {
               <Button
                 onClick={() => setShowCreateModal(true)}
                 variant="primary"
-                className="py-2 px-3.5 text-xs font-bold bg-primary text-white flex items-center gap-1.5 shadow-sm rounded-xl"
+                className="py-1.5 px-3.5 text-xs font-semibold bg-primary hover:bg-primary/90 text-white flex items-center gap-1.5 shadow-xs rounded-xl"
               >
                 <Plus className="h-4 w-4" />
                 Create Challenge
@@ -361,55 +361,55 @@ export default function HealthyHabitsPage() {
             </div>
           </div>
 
-          {/* STATS ROW WIDGETS */}
+          {/* STATS ROW WIDGETS (VitalCore Minimal Design System) */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div className="p-3.5 rounded-2xl bg-background/50 border border-foreground/8 shadow-sm flex items-center gap-3">
-              <div className="p-2.5 rounded-xl bg-orange-500/10 text-orange-500 shrink-0">
-                <Trophy className="h-5 w-5" />
+            <div className="p-3.5 rounded-2xl glass-panel border border-foreground/8 shadow-xs flex items-center gap-3">
+              <div className="p-2 rounded-xl bg-primary/10 text-primary shrink-0">
+                <Target className="h-4 w-4" />
               </div>
               <div>
-                <span className="text-[10px] font-extrabold text-foreground/50 uppercase tracking-wider block">Active</span>
-                <span className="text-base font-black text-foreground tabular-nums">{userChallenges.length}</span>
+                <span className="text-[10px] font-bold text-foreground/50 uppercase tracking-wider block">Active</span>
+                <span className="text-sm font-bold text-foreground tabular-nums">{userChallenges.length}</span>
               </div>
             </div>
 
-            <div className="p-3.5 rounded-2xl bg-background/50 border border-foreground/8 shadow-sm flex items-center gap-3">
-              <div className="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-500 shrink-0">
-                <Award className="h-5 w-5" />
+            <div className="p-3.5 rounded-2xl glass-panel border border-foreground/8 shadow-xs flex items-center gap-3">
+              <div className="p-2 rounded-xl bg-primary/10 text-primary shrink-0">
+                <ShieldCheck className="h-4 w-4" />
               </div>
               <div>
-                <span className="text-[10px] font-extrabold text-foreground/50 uppercase tracking-wider block">Completed</span>
-                <span className="text-base font-black text-foreground tabular-nums">{completedCount}</span>
+                <span className="text-[10px] font-bold text-foreground/50 uppercase tracking-wider block">Completed</span>
+                <span className="text-sm font-bold text-foreground tabular-nums">{completedCount}</span>
               </div>
             </div>
 
-            <div className="p-3.5 rounded-2xl bg-background/50 border border-foreground/8 shadow-sm flex items-center gap-3">
-              <div className="p-2.5 rounded-xl bg-rose-500/10 text-rose-500 shrink-0">
-                <Flame className="h-5 w-5" />
+            <div className="p-3.5 rounded-2xl glass-panel border border-foreground/8 shadow-xs flex items-center gap-3">
+              <div className="p-2 rounded-xl bg-primary/10 text-primary shrink-0">
+                <Flame className="h-4 w-4" />
               </div>
               <div>
-                <span className="text-[10px] font-extrabold text-foreground/50 uppercase tracking-wider block">Streak</span>
-                <span className="text-base font-black text-foreground tabular-nums">{profile?.streak_days || 7} Days</span>
+                <span className="text-[10px] font-bold text-foreground/50 uppercase tracking-wider block">Streak</span>
+                <span className="text-sm font-bold text-foreground tabular-nums">{profile?.streak_days || 7} Days</span>
               </div>
             </div>
 
-            <div className="p-3.5 rounded-2xl bg-background/50 border border-foreground/8 shadow-sm flex items-center gap-3">
-              <div className="p-2.5 rounded-xl bg-amber-500/10 text-amber-500 shrink-0">
-                <Zap className="h-5 w-5" />
+            <div className="p-3.5 rounded-2xl glass-panel border border-foreground/8 shadow-xs flex items-center gap-3">
+              <div className="p-2 rounded-xl bg-primary/10 text-primary shrink-0">
+                <Trophy className="h-4 w-4" />
               </div>
               <div>
-                <span className="text-[10px] font-extrabold text-foreground/50 uppercase tracking-wider block">Total XP</span>
-                <span className="text-base font-black text-foreground tabular-nums">{totalXp} XP</span>
+                <span className="text-[10px] font-bold text-foreground/50 uppercase tracking-wider block">Health XP</span>
+                <span className="text-sm font-bold text-foreground tabular-nums">{totalXp}</span>
               </div>
             </div>
           </div>
         </div>
 
-        {/* SECTION 1: ACTIVE CHALLENGES (Small Horizontal Dashboard Widgets) */}
+        {/* SECTION 1: ACTIVE CHALLENGES (Compact Dashboard Widgets) */}
         {userChallenges.length > 0 && (
           <section className="space-y-3">
-            <h2 className="text-xs font-extrabold text-foreground/70 uppercase tracking-wider flex items-center gap-1.5">
-              <Flame className="h-4 w-4 text-orange-500" />
+            <h2 className="text-xs font-bold text-foreground/60 uppercase tracking-wider flex items-center gap-1.5">
+              <Activity className="h-3.5 w-3.5 text-primary" />
               Active Challenges ({userChallenges.length})
             </h2>
 
@@ -423,22 +423,24 @@ export default function HealthyHabitsPage() {
                 return (
                   <div 
                     key={idx} 
-                    className="p-3.5 rounded-2xl bg-background/80 backdrop-blur-md border border-foreground/8 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 flex items-center gap-3 group relative"
+                    className="p-3.5 rounded-2xl glass-panel border border-foreground/8 shadow-xs hover:border-primary/20 transition-all duration-200 flex items-center gap-3 group"
                   >
-                    <ProgressRing percentage={progress} size={46} strokeWidth={4} color="#f97316" />
+                    <ProgressRing percentage={progress} size={42} strokeWidth={3.5} />
 
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-1.5 mb-0.5">
-                        <span className="text-[9px] font-extrabold text-orange-500 bg-orange-500/10 px-1.5 py-0.5 rounded-md flex items-center gap-1">
+                        <span className="text-[9px] font-bold text-primary bg-primary/10 px-1.5 py-0.5 rounded-md flex items-center gap-1">
                           <IconComp className="h-2.5 w-2.5" />
                           {ch.category || "Active"}
                         </span>
-                        <span className="text-[9px] font-semibold text-foreground/40">{ch.duration_days || 7}d left</span>
+                        <span className="text-[9px] font-medium text-foreground/40">{ch.duration_days || 7}d remaining</span>
                       </div>
-                      <h4 className="font-extrabold text-xs text-foreground truncate group-hover:text-primary transition-colors">
+                      <h4 className="font-bold text-xs text-foreground truncate group-hover:text-primary transition-colors">
                         {ch.title || "Custom Challenge"}
                       </h4>
-                      <span className="text-[10px] font-semibold text-foreground/50">🏆 +{ch.xp_reward || 200} XP</span>
+                      <span className="text-[10px] font-medium text-foreground/50 flex items-center gap-1 mt-0.5">
+                        <Trophy className="h-2.5 w-2.5 text-foreground/40" /> +{ch.xp_reward || 200} XP
+                      </span>
                     </div>
 
                     <div className="flex items-center gap-1 shrink-0">
@@ -451,10 +453,10 @@ export default function HealthyHabitsPage() {
                       </button>
                       <button
                         onClick={() => handleLeaveChallenge(chId)}
-                        className="p-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 transition-all text-xs"
+                        className="p-1.5 rounded-xl bg-foreground/5 hover:bg-rose-500/10 text-foreground/40 hover:text-rose-500 transition-all text-xs"
                         title="Leave"
                       >
-                        <X className="h-4 w-4" />
+                        <X className="h-3.5 w-3.5" />
                       </button>
                     </div>
                   </div>
@@ -464,61 +466,58 @@ export default function HealthyHabitsPage() {
           </section>
         )}
 
-        {/* SECTION 2: ⭐ RECOMMENDED FOR YOU (Large Featured Glass Cards) */}
+        {/* SECTION 2: ⭐ RECOMMENDED FOR YOU (Medical Minimal Glass Cards) */}
         {recommendedChallenges.length > 0 && (
           <section className="space-y-3">
             <div className="flex items-center justify-between">
-              <h2 className="text-xs font-extrabold text-foreground/70 uppercase tracking-wider flex items-center gap-1.5">
-                <Star className="h-4 w-4 text-amber-400 fill-amber-400" />
+              <h2 className="text-xs font-bold text-foreground/60 uppercase tracking-wider flex items-center gap-1.5">
+                <Star className="h-3.5 w-3.5 text-primary" />
                 Recommended For You
               </h2>
-              <span className="text-[10px] font-extrabold text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20">
+              <span className="text-[10px] font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full">
                 Matched to Goals
               </span>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               {recommendedChallenges.map((ch: ChallengeItem) => {
                 const IconComp = getCategoryIcon(ch.category);
                 return (
                   <div 
                     key={ch.id} 
-                    className="relative overflow-hidden p-5 rounded-3xl bg-gradient-to-br from-amber-500/10 via-background/90 to-primary/5 border border-amber-500/20 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between space-y-4 group"
+                    className="p-4 rounded-2xl glass-panel border border-primary/20 bg-primary/[0.02] shadow-xs hover:shadow-md hover:border-primary/30 transition-all duration-200 flex flex-col justify-between space-y-3 group"
                   >
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl pointer-events-none group-hover:bg-amber-500/20 transition-all" />
-
-                    <div className="space-y-3 relative z-10">
+                    <div className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <span className="px-2.5 py-1 rounded-xl bg-amber-500/20 text-amber-600 dark:text-amber-300 text-[9px] font-extrabold tracking-wider uppercase flex items-center gap-1.5 border border-amber-500/30">
-                          <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
-                          Goal Match
+                        <span className="px-2 py-0.5 rounded-md bg-primary/10 text-primary text-[10px] font-semibold flex items-center gap-1">
+                          <IconComp className="h-3 w-3" />
+                          {ch.category}
                         </span>
-                        <span className="text-xs font-black text-amber-500 tabular-nums">🏆 +{ch.xp_reward} XP</span>
+                        <span className="text-[10px] font-medium text-foreground/50 flex items-center gap-1">
+                          <Trophy className="h-2.5 w-2.5 text-primary/70" /> +{ch.xp_reward} XP
+                        </span>
                       </div>
 
-                      <div className="flex items-start gap-3">
-                        <div className="p-3 rounded-2xl bg-amber-500/15 text-amber-500 shrink-0">
-                          <IconComp className="h-6 w-6" />
-                        </div>
-                        <div className="space-y-1 min-w-0">
-                          <h3 className="font-extrabold text-sm text-foreground leading-snug group-hover:text-amber-500 transition-colors line-clamp-1">
-                            {ch.title}
-                          </h3>
-                          <p className="text-xs text-foreground/70 font-medium leading-relaxed line-clamp-2">
-                            {ch.description}
-                          </p>
-                        </div>
+                      <div>
+                        <h3 className="font-bold text-xs text-foreground group-hover:text-primary transition-colors line-clamp-1">
+                          {ch.title}
+                        </h3>
+                        <p className="text-[11px] text-foreground/60 font-normal mt-1 leading-relaxed line-clamp-2">
+                          {ch.description}
+                        </p>
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-between pt-3 border-t border-amber-500/15 relative z-10">
-                      <span className="text-[11px] font-bold text-foreground/50">{ch.duration_days} Days • {ch.difficulty}</span>
-                      <button
+                    <div className="flex items-center justify-between pt-2.5 border-t border-foreground/5">
+                      <span className="text-[10px] font-medium text-foreground/50">{ch.duration_days} Days • {ch.difficulty}</span>
+                      <Button
                         onClick={() => handleJoinChallenge(ch)}
-                        className="px-4 py-2 rounded-xl text-xs font-black bg-amber-500 hover:bg-amber-400 text-black shadow-md hover:shadow-amber-500/25 transition-all flex items-center gap-1 cursor-pointer"
+                        variant="primary"
+                        size="sm"
+                        className="py-1.5 px-3 text-xs font-semibold bg-primary hover:bg-primary/90 text-white rounded-xl shadow-xs"
                       >
-                        Join Challenge <ArrowRight className="h-3.5 w-3.5" />
-                      </button>
+                        Join Challenge
+                      </Button>
                     </div>
                   </div>
                 );
@@ -527,27 +526,27 @@ export default function HealthyHabitsPage() {
           </section>
         )}
 
-        {/* SECTION 3: CHALLENGE LIBRARY (Modern Segmented Control + Compact Grid) */}
-        <section id="challenge-library" className="space-y-4 pt-2">
+        {/* SECTION 3: CHALLENGE LIBRARY (Segmented Control + Minimal Cards Grid) */}
+        <section id="challenge-library" className="space-y-3 pt-2">
           <div className="flex items-center justify-between">
-            <h2 className="text-xs font-extrabold text-foreground/70 uppercase tracking-wider flex items-center gap-1.5">
-              <Target className="h-4 w-4 text-primary" />
+            <h2 className="text-xs font-bold text-foreground/60 uppercase tracking-wider flex items-center gap-1.5">
+              <Target className="h-3.5 w-3.5 text-primary" />
               Challenge Library ({filteredChallenges.length})
             </h2>
           </div>
 
-          {/* MODERN SEGMENTED CONTROL / PILL CATEGORY FILTER */}
-          <div className="flex items-center gap-1 overflow-x-auto p-1 bg-foreground/5 rounded-2xl border border-foreground/8 text-xs font-semibold no-scrollbar">
+          {/* MODERN SEGMENTED CONTROL TAB BAR */}
+          <div className="flex items-center gap-1 overflow-x-auto p-1 bg-foreground/5 rounded-2xl border border-foreground/8 text-xs font-medium no-scrollbar">
             {CATEGORIES.map((cat) => {
               const isSelected = selectedCategory === cat;
               return (
                 <button
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}
-                  className={`px-3.5 py-1.5 rounded-xl shrink-0 transition-all text-xs cursor-pointer ${
+                  className={`px-3 py-1 rounded-xl shrink-0 transition-all text-xs cursor-pointer ${
                     isSelected 
-                      ? "bg-primary text-white font-bold shadow-sm" 
-                      : "text-foreground/70 hover:text-foreground hover:bg-foreground/5 font-medium"
+                      ? "bg-primary text-white font-semibold shadow-xs" 
+                      : "text-foreground/70 hover:text-foreground hover:bg-foreground/5"
                   }`}
                 >
                   {cat}
@@ -556,7 +555,7 @@ export default function HealthyHabitsPage() {
             })}
           </div>
 
-          {/* COMPACT CHALLENGES GRID */}
+          {/* COMPACT MINIMAL CHALLENGES GRID */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
             {filteredChallenges.map((ch: ChallengeItem) => {
               const IconComp = getCategoryIcon(ch.category);
@@ -565,44 +564,47 @@ export default function HealthyHabitsPage() {
               return (
                 <div 
                   key={ch.id} 
-                  className="p-3.5 rounded-2xl bg-background/60 backdrop-blur-md border border-foreground/8 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 flex flex-col justify-between space-y-3 group"
+                  className="p-3.5 rounded-2xl glass-panel border border-foreground/8 shadow-xs hover:border-primary/20 transition-all duration-200 flex flex-col justify-between space-y-3 group"
                 >
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="px-2 py-0.5 rounded-lg bg-foreground/5 text-foreground/70 text-[10px] font-bold flex items-center gap-1">
+                      <span className="px-2 py-0.5 rounded-md bg-foreground/5 text-foreground/70 text-[10px] font-semibold flex items-center gap-1">
                         <IconComp className="h-3 w-3 text-primary" />
                         {ch.category}
                       </span>
-                      <span className="text-[10px] font-black text-amber-500 tabular-nums">🏆 +{ch.xp_reward} XP</span>
+                      <span className="text-[10px] font-medium text-foreground/50 flex items-center gap-1">
+                        <Trophy className="h-2.5 w-2.5 text-primary/70" /> +{ch.xp_reward} XP
+                      </span>
                     </div>
 
                     <div>
-                      <h3 className="font-extrabold text-xs text-foreground group-hover:text-primary transition-colors line-clamp-1">
+                      <h3 className="font-bold text-xs text-foreground group-hover:text-primary transition-colors line-clamp-1">
                         {ch.title}
                       </h3>
-                      <p className="text-[11px] text-foreground/60 font-medium mt-1 leading-normal line-clamp-2">
+                      <p className="text-[11px] text-foreground/60 font-normal mt-1 leading-relaxed line-clamp-2">
                         {ch.description}
                       </p>
                     </div>
                   </div>
 
                   <div className="space-y-2 pt-2 border-t border-foreground/5">
-                    <div className="flex items-center justify-between text-[10px] font-semibold text-foreground/50">
+                    <div className="flex items-center justify-between text-[10px] font-medium text-foreground/50">
                       <span>{ch.duration_days} Days • {ch.difficulty}</span>
                       <span>{ch.participants_count || 120}+ Active</span>
                     </div>
 
                     {joined ? (
-                      <div className="w-full text-center text-[11px] font-extrabold py-1.5 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center justify-center gap-1">
+                      <div className="w-full text-center text-xs font-semibold py-1.5 rounded-xl bg-primary/10 text-primary border border-primary/20 flex items-center justify-center gap-1">
                         <CheckCircle className="h-3.5 w-3.5" /> Joined & Active
                       </div>
                     ) : (
-                      <button
+                      <Button
                         onClick={() => handleJoinChallenge(ch)}
-                        className="w-full py-1.5 text-[11px] font-extrabold bg-primary hover:bg-primary/90 text-white rounded-xl shadow-sm transition-all cursor-pointer"
+                        variant="primary"
+                        className="w-full py-1.5 text-xs font-semibold bg-primary hover:bg-primary/90 text-white rounded-xl shadow-xs"
                       >
                         Join Challenge
-                      </button>
+                      </Button>
                     )}
                   </div>
                 </div>
@@ -615,26 +617,26 @@ export default function HealthyHabitsPage() {
 
       {/* CREATE YOUR OWN CHALLENGE MODAL */}
       {showCreateModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-[fadeIn_0.2s_ease-out]">
-          <div className="w-full max-w-md p-6 rounded-3xl glass-panel border border-foreground/10 bg-background space-y-4 shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-[fadeIn_0.2s_ease-out]">
+          <div className="w-full max-w-md p-6 rounded-2xl glass-panel border border-foreground/10 bg-background space-y-4 shadow-xl">
             <div className="flex items-center justify-between">
               <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
-                <Plus className="h-4 w-4 text-primary" /> Create Your Own Challenge
+                <Plus className="h-4 w-4 text-primary" /> Create Custom Challenge
               </h3>
               <button onClick={() => setShowCreateModal(false)} className="text-foreground/50 hover:text-foreground">
                 <X className="h-4 w-4" />
               </button>
             </div>
 
-            <form onSubmit={handleCreateChallenge} className="space-y-3 text-xs font-semibold">
+            <form onSubmit={handleCreateChallenge} className="space-y-3 text-xs font-medium">
               <div>
-                <label className="block text-foreground/60 text-[10px] uppercase font-bold mb-1">Challenge Name</label>
+                <label className="block text-foreground/60 text-[10px] uppercase font-bold mb-1">Challenge Title</label>
                 <input
                   type="text"
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
-                  placeholder="e.g. 7-Day Morning Electrolyte Sprint"
-                  className="w-full p-2.5 rounded-xl border border-foreground/10 bg-background text-foreground font-bold focus:outline-none focus:border-primary"
+                  placeholder="e.g. 7-Day Morning Hydration Sprint"
+                  className="w-full p-2.5 rounded-xl border border-foreground/10 bg-background text-foreground font-semibold focus:outline-none focus:border-primary"
                 />
               </div>
 
@@ -643,9 +645,9 @@ export default function HealthyHabitsPage() {
                 <textarea
                   value={newDesc}
                   onChange={(e) => setNewDesc(e.target.value)}
-                  placeholder="e.g. Drink 500ml water with electrolyte salt every morning."
+                  placeholder="e.g. Drink 500ml water immediately upon waking."
                   rows={3}
-                  className="w-full p-2.5 rounded-xl border border-foreground/10 bg-background text-foreground font-semibold focus:outline-none focus:border-primary"
+                  className="w-full p-2.5 rounded-xl border border-foreground/10 bg-background text-foreground font-normal focus:outline-none focus:border-primary"
                 />
               </div>
 
@@ -655,7 +657,7 @@ export default function HealthyHabitsPage() {
                   <select
                     value={newCategory}
                     onChange={(e) => setNewCategory(e.target.value)}
-                    className="w-full p-2.5 rounded-xl border border-foreground/10 bg-background text-foreground font-bold"
+                    className="w-full p-2.5 rounded-xl border border-foreground/10 bg-background text-foreground font-semibold"
                   >
                     <option value="Fitness">Fitness</option>
                     <option value="Nutrition">Nutrition</option>
@@ -670,7 +672,7 @@ export default function HealthyHabitsPage() {
                   <select
                     value={newDifficulty}
                     onChange={(e) => setNewDifficulty(e.target.value)}
-                    className="w-full p-2.5 rounded-xl border border-foreground/10 bg-background text-foreground font-bold"
+                    className="w-full p-2.5 rounded-xl border border-foreground/10 bg-background text-foreground font-semibold"
                   >
                     <option value="Easy">Easy</option>
                     <option value="Medium">Medium</option>
@@ -686,7 +688,7 @@ export default function HealthyHabitsPage() {
                     type="number"
                     value={newDuration}
                     onChange={(e) => setNewDuration(e.target.value)}
-                    className="w-full p-2.5 rounded-xl border border-foreground/10 bg-background text-foreground font-bold"
+                    className="w-full p-2.5 rounded-xl border border-foreground/10 bg-background text-foreground font-semibold"
                   />
                 </div>
                 <div>
@@ -695,7 +697,7 @@ export default function HealthyHabitsPage() {
                     type="number"
                     value={newXp}
                     onChange={(e) => setNewXp(e.target.value)}
-                    className="w-full p-2.5 rounded-xl border border-foreground/10 bg-background text-foreground font-bold"
+                    className="w-full p-2.5 rounded-xl border border-foreground/10 bg-background text-foreground font-semibold"
                   />
                 </div>
               </div>
@@ -704,7 +706,7 @@ export default function HealthyHabitsPage() {
                 <Button size="sm" variant="glass" onClick={() => setShowCreateModal(false)}>
                   Cancel
                 </Button>
-                <Button type="submit" disabled={submitting} size="sm" variant="primary" className="bg-primary text-white font-bold">
+                <Button type="submit" disabled={submitting} size="sm" variant="primary" className="bg-primary text-white font-semibold">
                   {submitting ? "Publishing..." : "Publish Challenge"}
                 </Button>
               </div>
@@ -715,10 +717,10 @@ export default function HealthyHabitsPage() {
 
       {/* CHALLENGE DETAILS MODAL */}
       {selectedChallengeModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-[fadeIn_0.2s_ease-out]">
-          <div className="w-full max-w-md p-6 rounded-3xl glass-panel border border-foreground/10 bg-background space-y-4 shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-[fadeIn_0.2s_ease-out]">
+          <div className="w-full max-w-md p-6 rounded-2xl glass-panel border border-foreground/10 bg-background space-y-4 shadow-xl">
             <div className="flex items-center justify-between">
-              <span className="px-2.5 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold">
+              <span className="px-2.5 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-semibold">
                 {selectedChallengeModal.category || "Challenge"}
               </span>
               <button onClick={() => setSelectedChallengeModal(null)} className="text-foreground/50 hover:text-foreground">
@@ -728,7 +730,7 @@ export default function HealthyHabitsPage() {
 
             <div>
               <h3 className="text-base font-bold text-foreground">{selectedChallengeModal.title}</h3>
-              <p className="text-xs text-foreground/60 font-semibold mt-1.5 leading-relaxed">{selectedChallengeModal.description}</p>
+              <p className="text-xs text-foreground/60 font-normal mt-1.5 leading-relaxed">{selectedChallengeModal.description}</p>
             </div>
 
             <div className="flex justify-end pt-2">
