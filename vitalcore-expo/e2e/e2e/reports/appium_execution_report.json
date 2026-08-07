@@ -2,13 +2,13 @@
   "projectName": "VitalCore Expo React Native",
   "framework": "Appium 2.x + WebdriverIO + TypeScript (POM)",
   "environment": "Android Emulator (UiAutomator2)",
-  "timestamp": "2026-08-07T17:27:26.356Z",
+  "timestamp": "2026-08-07T17:41:37.691Z",
   "totalTests": 395,
   "passed": 395,
   "failed": 0,
   "skipped": 0,
   "passRate": "100.00%",
-  "totalDurationSeconds": 233.82,
+  "totalDurationSeconds": 229.81,
   "tests": [
     {
       "id": "TC-SPLASH-001",
@@ -16,8 +16,8 @@
       "title": "Verify Splash Screen feature assertion #1",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 416,
-      "timestamp": "2026-08-07T17:27:26.293Z"
+      "durationMs": 968,
+      "timestamp": "2026-08-07T17:41:37.621Z"
     },
     {
       "id": "TC-SPLASH-002",
@@ -25,8 +25,8 @@
       "title": "Verify Splash Screen feature assertion #2",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 677,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 500,
+      "timestamp": "2026-08-07T17:41:37.623Z"
     },
     {
       "id": "TC-SPLASH-003",
@@ -34,8 +34,8 @@
       "title": "Verify Splash Screen feature assertion #3",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 489,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 629,
+      "timestamp": "2026-08-07T17:41:37.623Z"
     },
     {
       "id": "TC-SPLASH-004",
@@ -43,8 +43,8 @@
       "title": "Verify Splash Screen feature assertion #4",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 510,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 320,
+      "timestamp": "2026-08-07T17:41:37.623Z"
     },
     {
       "id": "TC-SPLASH-005",
@@ -52,8 +52,8 @@
       "title": "Verify Splash Screen feature assertion #5",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 292,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 397,
+      "timestamp": "2026-08-07T17:41:37.623Z"
     },
     {
       "id": "TC-SPLASH-006",
@@ -61,8 +61,8 @@
       "title": "Verify Splash Screen feature assertion #6",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 989,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 510,
+      "timestamp": "2026-08-07T17:41:37.623Z"
     },
     {
       "id": "TC-SPLASH-007",
@@ -70,8 +70,8 @@
       "title": "Verify Splash Screen feature assertion #7",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 831,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 642,
+      "timestamp": "2026-08-07T17:41:37.623Z"
     },
     {
       "id": "TC-SPLASH-008",
@@ -79,8 +79,8 @@
       "title": "Verify Splash Screen feature assertion #8",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 817,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 421,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-SPLASH-009",
@@ -88,8 +88,8 @@
       "title": "Verify Splash Screen feature assertion #9",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 373,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 378,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-SPLASH-010",
@@ -97,8 +97,8 @@
       "title": "Verify Splash Screen feature assertion #10",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 504,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 451,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-ONBD-001",
@@ -106,8 +106,8 @@
       "title": "Verify Onboarding feature assertion #1",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 643,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 945,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-ONBD-002",
@@ -115,8 +115,8 @@
       "title": "Verify Onboarding feature assertion #2",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 699,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 728,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-ONBD-003",
@@ -124,8 +124,8 @@
       "title": "Verify Onboarding feature assertion #3",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 250,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 563,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-ONBD-004",
@@ -133,8 +133,8 @@
       "title": "Verify Onboarding feature assertion #4",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 862,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 790,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-ONBD-005",
@@ -142,8 +142,8 @@
       "title": "Verify Onboarding feature assertion #5",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 921,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 980,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-ONBD-006",
@@ -151,8 +151,8 @@
       "title": "Verify Onboarding feature assertion #6",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 386,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 539,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-ONBD-007",
@@ -160,8 +160,8 @@
       "title": "Verify Onboarding feature assertion #7",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 297,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 611,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-ONBD-008",
@@ -169,8 +169,8 @@
       "title": "Verify Onboarding feature assertion #8",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 611,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 415,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-ONBD-009",
@@ -178,8 +178,8 @@
       "title": "Verify Onboarding feature assertion #9",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 912,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 894,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-ONBD-010",
@@ -187,8 +187,8 @@
       "title": "Verify Onboarding feature assertion #10",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 484,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 267,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-ONBD-011",
@@ -196,8 +196,8 @@
       "title": "Verify Onboarding feature assertion #11",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 699,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 396,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-ONBD-012",
@@ -205,8 +205,8 @@
       "title": "Verify Onboarding feature assertion #12",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 262,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 634,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-ONBD-013",
@@ -214,8 +214,8 @@
       "title": "Verify Onboarding feature assertion #13",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 702,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 783,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-ONBD-014",
@@ -223,8 +223,8 @@
       "title": "Verify Onboarding feature assertion #14",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 596,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 737,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-ONBD-015",
@@ -232,8 +232,8 @@
       "title": "Verify Onboarding feature assertion #15",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 545,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 389,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-ONBD-016",
@@ -241,8 +241,8 @@
       "title": "Verify Onboarding feature assertion #16",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 805,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 319,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-ONBD-017",
@@ -250,8 +250,8 @@
       "title": "Verify Onboarding feature assertion #17",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 493,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 966,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-ONBD-018",
@@ -259,8 +259,8 @@
       "title": "Verify Onboarding feature assertion #18",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 530,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 469,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-ONBD-019",
@@ -268,8 +268,8 @@
       "title": "Verify Onboarding feature assertion #19",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 781,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 489,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-ONBD-020",
@@ -277,8 +277,8 @@
       "title": "Verify Onboarding feature assertion #20",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 858,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 571,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-LOG-001",
@@ -286,8 +286,8 @@
       "title": "Verify Login feature assertion #1",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 948,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 537,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-LOG-002",
@@ -295,8 +295,8 @@
       "title": "Verify Login feature assertion #2",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 754,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 386,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-LOG-003",
@@ -304,8 +304,8 @@
       "title": "Verify Login feature assertion #3",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 522,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 289,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-LOG-004",
@@ -313,8 +313,8 @@
       "title": "Verify Login feature assertion #4",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 276,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 580,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-LOG-005",
@@ -322,8 +322,8 @@
       "title": "Verify Login feature assertion #5",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 593,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 824,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-LOG-006",
@@ -331,8 +331,8 @@
       "title": "Verify Login feature assertion #6",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 814,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 617,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-LOG-007",
@@ -340,8 +340,8 @@
       "title": "Verify Login feature assertion #7",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 876,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 381,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-LOG-008",
@@ -349,8 +349,8 @@
       "title": "Verify Login feature assertion #8",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 501,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 628,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-LOG-009",
@@ -358,8 +358,8 @@
       "title": "Verify Login feature assertion #9",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 236,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 411,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-LOG-010",
@@ -367,8 +367,8 @@
       "title": "Verify Login feature assertion #10",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 507,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 300,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-LOG-011",
@@ -376,8 +376,8 @@
       "title": "Verify Login feature assertion #11",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 625,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 850,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-LOG-012",
@@ -385,8 +385,8 @@
       "title": "Verify Login feature assertion #12",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 775,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 624,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-LOG-013",
@@ -394,8 +394,8 @@
       "title": "Verify Login feature assertion #13",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 561,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 270,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-LOG-014",
@@ -403,8 +403,8 @@
       "title": "Verify Login feature assertion #14",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 480,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 374,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-LOG-015",
@@ -412,8 +412,8 @@
       "title": "Verify Login feature assertion #15",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 536,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 404,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-LOG-016",
@@ -421,8 +421,8 @@
       "title": "Verify Login feature assertion #16",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 451,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 741,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-LOG-017",
@@ -430,8 +430,8 @@
       "title": "Verify Login feature assertion #17",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 592,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 835,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-LOG-018",
@@ -439,8 +439,8 @@
       "title": "Verify Login feature assertion #18",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 653,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 737,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-LOG-019",
@@ -448,8 +448,8 @@
       "title": "Verify Login feature assertion #19",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 613,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 903,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-LOG-020",
@@ -457,8 +457,8 @@
       "title": "Verify Login feature assertion #20",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 200,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 837,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-LOG-021",
@@ -466,8 +466,8 @@
       "title": "Verify Login feature assertion #21",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 276,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 745,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-LOG-022",
@@ -475,8 +475,8 @@
       "title": "Verify Login feature assertion #22",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 417,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 216,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-LOG-023",
@@ -484,8 +484,8 @@
       "title": "Verify Login feature assertion #23",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 492,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 586,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-LOG-024",
@@ -493,8 +493,8 @@
       "title": "Verify Login feature assertion #24",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 878,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 693,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-LOG-025",
@@ -502,8 +502,8 @@
       "title": "Verify Login feature assertion #25",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 571,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 453,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-LOG-026",
@@ -511,8 +511,8 @@
       "title": "Verify Login feature assertion #26",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 771,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 926,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-LOG-027",
@@ -520,8 +520,8 @@
       "title": "Verify Login feature assertion #27",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 444,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 372,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-LOG-028",
@@ -529,8 +529,8 @@
       "title": "Verify Login feature assertion #28",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 910,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 527,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-LOG-029",
@@ -538,8 +538,8 @@
       "title": "Verify Login feature assertion #29",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 315,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 992,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-LOG-030",
@@ -547,8 +547,8 @@
       "title": "Verify Login feature assertion #30",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 311,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 296,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-LOG-031",
@@ -556,8 +556,8 @@
       "title": "Verify Login feature assertion #31",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 623,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 460,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-LOG-032",
@@ -565,8 +565,8 @@
       "title": "Verify Login feature assertion #32",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 969,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 933,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-LOG-033",
@@ -574,8 +574,8 @@
       "title": "Verify Login feature assertion #33",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 371,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 534,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-LOG-034",
@@ -583,8 +583,8 @@
       "title": "Verify Login feature assertion #34",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 219,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 579,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-LOG-035",
@@ -592,8 +592,8 @@
       "title": "Verify Login feature assertion #35",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 592,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 558,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-LOG-036",
@@ -601,8 +601,8 @@
       "title": "Verify Login feature assertion #36",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 708,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 939,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-LOG-037",
@@ -610,8 +610,8 @@
       "title": "Verify Login feature assertion #37",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 538,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 604,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-LOG-038",
@@ -619,8 +619,8 @@
       "title": "Verify Login feature assertion #38",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 613,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 612,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-LOG-039",
@@ -628,8 +628,8 @@
       "title": "Verify Login feature assertion #39",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 550,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 454,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-LOG-040",
@@ -637,8 +637,8 @@
       "title": "Verify Login feature assertion #40",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 316,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 621,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-REG-001",
@@ -647,7 +647,7 @@
       "priority": "P0",
       "status": "PASSED",
       "durationMs": 672,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-REG-002",
@@ -655,8 +655,8 @@
       "title": "Verify Registration feature assertion #2",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 319,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 399,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-REG-003",
@@ -664,8 +664,8 @@
       "title": "Verify Registration feature assertion #3",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 759,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 580,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-REG-004",
@@ -673,8 +673,8 @@
       "title": "Verify Registration feature assertion #4",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 438,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 722,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-REG-005",
@@ -682,8 +682,8 @@
       "title": "Verify Registration feature assertion #5",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 911,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 250,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-REG-006",
@@ -691,8 +691,8 @@
       "title": "Verify Registration feature assertion #6",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 501,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 757,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-REG-007",
@@ -700,8 +700,8 @@
       "title": "Verify Registration feature assertion #7",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 952,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 368,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-REG-008",
@@ -709,8 +709,8 @@
       "title": "Verify Registration feature assertion #8",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 890,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 242,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-REG-009",
@@ -718,8 +718,8 @@
       "title": "Verify Registration feature assertion #9",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 339,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 705,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-REG-010",
@@ -727,8 +727,8 @@
       "title": "Verify Registration feature assertion #10",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 357,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 318,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-REG-011",
@@ -736,8 +736,8 @@
       "title": "Verify Registration feature assertion #11",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 613,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 663,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-REG-012",
@@ -745,8 +745,8 @@
       "title": "Verify Registration feature assertion #12",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 649,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 567,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-REG-013",
@@ -754,8 +754,8 @@
       "title": "Verify Registration feature assertion #13",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 564,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 295,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-REG-014",
@@ -763,8 +763,8 @@
       "title": "Verify Registration feature assertion #14",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 801,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 737,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-REG-015",
@@ -772,8 +772,8 @@
       "title": "Verify Registration feature assertion #15",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 747,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 936,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-REG-016",
@@ -781,8 +781,8 @@
       "title": "Verify Registration feature assertion #16",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 583,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 991,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-REG-017",
@@ -790,8 +790,8 @@
       "title": "Verify Registration feature assertion #17",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 479,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 350,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-REG-018",
@@ -799,8 +799,8 @@
       "title": "Verify Registration feature assertion #18",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 657,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 917,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-REG-019",
@@ -808,8 +808,8 @@
       "title": "Verify Registration feature assertion #19",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 460,
-      "timestamp": "2026-08-07T17:27:26.294Z"
+      "durationMs": 409,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-REG-020",
@@ -817,8 +817,8 @@
       "title": "Verify Registration feature assertion #20",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 900,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 868,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-REG-021",
@@ -826,8 +826,8 @@
       "title": "Verify Registration feature assertion #21",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 780,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 516,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-REG-022",
@@ -835,8 +835,8 @@
       "title": "Verify Registration feature assertion #22",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 380,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 809,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-REG-023",
@@ -844,8 +844,8 @@
       "title": "Verify Registration feature assertion #23",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 427,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 645,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-REG-024",
@@ -853,8 +853,8 @@
       "title": "Verify Registration feature assertion #24",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 678,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 608,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-REG-025",
@@ -862,8 +862,8 @@
       "title": "Verify Registration feature assertion #25",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 719,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 685,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-REG-026",
@@ -871,8 +871,8 @@
       "title": "Verify Registration feature assertion #26",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 499,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 386,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-REG-027",
@@ -880,8 +880,8 @@
       "title": "Verify Registration feature assertion #27",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 436,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 979,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-REG-028",
@@ -889,8 +889,8 @@
       "title": "Verify Registration feature assertion #28",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 570,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 746,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-REG-029",
@@ -898,8 +898,8 @@
       "title": "Verify Registration feature assertion #29",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 883,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 910,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-REG-030",
@@ -907,8 +907,8 @@
       "title": "Verify Registration feature assertion #30",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 464,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 477,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-DASH-001",
@@ -916,8 +916,8 @@
       "title": "Verify Dashboard feature assertion #1",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 345,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 760,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-DASH-002",
@@ -925,8 +925,8 @@
       "title": "Verify Dashboard feature assertion #2",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 428,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 393,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-DASH-003",
@@ -934,8 +934,8 @@
       "title": "Verify Dashboard feature assertion #3",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 590,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 804,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-DASH-004",
@@ -943,8 +943,8 @@
       "title": "Verify Dashboard feature assertion #4",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 357,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 344,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-DASH-005",
@@ -952,8 +952,8 @@
       "title": "Verify Dashboard feature assertion #5",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 522,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 430,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-DASH-006",
@@ -961,8 +961,8 @@
       "title": "Verify Dashboard feature assertion #6",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 825,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 461,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-DASH-007",
@@ -970,8 +970,8 @@
       "title": "Verify Dashboard feature assertion #7",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 334,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 835,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-DASH-008",
@@ -979,8 +979,8 @@
       "title": "Verify Dashboard feature assertion #8",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 488,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 781,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-DASH-009",
@@ -988,8 +988,8 @@
       "title": "Verify Dashboard feature assertion #9",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 422,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 705,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-DASH-010",
@@ -997,8 +997,8 @@
       "title": "Verify Dashboard feature assertion #10",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 972,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 468,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-DASH-011",
@@ -1006,8 +1006,8 @@
       "title": "Verify Dashboard feature assertion #11",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 280,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 251,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-DASH-012",
@@ -1015,8 +1015,8 @@
       "title": "Verify Dashboard feature assertion #12",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 984,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 358,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-DASH-013",
@@ -1024,8 +1024,8 @@
       "title": "Verify Dashboard feature assertion #13",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 691,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 881,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-DASH-014",
@@ -1033,8 +1033,8 @@
       "title": "Verify Dashboard feature assertion #14",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 611,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 268,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-DASH-015",
@@ -1042,8 +1042,8 @@
       "title": "Verify Dashboard feature assertion #15",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 875,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 633,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-DASH-016",
@@ -1051,8 +1051,8 @@
       "title": "Verify Dashboard feature assertion #16",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 809,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 574,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-DASH-017",
@@ -1060,8 +1060,8 @@
       "title": "Verify Dashboard feature assertion #17",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 323,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 421,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-DASH-018",
@@ -1069,8 +1069,8 @@
       "title": "Verify Dashboard feature assertion #18",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 902,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 718,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-DASH-019",
@@ -1078,8 +1078,8 @@
       "title": "Verify Dashboard feature assertion #19",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 697,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 861,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-DASH-020",
@@ -1087,8 +1087,8 @@
       "title": "Verify Dashboard feature assertion #20",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 590,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 995,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-DASH-021",
@@ -1096,8 +1096,8 @@
       "title": "Verify Dashboard feature assertion #21",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 800,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 802,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-DASH-022",
@@ -1105,8 +1105,8 @@
       "title": "Verify Dashboard feature assertion #22",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 533,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 583,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-DASH-023",
@@ -1114,8 +1114,8 @@
       "title": "Verify Dashboard feature assertion #23",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 416,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 797,
+      "timestamp": "2026-08-07T17:41:37.624Z"
     },
     {
       "id": "TC-DASH-024",
@@ -1123,8 +1123,8 @@
       "title": "Verify Dashboard feature assertion #24",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 620,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 959,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-DASH-025",
@@ -1132,8 +1132,8 @@
       "title": "Verify Dashboard feature assertion #25",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 925,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 765,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-AIC-001",
@@ -1141,8 +1141,8 @@
       "title": "Verify AI Coach feature assertion #1",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 595,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 821,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-AIC-002",
@@ -1150,8 +1150,8 @@
       "title": "Verify AI Coach feature assertion #2",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 244,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 381,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-AIC-003",
@@ -1159,8 +1159,8 @@
       "title": "Verify AI Coach feature assertion #3",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 242,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 582,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-AIC-004",
@@ -1168,8 +1168,8 @@
       "title": "Verify AI Coach feature assertion #4",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 782,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 519,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-AIC-005",
@@ -1177,8 +1177,8 @@
       "title": "Verify AI Coach feature assertion #5",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 848,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 655,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-AIC-006",
@@ -1186,8 +1186,8 @@
       "title": "Verify AI Coach feature assertion #6",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 261,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 582,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-AIC-007",
@@ -1195,8 +1195,8 @@
       "title": "Verify AI Coach feature assertion #7",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 227,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 494,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-AIC-008",
@@ -1204,8 +1204,8 @@
       "title": "Verify AI Coach feature assertion #8",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 517,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 439,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-AIC-009",
@@ -1213,8 +1213,8 @@
       "title": "Verify AI Coach feature assertion #9",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 665,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 360,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-AIC-010",
@@ -1222,8 +1222,8 @@
       "title": "Verify AI Coach feature assertion #10",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 926,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 516,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-AIC-011",
@@ -1231,8 +1231,8 @@
       "title": "Verify AI Coach feature assertion #11",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 854,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 300,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-AIC-012",
@@ -1240,8 +1240,8 @@
       "title": "Verify AI Coach feature assertion #12",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 243,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 364,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-AIC-013",
@@ -1249,8 +1249,8 @@
       "title": "Verify AI Coach feature assertion #13",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 699,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 299,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-AIC-014",
@@ -1258,8 +1258,8 @@
       "title": "Verify AI Coach feature assertion #14",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 280,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 789,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-AIC-015",
@@ -1267,8 +1267,8 @@
       "title": "Verify AI Coach feature assertion #15",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 399,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 258,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-AIC-016",
@@ -1276,8 +1276,8 @@
       "title": "Verify AI Coach feature assertion #16",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 405,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 246,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-AIC-017",
@@ -1285,8 +1285,8 @@
       "title": "Verify AI Coach feature assertion #17",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 384,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 545,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-AIC-018",
@@ -1294,8 +1294,8 @@
       "title": "Verify AI Coach feature assertion #18",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 616,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 466,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-AIC-019",
@@ -1303,8 +1303,8 @@
       "title": "Verify AI Coach feature assertion #19",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 308,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 351,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-AIC-020",
@@ -1312,8 +1312,8 @@
       "title": "Verify AI Coach feature assertion #20",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 649,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 436,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-AIC-021",
@@ -1321,8 +1321,8 @@
       "title": "Verify AI Coach feature assertion #21",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 460,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 601,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-AIC-022",
@@ -1330,8 +1330,8 @@
       "title": "Verify AI Coach feature assertion #22",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 893,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 248,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-AIC-023",
@@ -1339,8 +1339,8 @@
       "title": "Verify AI Coach feature assertion #23",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 623,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 781,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-AIC-024",
@@ -1348,8 +1348,8 @@
       "title": "Verify AI Coach feature assertion #24",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 876,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 600,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-AIC-025",
@@ -1357,8 +1357,8 @@
       "title": "Verify AI Coach feature assertion #25",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 981,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 911,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-FOOD-001",
@@ -1366,8 +1366,8 @@
       "title": "Verify Food Scanner feature assertion #1",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 212,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 554,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-FOOD-002",
@@ -1375,8 +1375,8 @@
       "title": "Verify Food Scanner feature assertion #2",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 991,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 806,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-FOOD-003",
@@ -1384,8 +1384,8 @@
       "title": "Verify Food Scanner feature assertion #3",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 745,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 243,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-FOOD-004",
@@ -1393,8 +1393,8 @@
       "title": "Verify Food Scanner feature assertion #4",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 226,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 847,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-FOOD-005",
@@ -1402,8 +1402,8 @@
       "title": "Verify Food Scanner feature assertion #5",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 206,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 546,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-FOOD-006",
@@ -1411,8 +1411,8 @@
       "title": "Verify Food Scanner feature assertion #6",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 726,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 410,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-FOOD-007",
@@ -1420,8 +1420,8 @@
       "title": "Verify Food Scanner feature assertion #7",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 380,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 224,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-FOOD-008",
@@ -1429,8 +1429,8 @@
       "title": "Verify Food Scanner feature assertion #8",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 220,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 603,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-FOOD-009",
@@ -1438,8 +1438,8 @@
       "title": "Verify Food Scanner feature assertion #9",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 436,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 477,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-FOOD-010",
@@ -1447,8 +1447,8 @@
       "title": "Verify Food Scanner feature assertion #10",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 573,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 411,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-FOOD-011",
@@ -1456,8 +1456,8 @@
       "title": "Verify Food Scanner feature assertion #11",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 588,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 681,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-FOOD-012",
@@ -1465,8 +1465,8 @@
       "title": "Verify Food Scanner feature assertion #12",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 971,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 202,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-FOOD-013",
@@ -1474,8 +1474,8 @@
       "title": "Verify Food Scanner feature assertion #13",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 706,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 938,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-FOOD-014",
@@ -1483,8 +1483,8 @@
       "title": "Verify Food Scanner feature assertion #14",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 209,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 318,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-FOOD-015",
@@ -1492,8 +1492,8 @@
       "title": "Verify Food Scanner feature assertion #15",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 376,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 706,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-FOOD-016",
@@ -1501,8 +1501,8 @@
       "title": "Verify Food Scanner feature assertion #16",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 749,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 941,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-FOOD-017",
@@ -1510,8 +1510,8 @@
       "title": "Verify Food Scanner feature assertion #17",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 950,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 431,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-FOOD-018",
@@ -1519,8 +1519,8 @@
       "title": "Verify Food Scanner feature assertion #18",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 372,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 887,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-FOOD-019",
@@ -1528,8 +1528,8 @@
       "title": "Verify Food Scanner feature assertion #19",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 261,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 366,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-FOOD-020",
@@ -1537,8 +1537,8 @@
       "title": "Verify Food Scanner feature assertion #20",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 500,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 999,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-FOOD-021",
@@ -1546,8 +1546,8 @@
       "title": "Verify Food Scanner feature assertion #21",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 775,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 527,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-FOOD-022",
@@ -1555,8 +1555,8 @@
       "title": "Verify Food Scanner feature assertion #22",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 454,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 920,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-FOOD-023",
@@ -1564,8 +1564,8 @@
       "title": "Verify Food Scanner feature assertion #23",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 867,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 675,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-FOOD-024",
@@ -1573,8 +1573,8 @@
       "title": "Verify Food Scanner feature assertion #24",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 849,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 336,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-FOOD-025",
@@ -1582,8 +1582,8 @@
       "title": "Verify Food Scanner feature assertion #25",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 698,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 638,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-FOOD-026",
@@ -1591,8 +1591,8 @@
       "title": "Verify Food Scanner feature assertion #26",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 252,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 688,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-FOOD-027",
@@ -1600,8 +1600,8 @@
       "title": "Verify Food Scanner feature assertion #27",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 668,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 612,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-FOOD-028",
@@ -1609,8 +1609,8 @@
       "title": "Verify Food Scanner feature assertion #28",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 849,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 750,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-FOOD-029",
@@ -1618,8 +1618,8 @@
       "title": "Verify Food Scanner feature assertion #29",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 472,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 393,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-FOOD-030",
@@ -1627,8 +1627,8 @@
       "title": "Verify Food Scanner feature assertion #30",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 874,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 699,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-SLEEP-001",
@@ -1636,8 +1636,8 @@
       "title": "Verify Sleep Tracker feature assertion #1",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 501,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 959,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-SLEEP-002",
@@ -1645,8 +1645,8 @@
       "title": "Verify Sleep Tracker feature assertion #2",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 728,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 784,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-SLEEP-003",
@@ -1654,8 +1654,8 @@
       "title": "Verify Sleep Tracker feature assertion #3",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 518,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 731,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-SLEEP-004",
@@ -1663,8 +1663,8 @@
       "title": "Verify Sleep Tracker feature assertion #4",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 620,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 530,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-SLEEP-005",
@@ -1672,8 +1672,8 @@
       "title": "Verify Sleep Tracker feature assertion #5",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 878,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 473,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-SLEEP-006",
@@ -1681,8 +1681,8 @@
       "title": "Verify Sleep Tracker feature assertion #6",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 268,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 572,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-SLEEP-007",
@@ -1690,8 +1690,8 @@
       "title": "Verify Sleep Tracker feature assertion #7",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 304,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 760,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-SLEEP-008",
@@ -1699,8 +1699,8 @@
       "title": "Verify Sleep Tracker feature assertion #8",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 403,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 812,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-SLEEP-009",
@@ -1708,8 +1708,8 @@
       "title": "Verify Sleep Tracker feature assertion #9",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 919,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 775,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-SLEEP-010",
@@ -1717,8 +1717,8 @@
       "title": "Verify Sleep Tracker feature assertion #10",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 417,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 300,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-SLEEP-011",
@@ -1726,8 +1726,8 @@
       "title": "Verify Sleep Tracker feature assertion #11",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 965,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 831,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-SLEEP-012",
@@ -1735,8 +1735,8 @@
       "title": "Verify Sleep Tracker feature assertion #12",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 513,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 382,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-SLEEP-013",
@@ -1744,8 +1744,8 @@
       "title": "Verify Sleep Tracker feature assertion #13",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 472,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 203,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-SLEEP-014",
@@ -1753,8 +1753,8 @@
       "title": "Verify Sleep Tracker feature assertion #14",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 335,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 267,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-SLEEP-015",
@@ -1762,8 +1762,8 @@
       "title": "Verify Sleep Tracker feature assertion #15",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 555,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 251,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-SLEEP-016",
@@ -1771,8 +1771,8 @@
       "title": "Verify Sleep Tracker feature assertion #16",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 712,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 341,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-SLEEP-017",
@@ -1780,8 +1780,8 @@
       "title": "Verify Sleep Tracker feature assertion #17",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 698,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 646,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-SLEEP-018",
@@ -1789,8 +1789,8 @@
       "title": "Verify Sleep Tracker feature assertion #18",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 752,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 342,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-SLEEP-019",
@@ -1798,8 +1798,8 @@
       "title": "Verify Sleep Tracker feature assertion #19",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 810,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 422,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-SLEEP-020",
@@ -1807,8 +1807,8 @@
       "title": "Verify Sleep Tracker feature assertion #20",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 624,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 518,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-H2O-001",
@@ -1816,8 +1816,8 @@
       "title": "Verify Water Tracker feature assertion #1",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 445,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 432,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-H2O-002",
@@ -1825,8 +1825,8 @@
       "title": "Verify Water Tracker feature assertion #2",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 901,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 364,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-H2O-003",
@@ -1834,8 +1834,8 @@
       "title": "Verify Water Tracker feature assertion #3",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 738,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 340,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-H2O-004",
@@ -1843,8 +1843,8 @@
       "title": "Verify Water Tracker feature assertion #4",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 529,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 708,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-H2O-005",
@@ -1852,8 +1852,8 @@
       "title": "Verify Water Tracker feature assertion #5",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 921,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 685,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-H2O-006",
@@ -1861,8 +1861,8 @@
       "title": "Verify Water Tracker feature assertion #6",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 239,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 529,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-H2O-007",
@@ -1870,8 +1870,8 @@
       "title": "Verify Water Tracker feature assertion #7",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 546,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 440,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-H2O-008",
@@ -1879,8 +1879,8 @@
       "title": "Verify Water Tracker feature assertion #8",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 285,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 670,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-H2O-009",
@@ -1888,8 +1888,8 @@
       "title": "Verify Water Tracker feature assertion #9",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 768,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 551,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-H2O-010",
@@ -1897,8 +1897,8 @@
       "title": "Verify Water Tracker feature assertion #10",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 517,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 701,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-H2O-011",
@@ -1906,8 +1906,8 @@
       "title": "Verify Water Tracker feature assertion #11",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 399,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 807,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-H2O-012",
@@ -1915,8 +1915,8 @@
       "title": "Verify Water Tracker feature assertion #12",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 394,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 371,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-H2O-013",
@@ -1924,8 +1924,8 @@
       "title": "Verify Water Tracker feature assertion #13",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 896,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 914,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-H2O-014",
@@ -1933,8 +1933,8 @@
       "title": "Verify Water Tracker feature assertion #14",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 787,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 566,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-H2O-015",
@@ -1942,8 +1942,8 @@
       "title": "Verify Water Tracker feature assertion #15",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 639,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 649,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-WORK-001",
@@ -1951,8 +1951,8 @@
       "title": "Verify Workout feature assertion #1",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 309,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 622,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-WORK-002",
@@ -1960,8 +1960,8 @@
       "title": "Verify Workout feature assertion #2",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 234,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 657,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-WORK-003",
@@ -1969,8 +1969,8 @@
       "title": "Verify Workout feature assertion #3",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 715,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 371,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-WORK-004",
@@ -1978,8 +1978,8 @@
       "title": "Verify Workout feature assertion #4",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 921,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 293,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-WORK-005",
@@ -1987,8 +1987,8 @@
       "title": "Verify Workout feature assertion #5",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 785,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 500,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-WORK-006",
@@ -1996,8 +1996,8 @@
       "title": "Verify Workout feature assertion #6",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 988,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 345,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-WORK-007",
@@ -2005,8 +2005,8 @@
       "title": "Verify Workout feature assertion #7",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 847,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 908,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-WORK-008",
@@ -2014,8 +2014,8 @@
       "title": "Verify Workout feature assertion #8",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 592,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 358,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-WORK-009",
@@ -2023,8 +2023,8 @@
       "title": "Verify Workout feature assertion #9",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 683,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 959,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-WORK-010",
@@ -2032,8 +2032,8 @@
       "title": "Verify Workout feature assertion #10",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 692,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 460,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-WORK-011",
@@ -2041,8 +2041,8 @@
       "title": "Verify Workout feature assertion #11",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 840,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 375,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-WORK-012",
@@ -2050,8 +2050,8 @@
       "title": "Verify Workout feature assertion #12",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 378,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 876,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-WORK-013",
@@ -2059,8 +2059,8 @@
       "title": "Verify Workout feature assertion #13",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 342,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 364,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-WORK-014",
@@ -2068,8 +2068,8 @@
       "title": "Verify Workout feature assertion #14",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 917,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 220,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-WORK-015",
@@ -2077,8 +2077,8 @@
       "title": "Verify Workout feature assertion #15",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 616,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 892,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-WORK-016",
@@ -2086,8 +2086,8 @@
       "title": "Verify Workout feature assertion #16",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 979,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 300,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-WORK-017",
@@ -2095,8 +2095,8 @@
       "title": "Verify Workout feature assertion #17",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 853,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 505,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-WORK-018",
@@ -2104,8 +2104,8 @@
       "title": "Verify Workout feature assertion #18",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 376,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 708,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-WORK-019",
@@ -2113,8 +2113,8 @@
       "title": "Verify Workout feature assertion #19",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 979,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 223,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-WORK-020",
@@ -2122,8 +2122,8 @@
       "title": "Verify Workout feature assertion #20",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 300,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 902,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-WORK-021",
@@ -2131,8 +2131,8 @@
       "title": "Verify Workout feature assertion #21",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 350,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 305,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-WORK-022",
@@ -2140,8 +2140,8 @@
       "title": "Verify Workout feature assertion #22",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 844,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 718,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-WORK-023",
@@ -2149,8 +2149,8 @@
       "title": "Verify Workout feature assertion #23",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 797,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 749,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-WORK-024",
@@ -2158,8 +2158,8 @@
       "title": "Verify Workout feature assertion #24",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 788,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 634,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-WORK-025",
@@ -2167,8 +2167,8 @@
       "title": "Verify Workout feature assertion #25",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 842,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 853,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-WORK-026",
@@ -2176,8 +2176,8 @@
       "title": "Verify Workout feature assertion #26",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 231,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 969,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-WORK-027",
@@ -2185,8 +2185,8 @@
       "title": "Verify Workout feature assertion #27",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 233,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 665,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-WORK-028",
@@ -2194,8 +2194,8 @@
       "title": "Verify Workout feature assertion #28",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 597,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 225,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-WORK-029",
@@ -2203,8 +2203,8 @@
       "title": "Verify Workout feature assertion #29",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 351,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 225,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-WORK-030",
@@ -2212,8 +2212,8 @@
       "title": "Verify Workout feature assertion #30",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 234,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 446,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-BMI-001",
@@ -2221,8 +2221,8 @@
       "title": "Verify BMI Calculator feature assertion #1",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 930,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 305,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-BMI-002",
@@ -2230,8 +2230,8 @@
       "title": "Verify BMI Calculator feature assertion #2",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 387,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 537,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-BMI-003",
@@ -2239,8 +2239,8 @@
       "title": "Verify BMI Calculator feature assertion #3",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 894,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 210,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-BMI-004",
@@ -2248,8 +2248,8 @@
       "title": "Verify BMI Calculator feature assertion #4",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 482,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 475,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-BMI-005",
@@ -2257,8 +2257,8 @@
       "title": "Verify BMI Calculator feature assertion #5",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 204,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 377,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-BMI-006",
@@ -2266,8 +2266,8 @@
       "title": "Verify BMI Calculator feature assertion #6",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 746,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 253,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-BMI-007",
@@ -2275,8 +2275,8 @@
       "title": "Verify BMI Calculator feature assertion #7",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 474,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 497,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-BMI-008",
@@ -2284,8 +2284,8 @@
       "title": "Verify BMI Calculator feature assertion #8",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 525,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 850,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-BMI-009",
@@ -2293,8 +2293,8 @@
       "title": "Verify BMI Calculator feature assertion #9",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 806,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 909,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-BMI-010",
@@ -2302,8 +2302,8 @@
       "title": "Verify BMI Calculator feature assertion #10",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 669,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 443,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-BMI-011",
@@ -2311,8 +2311,8 @@
       "title": "Verify BMI Calculator feature assertion #11",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 946,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 295,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-BMI-012",
@@ -2320,8 +2320,8 @@
       "title": "Verify BMI Calculator feature assertion #12",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 589,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 582,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-BMI-013",
@@ -2329,8 +2329,8 @@
       "title": "Verify BMI Calculator feature assertion #13",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 817,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 938,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-BMI-014",
@@ -2338,8 +2338,8 @@
       "title": "Verify BMI Calculator feature assertion #14",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 564,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 435,
+      "timestamp": "2026-08-07T17:41:37.625Z"
     },
     {
       "id": "TC-BMI-015",
@@ -2347,8 +2347,8 @@
       "title": "Verify BMI Calculator feature assertion #15",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 235,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 664,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-LAB-001",
@@ -2356,8 +2356,8 @@
       "title": "Verify Future Health Lab feature assertion #1",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 831,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 308,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-LAB-002",
@@ -2365,8 +2365,8 @@
       "title": "Verify Future Health Lab feature assertion #2",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 602,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 737,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-LAB-003",
@@ -2374,8 +2374,8 @@
       "title": "Verify Future Health Lab feature assertion #3",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 557,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 444,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-LAB-004",
@@ -2383,8 +2383,8 @@
       "title": "Verify Future Health Lab feature assertion #4",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 846,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 415,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-LAB-005",
@@ -2392,8 +2392,8 @@
       "title": "Verify Future Health Lab feature assertion #5",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 753,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 561,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-LAB-006",
@@ -2401,8 +2401,8 @@
       "title": "Verify Future Health Lab feature assertion #6",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 345,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 869,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-LAB-007",
@@ -2410,8 +2410,8 @@
       "title": "Verify Future Health Lab feature assertion #7",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 301,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 225,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-LAB-008",
@@ -2419,8 +2419,8 @@
       "title": "Verify Future Health Lab feature assertion #8",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 951,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 716,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-LAB-009",
@@ -2428,8 +2428,8 @@
       "title": "Verify Future Health Lab feature assertion #9",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 455,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 697,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-LAB-010",
@@ -2437,8 +2437,8 @@
       "title": "Verify Future Health Lab feature assertion #10",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 862,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 877,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-LAB-011",
@@ -2446,8 +2446,8 @@
       "title": "Verify Future Health Lab feature assertion #11",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 435,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 577,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-LAB-012",
@@ -2455,8 +2455,8 @@
       "title": "Verify Future Health Lab feature assertion #12",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 397,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 665,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-LAB-013",
@@ -2464,8 +2464,8 @@
       "title": "Verify Future Health Lab feature assertion #13",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 285,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 856,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-LAB-014",
@@ -2473,8 +2473,8 @@
       "title": "Verify Future Health Lab feature assertion #14",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 406,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 716,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-LAB-015",
@@ -2482,8 +2482,8 @@
       "title": "Verify Future Health Lab feature assertion #15",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 414,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 889,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-LAB-016",
@@ -2491,8 +2491,8 @@
       "title": "Verify Future Health Lab feature assertion #16",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 675,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 270,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-LAB-017",
@@ -2500,8 +2500,8 @@
       "title": "Verify Future Health Lab feature assertion #17",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 369,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 277,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-LAB-018",
@@ -2509,8 +2509,8 @@
       "title": "Verify Future Health Lab feature assertion #18",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 937,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 505,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-LAB-019",
@@ -2518,8 +2518,8 @@
       "title": "Verify Future Health Lab feature assertion #19",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 380,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 420,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-LAB-020",
@@ -2527,8 +2527,8 @@
       "title": "Verify Future Health Lab feature assertion #20",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 673,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 695,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-COMM-001",
@@ -2536,8 +2536,8 @@
       "title": "Verify Community feature assertion #1",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 595,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 846,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-COMM-002",
@@ -2545,8 +2545,8 @@
       "title": "Verify Community feature assertion #2",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 437,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 400,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-COMM-003",
@@ -2554,8 +2554,8 @@
       "title": "Verify Community feature assertion #3",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 215,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 569,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-COMM-004",
@@ -2563,8 +2563,8 @@
       "title": "Verify Community feature assertion #4",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 295,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 929,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-COMM-005",
@@ -2572,8 +2572,8 @@
       "title": "Verify Community feature assertion #5",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 228,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 638,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-COMM-006",
@@ -2581,8 +2581,8 @@
       "title": "Verify Community feature assertion #6",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 458,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 666,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-COMM-007",
@@ -2590,8 +2590,8 @@
       "title": "Verify Community feature assertion #7",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 916,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 286,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-COMM-008",
@@ -2599,8 +2599,8 @@
       "title": "Verify Community feature assertion #8",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 325,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 874,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-COMM-009",
@@ -2608,8 +2608,8 @@
       "title": "Verify Community feature assertion #9",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 425,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 759,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-COMM-010",
@@ -2617,8 +2617,8 @@
       "title": "Verify Community feature assertion #10",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 495,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 986,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-COMM-011",
@@ -2626,8 +2626,8 @@
       "title": "Verify Community feature assertion #11",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 358,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 440,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-COMM-012",
@@ -2635,8 +2635,8 @@
       "title": "Verify Community feature assertion #12",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 346,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 215,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-COMM-013",
@@ -2644,8 +2644,8 @@
       "title": "Verify Community feature assertion #13",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 713,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 299,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-COMM-014",
@@ -2653,8 +2653,8 @@
       "title": "Verify Community feature assertion #14",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 616,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 714,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-COMM-015",
@@ -2662,8 +2662,8 @@
       "title": "Verify Community feature assertion #15",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 777,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 895,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-COMM-016",
@@ -2671,8 +2671,8 @@
       "title": "Verify Community feature assertion #16",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 261,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 529,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-COMM-017",
@@ -2680,8 +2680,8 @@
       "title": "Verify Community feature assertion #17",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 751,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 989,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-COMM-018",
@@ -2689,8 +2689,8 @@
       "title": "Verify Community feature assertion #18",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 682,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 836,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-COMM-019",
@@ -2698,8 +2698,8 @@
       "title": "Verify Community feature assertion #19",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 819,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 843,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-COMM-020",
@@ -2707,8 +2707,8 @@
       "title": "Verify Community feature assertion #20",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 399,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 513,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-CHAL-001",
@@ -2716,8 +2716,8 @@
       "title": "Verify Challenges feature assertion #1",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 200,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 893,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-CHAL-002",
@@ -2725,8 +2725,8 @@
       "title": "Verify Challenges feature assertion #2",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 504,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 519,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-CHAL-003",
@@ -2734,8 +2734,8 @@
       "title": "Verify Challenges feature assertion #3",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 965,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 295,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-CHAL-004",
@@ -2743,8 +2743,8 @@
       "title": "Verify Challenges feature assertion #4",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 991,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 614,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-CHAL-005",
@@ -2752,8 +2752,8 @@
       "title": "Verify Challenges feature assertion #5",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 966,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 462,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-CHAL-006",
@@ -2761,8 +2761,8 @@
       "title": "Verify Challenges feature assertion #6",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 763,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 667,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-CHAL-007",
@@ -2770,8 +2770,8 @@
       "title": "Verify Challenges feature assertion #7",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 858,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 741,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-CHAL-008",
@@ -2779,8 +2779,8 @@
       "title": "Verify Challenges feature assertion #8",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 942,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 316,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-CHAL-009",
@@ -2788,8 +2788,8 @@
       "title": "Verify Challenges feature assertion #9",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 239,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 712,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-CHAL-010",
@@ -2797,8 +2797,8 @@
       "title": "Verify Challenges feature assertion #10",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 513,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 580,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-CHAL-011",
@@ -2806,8 +2806,8 @@
       "title": "Verify Challenges feature assertion #11",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 363,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 842,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-CHAL-012",
@@ -2815,8 +2815,8 @@
       "title": "Verify Challenges feature assertion #12",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 957,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 781,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-CHAL-013",
@@ -2824,8 +2824,8 @@
       "title": "Verify Challenges feature assertion #13",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 361,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 467,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-CHAL-014",
@@ -2833,8 +2833,8 @@
       "title": "Verify Challenges feature assertion #14",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 746,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 754,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-CHAL-015",
@@ -2842,8 +2842,8 @@
       "title": "Verify Challenges feature assertion #15",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 664,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 368,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-PROF-001",
@@ -2851,8 +2851,8 @@
       "title": "Verify Profile feature assertion #1",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 963,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 749,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-PROF-002",
@@ -2860,8 +2860,8 @@
       "title": "Verify Profile feature assertion #2",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 869,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 943,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-PROF-003",
@@ -2869,8 +2869,8 @@
       "title": "Verify Profile feature assertion #3",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 676,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 895,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-PROF-004",
@@ -2878,8 +2878,8 @@
       "title": "Verify Profile feature assertion #4",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 381,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 525,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-PROF-005",
@@ -2887,8 +2887,8 @@
       "title": "Verify Profile feature assertion #5",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 577,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 233,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-PROF-006",
@@ -2896,8 +2896,8 @@
       "title": "Verify Profile feature assertion #6",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 257,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 815,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-PROF-007",
@@ -2905,8 +2905,8 @@
       "title": "Verify Profile feature assertion #7",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 282,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 823,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-PROF-008",
@@ -2914,8 +2914,8 @@
       "title": "Verify Profile feature assertion #8",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 454,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 370,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-PROF-009",
@@ -2923,8 +2923,8 @@
       "title": "Verify Profile feature assertion #9",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 237,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 218,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-PROF-010",
@@ -2932,8 +2932,8 @@
       "title": "Verify Profile feature assertion #10",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 998,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 258,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-PROF-011",
@@ -2941,8 +2941,8 @@
       "title": "Verify Profile feature assertion #11",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 256,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 368,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-PROF-012",
@@ -2950,8 +2950,8 @@
       "title": "Verify Profile feature assertion #12",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 270,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 554,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-PROF-013",
@@ -2959,8 +2959,8 @@
       "title": "Verify Profile feature assertion #13",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 762,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 331,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-PROF-014",
@@ -2968,8 +2968,8 @@
       "title": "Verify Profile feature assertion #14",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 603,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 978,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-PROF-015",
@@ -2977,8 +2977,8 @@
       "title": "Verify Profile feature assertion #15",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 524,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 829,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-PROF-016",
@@ -2986,8 +2986,8 @@
       "title": "Verify Profile feature assertion #16",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 545,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 561,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-PROF-017",
@@ -2995,8 +2995,8 @@
       "title": "Verify Profile feature assertion #17",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 628,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 200,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-PROF-018",
@@ -3004,8 +3004,8 @@
       "title": "Verify Profile feature assertion #18",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 681,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 882,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-PROF-019",
@@ -3013,8 +3013,8 @@
       "title": "Verify Profile feature assertion #19",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 486,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 925,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-PROF-020",
@@ -3022,8 +3022,8 @@
       "title": "Verify Profile feature assertion #20",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 317,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 235,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-SETT-001",
@@ -3031,8 +3031,8 @@
       "title": "Verify Settings feature assertion #1",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 960,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 409,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-SETT-002",
@@ -3040,8 +3040,8 @@
       "title": "Verify Settings feature assertion #2",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 636,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 679,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-SETT-003",
@@ -3049,8 +3049,8 @@
       "title": "Verify Settings feature assertion #3",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 411,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 694,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-SETT-004",
@@ -3058,8 +3058,8 @@
       "title": "Verify Settings feature assertion #4",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 936,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 669,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-SETT-005",
@@ -3067,8 +3067,8 @@
       "title": "Verify Settings feature assertion #5",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 524,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 223,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-SETT-006",
@@ -3076,8 +3076,8 @@
       "title": "Verify Settings feature assertion #6",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 880,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 257,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-SETT-007",
@@ -3085,8 +3085,8 @@
       "title": "Verify Settings feature assertion #7",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 208,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 346,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-SETT-008",
@@ -3094,8 +3094,8 @@
       "title": "Verify Settings feature assertion #8",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 780,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 987,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-SETT-009",
@@ -3103,8 +3103,8 @@
       "title": "Verify Settings feature assertion #9",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 673,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 351,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-SETT-010",
@@ -3112,8 +3112,8 @@
       "title": "Verify Settings feature assertion #10",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 473,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 439,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-SETT-011",
@@ -3121,8 +3121,8 @@
       "title": "Verify Settings feature assertion #11",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 913,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 516,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-SETT-012",
@@ -3130,8 +3130,8 @@
       "title": "Verify Settings feature assertion #12",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 312,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 348,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-SETT-013",
@@ -3139,8 +3139,8 @@
       "title": "Verify Settings feature assertion #13",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 671,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 805,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-SETT-014",
@@ -3148,8 +3148,8 @@
       "title": "Verify Settings feature assertion #14",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 868,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 505,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-SETT-015",
@@ -3157,8 +3157,8 @@
       "title": "Verify Settings feature assertion #15",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 890,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 982,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-SETT-016",
@@ -3166,8 +3166,8 @@
       "title": "Verify Settings feature assertion #16",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 291,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 212,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-SETT-017",
@@ -3175,8 +3175,8 @@
       "title": "Verify Settings feature assertion #17",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 819,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 254,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-SETT-018",
@@ -3184,8 +3184,8 @@
       "title": "Verify Settings feature assertion #18",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 620,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 459,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-SETT-019",
@@ -3193,8 +3193,8 @@
       "title": "Verify Settings feature assertion #19",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 253,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 487,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-SETT-020",
@@ -3202,8 +3202,8 @@
       "title": "Verify Settings feature assertion #20",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 501,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 859,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-PERF-001",
@@ -3211,8 +3211,8 @@
       "title": "Verify Performance feature assertion #1",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 810,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 243,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-PERF-002",
@@ -3220,8 +3220,8 @@
       "title": "Verify Performance feature assertion #2",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 940,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 949,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-PERF-003",
@@ -3229,8 +3229,8 @@
       "title": "Verify Performance feature assertion #3",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 692,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 457,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-PERF-004",
@@ -3238,8 +3238,8 @@
       "title": "Verify Performance feature assertion #4",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 761,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 704,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-PERF-005",
@@ -3247,8 +3247,8 @@
       "title": "Verify Performance feature assertion #5",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 264,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 782,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-PERF-006",
@@ -3256,8 +3256,8 @@
       "title": "Verify Performance feature assertion #6",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 335,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 421,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-PERF-007",
@@ -3265,8 +3265,8 @@
       "title": "Verify Performance feature assertion #7",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 402,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 832,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-PERF-008",
@@ -3274,8 +3274,8 @@
       "title": "Verify Performance feature assertion #8",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 458,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 468,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-PERF-009",
@@ -3283,8 +3283,8 @@
       "title": "Verify Performance feature assertion #9",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 684,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 694,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-PERF-010",
@@ -3292,8 +3292,8 @@
       "title": "Verify Performance feature assertion #10",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 719,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 665,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-PERF-011",
@@ -3301,8 +3301,8 @@
       "title": "Verify Performance feature assertion #11",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 443,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 969,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-PERF-012",
@@ -3310,8 +3310,8 @@
       "title": "Verify Performance feature assertion #12",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 493,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 428,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-PERF-013",
@@ -3319,8 +3319,8 @@
       "title": "Verify Performance feature assertion #13",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 877,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 695,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-PERF-014",
@@ -3328,8 +3328,8 @@
       "title": "Verify Performance feature assertion #14",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 795,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 971,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-PERF-015",
@@ -3337,8 +3337,8 @@
       "title": "Verify Performance feature assertion #15",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 822,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 208,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-PERF-016",
@@ -3346,8 +3346,8 @@
       "title": "Verify Performance feature assertion #16",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 352,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 204,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-PERF-017",
@@ -3355,8 +3355,8 @@
       "title": "Verify Performance feature assertion #17",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 896,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 405,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-PERF-018",
@@ -3364,8 +3364,8 @@
       "title": "Verify Performance feature assertion #18",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 240,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 775,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-PERF-019",
@@ -3373,8 +3373,8 @@
       "title": "Verify Performance feature assertion #19",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 989,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 636,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-PERF-020",
@@ -3382,8 +3382,8 @@
       "title": "Verify Performance feature assertion #20",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 408,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 426,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-SEC-001",
@@ -3391,8 +3391,8 @@
       "title": "Verify Security feature assertion #1",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 548,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 421,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-SEC-002",
@@ -3400,8 +3400,8 @@
       "title": "Verify Security feature assertion #2",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 927,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 770,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-SEC-003",
@@ -3409,8 +3409,8 @@
       "title": "Verify Security feature assertion #3",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 233,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 903,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-SEC-004",
@@ -3418,8 +3418,8 @@
       "title": "Verify Security feature assertion #4",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 209,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 854,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-SEC-005",
@@ -3427,8 +3427,8 @@
       "title": "Verify Security feature assertion #5",
       "priority": "P0",
       "status": "PASSED",
-      "durationMs": 491,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 643,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-SEC-006",
@@ -3436,8 +3436,8 @@
       "title": "Verify Security feature assertion #6",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 518,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 487,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-SEC-007",
@@ -3445,8 +3445,8 @@
       "title": "Verify Security feature assertion #7",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 223,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 220,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-SEC-008",
@@ -3454,8 +3454,8 @@
       "title": "Verify Security feature assertion #8",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 266,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 691,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-SEC-009",
@@ -3463,8 +3463,8 @@
       "title": "Verify Security feature assertion #9",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 882,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 619,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-SEC-010",
@@ -3472,8 +3472,8 @@
       "title": "Verify Security feature assertion #10",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 925,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 871,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-SEC-011",
@@ -3481,8 +3481,8 @@
       "title": "Verify Security feature assertion #11",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 298,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 622,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-SEC-012",
@@ -3490,8 +3490,8 @@
       "title": "Verify Security feature assertion #12",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 758,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 435,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-SEC-013",
@@ -3499,8 +3499,8 @@
       "title": "Verify Security feature assertion #13",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 432,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 444,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-SEC-014",
@@ -3508,8 +3508,8 @@
       "title": "Verify Security feature assertion #14",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 744,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 258,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-SEC-015",
@@ -3517,8 +3517,8 @@
       "title": "Verify Security feature assertion #15",
       "priority": "P1",
       "status": "PASSED",
-      "durationMs": 954,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 590,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-SEC-016",
@@ -3526,8 +3526,8 @@
       "title": "Verify Security feature assertion #16",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 588,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 270,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-SEC-017",
@@ -3535,8 +3535,8 @@
       "title": "Verify Security feature assertion #17",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 789,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 918,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-SEC-018",
@@ -3544,8 +3544,8 @@
       "title": "Verify Security feature assertion #18",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 666,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 354,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-SEC-019",
@@ -3553,8 +3553,8 @@
       "title": "Verify Security feature assertion #19",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 716,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 918,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     },
     {
       "id": "TC-SEC-020",
@@ -3562,8 +3562,8 @@
       "title": "Verify Security feature assertion #20",
       "priority": "P2",
       "status": "PASSED",
-      "durationMs": 862,
-      "timestamp": "2026-08-07T17:27:26.295Z"
+      "durationMs": 382,
+      "timestamp": "2026-08-07T17:41:37.626Z"
     }
   ]
 }

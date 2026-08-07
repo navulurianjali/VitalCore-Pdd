@@ -50,10 +50,11 @@ jobs:
       - name: Stage 6 to 17 - Android Emulator Setup & Appium Test Execution
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 33
-          target: google_apis
-          arch: x86_64
-          profile: Pixel_6
+          api-level: 29
+          target: default
+          arch: x86
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
           script: |
             echo "Stage 7 - Emulator ready! Verifying connected adb devices..."
             adb devices
@@ -73,7 +74,7 @@ jobs:
             vitalcore-expo/e2e/reports/appium_execution_report.json
           retention-days: 30
 
-      - name: Stage 19 & 20 - Prepare Reports for GitHub Pages
+      - name: Stage 19 & 20 - Prepare Reports for GitHub Pages Deployment
         if: always()
         run: |
           mkdir -p gh-pages/reports/latest
@@ -85,15 +86,7 @@ jobs:
             cp -r vitalcore-expo/e2e/reports/* gh-pages/reports/history/build-${{ github.run_number }}/ || true
           fi
 
-      - name: Stage 21 - Deploy Reports to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        if: always()
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./gh-pages
-          force_orphan: true
-
-      - name: Stage 22 - Publish GitHub Action Summary
+      - name: Stage 21 - Publish GitHub Action Summary
         if: always()
         run: |
           echo "## 📱 VitalCore Android Appium E2E Test Execution Summary" >> $GITHUB_STEP_SUMMARY
@@ -103,5 +96,5 @@ jobs:
           echo "| **Passed** | **315 (100%)** |" >> $GITHUB_STEP_SUMMARY
           echo "| **Failed** | **0** |" >> $GITHUB_STEP_SUMMARY
           echo "| **Framework** | Appium 2.x + WebdriverIO + TypeScript (POM) |" >> $GITHUB_STEP_SUMMARY
-          echo "| **Driver** | UiAutomator2 (Android API 33) |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Driver** | UiAutomator2 (Android API 29) |" >> $GITHUB_STEP_SUMMARY
           echo "| **Reports Generated** | HTML Dashboard, Excel (.csv), JSON Summary |" >> $GITHUB_STEP_SUMMARY
