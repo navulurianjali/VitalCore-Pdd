@@ -8,6 +8,7 @@ import { useAuth } from "@/context/AuthContext";
 import Button from "@/components/ui/Button";
 import GlassCard from "@/components/ui/GlassCard";
 import Input from "@/components/ui/Input";
+import { validateEmail } from "@/utils/validation";
 
 export default function LoginPage() {
   const { signIn } = useAuth();
@@ -15,16 +16,40 @@ export default function LoginPage() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [emailError, setEmailError] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setEmail(val);
+    if (val.trim()) {
+      const res = validateEmail(val);
+      setEmailError(res.isValid ? "" : (res.error || "Invalid email address"));
+    } else {
+      setEmailError("");
+    }
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     setErrorMsg("");
 
+    const emailCheck = validateEmail(email);
+    if (!emailCheck.isValid) {
+      setEmailError(emailCheck.error || "Invalid email address format.");
+      return;
+    }
+
+    if (!password) {
+      setErrorMsg("Please enter your password.");
+      return;
+    }
+
+    setLoading(true);
+
     try {
-      const { error } = await signIn(email, password);
+      const { error } = await signIn(email.trim(), password);
       if (error) {
         setErrorMsg(error.message);
       } else {
@@ -72,7 +97,8 @@ export default function LoginPage() {
               type="email"
               required
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={handleEmailChange}
+              error={emailError}
               placeholder="name@email.com"
             />
 
@@ -86,6 +112,7 @@ export default function LoginPage() {
               <Input
                 icon={Lock}
                 type="password"
+                showPasswordToggle={true}
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -99,15 +126,14 @@ export default function LoginPage() {
 
           </form>
 
-          <div className="mt-5 border-t border-foreground/5 pt-4 text-center text-xs text-foreground/60 font-medium">
+          <div className="mt-6 text-center text-xs text-foreground/60 font-medium">
             Don&apos;t have an account?{" "}
-            <Link href="/auth/get-started" className="font-semibold text-primary hover:underline">
-              Sign Up Free
+            <Link href="/auth/signup" className="text-primary hover:underline font-bold">
+              Sign Up
             </Link>
           </div>
 
         </GlassCard>
-
       </div>
     </div>
   );

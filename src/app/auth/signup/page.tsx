@@ -3,14 +3,12 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Activity, ShieldCheck, Mail, Lock, User, CheckCircle, AlertCircle } from "lucide-react";
+import { Activity, ShieldCheck, Mail, Lock, User, CheckCircle, AlertCircle, Shield } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import Button from "@/components/ui/Button";
 import GlassCard from "@/components/ui/GlassCard";
 import Input from "@/components/ui/Input";
-
-// Strict RFC 5322 compliant email regex
-const RFC_EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
+import { validateEmail, validatePassword } from "@/utils/validation";
 
 export default function SignupPage() {
   const { signUp } = useAuth();
@@ -27,22 +25,39 @@ export default function SignupPage() {
   const [touched, setTouched] = useState<Record<string, boolean>>({});
 
   // Real-time Validation Checks
-  const isEmailValid = RFC_EMAIL_REGEX.test(email.trim());
-  const isPasswordLongEnough = password.length >= 8;
-  const hasUppercase = /[A-Z]/.test(password);
-  const hasLowercase = /[a-z]/.test(password);
-  const hasNumber = /[0-9]/.test(password);
-  const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
-
-  const isPasswordStrong = isPasswordLongEnough && hasUppercase && hasLowercase && hasNumber && hasSpecialChar;
+  const emailValidation = validateEmail(email);
+  const passwordValidation = validatePassword(password);
+  
+  const isEmailValid = emailValidation.isValid;
+  const isPasswordStrong = passwordValidation.isValid;
   const isConfirmPasswordValid = confirmPassword.length > 0 && confirmPassword === password;
   const isFullNameValid = fullName.trim().length >= 2;
-  const isUsernameValid = username.trim().length >= 3 && /^[a-zA-Z0-9_]+$/.test(username);
+  const isUsernameValid = username.trim().length >= 3 && /^[a-zA-Z0-9_]+$/.test(username.trim());
 
   const isFormValid = isFullNameValid && isUsernameValid && isEmailValid && isPasswordStrong && isConfirmPasswordValid;
 
   const handleBlur = (field: string) => {
     setTouched(prev => ({ ...prev, [field]: true }));
+  };
+
+  const getStrengthBarColor = (score: number) => {
+    switch (score) {
+      case 1: return "bg-rose-500";
+      case 2: return "bg-amber-500";
+      case 3: return "bg-blue-500";
+      case 4: return "bg-emerald-500";
+      default: return "bg-foreground/10";
+    }
+  };
+
+  const getStrengthLabel = (score: number) => {
+    switch (score) {
+      case 1: return "Weak";
+      case 2: return "Fair";
+      case 3: return "Good";
+      case 4: return "Strong & Secure";
+      default: return "Enter password";
+    }
   };
 
   const handleSignup = async (e: React.FormEvent) => {
@@ -56,12 +71,12 @@ export default function SignupPage() {
     });
 
     if (!isEmailValid) {
-      setErrorMsg("Please enter a valid RFC-compliant email address (e.g. user@example.com).");
+      setErrorMsg(emailValidation.error || "Please enter a valid email address.");
       return;
     }
 
     if (!isPasswordStrong) {
-      setErrorMsg("Password does not meet required strength criteria.");
+      setErrorMsg(passwordValidation.error || "Password does not meet required strength criteria.");
       return;
     }
 
@@ -86,7 +101,7 @@ export default function SignupPage() {
         router.push("/auth/onboarding");
       }
     } catch (err: any) {
-      setErrorMsg(err.message || "An unexpected error occurred during secure sign-up.");
+      setErrorMsg(err.message || "An unexpected error occurred during sign-up.");
     } finally {
       setLoading(false);
     }
@@ -106,7 +121,7 @@ export default function SignupPage() {
           <h2 className="auth-subtitle tracking-tight text-center font-bold">Create Your Account</h2>
           <p className="auth-helper text-[12px] flex items-center gap-1 justify-center">
             <ShieldCheck className="h-4 w-4 text-secondary/80" />
-            Verified Supabase Healthcare Authentication
+            Verified Healthcare Authentication
           </p>
         </div>
 
@@ -143,7 +158,7 @@ export default function SignupPage() {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               onBlur={() => handleBlur("username")}
-              error={touched.username && !isUsernameValid ? "Username must be at least 3 alphanumeric characters/underscores." : undefined}
+              error={touched.username && !isUsernameValid ? "Username must be at least 3 alphanumeric characters or underscores." : undefined}
               placeholder="johndoe_health"
             />
 
@@ -156,16 +171,17 @@ export default function SignupPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               onBlur={() => handleBlur("email")}
-              error={touched.email && !isEmailValid ? "Invalid email format. Enter a valid email (e.g. user@domain.com)." : undefined}
-              placeholder="name@domain.com"
+              error={touched.email && !isEmailValid ? (emailValidation.error || "Please enter a valid email address.") : undefined}
+              placeholder="user@domain.com"
             />
 
             {/* Password Field & Requirements Tracker */}
-            <div className="space-y-1.5">
+            <div className="space-y-2">
               <Input
                 label="Password"
                 icon={Lock}
                 type="password"
+                showPasswordToggle={true}
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -173,23 +189,44 @@ export default function SignupPage() {
                 placeholder="••••••••"
               />
 
-              {/* Real-time Password Checklist */}
+              {/* Strength Meter Bar */}
               {password.length > 0 && (
-                <div className="grid grid-cols-2 gap-1.5 pt-1 text-[10px]">
-                  <div className={`flex items-center gap-1 font-semibold ${isPasswordLongEnough ? "text-emerald-400" : "text-foreground/45"}`}>
-                    <CheckCircle className="h-3 w-3" /> Min 8 characters
+                <div className="space-y-1.5 pt-1">
+                  <div className="flex items-center justify-between text-[11px] font-bold text-foreground/70">
+                    <span>Password Strength:</span>
+                    <span className={passwordValidation.score >= 4 ? "text-emerald-400" : "text-amber-400"}>
+                      {getStrengthLabel(passwordValidation.score)}
+                    </span>
                   </div>
-                  <div className={`flex items-center gap-1 font-semibold ${hasUppercase ? "text-emerald-400" : "text-foreground/45"}`}>
-                    <CheckCircle className="h-3 w-3" /> Uppercase letter
+
+                  <div className="w-full bg-foreground/10 h-1.5 rounded-full overflow-hidden flex gap-1">
+                    {[1, 2, 3, 4].map((step) => (
+                      <div
+                        key={step}
+                        className={`h-full flex-1 rounded-full transition-all duration-300 ${
+                          step <= passwordValidation.score ? getStrengthBarColor(passwordValidation.score) : "bg-foreground/10"
+                        }`}
+                      />
+                    ))}
                   </div>
-                  <div className={`flex items-center gap-1 font-semibold ${hasLowercase ? "text-emerald-400" : "text-foreground/45"}`}>
-                    <CheckCircle className="h-3 w-3" /> Lowercase letter
-                  </div>
-                  <div className={`flex items-center gap-1 font-semibold ${hasNumber ? "text-emerald-400" : "text-foreground/45"}`}>
-                    <CheckCircle className="h-3 w-3" /> Number (0-9)
-                  </div>
-                  <div className={`flex items-center gap-1 font-semibold ${hasSpecialChar ? "text-emerald-400" : "text-foreground/45"} col-span-2`}>
-                    <CheckCircle className="h-3 w-3" /> Special character (!@#$%^&*)
+
+                  {/* Real-time Password Requirements Checklist */}
+                  <div className="grid grid-cols-2 gap-1.5 pt-1 text-[10px]">
+                    <div className={`flex items-center gap-1 font-semibold ${passwordValidation.hasMinLength ? "text-emerald-400" : "text-foreground/45"}`}>
+                      <CheckCircle className="h-3 w-3" /> Min 8 characters
+                    </div>
+                    <div className={`flex items-center gap-1 font-semibold ${passwordValidation.hasUpper ? "text-emerald-400" : "text-foreground/45"}`}>
+                      <CheckCircle className="h-3 w-3" /> Uppercase letter (A-Z)
+                    </div>
+                    <div className={`flex items-center gap-1 font-semibold ${passwordValidation.hasLower ? "text-emerald-400" : "text-foreground/45"}`}>
+                      <CheckCircle className="h-3 w-3" /> Lowercase letter (a-z)
+                    </div>
+                    <div className={`flex items-center gap-1 font-semibold ${passwordValidation.hasNumber ? "text-emerald-400" : "text-foreground/45"}`}>
+                      <CheckCircle className="h-3 w-3" /> Number (0-9)
+                    </div>
+                    <div className={`flex items-center gap-1 font-semibold ${passwordValidation.hasSpecial ? "text-emerald-400" : "text-foreground/45"} col-span-2`}>
+                      <CheckCircle className="h-3 w-3" /> Special character (!@#$%^&*)
+                    </div>
                   </div>
                 </div>
               )}
@@ -200,6 +237,7 @@ export default function SignupPage() {
               label="Confirm Password"
               icon={Lock}
               type="password"
+              showPasswordToggle={true}
               required
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}

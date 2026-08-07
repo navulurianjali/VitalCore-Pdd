@@ -7,18 +7,38 @@ import { supabase } from "@/utils/supabase";
 import Button from "@/components/ui/Button";
 import GlassCard from "@/components/ui/GlassCard";
 import Input from "@/components/ui/Input";
+import { validateEmail } from "@/utils/validation";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
+  const [emailError, setEmailError] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setEmail(val);
+    if (val.trim()) {
+      const res = validateEmail(val);
+      setEmailError(res.isValid ? "" : (res.error || "Invalid email format"));
+    } else {
+      setEmailError("");
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     setErrorMsg("");
     setSuccessMsg("");
+
+    const emailCheck = validateEmail(email);
+    if (!emailCheck.isValid) {
+      setEmailError(emailCheck.error || "Invalid email format.");
+      return;
+    }
+
+    setLoading(true);
 
     try {
       if (!supabase) {
@@ -97,14 +117,14 @@ export default function ForgotPasswordPage() {
                 type="email"
                 required
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={handleEmailChange}
+                error={emailError}
                 placeholder="name@company.com"
               />
 
-              <Button variant="primary" type="submit" isLoading={loading} className="w-full mt-2 font-semibold">
-                Send Reset Link
+              <Button variant="primary" type="submit" isLoading={loading} className="w-full font-semibold">
+                Send Reset Instructions
               </Button>
-
             </form>
           )}
 
