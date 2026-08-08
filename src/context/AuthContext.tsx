@@ -130,7 +130,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
       });
 
-      const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+        // TOKEN_REFRESHED fires automatically when the JWT is silently refreshed.
+        // Re-fetching the profile here causes setProfile(newObject) → useEffect([profile])
+        // triggers in consumers (e.g. ProfilePage) → form state gets overwritten, losing
+        // whatever the user was typing. Only fetch on real auth events.
+        if (event === "TOKEN_REFRESHED" || event === "USER_UPDATED") {
+          // Just keep the user up-to-date; don't re-fetch the whole profile.
+          if (session) setUser(session.user);
+          return;
+        }
+
         if (session) {
           setUser(session.user);
           fetchSupabaseProfile(session.user.id, session.user);
@@ -247,16 +257,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     try {
       const validColumns = new Set([
-        "username", "full_name", "avatar_url", "date_of_birth", "gender",
-        "weight_kg", "height_cm", "fitness_goal", "activity_level", "active_mode",
+        "username", "full_name", "avatar_url", "date_of_birth", "gender", "blood_group",
+        "country", "state", "city", "occupation", "height_cm", "weight_kg", "bmi",
+        "body_fat_estimate", "medical_conditions", "medications", "medication_schedule",
+        "allergies", "food_allergies", "surgeries", "chronic_conditions", "family_history",
+        "pregnancy_status", "activity_level", "exercise_frequency", "workout_preference",
+        "fitness_experience", "fitness_level", "step_goal", "water_goal", "sleep_goal",
+        "wind_down_routine", "food_preference", "favorite_foods", "disliked_foods",
+        "cuisine_preference", "calorie_goal", "protein_goal", "carb_goal", "fat_goal",
+        "smoking_status", "alcohol_status", "stress_level_onboard", "working_hours",
+        "sleep_schedule", "emergency_contact_name", "emergency_contact_phone",
+        "emergency_contact_relation", "emergency_contact_relationship", "fitness_goal",
+        "reminder_preferences", "ai_coach_style", "unit_system", "active_mode",
         "soreness_level", "biological_age", "stability_score", "onboarding_completed",
-        "bmi", "body_fat_estimate", "occupation", "timezone", "fitness_level",
-        "workout_duration_preference", "preferred_workout_time", "home_gym_preference",
-        "previous_injuries", "chronic_conditions", "surgeries", "mobility_limitations",
-        "sleep_problems", "dietary_preferences", "disliked_foods", "favorite_foods",
-        "allergies", "meal_timing_habits", "caffeine_intake", "wearable_synced",
-        "anxiety_rating", "motivation_level", "stress_level_onboard",
-        "screen_time_hours", "sitting_hours", "updated_at"
+        "timezone", "workout_duration_preference", "preferred_workout_time",
+        "home_gym_preference", "previous_injuries", "mobility_limitations",
+        "sleep_problems", "dietary_preferences", "meal_timing_habits", "caffeine_intake",
+        "wearable_synced", "anxiety_rating", "motivation_level", "screen_time_hours",
+        "sitting_hours", "updated_at"
       ]);
 
       const validUpdates: Record<string, any> = {};

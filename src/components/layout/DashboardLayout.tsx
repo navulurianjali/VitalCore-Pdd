@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
@@ -85,7 +85,11 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
     { name: "Settings", href: "/settings", icon: Settings },
   ];
 
-  const SidebarContent = () => (
+  // Memoize sidebar JSX so it doesn't recreate on every render.
+  // Defining a component inline (const SidebarContent = () => ...) inside a render
+  // function creates a brand-new function reference each render; React then treats it
+  // as a different component type and unmounts+remounts the entire sidebar subtree.
+  const sidebarContent = useMemo(() => (
     <div className="flex flex-col h-full bg-[var(--card-bg)]">
       {/* Logo / Brand */}
       <div className="flex items-center gap-3 px-6 py-6 shrink-0">
@@ -171,14 +175,15 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
         </div>
       </div>
     </div>
-  );
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  ), [pathname, profile?.full_name, mobileSidebarOpen]);
 
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-[var(--background)]">
 
       {/* Desktop Sidebar */}
       <aside className="hidden lg:flex flex-col w-64 border-r border-[var(--border)] bg-[var(--card-bg)] shrink-0 select-none">
-        <SidebarContent />
+        {sidebarContent}
       </aside>
 
       {/* Main content area */}
@@ -211,7 +216,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
               onClick={() => setMobileSidebarOpen(false)}
             />
             <aside className="relative flex flex-col w-56 max-w-xs h-full bg-[var(--card-bg)] border-r border-[var(--border)] z-50">
-              <SidebarContent />
+              {sidebarContent}
             </aside>
           </div>
         )}
@@ -226,3 +231,4 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
   );
 };
 export default DashboardLayout;
+

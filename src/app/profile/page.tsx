@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   User, HeartPulse, Activity, Utensils, Moon, PhoneCall,
   ShieldCheck, Scale, Edit3, Save, RefreshCw, CheckCircle,
@@ -32,6 +32,13 @@ export default function ProfilePage() {
   const [saving, setSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [saveError, setSaveError] = useState("");
+
+  // Guard: populate form from DB profile only once on initial load.
+  // Without this, any profile object reference change (e.g. from updateProfile's
+  // optimistic setProfile call, or a Supabase auth token refresh) re-triggers
+  // useEffect([profile]) and wipes whatever the user is currently typing.
+  const formInitialized = useRef(false);
+  const pendingFormReset = useRef(false);
 
   const [form, setForm] = useState({
     // Personal
@@ -94,60 +101,72 @@ export default function ProfilePage() {
     emergency_contact_relation: "",
   });
 
+  const populateForm = (p: typeof profile) => {
+    if (!p) return;
+    setForm({
+      full_name: p.full_name || "",
+      date_of_birth: p.date_of_birth || "",
+      gender: p.gender || "",
+      occupation: p.occupation || "",
+      country: p.country || "",
+      state: p.state || "",
+      city: p.city || "",
+
+      height_cm: p.height_cm ? Number(p.height_cm) : "",
+      weight_kg: p.weight_kg ? Number(p.weight_kg) : "",
+      blood_group: p.blood_group || "",
+
+      medical_conditions: p.medical_conditions || "",
+      medications: p.medications || "",
+      allergies: p.allergies || "",
+      food_allergies: p.food_allergies || "",
+      surgeries: p.surgeries || "",
+      chronic_diseases: p.chronic_conditions || "",
+      family_history: p.family_history || "",
+      pregnancy_status: p.pregnancy_status || "",
+
+      smoking_status: p.smoking_status || "",
+      alcohol_status: p.alcohol_status || "",
+      stress_level_onboard: p.stress_level_onboard ? Number(p.stress_level_onboard) : "",
+      working_hours: p.working_hours || "",
+      sleep_schedule: p.sleep_schedule || "",
+
+      food_preference: p.food_preference || "",
+      favorite_foods: Array.isArray(p.favorite_foods) ? p.favorite_foods.join(", ") : (p.favorite_foods || ""),
+      disliked_foods: Array.isArray(p.disliked_foods) ? p.disliked_foods.join(", ") : (p.disliked_foods || ""),
+      cuisine_preference: p.cuisine_preference || "",
+      calorie_goal: p.calorie_goal ? Number(p.calorie_goal) : "",
+      protein_goal: p.protein_goal ? Number(p.protein_goal) : "",
+      carb_goal: p.carb_goal ? Number(p.carb_goal) : "",
+      fat_goal: p.fat_goal ? Number(p.fat_goal) : "",
+
+      fitness_goal: p.fitness_goal || "",
+      activity_level: p.activity_level || "",
+      exercise_frequency: p.exercise_frequency || "",
+      workout_preference: p.workout_preference || "",
+      fitness_experience: p.fitness_experience || "",
+      step_goal: p.step_goal ? Number(p.step_goal) : "",
+      water_goal: p.water_goal ? Number(p.water_goal) : "",
+
+      sleep_goal: p.sleep_goal ? Number(p.sleep_goal) : "",
+      wind_down_routine: p.wind_down_routine || "",
+
+      emergency_contact_name: p.emergency_contact_name || "",
+      emergency_contact_phone: p.emergency_contact_phone || "",
+      emergency_contact_relation: p.emergency_contact_relation || "",
+    });
+  };
+
   useEffect(() => {
-    if (profile) {
-      setForm({
-        full_name: profile.full_name || "",
-        date_of_birth: profile.date_of_birth || "",
-        gender: profile.gender || "",
-        occupation: profile.occupation || "",
-        country: profile.country || "",
-        state: profile.state || "",
-        city: profile.city || "",
-
-        height_cm: profile.height_cm ? Number(profile.height_cm) : "",
-        weight_kg: profile.weight_kg ? Number(profile.weight_kg) : "",
-        blood_group: profile.blood_group || "",
-
-        medical_conditions: profile.medical_conditions || "",
-        medications: profile.medications || "",
-        allergies: profile.allergies || "",
-        food_allergies: profile.food_allergies || "",
-        surgeries: profile.surgeries || "",
-        chronic_diseases: profile.chronic_conditions || "",
-        family_history: profile.family_history || "",
-        pregnancy_status: profile.pregnancy_status || "",
-
-        smoking_status: profile.smoking_status || "",
-        alcohol_status: profile.alcohol_status || "",
-        stress_level_onboard: profile.stress_level_onboard ? Number(profile.stress_level_onboard) : "",
-        working_hours: profile.working_hours || "",
-        sleep_schedule: profile.sleep_schedule || "",
-
-        food_preference: profile.food_preference || "",
-        favorite_foods: Array.isArray(profile.favorite_foods) ? profile.favorite_foods.join(", ") : (profile.favorite_foods || ""),
-        disliked_foods: Array.isArray(profile.disliked_foods) ? profile.disliked_foods.join(", ") : (profile.disliked_foods || ""),
-        cuisine_preference: profile.cuisine_preference || "",
-        calorie_goal: profile.calorie_goal ? Number(profile.calorie_goal) : "",
-        protein_goal: profile.protein_goal ? Number(profile.protein_goal) : "",
-        carb_goal: profile.carb_goal ? Number(profile.carb_goal) : "",
-        fat_goal: profile.fat_goal ? Number(profile.fat_goal) : "",
-
-        fitness_goal: profile.fitness_goal || "",
-        activity_level: profile.activity_level || "",
-        exercise_frequency: profile.exercise_frequency || "",
-        workout_preference: profile.workout_preference || "",
-        fitness_experience: profile.fitness_experience || "",
-        step_goal: profile.step_goal ? Number(profile.step_goal) : "",
-        water_goal: profile.water_goal ? Number(profile.water_goal) : "",
-
-        sleep_goal: profile.sleep_goal ? Number(profile.sleep_goal) : "",
-        wind_down_routine: profile.wind_down_routine || "",
-
-        emergency_contact_name: profile.emergency_contact_name || "",
-        emergency_contact_phone: profile.emergency_contact_phone || "",
-        emergency_contact_relation: profile.emergency_contact_relation || "",
-      });
+    if (!profile) return;
+    // Only seed the form on the very first load, OR when handleSave explicitly
+    // requests a re-seed after a successful save (pendingFormReset.current = true).
+    // This prevents TOKEN_REFRESHED / optimistic updateProfile calls from
+    // overwriting whatever the user is currently typing.
+    if (!formInitialized.current || pendingFormReset.current) {
+      formInitialized.current = true;
+      pendingFormReset.current = false;
+      populateForm(profile);
     }
   }, [profile]);
 
@@ -248,16 +267,22 @@ export default function ProfilePage() {
       } as any);
 
       if (error) throw error;
+
+      // Signal that the next profile change (from refreshProfile below)
+      // should re-populate the form with the confirmed DB values.
+      pendingFormReset.current = true;
       await refreshProfile();
       setSaveSuccess(true);
       setIsEditing(false);
       setTimeout(() => setSaveSuccess(false), 3000);
     } catch (err: any) {
-      setSaveError(err.message || "Failed to save profile.");
+      console.error("[ProfilePage] Save error:", err);
+      setSaveError("Couldn't save your changes. Please try again.");
     } finally {
       setSaving(false);
     }
   };
+
 
   // Reusable input/select helpers
   const inputCls = "w-full text-xs px-3 py-2.5 rounded-xl border border-foreground/10 bg-foreground/5 text-foreground placeholder-foreground/35 focus:outline-none focus:border-primary/40 transition-colors";
