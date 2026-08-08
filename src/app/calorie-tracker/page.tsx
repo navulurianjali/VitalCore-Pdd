@@ -7,7 +7,8 @@ import { Button } from "@/components/ui/Button";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/utils/supabase";
 import { FOOD_DATABASE, searchFoodDatabase, smartFoodSearch, calculateNutrition, FoodItem, SearchStatus } from "@/utils/foodDatabase";
-import { Utensils, Plus, Trash2, Edit2, Search, X, Flame, CheckCircle, PieChart, Sparkles, Loader2 } from "lucide-react";
+import { getLocalDateString, formatDisplayDate, addDaysToDate, isRecordOnDate } from "@/utils/dateUtils";
+import { Utensils, Plus, Trash2, Edit2, Search, X, Flame, CheckCircle, PieChart, Sparkles, Loader2, ChevronLeft, ChevronRight, Calendar } from "lucide-react";
 
 interface LoggedFood {
   id: string;
@@ -43,38 +44,10 @@ export default function CalorieTrackerPage() {
   const [selectedFood, setSelectedFood] = useState<FoodItem | null>(null);
   const [grams, setGrams] = useState<number>(100);
 
-  const todayStr = new Date().toISOString().split("T")[0];
+  // Date Selector state (default TODAY in local timezone)
+  const [selectedDate, setSelectedDate] = useState<string>(getLocalDateString());
 
-  // Smart Food Search debounced effect
-  useEffect(() => {
-    let active = true;
-    const doSearch = async () => {
-      if (!searchQuery.trim()) {
-        const defaults = FOOD_DATABASE.slice(0, 12);
-        setSearchResults(defaults);
-        setSearchStatus('idle');
-        if (defaults.length > 0 && !selectedFood) {
-          setSelectedFood(defaults[0]);
-        }
-        return;
-      }
-      const { results } = await smartFoodSearch(searchQuery, setSearchStatus);
-      if (active) {
-        setSearchResults(results);
-        if (results.length > 0) {
-          setSelectedFood(results[0]);
-        }
-      }
-    };
-
-    const timer = setTimeout(doSearch, 250);
-    return () => {
-      active = false;
-      clearTimeout(timer);
-    };
-  }, [searchQuery]);
-
-  // Fetch today's food logs from Supabase
+  // Fetch food logs for selectedDate from Supabase
   const fetchLogs = async () => {
     if (!user?.id || !supabase) {
       setLoading(false);
@@ -89,9 +62,7 @@ export default function CalorieTrackerPage() {
         .order("created_at", { ascending: true });
 
       if (data && !error) {
-        const filtered = (data as any[]).filter(
-          item => !item.date || item.date === todayStr || (item.created_at && item.created_at.startsWith(todayStr))
-        );
+        const filtered = (data as any[]).filter(item => isRecordOnDate(item.date, item.created_at, selectedDate));
         setLogs(filtered as LoggedFood[]);
       }
     } catch (e) {
@@ -125,7 +96,7 @@ export default function CalorieTrackerPage() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [user?.id]);
+  }, [user?.id, selectedDate]);
 
   const foodSearchResults = searchResults.length > 0 ? searchResults : searchFoodDatabase(searchQuery);
   const currentNutritionPreview = selectedFood ? calculateNutrition(selectedFood, grams) : null;
@@ -200,7 +171,7 @@ export default function CalorieTrackerPage() {
           .from("nutrition_logs")
           .insert({
             user_id: user.id,
-            date: todayStr,
+            date: selectedDate,
             meal_type: activeMealType,
             food_name: formattedName,
             calories: Math.round(nutrition.calories),
@@ -273,11 +244,37 @@ export default function CalorieTrackerPage() {
               Simple and effortless daily calorie and macro intake logger.
             </p>
           </div>
-          <div className="text-right shrink-0">
+          <div className="flex flex-col items-end shrink-0 gap-1">
             <span className="text-[10px] uppercase font-bold text-foreground/50 block">Tracking Date</span>
-            <span className="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20 inline-block">
-              📅 Today ({new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })})
-            </span>
+            <div className="flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1.5 rounded-2xl">
+              <button 
+                onClick={() => setSelectedDate(prev => addDaysToDate(prev, -1))} 
+                className="p-1 hover:bg-foreground/10 rounded-lg transition-colors"
+                title="Previous Day"
+              >
+                <ChevronLeft className="h-4 w-4 text-emerald-400" />
+              </button>
+              <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-400 min-w-[110px] justify-center">
+                <Calendar className="h-3.5 w-3.5" />
+                <span>{formatDisplayDate(selectedDate)}</span>
+              </div>
+              <button 
+                onClick={() => setSelectedDate(prev => addDaysToDate(prev, 1))} 
+                disabled={selectedDate >= getLocalDateString()} 
+                className="p-1 hover:bg-foreground/10 rounded-lg transition-colors disabled:opacity-30"
+                title="Next Day"
+              >
+                <ChevronRight className="h-4 w-4 text-emerald-400" />
+              </button>
+              {selectedDate !== getLocalDateString() && (
+                <button 
+                  onClick={() => setSelectedDate(getLocalDateString())} 
+                  className="text-[10px] text-emerald-400 font-extrabold underline ml-1 hover:text-emerald-300"
+                >
+                  Today
+                </button>
+              )}
+            </div>
           </div>
         </div>
 

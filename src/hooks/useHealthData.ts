@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/utils/supabase";
 import { useAuth } from "@/context/AuthContext";
+import { getLocalDateString, isRecordOnDate } from "@/utils/dateUtils";
 
 export interface HealthDigitalTwin {
   caloriesBurned: number;
@@ -36,13 +37,16 @@ export interface HealthDigitalTwin {
   trackingDaysCount: number;
   hasTelemetry: boolean;
   hasEnergyTelemetry: boolean;
+  selectedDate?: string;
 }
 
-export function useHealthData() {
+export function useHealthData(selectedDateInput?: string) {
   const { profile } = useAuth();
   const [metrics, setMetrics] = useState<HealthDigitalTwin | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const targetDate = selectedDateInput || getLocalDateString();
 
   const fetchRealData = useCallback(async () => {
     if (!profile?.id) {
@@ -55,19 +59,7 @@ export function useHealthData() {
       setLoading(true);
       setError(null);
       
-      const now = new Date();
-      const localToday = now.toLocaleDateString('sv-SE');
-      const isoToday = now.toISOString().split('T')[0];
-
-      const matchesToday = (dateStr?: string, createdAt?: string) => {
-        if (dateStr && (dateStr === localToday || dateStr === isoToday)) return true;
-        if (createdAt) {
-          if (createdAt.startsWith(localToday) || createdAt.startsWith(isoToday)) return true;
-          const itemDate = new Date(createdAt).toLocaleDateString('sv-SE');
-          if (itemDate === localToday || itemDate === isoToday) return true;
-        }
-        return false;
-      };
+      const currentTargetDate = selectedDateInput || getLocalDateString();
 
       // Concurrent Promise.all Batch Fetching
       const [
@@ -88,18 +80,14 @@ export function useHealthData() {
         supabase.from("mood_tracking").select("*").eq("user_id", profile.id).order("created_at", { ascending: false })
       ]);
 
-      const todayNutrition = (rawNutrition || []).filter(item => matchesToday(item.date, item.created_at));
-      const nutritionData = todayNutrition.length > 0 ? todayNutrition : (rawNutrition || []);
-
-      const todayWorkouts = (allWorkouts || []).filter(item => matchesToday(undefined, item.created_at));
-      const workoutData = todayWorkouts.length > 0 ? todayWorkouts : (allWorkouts || []);
-
-      const todayHydration = (allHydration || []).filter(item => matchesToday(undefined, item.created_at));
-      const hydrationData = todayHydration.length > 0 ? todayHydration : (allHydration || []);
+      // Filter daily logs specifically for currentTargetDate with ZERO fallback substitution
+      const nutritionData = (rawNutrition || []).filter(item => isRecordOnDate(item.date, item.created_at, currentTargetDate));
+      const workoutData = (allWorkouts || []).filter(item => isRecordOnDate(undefined, item.created_at, currentTargetDate));
+      const hydrationData = (allHydration || []).filter(item => isRecordOnDate(undefined, item.created_at, currentTargetDate));
 
       const stepCountData = workoutData.filter((item: any) => item.type === "steps");
 
-      // Compute distinct tracking dates
+      // Compute distinct historical tracking dates for long-term telemetry features
       const trackingDates = new Set<string>();
       (rawNutrition || []).forEach((i: any) => { const d = i.date || i.created_at?.split('T')[0]; if (d) trackingDates.add(d); });
       (allWorkouts || []).forEach((i: any) => { if (i.created_at) trackingDates.add(i.created_at.split('T')[0]); });
@@ -122,10 +110,18 @@ export function useHealthData() {
       const caloriesBurned = workoutData?.reduce((sum, item) => sum + (item.calories_burned || 0), 0) || 0;
       const hydrationMl = hydrationData?.reduce((sum, item) => sum + (item.amount_ml || 0), 0) || 0;
       const realSteps = stepCountData?.reduce((sum, item) => sum + (item.duration_minutes || 0), 0) || 0;
-      const lastSleep = sleepLogs?.[0] || null;
-      const lastRecovery = recoveryLogs?.[0] || null;
-      const lastFatigue = fatigueLogs?.[0] || null;
-      const lastMood = moodLogs?.[0] || null;
+      
+      const targetSleepLogs = (sleepLogs || []).filter(item => isRecordOnDate(undefined, item.created_at, currentTargetDate));
+      const lastSleep = targetSleepLogs.length > 0 ? targetSleepLogs[0] : (sleepLogs?.[0] || null);
+
+      const targetRecoveryLogs = (recoveryLogs || []).filter(item => isRecordOnDate(undefined, item.created_at, currentTargetDate));
+      const lastRecovery = targetRecoveryLogs.length > 0 ? targetRecoveryLogs[0] : (recoveryLogs?.[0] || null);
+
+      const targetFatigueLogs = (fatigueLogs || []).filter(item => isRecordOnDate(undefined, item.created_at, currentTargetDate));
+      const lastFatigue = targetFatigueLogs.length > 0 ? targetFatigueLogs[0] : (fatigueLogs?.[0] || null);
+
+      const targetMoodLogs = (moodLogs || []).filter(item => isRecordOnDate(undefined, item.created_at, currentTargetDate));
+      const lastMood = targetMoodLogs.length > 0 ? targetMoodLogs[0] : (moodLogs?.[0] || null);
 
       const hasEnergyTelemetry = Boolean(lastSleep || lastRecovery || lastFatigue || lastMood);
 
@@ -162,7 +158,8 @@ export function useHealthData() {
         micronutrientDeficiencies: [],
         trackingDaysCount,
         hasTelemetry,
-        hasEnergyTelemetry
+        hasEnergyTelemetry,
+        selectedDate: currentTargetDate
       };
 
       setMetrics(realMetrics);
@@ -173,7 +170,7 @@ export function useHealthData() {
     } finally {
       setLoading(false);
     }
-  }, [profile]);
+  }, [profile, selectedDateInput]);
 
   useEffect(() => {
     fetchRealData();
@@ -183,6 +180,12 @@ export function useHealthData() {
     };
     
     window.addEventListener("vitalcore-data-updated", handleDataUpdate);
+
+    // Re-check date boundary periodically and on window focus
+    const handleFocus = () => {
+      fetchRealData();
+    };
+    window.addEventListener("focus", handleFocus);
 
     let channel: any = null;
     if (supabase && profile?.id) {
@@ -213,6 +216,18 @@ export function useHealthData() {
             fetchRealData();
           }
         )
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'workouts',
+            filter: `user_id=eq.${profile.id}`,
+          },
+          () => {
+            fetchRealData();
+          }
+        )
         .subscribe();
     }
 
@@ -226,6 +241,7 @@ export function useHealthData() {
     return () => {
       window.removeEventListener("vitalcore-data-updated", handleDataUpdate);
       window.removeEventListener("vitalcore-user-logout", handleLogout);
+      window.removeEventListener("focus", handleFocus);
       if (channel) {
         supabase.removeChannel(channel);
       }

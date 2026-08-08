@@ -419,7 +419,7 @@ const styles = StyleSheet.create({
   insightMsg: { fontSize: 12, lineHeight: 17, fontWeight: '600' },
   insightBtn: { paddingVertical: 6, paddingHorizontal: 12, borderRadius: 10, alignSelf: 'flex-start', marginTop: 4 },
   insightBtnText: { fontSize: 11, fontWeight: '700' },
-  clearBox: { padding: 14, borderRadius: 14, borderWidth: 1, flexDirection: 'row', items: 'center', gap: 8 },
+  clearBox: { padding: 14, borderRadius: 14, borderWidth: 1, flexDirection: 'row', alignItems: 'center', gap: 8 },
   clearText: { fontSize: 12, fontWeight: '700' },
   actionPlanCard: { borderRadius: 18, padding: 14, borderWidth: 1, marginBottom: 10 },
   actionPlanGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },

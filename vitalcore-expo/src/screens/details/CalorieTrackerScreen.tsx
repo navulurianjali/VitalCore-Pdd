@@ -12,7 +12,8 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Search } from 'lucide-react-native';
+import { Search, ChevronLeft, ChevronRight, Calendar } from 'lucide-react-native';
+import { getLocalDateString, formatDisplayDate, addDaysToDate, isRecordOnDate } from '../../utils/dateUtils';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { supabase } from '../../services/supabase';
@@ -71,34 +72,26 @@ export default function CalorieTrackerScreen({ navigation }: any) {
   const [gramsInput, setGramsInput] = useState('100');
   const [saving, setSaving] = useState(false);
 
-  const getLocalDateString = (d: Date = new Date()): string => {
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  };
-
-  const todayStr = getLocalDateString();
+  const [selectedDate, setSelectedDate] = useState<string>(getLocalDateString());
   const grams = Math.max(1, parseInt(gramsInput, 10) || 100);
 
   // ─────────────────────────────────────────────────────────────
-  // Fetch today's logs
+  // Fetch logs for selectedDate
   // ─────────────────────────────────────────────────────────────
   const fetchLogs = async () => {
     if (!user?.id) { setLoading(false); return; }
     try {
-      const utcTodayStr = new Date().toISOString().split('T')[0];
       const { data, error } = await supabase
         .from('nutrition_logs')
         .select('*')
         .eq('user_id', user.id)
-        .or(`date.eq.${todayStr},date.eq.${utcTodayStr}`)
         .order('created_at', { ascending: true });
 
       if (error) {
         console.error('Error fetching nutrition logs from Supabase:', error);
       } else if (data) {
-        setLogs(data as LoggedFood[]);
+        const filtered = (data as any[]).filter(item => isRecordOnDate(item.date, item.created_at, selectedDate));
+        setLogs(filtered as LoggedFood[]);
       }
     } catch (e) {
       console.error('Error fetching logs:', e);
@@ -229,7 +222,7 @@ export default function CalorieTrackerScreen({ navigation }: any) {
       } else {
         const payload = {
           user_id: user.id,
-          date: todayStr,
+          date: selectedDate,
           ...logData,
         };
         const { data, error } = await supabase
@@ -336,6 +329,29 @@ export default function CalorieTrackerScreen({ navigation }: any) {
           <Text style={[styles.title, { color: colors.text, fontSize: isCareMode ? 24 : 20 }]}>
             🥗 Calorie Tracker
           </Text>
+        </View>
+
+        {/* Date Selector Controls */}
+        <View style={[styles.dateSelectorRow, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
+          <TouchableOpacity onPress={() => setSelectedDate(prev => addDaysToDate(prev, -1))} style={styles.dateNavBtn}>
+            <ChevronLeft size={18} color={colors.primary} />
+          </TouchableOpacity>
+          <View style={styles.dateLabelBox}>
+            <Calendar size={14} color={colors.primary} />
+            <Text style={[styles.dateLabelText, { color: colors.text }]}>{formatDisplayDate(selectedDate)}</Text>
+          </View>
+          <TouchableOpacity 
+            onPress={() => setSelectedDate(prev => addDaysToDate(prev, 1))} 
+            disabled={selectedDate >= getLocalDateString()}
+            style={[styles.dateNavBtn, selectedDate >= getLocalDateString() && { opacity: 0.3 }]}
+          >
+            <ChevronRight size={18} color={colors.primary} />
+          </TouchableOpacity>
+          {selectedDate !== getLocalDateString() && (
+            <TouchableOpacity onPress={() => setSelectedDate(getLocalDateString())} style={styles.todayResetBtn}>
+              <Text style={[styles.todayResetText, { color: colors.primary }]}>Today</Text>
+            </TouchableOpacity>
+          )}
         </View>
 
         {/* SECTION 1: TODAY'S MEALS */}
@@ -703,4 +719,10 @@ const styles = StyleSheet.create({
   cancelBtnText: { fontWeight: 'bold', fontSize: 14 },
   saveBtn: { flex: 1, borderRadius: 10, paddingVertical: 11, alignItems: 'center' },
   saveBtnText: { color: '#ffffff', fontWeight: 'bold', fontSize: 14 },
+  dateSelectorRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 8, paddingHorizontal: 12, borderRadius: 14, borderWidth: 1, marginBottom: 16, gap: 10 },
+  dateNavBtn: { padding: 4 },
+  dateLabelBox: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  dateLabelText: { fontSize: 13, fontWeight: 'bold' },
+  todayResetBtn: { paddingHorizontal: 8, paddingVertical: 2, borderRadius: 6, backgroundColor: 'rgba(16, 185, 129, 0.15)' },
+  todayResetText: { fontSize: 11, fontWeight: 'bold' },
 });

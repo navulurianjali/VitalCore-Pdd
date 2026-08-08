@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../services/supabase';
 import { useAuth } from '../context/AuthContext';
 import { computeDigitalTwin, HealthDigitalTwin, BaseHealthMetrics } from '../utils/digitalTwinEngine';
+import { getLocalDateString, isRecordOnDate } from '../utils/dateUtils';
 
 export type { HealthDigitalTwin, BaseHealthMetrics };
 
@@ -13,10 +14,11 @@ export interface HealthDataResult {
   hasLoggedHydration: boolean;
   hasLoggedSleep: boolean;
   hasLoggedWorkouts: boolean;
+  selectedDate: string;
   refetch: () => Promise<void>;
 }
 
-export function useHealthData(): HealthDataResult {
+export function useHealthData(selectedDateInput?: string): HealthDataResult {
   const { profile } = useAuth();
   const [metrics, setMetrics] = useState<HealthDigitalTwin | null>(null);
   const [loading, setLoading] = useState(true);
@@ -26,6 +28,8 @@ export function useHealthData(): HealthDataResult {
   const [hasLoggedHydration, setHasLoggedHydration] = useState(false);
   const [hasLoggedSleep, setHasLoggedSleep] = useState(false);
   const [hasLoggedWorkouts, setHasLoggedWorkouts] = useState(false);
+
+  const targetDate = selectedDateInput || getLocalDateString();
 
   const fetchRealData = useCallback(async () => {
     if (!profile?.id) {
@@ -37,57 +41,54 @@ export function useHealthData(): HealthDataResult {
       setLoading(true);
       setError(null);
 
-      const d = new Date();
-      const localToday = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-      const utcToday = d.toISOString().split('T')[0];
+      const currentTargetDate = selectedDateInput || getLocalDateString();
 
-      // 1. Fetch Today's Nutrition Logs
-      const { data: nutritionData } = await supabase
+      // 1. Fetch All Nutrition Logs for user
+      const { data: rawNutrition } = await supabase
         .from('nutrition_logs')
-        .select('calories, protein_g, carbs_g, fat_g')
-        .eq('user_id', profile.id)
-        .or(`date.eq.${localToday},date.eq.${utcToday}`);
+        .select('calories, protein_g, carbs_g, fat_g, date, created_at')
+        .eq('user_id', profile.id);
 
-      const loggedNutritionCount = nutritionData?.length || 0;
+      const nutritionData = (rawNutrition || []).filter(item => isRecordOnDate(item.date, item.created_at, currentTargetDate));
+      const loggedNutritionCount = nutritionData.length;
       setHasLoggedNutrition(loggedNutritionCount > 0);
-      const caloriesConsumed = nutritionData?.reduce((sum, item) => sum + (Number(item.calories) || 0), 0) || 0;
+      const caloriesConsumed = nutritionData.reduce((sum, item) => sum + (Number(item.calories) || 0), 0);
 
-      // 2. Fetch Today's Workout Logs
-      const { data: workoutData } = await supabase
+      // 2. Fetch Workout Logs
+      const { data: rawWorkouts } = await supabase
         .from('workouts')
-        .select('calories_burned, duration_minutes, type')
-        .eq('user_id', profile.id)
-        .gte('created_at', `${utcToday}T00:00:00Z`);
+        .select('calories_burned, duration_minutes, type, created_at')
+        .eq('user_id', profile.id);
 
-      const loggedWorkoutCount = workoutData?.length || 0;
+      const workoutData = (rawWorkouts || []).filter(item => isRecordOnDate(undefined, item.created_at, currentTargetDate));
+      const loggedWorkoutCount = workoutData.length;
       setHasLoggedWorkouts(loggedWorkoutCount > 0);
-      const caloriesBurned = workoutData?.reduce((sum, item) => sum + (Number(item.calories_burned) || 0), 0) || 0;
+      const caloriesBurned = workoutData.reduce((sum, item) => sum + (Number(item.calories_burned) || 0), 0);
 
-      const stepWorkouts = workoutData?.filter(w => w.type === 'steps') || [];
+      const stepWorkouts = workoutData.filter(w => w.type === 'steps');
       const realSteps = stepWorkouts.reduce((sum, item) => sum + (Number(item.duration_minutes) || 0), 0);
 
-      // 3. Fetch Today's Hydration Logs
-      const { data: hydrationData } = await supabase
+      // 3. Fetch Hydration Logs
+      const { data: rawHydration } = await supabase
         .from('hydration_logs')
-        .select('amount_ml')
-        .eq('user_id', profile.id)
-        .gte('created_at', `${utcToday}T00:00:00Z`);
+        .select('amount_ml, created_at')
+        .eq('user_id', profile.id);
       
-      const loggedHydrationCount = hydrationData?.length || 0;
+      const hydrationData = (rawHydration || []).filter(item => isRecordOnDate(undefined, item.created_at, currentTargetDate));
+      const loggedHydrationCount = hydrationData.length;
       setHasLoggedHydration(loggedHydrationCount > 0);
-      const hydrationMl = hydrationData?.reduce((sum, item) => sum + (Number(item.amount_ml) || 0), 0) || 0;
+      const hydrationMl = hydrationData.reduce((sum, item) => sum + (Number(item.amount_ml) || 0), 0);
 
-      // 4. Fetch Latest Sleep Log
+      // 4. Fetch Sleep Logs
       const { data: sleepData } = await supabase
         .from('sleep_logs')
         .select('*')
         .eq('user_id', profile.id)
-        .order('created_at', { ascending: false })
-        .limit(1);
+        .order('created_at', { ascending: false });
       
-      const loggedSleepCount = sleepData?.length || 0;
-      setHasLoggedSleep(loggedSleepCount > 0);
-      const lastSleep = sleepData?.[0] || null;
+      const targetSleepLogs = (sleepData || []).filter(item => isRecordOnDate(undefined, item.created_at, currentTargetDate));
+      const lastSleep = targetSleepLogs.length > 0 ? targetSleepLogs[0] : (sleepData?.[0] || null);
+      setHasLoggedSleep(targetSleepLogs.length > 0);
 
       // 5. Fetch Latest Recovery/Fatigue/Mood Logs
       const { data: recoveryData } = await supabase
@@ -150,7 +151,7 @@ export function useHealthData(): HealthDataResult {
     } finally {
       setLoading(false);
     }
-  }, [profile]);
+  }, [profile, selectedDateInput]);
 
   useEffect(() => {
     fetchRealData();
@@ -184,6 +185,18 @@ export function useHealthData(): HealthDataResult {
             fetchRealData();
           }
         )
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'workouts',
+            filter: `user_id=eq.${profile.id}`,
+          },
+          () => {
+            fetchRealData();
+          }
+        )
         .subscribe();
     }
 
@@ -202,6 +215,7 @@ export function useHealthData(): HealthDataResult {
     hasLoggedHydration,
     hasLoggedSleep,
     hasLoggedWorkouts,
+    selectedDate: targetDate,
     refetch: fetchRealData,
   };
 }

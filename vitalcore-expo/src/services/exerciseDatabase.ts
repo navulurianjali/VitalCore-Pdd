@@ -154,7 +154,7 @@ export async function fetchExercisesFromAPI(query: ExerciseQuery): Promise<Exerc
     let url = `https://${RAPID_API_HOST}/exercises?limit=${limit}&offset=0`;
 
     if (bodyPart) {
-      const apiBodyPart = mapToApiBodyPart(bodyPart);
+      const apiBodyPart = mapApiBodyPart(bodyPart);
       url = `https://${RAPID_API_HOST}/exercises/bodyPart/${encodeURIComponent(apiBodyPart)}?limit=${limit}`;
     }
 
