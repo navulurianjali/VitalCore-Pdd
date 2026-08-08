@@ -24,6 +24,42 @@ const TABS: { id: TabId; label: string; icon: React.ElementType }[] = [
   { id: "emergency",  label: "Emergency",       icon: PhoneCall  },
 ];
 
+// ─── MODULE-LEVEL CONSTANTS & HELPERS ─────────────────────────────────────────
+// CRITICAL: These MUST be outside ProfilePage.
+// Defining component functions (Field, ViewTile) inside a render function creates
+// a new function reference on every render. React uses reference equality to
+// compare component types — a new reference means React unmounts the old Field
+// and mounts a brand-new one, destroying the DOM input and losing focus after
+// every single keystroke ("first character only" bug).
+// Moving them here gives them a stable reference that never changes.
+
+const inputCls = "w-full text-xs px-3 py-2.5 rounded-xl border border-foreground/10 bg-foreground/5 text-foreground placeholder-foreground/35 focus:outline-none focus:border-primary/40 transition-colors";
+const selectCls = "w-full text-xs px-3 py-2.5 rounded-xl border border-foreground/10 bg-background text-foreground focus:outline-none focus:border-primary/40 transition-colors";
+const labelCls = "block text-[11px] font-semibold text-foreground/60 mb-1";
+
+const f = (id: string) => `profile-field-${id}`;
+
+const val = (v: any, suffix = "") => {
+  if (v === null || v === undefined || v === "" || v === 0) {
+    return <span className="text-foreground/35 italic font-normal text-xs">Not provided</span>;
+  }
+  return <span className="text-foreground font-semibold text-xs">{v}{suffix}</span>;
+};
+
+const Field = ({ label, id, children }: { label: string; id: string; children: React.ReactNode }) => (
+  <div className="space-y-1" id={id}>
+    <label className={labelCls}>{label}</label>
+    {children}
+  </div>
+);
+
+const ViewTile = ({ label, children }: { label: string; children: React.ReactNode }) => (
+  <div className="p-3 bg-foreground/[0.04] rounded-xl border border-foreground/5 space-y-1">
+    <span className="text-[10px] font-bold uppercase tracking-wide text-foreground/40">{label}</span>
+    <div>{children}</div>
+  </div>
+);
+
 export default function ProfilePage() {
   const { profile, updateProfile, refreshProfile, user } = useAuth();
 
@@ -193,14 +229,6 @@ export default function ProfilePage() {
   };
   const bmiInfo = bmiCategory(calculatedBMI);
 
-  const val = (v: any, suffix = "") => {
-    if (v === null || v === undefined || v === "" || v === 0) {
-      return <span className="text-foreground/35 italic font-normal text-xs">Not provided</span>;
-    }
-    return <span className="text-foreground font-semibold text-xs">{v}{suffix}</span>;
-  };
-
-  const f = (id: string) => `profile-field-${id}`;
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -262,11 +290,22 @@ export default function ProfilePage() {
         emergency_contact_name: form.emergency_contact_name || null,
         emergency_contact_phone: form.emergency_contact_phone || null,
         emergency_contact_relation: form.emergency_contact_relation || null,
-
-        updated_at: new Date().toISOString(),
+        // NOTE: updated_at is intentionally omitted — the DB column has a default
+        // that updates automatically. Explicitly setting it can conflict with triggers.
       } as any);
 
-      if (error) throw error;
+      if (error) {
+        // Surface the actual Supabase PostgrestError for debugging
+        console.error("[ProfilePage] Supabase save error:", {
+          message: (error as any).message,
+          code: (error as any).code,
+          details: (error as any).details,
+          hint: (error as any).hint,
+          status: (error as any).status,
+          fullError: error,
+        });
+        throw error;
+      }
 
       // Signal that the next profile change (from refreshProfile below)
       // should re-populate the form with the confirmed DB values.
@@ -276,32 +315,19 @@ export default function ProfilePage() {
       setIsEditing(false);
       setTimeout(() => setSaveSuccess(false), 3000);
     } catch (err: any) {
-      console.error("[ProfilePage] Save error:", err);
-      setSaveError("Couldn't save your changes. Please try again.");
+      // Show the actual error message from Supabase if available
+      const msg = err?.message || err?.details || err?.hint || "Unknown error";
+      console.error("[ProfilePage] handleSave caught:", err);
+      setSaveError(`Save failed: ${msg}`);
     } finally {
       setSaving(false);
     }
   };
 
 
-  // Reusable input/select helpers
-  const inputCls = "w-full text-xs px-3 py-2.5 rounded-xl border border-foreground/10 bg-foreground/5 text-foreground placeholder-foreground/35 focus:outline-none focus:border-primary/40 transition-colors";
-  const selectCls = "w-full text-xs px-3 py-2.5 rounded-xl border border-foreground/10 bg-background text-foreground focus:outline-none focus:border-primary/40 transition-colors";
-  const labelCls = "block text-[11px] font-semibold text-foreground/60 mb-1";
 
-  const Field = ({ label, id, children }: { label: string; id: string; children: React.ReactNode }) => (
-    <div className="space-y-1" id={id}>
-      <label className={labelCls}>{label}</label>
-      {children}
-    </div>
-  );
-
-  const ViewTile = ({ label, children }: { label: string; children: React.ReactNode }) => (
-    <div className="p-3 bg-foreground/[0.04] rounded-xl border border-foreground/5 space-y-1">
-      <span className="text-[10px] font-bold uppercase tracking-wide text-foreground/40">{label}</span>
-      <div>{children}</div>
-    </div>
-  );
+  // Field, ViewTile, inputCls, selectCls, labelCls, val, f are all defined
+  // at module level (outside this component) to keep their references stable.
 
   return (
     <DashboardLayout>

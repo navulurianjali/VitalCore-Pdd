@@ -274,7 +274,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         "home_gym_preference", "previous_injuries", "mobility_limitations",
         "sleep_problems", "dietary_preferences", "meal_timing_habits", "caffeine_intake",
         "wearable_synced", "anxiety_rating", "motivation_level", "screen_time_hours",
-        "sitting_hours", "updated_at"
+        "sitting_hours"
+        // updated_at intentionally excluded — let the DB default/trigger handle it
       ]);
 
       const validUpdates: Record<string, any> = {};
@@ -284,20 +285,34 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
       }
 
+      console.log("[AuthContext] updateProfile → updating columns:", Object.keys(validUpdates));
+
       const { error } = await supabase
         .from("profiles")
         .update(validUpdates)
         .eq("id", profile.id);
 
-      if (!error) {
-        setProfile({ ...profile, ...updates });
-        return { error: null };
+      if (error) {
+        console.error("[AuthContext] updateProfile Supabase error:", {
+          code: error.code,
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+        });
+        return { error };
       }
-      return { error };
+
+      // Optimistically update the in-memory profile.
+      // Note: this creates a new object reference which triggers useEffect([profile])
+      // in consumers — they must guard against unwanted form resets (see ProfilePage).
+      setProfile({ ...profile, ...updates });
+      return { error: null };
     } catch (e: any) {
+      console.error("[AuthContext] updateProfile exception:", e);
       return { error: e };
     }
   };
+
 
   return (
     <AuthContext.Provider value={{ user, profile, loading, signIn, signUp, signOut, updateProfile, refreshProfile, isMockMode }}>
