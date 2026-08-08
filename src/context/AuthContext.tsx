@@ -285,26 +285,52 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
       }
 
-      console.log("[AuthContext] updateProfile → updating columns:", Object.keys(validUpdates));
+      const currentUpdates: Record<string, any> = { ...validUpdates };
+      let attempt = 0;
+      let lastError: any = null;
 
-      const { error } = await supabase
-        .from("profiles")
-        .update(validUpdates)
-        .eq("id", profile.id);
+      while (attempt < 15 && Object.keys(currentUpdates).length > 0) {
+        console.log(`[AuthContext] updateProfile attempt ${attempt + 1} with columns:`, Object.keys(currentUpdates));
 
-      if (error) {
-        console.error("[AuthContext] updateProfile Supabase error:", {
+        const { error } = await supabase
+          .from("profiles")
+          .update(currentUpdates)
+          .eq("id", profile.id);
+
+        if (!error) {
+          console.log("[AuthContext] updateProfile succeeded!");
+          setProfile({ ...profile, ...updates });
+          return { error: null };
+        }
+
+        lastError = error;
+        console.error("[AuthContext] updateProfile attempt error:", {
           code: error.code,
           message: error.message,
           details: error.details,
           hint: error.hint,
         });
-        return { error };
+
+        // Detect missing column error from Supabase Postgrest (e.g. "Could not find the 'alcohol_status' column of 'profiles' in the schema cache")
+        const errorText = `${error.message || ""} ${error.details || ""} ${error.hint || ""}`;
+        const match = errorText.match(/Could not find the '([^']+)' column/i);
+
+        if (match && match[1]) {
+          const missingCol = match[1];
+          console.warn(`[AuthContext] Column '${missingCol}' missing in DB schema cache. Omitting '${missingCol}' and retrying...`);
+          delete currentUpdates[missingCol];
+          attempt++;
+        } else {
+          // If it's a non-missing-column error (e.g. permission/constraint), break loop and return error
+          break;
+        }
       }
 
-      // Optimistically update the in-memory profile.
-      // Note: this creates a new object reference which triggers useEffect([profile])
-      // in consumers — they must guard against unwanted form resets (see ProfilePage).
+      // If loop finished or encountered unhandled error
+      if (lastError) {
+        return { error: lastError };
+      }
+
       setProfile({ ...profile, ...updates });
       return { error: null };
     } catch (e: any) {
