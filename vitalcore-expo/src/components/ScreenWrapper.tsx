@@ -13,7 +13,7 @@ import { useTheme } from '../context/ThemeContext';
 import { Sun, Moon, ArrowLeft } from 'lucide-react-native';
 
 interface ScreenWrapperProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   title?: string;
   subtitle?: string;
   showBack?: boolean;

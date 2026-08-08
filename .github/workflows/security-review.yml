@@ -84,8 +84,6 @@ jobs:
             p/xss
             p/secrets
             p/owasp-top-ten
-          generateSarif: "1"
-          publishResults: false
         continue-on-error: true
 
       - name: Upload Semgrep SARIF
