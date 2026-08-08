@@ -401,8 +401,11 @@ export function generatePersonalizedWorkoutPlan(params: {
   // Shuffle randomly every time so no two generated sessions are identical
   candidatePool = candidatePool.sort(() => 0.5 - Math.random());
 
-  // Determine target exercise count based on duration (15m: 4 ex, 30m: 6 ex, 45m: 8 ex)
-  const targetCount = duration <= 15 ? 4 : duration <= 30 ? 6 : 8;
+  // Determine concise exercise count (~3-4 exercises based on prompt requirement #4)
+  let targetCount = duration <= 15 ? 3 : duration <= 30 ? 4 : 5;
+  if (readiness < 65 || soreness > 5 || isSenior) {
+    targetCount = Math.max(3, targetCount - 1);
+  }
   const selectedExercises = candidatePool.slice(0, targetCount);
 
   // Tailor Reps & Rest based on Intensity & Goal
@@ -424,9 +427,9 @@ export function generatePersonalizedWorkoutPlan(params: {
   });
 
   // Recommendation Reason
-  let reason = `Generated personalized ${fitnessGoal} routine based on your age (${age}), recovery readiness (${readiness}%), and selected equipment (${equipment}).`;
+  let reason = `Generated personalized ${fitnessGoal} routine based on your age (${age}), recovery readiness (${readiness}%), and selected equipment (${equipment}). Recommended ${targetCount} tailored exercises.`;
   if (readiness < 65) {
-    reason = `💡 Higher fatigue/soreness detected. Your routine has been calibrated to supportive low-impact movements with extra rest intervals.`;
+    reason = `💡 Higher fatigue/soreness detected. Your routine has been calibrated to ${targetCount} supportive low-impact movements with extra rest intervals.`;
   }
 
   return {

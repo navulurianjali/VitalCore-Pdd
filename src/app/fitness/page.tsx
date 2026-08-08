@@ -17,7 +17,8 @@ import { supabase } from "@/utils/supabase";
 import confetti from "canvas-confetti";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
-import { EXERCISE_LIBRARY, ExerciseDetail } from "@/utils/exerciseLibrary";
+import { EXERCISE_LIBRARY, ExerciseDetail, generatePersonalizedWorkoutPlan } from "@/utils/exerciseLibrary";
+import { fetchExercisesForPlan } from "@/services/exerciseDatabase";
 
 const EXERCISE_DATABASE = EXERCISE_LIBRARY;
 
@@ -624,87 +625,73 @@ export default function FitnessPage() {
   };
 
   // Compile final adaptive workout
-  const compileWorkout = () => {
+  const compileWorkout = async () => {
     setRecoveryWarning("");
     setLoadingTick(0);
     setCoachState("generating");
 
-    const focusKey = focus === "yoga" || focus === "recovery" ? "mobility" : focus;
-    const originalList = EXERCISE_DATABASE[focusKey] || EXERCISE_DATABASE["full_body"];
-    
-    let filteredList = originalList;
-    if (equipment === "bodyweight" || equipment === "none") {
-      filteredList = originalList.filter(ex => ex.equipment === "Bodyweight");
-    } else if (equipment === "dumbbells") {
-      filteredList = originalList.filter(ex => ex.equipment === "Bodyweight" || ex.equipment === "Dumbbells");
-    } else if (equipment === "bands") {
-      filteredList = originalList.filter(ex => ex.equipment === "Bodyweight" || ex.equipment === "Bands" || ex.equipment === "Resistance Bands");
-    } else if (equipment === "yoga_mobility") {
-      const mobilityList = EXERCISE_DATABASE["mobility"] || originalList;
-      filteredList = mobilityList.filter(ex => ex.equipment === "Bodyweight");
-    } else if (equipment === "outdoor") {
-      filteredList = originalList.filter(ex => ex.equipment === "Bodyweight");
-    } else if (equipment === "home_gym") {
-      filteredList = originalList.filter(ex => ex.equipment === "Bodyweight" || ex.equipment === "Dumbbells" || ex.equipment === "Bands");
-    } else if (equipment === "commercial_gym") {
-      filteredList = originalList;
-    }
+    try {
+      // 1. Personalized recommendation engine calculation
+      const recResult = generatePersonalizedWorkoutPlan({
+        profile,
+        metrics,
+        focus,
+        duration,
+        equipment,
+        location,
+        intensity,
+        feeling,
+      });
 
-    if (filteredList.length === 0) {
-      filteredList = originalList;
-    }
+      // 2. Fetch exercises: Supabase exercise_database -> ExerciseDB API -> local dataset fallback
+      const liveExercises = await fetchExercisesForPlan({
+        category: focus,
+        equipment: equipment,
+        location: location === "home" ? "Home" : location === "gym" ? "Gym" : "Both",
+        limit: recResult.exercises.length || 4,
+      });
 
-    // Shuffle the filtered list for dynamic routines
-    filteredList = [...filteredList].sort(() => 0.5 - Math.random());
+      const finalExercises = (liveExercises && liveExercises.length >= 3)
+        ? liveExercises
+        : recResult.exercises;
 
-    let finalIntensity = intensity;
-    let restBuffer = 0;
-    
-    // Bio-feedback calculations
-    const isFatigued = feeling === "tired" || feeling === "stressed" || feeling === "sore" || (metrics && metrics.sleepQuality < 65);
-    const isHighSoreness = profile?.soreness_level && profile.soreness_level > 5;
-    
-    let readiness = 88;
-    if (isFatigued) readiness -= 20;
-    if (isHighSoreness) readiness -= 15;
-    setReadinessScore(Math.max(30, readiness));
-
-    if (isFatigued || isHighSoreness) {
-      finalIntensity = "light";
-      restBuffer = 10; 
-      setRecoveryWarning(
-        "💡 We detected higher fatigue, sleep debt, or muscular soreness. To protect your joints, we have calibrated your workout to a supportive Light intensity and added extra rest buffers."
-      );
-    }
-
-    const formattedExercises = filteredList.map(ex => {
-      let repsLabel = ex.reps;
-      let dur = ex.durationSeconds;
-      
-      if (finalIntensity === "light") {
-        dur = Math.round(ex.durationSeconds * 0.8);
-        repsLabel = ex.reps.includes("reps") ? `${Math.round(parseInt(ex.reps) * 0.8)} reps` : ex.reps;
-      } else if (finalIntensity === "intense") {
-        dur = Math.round(ex.durationSeconds * 1.2);
-        repsLabel = ex.reps.includes("reps") ? `${Math.round(parseInt(ex.reps) * 1.2)} reps` : ex.reps;
+      setReadinessScore(recResult.readinessScore);
+      if (recResult.recommendationReason) {
+        setRecoveryWarning(recResult.recommendationReason);
       }
 
-      return {
-        ...ex,
-        reps: repsLabel,
-        durationSeconds: dur,
-        restSeconds: ex.restSeconds + restBuffer
-      };
-    });
-
-    const titleFocus = focus.replace("_", " ").toUpperCase();
-    setActiveWorkoutName(`AI ${finalIntensity.toUpperCase()} ${titleFocus} ROUTINE`);
-    setGeneratedWorkout(formattedExercises);
-    setCompletedExercises(new Array(formattedExercises.length).fill(false));
-    setCurrentExerciseIdx(0);
-    setTimeLeft(formattedExercises[0].durationSeconds);
-    setIsResting(false);
-    setTimerRunning(false);
+      const titleFocus = focus.replace("_", " ").toUpperCase();
+      setActiveWorkoutName(`AI ${intensity.toUpperCase()} ${titleFocus} ROUTINE`);
+      setGeneratedWorkout(finalExercises);
+      setCompletedExercises(new Array(finalExercises.length).fill(false));
+      setCurrentExerciseIdx(0);
+      setTimeLeft(finalExercises[0]?.durationSeconds || 45);
+      setIsResting(false);
+      setTimerRunning(false);
+    } catch (e) {
+      console.warn("ExerciseDB/Supabase fetch error, using local recommendation engine:", e);
+      const recResult = generatePersonalizedWorkoutPlan({
+        profile,
+        metrics,
+        focus,
+        duration,
+        equipment,
+        location,
+        intensity,
+        feeling,
+      });
+      setReadinessScore(recResult.readinessScore);
+      if (recResult.recommendationReason) {
+        setRecoveryWarning(recResult.recommendationReason);
+      }
+      setActiveWorkoutName(`AI ${intensity.toUpperCase()} ${focus.replace("_", " ").toUpperCase()} ROUTINE`);
+      setGeneratedWorkout(recResult.exercises);
+      setCompletedExercises(new Array(recResult.exercises.length).fill(false));
+      setCurrentExerciseIdx(0);
+      setTimeLeft(recResult.exercises[0]?.durationSeconds || 45);
+      setIsResting(false);
+      setTimerRunning(false);
+    }
   };
 
   const handleMarkComplete = () => {
