@@ -311,9 +311,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           hint: error.hint,
         });
 
-        // Detect missing column error from Supabase Postgrest (e.g. "Could not find the 'alcohol_status' column of 'profiles' in the schema cache")
+        // Detect missing column error from Supabase Postgrest (e.g. "Could not find the 'food_allergies' column of 'profiles' in the schema cache")
         const errorText = `${error.message || ""} ${error.details || ""} ${error.hint || ""}`;
-        const match = errorText.match(/Could not find the '([^']+)' column/i);
+        const match =
+          errorText.match(/Could not find the '([^']+)' column/i) ||
+          errorText.match(/column ["']?([^"' ]+)["']? of relation/i) ||
+          errorText.match(/column ["']?([^"' ]+)["']? does not exist/i);
 
         if (match && match[1]) {
           const missingCol = match[1];
