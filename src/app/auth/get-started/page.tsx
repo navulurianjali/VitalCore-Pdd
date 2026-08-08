@@ -64,56 +64,44 @@ export default function GetStartedPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.1 }}
         >
-          <GlassCard glowColor="emerald" className="border border-foreground/10 shadow-xl space-y-4">
+          <GlassCard glowColor="emerald" className="border border-foreground/10 shadow-sm p-6 space-y-5">
 
             {/* Create Account — primary action */}
             <div className="space-y-2">
-              <p className="text-[11px] font-bold uppercase tracking-widest text-foreground/40">
-                New here?
+              <p className="text-[14px] font-medium text-foreground/75">
+                New to VitalCore?
               </p>
               <Link href="/auth/signup" className="block">
                 <Button
                   variant="primary"
-                  size="lg"
-                  className="w-full flex items-center justify-between gap-2 font-semibold shadow-md shadow-primary/15 group"
+                  size="md"
+                  className="w-full flex items-center justify-between gap-2 px-4 h-10.5 shadow-sm shadow-primary/10 group"
                 >
                   <div className="flex items-center gap-2.5">
-                    <UserPlus className="h-4.5 w-4.5" />
-                    <span>Create New Account</span>
+                    <UserPlus className="h-4.5 w-4.5 shrink-0" />
+                    <span className="text-[15px] font-medium">Create an account</span>
                   </div>
-                  <ArrowRight className="h-4 w-4 opacity-70 group-hover:translate-x-0.5 transition-transform" />
+                  <ArrowRight className="h-4 w-4 opacity-70 group-hover:translate-x-0.5 transition-transform shrink-0" />
                 </Button>
               </Link>
-              <p className="text-[11px] text-foreground/45 font-medium text-center">
-                Free forever · No credit card required
-              </p>
-            </div>
-
-            {/* Divider */}
-            <div className="relative flex items-center gap-3">
-              <div className="flex-1 h-px bg-foreground/8" />
-              <span className="text-[11px] font-semibold text-foreground/35 uppercase tracking-wider">
-                or
-              </span>
-              <div className="flex-1 h-px bg-foreground/8" />
             </div>
 
             {/* Log In — secondary action */}
             <div className="space-y-2">
-              <p className="text-[11px] font-bold uppercase tracking-widest text-foreground/40">
+              <p className="text-[14px] font-medium text-foreground/75">
                 Already have an account?
               </p>
               <Link href="/auth/login" className="block">
                 <Button
                   variant="glass"
-                  size="lg"
-                  className="w-full flex items-center justify-between gap-2 font-semibold border border-foreground/10 hover:border-primary/30 group"
+                  size="md"
+                  className="w-full flex items-center justify-between gap-2 px-4 h-10.5 border border-foreground/10 hover:border-primary/30 group"
                 >
                   <div className="flex items-center gap-2.5">
-                    <LogIn className="h-4.5 w-4.5" />
-                    <span>Log In</span>
+                    <LogIn className="h-4.5 w-4.5 shrink-0" />
+                    <span className="text-[15px] font-medium">Log in</span>
                   </div>
-                  <ArrowRight className="h-4 w-4 opacity-50 group-hover:translate-x-0.5 transition-transform" />
+                  <ArrowRight className="h-4 w-4 opacity-50 group-hover:translate-x-0.5 transition-transform shrink-0" />
                 </Button>
               </Link>
             </div>
