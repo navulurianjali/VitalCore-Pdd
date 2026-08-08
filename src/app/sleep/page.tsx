@@ -380,9 +380,9 @@ export default function SleepPage() {
                   <p className="text-xs text-[var(--muted)] mt-0.5">7-day trend: sleep hours vs next-day energy</p>
                 </div>
 
-                <div className="h-52 w-full">
+                <div className="h-52 w-full min-w-0">
                   {mounted ? (
-                    <ResponsiveContainer width="100%" height="100%">
+                    <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={200}>
                       <AreaChart data={logs} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                         <defs>
                           <linearGradient id="colorDuration" x1="0" y1="0" x2="0" y2="1">
@@ -436,9 +436,9 @@ export default function SleepPage() {
                   <p className="text-xs text-[var(--muted)] mt-0.5">Sleep quality, stress, and muscle recovery</p>
                 </div>
 
-                <div className="h-52 w-full">
+                <div className="h-52 w-full min-w-0">
                   {mounted ? (
-                    <ResponsiveContainer width="100%" height="100%">
+                    <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={200}>
                       <BarChart data={logs} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                         <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
                         <XAxis dataKey="date" stroke="rgba(255,255,255,0.3)" style={{ fontSize: "9px", fontWeight: "bold" }} />

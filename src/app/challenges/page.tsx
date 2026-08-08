@@ -90,7 +90,7 @@ const ProgressRing = ({ percentage = 0, size = 42, strokeWidth = 3.5 }: { percen
           stroke="hsl(168, 80%, 36%)"
           strokeWidth={strokeWidth}
           strokeDasharray={circumference}
-          strokeDashoffset={strokeDashoffset}
+          strokeDashoffset={isNaN(strokeDashoffset) ? circumference : strokeDashoffset}
           strokeLinecap="round"
           fill="transparent"
           className="transition-all duration-500 ease-out"

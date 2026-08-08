@@ -114,7 +114,7 @@ export default function FutureHealthLabPage() {
                     stroke="currentColor" 
                     strokeWidth="8" 
                     strokeDasharray={264}
-                    strokeDashoffset={264 - (264 * ((digitalTwin.overallHealthScore || 0) / 100))}
+                    strokeDashoffset={isNaN(digitalTwin.overallHealthScore) ? 264 : 264 - (264 * ((digitalTwin.overallHealthScore || 0) / 100))}
                     strokeLinecap="round"
                     className="text-emerald-500 transition-all duration-1000" 
                     fill="transparent" 
