@@ -1,989 +1,570 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import DashboardLayout from "@/components/layout/DashboardLayout";
-import GlassCard from "@/components/ui/GlassCard";
-import Button from "@/components/ui/Button";
-import { 
-  User, ShieldCheck, Activity, Utensils, HeartPulse, 
-  PhoneCall, Bot, Save, CheckCircle, AlertCircle, RefreshCw,
-  Edit3, Moon, Clock, Check
+import React, { useState, useEffect, useCallback } from "react";
+import {
+  User, Lock, LogOut, Trash2, Sun, Moon, Monitor,
+  Smartphone, Brain, Bell, Shield, ChevronRight,
+  CheckCircle, AlertCircle, RefreshCw, Eye, EyeOff,
+  Zap, Heart, Users
 } from "lucide-react";
+import DashboardLayout from "@/components/layout/DashboardLayout";
 import { useAuth } from "@/context/AuthContext";
+import { useTheme } from "@/context/ThemeContext";
 import { supabase } from "@/utils/supabase";
+import { useRouter } from "next/navigation";
+
+// ── Settings Row ──────────────────────────────────────────────────────────────
+function SettingsRow({
+  id,
+  icon: Icon,
+  label,
+  description,
+  rightContent,
+  onClick,
+  danger = false,
+}: {
+  id?: string;
+  icon?: React.ElementType;
+  label: string;
+  description?: string;
+  rightContent?: React.ReactNode;
+  onClick?: () => void;
+  danger?: boolean;
+}) {
+  const base = "flex items-center gap-3 px-4 py-3.5 transition-colors";
+  const interactive = onClick ? "cursor-pointer hover:bg-foreground/[0.03] active:bg-foreground/5" : "";
+  const dangerCls = danger ? "text-rose-500" : "text-foreground";
+
+  return (
+    <div id={id} className={`${base} ${interactive}`} onClick={onClick} role={onClick ? "button" : undefined}>
+      {Icon && (
+        <div className={`h-8 w-8 rounded-lg flex items-center justify-center shrink-0 ${danger ? "bg-rose-500/10" : "bg-foreground/[0.06]"}`}>
+          <Icon className={`h-4 w-4 ${danger ? "text-rose-500" : "text-foreground/70"}`} />
+        </div>
+      )}
+      <div className="flex-1 min-w-0">
+        <div className={`text-sm font-medium ${dangerCls} leading-tight`}>{label}</div>
+        {description && <div className="text-xs text-foreground/45 mt-0.5 font-normal">{description}</div>}
+      </div>
+      {rightContent && <div className="shrink-0">{rightContent}</div>}
+      {onClick && !rightContent && <ChevronRight className="h-4 w-4 text-foreground/30 shrink-0" />}
+    </div>
+  );
+}
+
+// ── Section card ─────────────────────────────────────────────────────────────
+function SettingsSection({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <div className="px-1 mb-1.5">
+        <span className="text-[11px] font-bold uppercase tracking-widest text-foreground/40">{title}</span>
+      </div>
+      <div className="rounded-2xl border border-foreground/8 bg-[var(--card-bg)] overflow-hidden divide-y divide-foreground/[0.06]">
+        {children}
+      </div>
+    </div>
+  );
+}
+
+// ── Toggle ────────────────────────────────────────────────────────────────────
+function Toggle({ id, checked, onChange }: { id: string; checked: boolean; onChange: (v: boolean) => void }) {
+  return (
+    <button
+      id={id}
+      role="switch"
+      aria-checked={checked}
+      onClick={() => onChange(!checked)}
+      className={`relative w-10 h-5.5 rounded-full transition-colors cursor-pointer shrink-0 ${checked ? "bg-primary" : "bg-foreground/20"}`}
+      style={{ height: "22px", width: "40px" }}
+    >
+      <span
+        className={`absolute top-0.5 left-0.5 h-[18px] w-[18px] rounded-full bg-white shadow-sm transition-transform duration-200 ${checked ? "translate-x-[18px]" : "translate-x-0"}`}
+      />
+    </button>
+  );
+}
+
+// ── Mode Chip ─────────────────────────────────────────────────────────────────
+function ModeChip({
+  id,
+  label,
+  description,
+  icon: Icon,
+  active,
+  onClick,
+}: {
+  id: string;
+  label: string;
+  description: string;
+  icon: React.ElementType;
+  active: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      id={id}
+      onClick={onClick}
+      className={`flex-1 flex flex-col items-center gap-1.5 p-3.5 rounded-xl border text-center transition-all cursor-pointer ${
+        active
+          ? "border-primary bg-primary/8 text-primary"
+          : "border-foreground/10 text-foreground/60 hover:border-foreground/20 hover:text-foreground/80 hover:bg-foreground/[0.03]"
+      }`}
+    >
+      <Icon className={`h-5 w-5 ${active ? "text-primary" : "text-foreground/50"}`} />
+      <span className={`text-xs font-bold ${active ? "text-primary" : "text-foreground/70"}`}>{label}</span>
+      <span className="text-[10px] text-foreground/40 leading-snug font-normal">{description}</span>
+    </button>
+  );
+}
+
+// ── Theme Chip ────────────────────────────────────────────────────────────────
+function ThemeChip({
+  id,
+  label,
+  icon: Icon,
+  active,
+  onClick,
+}: {
+  id: string;
+  label: string;
+  icon: React.ElementType;
+  active: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      id={id}
+      onClick={onClick}
+      className={`flex-1 flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl border text-center transition-all cursor-pointer ${
+        active
+          ? "border-primary bg-primary/8"
+          : "border-foreground/10 hover:border-foreground/20 hover:bg-foreground/[0.03]"
+      }`}
+    >
+      <Icon className={`h-4.5 w-4.5 ${active ? "text-primary" : "text-foreground/50"}`} />
+      <span className={`text-xs font-semibold ${active ? "text-primary" : "text-foreground/60"}`}>{label}</span>
+    </button>
+  );
+}
 
 export default function SettingsPage() {
-  const { profile, refreshProfile } = useAuth();
-  const [activeTab, setActiveTab] = useState<"personal" | "health" | "lifestyle" | "nutrition" | "sleep" | "fitness" | "emergency" | "ai">("personal");
-  const [isEditing, setIsEditing] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [saveSuccess, setSaveSuccess] = useState(false);
-  const [saveError, setSaveError] = useState("");
+  const { profile, updateProfile, signOut } = useAuth();
+  const { theme, toggleTheme, activeMode, setActiveMode } = useTheme();
+  const router = useRouter();
 
-  // FORM STATE FOR ALL 8 HEALTH PROFILE SECTIONS (NO DEMO FALLBACKS)
-  const [form, setForm] = useState({
-    // Personal Information
-    full_name: "",
-    avatar_url: "",
-    date_of_birth: "",
-    gender: "",
-    height_cm: "" as number | "",
-    weight_kg: "" as number | "",
-    blood_group: "",
-    country: "",
-    state: "",
-    city: "",
-    occupation: "",
+  // Password change state
+  const [showPasswordForm, setShowPasswordForm] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPw, setShowPw] = useState(false);
+  const [pwSaving, setPwSaving] = useState(false);
+  const [pwMessage, setPwMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
-    // Medical Information
-    medical_conditions: "",
-    medications: "",
-    medication_schedule: "",
-    allergies: "",
-    food_allergies: "",
-    surgeries: "",
-    chronic_diseases: "",
-    family_history: "",
-    pregnancy_status: "",
+  // AI Preferences
+  const [aiCoachStyle, setAiCoachStyle] = useState(profile?.ai_coach_style || "supportive");
+  const [unitSystem, setUnitSystem] = useState(profile?.unit_system || "Metric");
+  const [aiSaving, setAiSaving] = useState(false);
+  const [aiSaved, setAiSaved] = useState(false);
 
-    // Lifestyle
-    smoking_status: "",
-    alcohol_status: "",
-    stress_level_onboard: "" as number | "",
-    working_hours: "",
-    sleep_schedule: "",
-
-    // Nutrition Information
-    food_preference: "",
-    favorite_foods: "",
-    disliked_foods: "",
-    cuisine_preference: "",
-    calorie_goal: "" as number | "",
-    protein_goal: "" as number | "",
-    carb_goal: "" as number | "",
-    fat_goal: "" as number | "",
-
-    // Sleep Information
-    sleep_goal: "" as number | "",
-    wind_down_routine: "",
-
-    // Fitness Information
-    activity_level: "",
-    exercise_frequency: "",
-    workout_preference: "",
-    fitness_experience: "",
-    step_goal: "" as number | "",
-    water_goal: "" as number | "",
-
-    // Emergency Contact
-    emergency_contact_name: "",
-    emergency_contact_phone: "",
-    emergency_contact_relation: "",
-
-    // AI Preferences
-    fitness_goal: "",
-    reminder_preferences: "",
-    ai_coach_style: "",
-    unit_system: "Metric"
+  // Notifications — stored as JSON in reminder_preferences
+  const [notifications, setNotifications] = useState({
+    meal: true,
+    hydration: true,
+    workout: true,
+    sleep: true,
   });
+  const [notifSaving, setNotifSaving] = useState(false);
 
+  // Delete account
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteText, setDeleteText] = useState("");
+
+  // Load saved notification prefs
   useEffect(() => {
-    if (profile) {
-      setForm({
-        full_name: profile.full_name || "",
-        avatar_url: profile.avatar_url || "",
-        date_of_birth: profile.date_of_birth || "",
-        gender: profile.gender || "",
-        height_cm: profile.height_cm ? Number(profile.height_cm) : "",
-        weight_kg: profile.weight_kg ? Number(profile.weight_kg) : "",
-        blood_group: profile.blood_group || "",
-        country: profile.country || "",
-        state: profile.state || "",
-        city: profile.city || "",
-        occupation: profile.occupation || "",
-
-        medical_conditions: profile.medical_conditions || "",
-        medications: profile.medications || "",
-        medication_schedule: profile.medication_schedule || "",
-        allergies: profile.allergies || "",
-        food_allergies: profile.food_allergies || "",
-        surgeries: profile.surgeries || "",
-        chronic_diseases: profile.chronic_conditions || "",
-        family_history: profile.family_history || "",
-        pregnancy_status: profile.pregnancy_status || "",
-
-        smoking_status: profile.smoking_status || "",
-        alcohol_status: profile.alcohol_status || "",
-        stress_level_onboard: profile.stress_level_onboard ? Number(profile.stress_level_onboard) : "",
-        working_hours: profile.working_hours || "",
-        sleep_schedule: profile.sleep_schedule || "",
-
-        food_preference: profile.food_preference || "",
-        favorite_foods: Array.isArray(profile.favorite_foods) ? profile.favorite_foods.join(", ") : (profile.favorite_foods || ""),
-        disliked_foods: Array.isArray(profile.disliked_foods) ? profile.disliked_foods.join(", ") : (profile.disliked_foods || ""),
-        cuisine_preference: profile.cuisine_preference || "",
-        calorie_goal: profile.calorie_goal ? Number(profile.calorie_goal) : "",
-        protein_goal: profile.protein_goal ? Number(profile.protein_goal) : "",
-        carb_goal: profile.carb_goal ? Number(profile.carb_goal) : "",
-        fat_goal: profile.fat_goal ? Number(profile.fat_goal) : "",
-
-        sleep_goal: profile.sleep_goal ? Number(profile.sleep_goal) : "",
-        wind_down_routine: profile.wind_down_routine || "",
-
-        activity_level: profile.activity_level || "",
-        exercise_frequency: profile.exercise_frequency || "",
-        workout_preference: profile.workout_preference || "",
-        fitness_experience: profile.fitness_experience || "",
-        step_goal: profile.step_goal ? Number(profile.step_goal) : "",
-        water_goal: profile.water_goal ? Number(profile.water_goal) : "",
-
-        emergency_contact_name: profile.emergency_contact_name || "",
-        emergency_contact_phone: profile.emergency_contact_phone || "",
-        emergency_contact_relation: profile.emergency_contact_relation || "",
-
-        fitness_goal: profile.fitness_goal || "",
-        reminder_preferences: profile.reminder_preferences || "",
-        ai_coach_style: profile.ai_coach_style || "",
-        unit_system: profile.unit_system || "Metric"
-      });
+    if (profile?.reminder_preferences) {
+      try {
+        const parsed = JSON.parse(profile.reminder_preferences);
+        if (typeof parsed === "object") {
+          setNotifications(prev => ({ ...prev, ...parsed }));
+        }
+      } catch {
+        // legacy text value — ignore, keep defaults
+      }
     }
+    if (profile?.ai_coach_style) setAiCoachStyle(profile.ai_coach_style);
+    if (profile?.unit_system) setUnitSystem(profile.unit_system);
   }, [profile]);
 
-  // CALCULATION LOGIC (ONLY FOR PROVIDED VALUES)
-  const calculateAge = (dobString: string): number | null => {
-    if (!dobString) return null;
-    const dob = new Date(dobString);
-    if (isNaN(dob.getTime())) return null;
-    const diff = Date.now() - dob.getTime();
-    const ageDate = new Date(diff);
-    return Math.abs(ageDate.getUTCFullYear() - 1970);
+  // ── Handlers ──────────────────────────────────────────────────────────────
+
+  const handleSignOut = async () => {
+    await signOut();
+    router.push("/auth/login");
   };
 
-  const calculatedAge = calculateAge(form.date_of_birth);
-  const heightVal = form.height_cm !== "" ? Number(form.height_cm) : 0;
-  const weightVal = form.weight_kg !== "" ? Number(form.weight_kg) : 0;
-  const calculatedBMI = heightVal > 0 && weightVal > 0 
-    ? Number((weightVal / Math.pow(heightVal / 100, 2)).toFixed(1)) 
-    : null;
-
-  const renderValue = (val: any, suffix: string = "") => {
-    if (val === undefined || val === null || val === "" || val === 0) {
-      return <span className="text-foreground/40 italic font-normal">Not provided</span>;
-    }
-    return <span className="text-foreground font-semibold">{val}{suffix}</span>;
-  };
-
-  // SAVE TO SUPABASE
-  const handleSaveProfile = async (e: React.FormEvent) => {
+  const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!profile?.id || !supabase) return;
-    setSaving(true);
-    setSaveError("");
-    setSaveSuccess(false);
-
+    if (!supabase) return;
+    if (newPassword !== confirmPassword) {
+      setPwMessage({ type: "error", text: "Passwords do not match." });
+      return;
+    }
+    if (newPassword.length < 8) {
+      setPwMessage({ type: "error", text: "Password must be at least 8 characters." });
+      return;
+    }
+    setPwSaving(true);
+    setPwMessage(null);
     try {
-      const updateData = {
-        full_name: form.full_name,
-        avatar_url: form.avatar_url,
-        date_of_birth: form.date_of_birth || null,
-        gender: form.gender || null,
-        height_cm: form.height_cm !== "" ? Number(form.height_cm) : null,
-        weight_kg: form.weight_kg !== "" ? Number(form.weight_kg) : null,
-        bmi: calculatedBMI,
-        blood_group: form.blood_group || null,
-        country: form.country || null,
-        state: form.state || null,
-        city: form.city || null,
-        occupation: form.occupation || null,
-
-        medical_conditions: form.medical_conditions || null,
-        medications: form.medications || null,
-        medication_schedule: form.medication_schedule || null,
-        allergies: form.allergies || null,
-        food_allergies: form.food_allergies || null,
-        surgeries: form.surgeries || null,
-        chronic_conditions: form.chronic_diseases || null,
-        family_history: form.family_history || null,
-        pregnancy_status: form.pregnancy_status || null,
-
-        activity_level: form.activity_level || null,
-        exercise_frequency: form.exercise_frequency || null,
-        workout_preference: form.workout_preference || null,
-        fitness_experience: form.fitness_experience || null,
-        step_goal: form.step_goal !== "" ? Number(form.step_goal) : null,
-        water_goal: form.water_goal !== "" ? Number(form.water_goal) : null,
-        sleep_goal: form.sleep_goal !== "" ? Number(form.sleep_goal) : null,
-        wind_down_routine: form.wind_down_routine || null,
-
-        food_preference: form.food_preference || null,
-        favorite_foods: form.favorite_foods ? form.favorite_foods.split(",").map(s => s.trim()) : null,
-        disliked_foods: form.disliked_foods ? form.disliked_foods.split(",").map(s => s.trim()) : null,
-        cuisine_preference: form.cuisine_preference || null,
-        calorie_goal: form.calorie_goal !== "" ? Number(form.calorie_goal) : null,
-        protein_goal: form.protein_goal !== "" ? Number(form.protein_goal) : null,
-        carb_goal: form.carb_goal !== "" ? Number(form.carb_goal) : null,
-        fat_goal: form.fat_goal !== "" ? Number(form.fat_goal) : null,
-
-        smoking_status: form.smoking_status || null,
-        alcohol_status: form.alcohol_status || null,
-        stress_level_onboard: form.stress_level_onboard !== "" ? Number(form.stress_level_onboard) : null,
-        working_hours: form.working_hours || null,
-        sleep_schedule: form.sleep_schedule || null,
-
-        emergency_contact_name: form.emergency_contact_name || null,
-        emergency_contact_phone: form.emergency_contact_phone || null,
-        emergency_contact_relation: form.emergency_contact_relation || null,
-
-        fitness_goal: form.fitness_goal || null,
-        reminder_preferences: form.reminder_preferences || null,
-        ai_coach_style: form.ai_coach_style || null,
-        unit_system: form.unit_system || "Metric",
-        updated_at: new Date().toISOString()
-      };
-
-      const { error } = await supabase
-        .from("profiles")
-        .update(updateData)
-        .eq("id", profile.id);
-
-      if (error) {
-        throw error;
-      }
-
-      await refreshProfile();
-      setSaveSuccess(true);
-      setIsEditing(false);
-      setTimeout(() => setSaveSuccess(false), 3000);
+      const { error } = await supabase.auth.updateUser({ password: newPassword });
+      if (error) throw error;
+      setPwMessage({ type: "success", text: "Password updated successfully." });
+      setCurrentPassword(""); setNewPassword(""); setConfirmPassword("");
+      setTimeout(() => { setPwMessage(null); setShowPasswordForm(false); }, 3000);
     } catch (err: any) {
-      console.error("Save error:", err);
-      setSaveError(err.message || "Failed to update Health Profile.");
+      setPwMessage({ type: "error", text: err.message || "Failed to update password." });
     } finally {
-      setSaving(false);
+      setPwSaving(false);
     }
   };
 
-  const TAB_BUTTONS = [
-    { id: "personal", label: "Personal", icon: User },
-    { id: "health", label: "Medical & Health", icon: ShieldCheck },
-    { id: "lifestyle", label: "Lifestyle", icon: HeartPulse },
-    { id: "nutrition", label: "Nutrition", icon: Utensils },
-    { id: "sleep", label: "Sleep", icon: Moon },
-    { id: "fitness", label: "Fitness", icon: Activity },
-    { id: "emergency", label: "Emergency", icon: PhoneCall },
-    { id: "ai", label: "AI Preferences", icon: Bot },
-  ];
+  const handleSaveAI = async () => {
+    setAiSaving(true);
+    try {
+      await updateProfile({ ai_coach_style: aiCoachStyle, unit_system: unitSystem } as any);
+      setAiSaved(true);
+      setTimeout(() => setAiSaved(false), 2500);
+    } finally {
+      setAiSaving(false);
+    }
+  };
+
+  const handleToggleNotification = async (key: keyof typeof notifications, value: boolean) => {
+    const updated = { ...notifications, [key]: value };
+    setNotifications(updated);
+    setNotifSaving(true);
+    try {
+      await updateProfile({ reminder_preferences: JSON.stringify(updated) } as any);
+    } finally {
+      setNotifSaving(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    // Client-side sign out — actual deletion requires a backend service-role endpoint
+    if (deleteText !== "DELETE") return;
+    await signOut();
+    router.push("/auth/login");
+  };
+
+  // ── Theme state (system default detection) ────────────────────────────────
+  const [systemPrefersDark, setSystemPrefersDark] = useState(false);
+  const [themeMode, setThemeMode] = useState<"light" | "dark" | "system">(
+    () => (typeof window !== "undefined" ? (localStorage.getItem("vitalcore-theme-mode") as any) || "system" : "system")
+  );
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    setSystemPrefersDark(mq.matches);
+    const handler = (e: MediaQueryListEvent) => setSystemPrefersDark(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
+
+  const applyThemeMode = useCallback((mode: "light" | "dark" | "system") => {
+    setThemeMode(mode);
+    if (typeof window !== "undefined") localStorage.setItem("vitalcore-theme-mode", mode);
+    const resolved = mode === "system" ? (systemPrefersDark ? "dark" : "light") : mode;
+    const root = document.documentElement;
+    root.classList.remove("light", "dark");
+    root.classList.add(resolved);
+    localStorage.setItem("vitalcore-theme", resolved);
+  }, [systemPrefersDark]);
 
   return (
     <DashboardLayout>
-      <div className="space-y-6 max-w-5xl mx-auto pb-12">
-        
-        {/* HEADER */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div>
-            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
-              <User className="h-6 w-6 text-primary" />
-              Centralized Health Profile
-            </h1>
-            <p className="text-xs text-foreground/60 font-medium">
-              Single source of truth for all VitalCore AI health recommendations
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            <Button
-              onClick={() => setIsEditing(!isEditing)}
-              variant={isEditing ? "glass" : "primary"}
-              className="text-xs font-bold flex items-center gap-1.5 shadow-md cursor-pointer"
-            >
-              <Edit3 className="h-4 w-4" />
-              {isEditing ? "View Mode" : "Edit Profile"}
-            </Button>
-            {isEditing && (
-              <Button
-                onClick={handleSaveProfile}
-                disabled={saving}
-                variant="primary"
-                className="text-xs font-bold bg-primary text-white flex items-center gap-1.5 shadow-md cursor-pointer"
-              >
-                {saving ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-                {saving ? "Saving..." : "Save Changes"}
-              </Button>
-            )}
-          </div>
+      <div className="space-y-6 max-w-2xl mx-auto pb-12">
+
+        {/* Header */}
+        <div>
+          <h1 className="text-xl font-bold tracking-tight text-foreground">Settings</h1>
+          <p className="text-xs text-foreground/45 mt-0.5">Manage how VitalCore looks and behaves</p>
         </div>
 
-        {/* FEEDBACK BANNERS */}
-        {saveSuccess && (
-          <div className="p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 text-xs font-bold flex items-center gap-2">
-            <CheckCircle className="h-4 w-4 shrink-0" />
-            Health Profile saved & synchronized across all VitalCore modules!
-          </div>
-        )}
-        {saveError && (
-          <div className="p-3 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-600 text-xs font-bold flex items-center gap-2">
-            <AlertCircle className="h-4 w-4 shrink-0" />
-            {saveError}
-          </div>
-        )}
-
-        {/* TAB NAVIGATION BAR */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar p-1 bg-foreground/5 rounded-2xl border border-foreground/10 text-xs font-bold">
-          {TAB_BUTTONS.map((tab) => {
-            const IconComp = tab.icon;
-            const isSelected = activeTab === tab.id;
-            return (
+        {/* ── ACCOUNT ──────────────────────────────────────────────────────── */}
+        <SettingsSection title="Account">
+          <SettingsRow
+            id="settings-account-info"
+            icon={User}
+            label={profile?.full_name || "Your Account"}
+            description={profile?.email || "Manage your profile information"}
+            rightContent={
               <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
-                className={`px-3 py-2 rounded-xl flex items-center gap-1.5 whitespace-nowrap transition-all cursor-pointer ${
-                  isSelected
-                    ? "bg-primary text-white shadow-md"
-                    : "text-foreground/60 hover:text-foreground hover:bg-foreground/5"
-                }`}
+                onClick={() => router.push("/profile")}
+                className="text-[11px] font-semibold text-primary hover:text-primary/80 cursor-pointer transition-colors"
               >
-                <IconComp className="h-4 w-4" />
-                <span>{tab.label}</span>
+                Edit Profile
               </button>
-            );
-          })}
-        </div>
+            }
+          />
+          <SettingsRow
+            id="settings-change-password"
+            icon={Lock}
+            label="Change Password"
+            description="Update your account password"
+            onClick={() => setShowPasswordForm(!showPasswordForm)}
+          />
 
-        {/* CONTENT CONTAINER */}
-        <GlassCard className="p-6">
-          <form onSubmit={handleSaveProfile} className="space-y-6">
-            
-            {/* 1. PERSONAL INFORMATION */}
-            {activeTab === "personal" && (
-              <div className="space-y-4">
-                <h3 className="text-sm font-bold text-foreground border-b border-foreground/10 pb-2 flex items-center gap-2">
-                  <User className="h-4 w-4 text-primary" /> Personal Information
-                </h3>
-                
-                {isEditing ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-1">
-                      <label className="text-xs font-bold text-foreground/70">Full Name</label>
-                      <input
-                        type="text"
-                        value={form.full_name}
-                        onChange={e => setForm({ ...form, full_name: e.target.value })}
-                        placeholder="Complete in Profile"
-                        className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-foreground/10 bg-foreground/5 text-foreground"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-xs font-bold text-foreground/70">Date of Birth</label>
-                      <input
-                        type="date"
-                        value={form.date_of_birth}
-                        onChange={e => setForm({ ...form, date_of_birth: e.target.value })}
-                        className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-foreground/10 bg-foreground/5 text-foreground"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-xs font-bold text-foreground/70">Gender</label>
-                      <select
-                        value={form.gender}
-                        onChange={e => setForm({ ...form, gender: e.target.value })}
-                        className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-foreground/10 bg-background text-foreground"
-                      >
-                        <option value="">Select Gender</option>
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
-                        <option value="Non-binary">Non-binary</option>
-                        <option value="Prefer not to say">Prefer not to say</option>
-                      </select>
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-xs font-bold text-foreground/70">Height (cm)</label>
-                      <input
-                        type="number"
-                        value={form.height_cm}
-                        onChange={e => setForm({ ...form, height_cm: e.target.value ? Number(e.target.value) : "" })}
-                        placeholder="e.g. 175"
-                        className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-foreground/10 bg-foreground/5 text-foreground"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-xs font-bold text-foreground/70">Weight (kg)</label>
-                      <input
-                        type="number"
-                        value={form.weight_kg}
-                        onChange={e => setForm({ ...form, weight_kg: e.target.value ? Number(e.target.value) : "" })}
-                        placeholder="e.g. 70"
-                        className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-foreground/10 bg-foreground/5 text-foreground"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-xs font-bold text-foreground/70">Blood Group</label>
-                      <input
-                        type="text"
-                        value={form.blood_group}
-                        onChange={e => setForm({ ...form, blood_group: e.target.value })}
-                        placeholder="e.g. O+, A+, B-"
-                        className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-foreground/10 bg-foreground/5 text-foreground"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-xs font-bold text-foreground/70">Occupation</label>
-                      <input
-                        type="text"
-                        value={form.occupation}
-                        onChange={e => setForm({ ...form, occupation: e.target.value })}
-                        placeholder="Complete in Profile"
-                        className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-foreground/10 bg-foreground/5 text-foreground"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-xs font-bold text-foreground/70">Country</label>
-                      <input
-                        type="text"
-                        value={form.country}
-                        onChange={e => setForm({ ...form, country: e.target.value })}
-                        placeholder="Complete in Profile"
-                        className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-foreground/10 bg-foreground/5 text-foreground"
-                      />
-                    </div>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 text-xs">
-                    <div className="p-3 bg-foreground/5 rounded-xl space-y-1">
-                      <span className="text-[10px] font-bold uppercase text-foreground/45">Full Name</span>
-                      <div>{renderValue(form.full_name)}</div>
-                    </div>
-                    <div className="p-3 bg-foreground/5 rounded-xl space-y-1">
-                      <span className="text-[10px] font-bold uppercase text-foreground/45">Date of Birth</span>
-                      <div>{renderValue(form.date_of_birth)}</div>
-                    </div>
-                    <div className="p-3 bg-foreground/5 rounded-xl space-y-1">
-                      <span className="text-[10px] font-bold uppercase text-foreground/45">Calculated Age</span>
-                      <div>{renderValue(calculatedAge, " yrs")}</div>
-                    </div>
-                    <div className="p-3 bg-foreground/5 rounded-xl space-y-1">
-                      <span className="text-[10px] font-bold uppercase text-foreground/45">Gender</span>
-                      <div>{renderValue(form.gender)}</div>
-                    </div>
-                    <div className="p-3 bg-foreground/5 rounded-xl space-y-1">
-                      <span className="text-[10px] font-bold uppercase text-foreground/45">Height</span>
-                      <div>{renderValue(form.height_cm, " cm")}</div>
-                    </div>
-                    <div className="p-3 bg-foreground/5 rounded-xl space-y-1">
-                      <span className="text-[10px] font-bold uppercase text-foreground/45">Weight</span>
-                      <div>{renderValue(form.weight_kg, " kg")}</div>
-                    </div>
-                    <div className="p-3 bg-foreground/5 rounded-xl space-y-1">
-                      <span className="text-[10px] font-bold uppercase text-foreground/45">Calculated BMI</span>
-                      <div>{renderValue(calculatedBMI)}</div>
-                    </div>
-                    <div className="p-3 bg-foreground/5 rounded-xl space-y-1">
-                      <span className="text-[10px] font-bold uppercase text-foreground/45">Blood Group</span>
-                      <div>{renderValue(form.blood_group)}</div>
-                    </div>
-                    <div className="p-3 bg-foreground/5 rounded-xl space-y-1">
-                      <span className="text-[10px] font-bold uppercase text-foreground/45">Occupation</span>
-                      <div>{renderValue(form.occupation)}</div>
-                    </div>
+          {/* Password form (inline expansion) */}
+          {showPasswordForm && (
+            <div className="px-4 pb-4 pt-1 bg-foreground/[0.02]">
+              <form onSubmit={handleChangePassword} className="space-y-3">
+                {pwMessage && (
+                  <div className={`flex items-center gap-1.5 text-xs font-semibold p-2.5 rounded-lg ${
+                    pwMessage.type === "success"
+                      ? "bg-emerald-500/10 text-emerald-600 border border-emerald-500/20"
+                      : "bg-rose-500/10 text-rose-600 border border-rose-500/20"
+                  }`}>
+                    {pwMessage.type === "success" ? <CheckCircle className="h-3.5 w-3.5" /> : <AlertCircle className="h-3.5 w-3.5" />}
+                    {pwMessage.text}
                   </div>
                 )}
+                <div className="relative">
+                  <input
+                    id="settings-new-password"
+                    type={showPw ? "text" : "password"}
+                    placeholder="New password"
+                    value={newPassword}
+                    onChange={e => setNewPassword(e.target.value)}
+                    required
+                    className="w-full text-xs px-3 py-2.5 pr-9 rounded-xl border border-foreground/10 bg-foreground/5 text-foreground placeholder-foreground/35 focus:outline-none focus:border-primary/40"
+                  />
+                  <button type="button" onClick={() => setShowPw(!showPw)}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-foreground/40 hover:text-foreground/70 cursor-pointer">
+                    {showPw ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+                  </button>
+                </div>
+                <input
+                  id="settings-confirm-password"
+                  type={showPw ? "text" : "password"}
+                  placeholder="Confirm new password"
+                  value={confirmPassword}
+                  onChange={e => setConfirmPassword(e.target.value)}
+                  required
+                  className="w-full text-xs px-3 py-2.5 rounded-xl border border-foreground/10 bg-foreground/5 text-foreground placeholder-foreground/35 focus:outline-none focus:border-primary/40"
+                />
+                <div className="flex gap-2">
+                  <button type="button" onClick={() => { setShowPasswordForm(false); setPwMessage(null); }}
+                    className="flex-1 text-xs font-semibold py-2 rounded-xl border border-foreground/15 text-foreground/60 hover:bg-foreground/5 cursor-pointer transition-colors">
+                    Cancel
+                  </button>
+                  <button type="submit" disabled={pwSaving}
+                    className="flex-1 flex items-center justify-center gap-1.5 text-xs font-bold py-2 rounded-xl bg-primary text-white hover:bg-primary/90 cursor-pointer transition-colors disabled:opacity-60">
+                    {pwSaving ? <><RefreshCw className="h-3.5 w-3.5 animate-spin" /> Saving…</> : "Update Password"}
+                  </button>
+                </div>
+              </form>
+            </div>
+          )}
+
+          <SettingsRow
+            id="settings-logout"
+            icon={LogOut}
+            label="Sign Out"
+            description="Sign out of your VitalCore account"
+            onClick={handleSignOut}
+          />
+        </SettingsSection>
+
+        {/* ── APPEARANCE ───────────────────────────────────────────────────── */}
+        <SettingsSection title="Appearance">
+          <div className="px-4 py-4">
+            <div className="text-xs font-semibold text-foreground/60 mb-3">Theme</div>
+            <div className="flex gap-2">
+              <ThemeChip id="settings-theme-light" label="Light" icon={Sun} active={themeMode === "light"} onClick={() => applyThemeMode("light")} />
+              <ThemeChip id="settings-theme-dark" label="Dark" icon={Moon} active={themeMode === "dark"} onClick={() => applyThemeMode("dark")} />
+              <ThemeChip id="settings-theme-system" label="System" icon={Monitor} active={themeMode === "system"} onClick={() => applyThemeMode("system")} />
+            </div>
+          </div>
+        </SettingsSection>
+
+        {/* ── APP EXPERIENCE ────────────────────────────────────────────────── */}
+        <SettingsSection title="App Experience">
+          <div className="px-4 py-4">
+            <div className="text-xs font-semibold text-foreground/60 mb-1">Mode</div>
+            <p className="text-[11px] text-foreground/40 mb-3">
+              Adjusts your coaching style, pacing, and UI complexity.
+            </p>
+            <div className="flex gap-2">
+              <ModeChip
+                id="settings-mode-wellness"
+                label="Wellness"
+                description="Balanced everyday health"
+                icon={Heart}
+                active={activeMode === "wellness"}
+                onClick={() => setActiveMode("wellness")}
+              />
+              <ModeChip
+                id="settings-mode-performance"
+                label="Performance"
+                description="Optimised for athletes"
+                icon={Zap}
+                active={activeMode === "performance"}
+                onClick={() => setActiveMode("performance")}
+              />
+              <ModeChip
+                id="settings-mode-elderly"
+                label="Elderly"
+                description="Larger text, gentle pace"
+                icon={Users}
+                active={activeMode === "elderly"}
+                onClick={() => setActiveMode("elderly")}
+              />
+            </div>
+          </div>
+        </SettingsSection>
+
+        {/* ── AI PREFERENCES ────────────────────────────────────────────────── */}
+        <SettingsSection title="AI Preferences">
+          <div className="px-4 py-4 space-y-4">
+            <div>
+              <label className="text-xs font-semibold text-foreground/60 mb-1.5 block">AI Coach Style</label>
+              <select
+                id="settings-ai-coach-style"
+                value={aiCoachStyle}
+                onChange={e => setAiCoachStyle(e.target.value)}
+                className="w-full text-xs px-3 py-2.5 rounded-xl border border-foreground/10 bg-background text-foreground focus:outline-none focus:border-primary/40"
+              >
+                <option value="supportive">Supportive & Encouraging</option>
+                <option value="clinical">Clinical & Precise</option>
+                <option value="motivational">High Energy & Motivational</option>
+                <option value="gentle">Gentle & Mindful</option>
+                <option value="direct">Direct & No-Nonsense</option>
+              </select>
+            </div>
+            <div>
+              <label className="text-xs font-semibold text-foreground/60 mb-1.5 block">Unit System</label>
+              <div className="flex gap-2">
+                {["Metric", "Imperial"].map(u => (
+                  <button
+                    key={u}
+                    id={`settings-unit-${u.toLowerCase()}`}
+                    onClick={() => setUnitSystem(u)}
+                    className={`flex-1 py-2 rounded-xl border text-xs font-semibold transition-all cursor-pointer ${
+                      unitSystem === u
+                        ? "bg-primary/8 border-primary text-primary"
+                        : "border-foreground/10 text-foreground/60 hover:border-foreground/20"
+                    }`}
+                  >
+                    {u}
+                  </button>
+                ))}
               </div>
-            )}
+            </div>
+            <div className="flex justify-end">
+              <button
+                id="settings-ai-save"
+                onClick={handleSaveAI}
+                disabled={aiSaving}
+                className="flex items-center gap-1.5 text-xs font-bold px-4 py-2 rounded-xl bg-primary text-white hover:bg-primary/90 shadow-sm transition-all cursor-pointer disabled:opacity-60"
+              >
+                {aiSaving
+                  ? <><RefreshCw className="h-3.5 w-3.5 animate-spin" /> Saving…</>
+                  : aiSaved
+                    ? <><CheckCircle className="h-3.5 w-3.5" /> Saved</>
+                    : "Save Preferences"
+                }
+              </button>
+            </div>
+          </div>
+        </SettingsSection>
 
-            {/* 2. MEDICAL INFORMATION */}
-            {activeTab === "health" && (
-              <div className="space-y-4">
-                <h3 className="text-sm font-bold text-foreground border-b border-foreground/10 pb-2 flex items-center gap-2">
-                  <ShieldCheck className="h-4 w-4 text-primary" /> Medical & Health History
-                </h3>
+        {/* ── NOTIFICATIONS ─────────────────────────────────────────────────── */}
+        <SettingsSection title="Notifications">
+          {([
+            { key: "meal" as const, label: "Meal Reminders", description: "Reminders to log your meals" },
+            { key: "hydration" as const, label: "Hydration Reminders", description: "Drink water alerts throughout the day" },
+            { key: "workout" as const, label: "Workout Reminders", description: "Prompts for scheduled workouts" },
+            { key: "sleep" as const, label: "Sleep Reminders", description: "Wind-down and bedtime alerts" },
+          ]).map(({ key, label, description }) => (
+            <SettingsRow
+              key={key}
+              id={`settings-notif-${key}`}
+              icon={Bell}
+              label={label}
+              description={description}
+              rightContent={
+                <Toggle
+                  id={`toggle-notif-${key}`}
+                  checked={notifications[key]}
+                  onChange={v => handleToggleNotification(key, v)}
+                />
+              }
+            />
+          ))}
+        </SettingsSection>
 
-                {isEditing ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-1">
-                      <label className="text-xs font-bold text-foreground/70">Medical Conditions</label>
-                      <input
-                        type="text"
-                        value={form.medical_conditions}
-                        onChange={e => setForm({ ...form, medical_conditions: e.target.value })}
-                        placeholder="Complete in Profile"
-                        className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-foreground/10 bg-foreground/5 text-foreground"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-xs font-bold text-foreground/70">Medications</label>
-                      <input
-                        type="text"
-                        value={form.medications}
-                        onChange={e => setForm({ ...form, medications: e.target.value })}
-                        placeholder="Complete in Profile"
-                        className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-foreground/10 bg-foreground/5 text-foreground"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-xs font-bold text-foreground/70">Allergies</label>
-                      <input
-                        type="text"
-                        value={form.allergies}
-                        onChange={e => setForm({ ...form, allergies: e.target.value })}
-                        placeholder="Complete in Profile"
-                        className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-foreground/10 bg-foreground/5 text-foreground"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-xs font-bold text-foreground/70">Food Allergies</label>
-                      <input
-                        type="text"
-                        value={form.food_allergies}
-                        onChange={e => setForm({ ...form, food_allergies: e.target.value })}
-                        placeholder="Complete in Profile"
-                        className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-foreground/10 bg-foreground/5 text-foreground"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-xs font-bold text-foreground/70">Past Surgeries</label>
-                      <input
-                        type="text"
-                        value={form.surgeries}
-                        onChange={e => setForm({ ...form, surgeries: e.target.value })}
-                        placeholder="Complete in Profile"
-                        className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-foreground/10 bg-foreground/5 text-foreground"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-xs font-bold text-foreground/70">Chronic Diseases</label>
-                      <input
-                        type="text"
-                        value={form.chronic_diseases}
-                        onChange={e => setForm({ ...form, chronic_diseases: e.target.value })}
-                        placeholder="Complete in Profile"
-                        className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-foreground/10 bg-foreground/5 text-foreground"
-                      />
-                    </div>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 text-xs">
-                    <div className="p-3 bg-foreground/5 rounded-xl space-y-1">
-                      <span className="text-[10px] font-bold uppercase text-foreground/45">Medical Conditions</span>
-                      <div>{renderValue(form.medical_conditions)}</div>
-                    </div>
-                    <div className="p-3 bg-foreground/5 rounded-xl space-y-1">
-                      <span className="text-[10px] font-bold uppercase text-foreground/45">Active Medications</span>
-                      <div>{renderValue(form.medications)}</div>
-                    </div>
-                    <div className="p-3 bg-foreground/5 rounded-xl space-y-1">
-                      <span className="text-[10px] font-bold uppercase text-foreground/45">Environmental Allergies</span>
-                      <div>{renderValue(form.allergies)}</div>
-                    </div>
-                    <div className="p-3 bg-foreground/5 rounded-xl space-y-1">
-                      <span className="text-[10px] font-bold uppercase text-foreground/45">Food Allergies</span>
-                      <div>{renderValue(form.food_allergies)}</div>
-                    </div>
-                    <div className="p-3 bg-foreground/5 rounded-xl space-y-1">
-                      <span className="text-[10px] font-bold uppercase text-foreground/45">Surgeries</span>
-                      <div>{renderValue(form.surgeries)}</div>
-                    </div>
-                    <div className="p-3 bg-foreground/5 rounded-xl space-y-1">
-                      <span className="text-[10px] font-bold uppercase text-foreground/45">Chronic Conditions</span>
-                      <div>{renderValue(form.chronic_diseases)}</div>
-                    </div>
-                  </div>
-                )}
+        {/* ── PRIVACY & DATA ────────────────────────────────────────────────── */}
+        <SettingsSection title="Privacy & Data">
+          <SettingsRow
+            id="settings-privacy-info"
+            icon={Shield}
+            label="Privacy"
+            description="Your data is encrypted and never sold to third parties"
+            rightContent={<span className="text-[11px] text-foreground/40 font-medium">HIPAA-aligned</span>}
+          />
+          <SettingsRow
+            id="settings-delete-account"
+            icon={Trash2}
+            label="Delete Account"
+            description="Permanently remove your account and all data"
+            danger
+            onClick={() => setShowDeleteConfirm(!showDeleteConfirm)}
+          />
+
+          {/* Delete account confirmation inline */}
+          {showDeleteConfirm && (
+            <div className="px-4 pb-4 pt-1 bg-rose-500/[0.03]">
+              <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 mb-3">
+                <p className="text-xs font-semibold text-rose-600 leading-relaxed">
+                  This action is permanent. All your health data, logs, and account information will be deleted.
+                  Type <strong>DELETE</strong> below to confirm.
+                </p>
               </div>
-            )}
-
-            {/* 3. LIFESTYLE INFORMATION */}
-            {activeTab === "lifestyle" && (
-              <div className="space-y-4">
-                <h3 className="text-sm font-bold text-foreground border-b border-foreground/10 pb-2 flex items-center gap-2">
-                  <HeartPulse className="h-4 w-4 text-primary" /> Lifestyle & Habit Tracking
-                </h3>
-
-                {isEditing ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-1">
-                      <label className="text-xs font-bold text-foreground/70">Smoking Status</label>
-                      <input
-                        type="text"
-                        value={form.smoking_status}
-                        onChange={e => setForm({ ...form, smoking_status: e.target.value })}
-                        placeholder="e.g. Never / Former / Active"
-                        className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-foreground/10 bg-foreground/5 text-foreground"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-xs font-bold text-foreground/70">Alcohol Status</label>
-                      <input
-                        type="text"
-                        value={form.alcohol_status}
-                        onChange={e => setForm({ ...form, alcohol_status: e.target.value })}
-                        placeholder="e.g. Never / Occasional / Moderate"
-                        className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-foreground/10 bg-foreground/5 text-foreground"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-xs font-bold text-foreground/70">Working Hours</label>
-                      <input
-                        type="text"
-                        value={form.working_hours}
-                        onChange={e => setForm({ ...form, working_hours: e.target.value })}
-                        placeholder="Complete in Profile"
-                        className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-foreground/10 bg-foreground/5 text-foreground"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-xs font-bold text-foreground/70">Sleep Schedule</label>
-                      <input
-                        type="text"
-                        value={form.sleep_schedule}
-                        onChange={e => setForm({ ...form, sleep_schedule: e.target.value })}
-                        placeholder="Complete in Profile"
-                        className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-foreground/10 bg-foreground/5 text-foreground"
-                      />
-                    </div>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 text-xs">
-                    <div className="p-3 bg-foreground/5 rounded-xl space-y-1">
-                      <span className="text-[10px] font-bold uppercase text-foreground/45">Smoking Status</span>
-                      <div>{renderValue(form.smoking_status)}</div>
-                    </div>
-                    <div className="p-3 bg-foreground/5 rounded-xl space-y-1">
-                      <span className="text-[10px] font-bold uppercase text-foreground/45">Alcohol Intake</span>
-                      <div>{renderValue(form.alcohol_status)}</div>
-                    </div>
-                    <div className="p-3 bg-foreground/5 rounded-xl space-y-1">
-                      <span className="text-[10px] font-bold uppercase text-foreground/45">Daily Working Hours</span>
-                      <div>{renderValue(form.working_hours)}</div>
-                    </div>
-                    <div className="p-3 bg-foreground/5 rounded-xl space-y-1">
-                      <span className="text-[10px] font-bold uppercase text-foreground/45">Target Sleep Schedule</span>
-                      <div>{renderValue(form.sleep_schedule)}</div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* 4. NUTRITION INFORMATION */}
-            {activeTab === "nutrition" && (
-              <div className="space-y-4">
-                <h3 className="text-sm font-bold text-foreground border-b border-foreground/10 pb-2 flex items-center gap-2">
-                  <Utensils className="h-4 w-4 text-primary" /> Nutrition Preferences & Goals
-                </h3>
-
-                {isEditing ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-1">
-                      <label className="text-xs font-bold text-foreground/70">Dietary Preference</label>
-                      <input
-                        type="text"
-                        value={form.food_preference}
-                        onChange={e => setForm({ ...form, food_preference: e.target.value })}
-                        placeholder="e.g. Vegetarian, Vegan, Non-Veg"
-                        className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-foreground/10 bg-foreground/5 text-foreground"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-xs font-bold text-foreground/70">Favorite Foods</label>
-                      <input
-                        type="text"
-                        value={form.favorite_foods}
-                        onChange={e => setForm({ ...form, favorite_foods: e.target.value })}
-                        placeholder="Complete in Profile"
-                        className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-foreground/10 bg-foreground/5 text-foreground"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-xs font-bold text-foreground/70">Disliked Foods</label>
-                      <input
-                        type="text"
-                        value={form.disliked_foods}
-                        onChange={e => setForm({ ...form, disliked_foods: e.target.value })}
-                        placeholder="Complete in Profile"
-                        className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-foreground/10 bg-foreground/5 text-foreground"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-xs font-bold text-foreground/70">Daily Calorie Target (kcal)</label>
-                      <input
-                        type="number"
-                        value={form.calorie_goal}
-                        onChange={e => setForm({ ...form, calorie_goal: e.target.value ? Number(e.target.value) : "" })}
-                        placeholder="e.g. 2000"
-                        className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-foreground/10 bg-foreground/5 text-foreground"
-                      />
-                    </div>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 text-xs">
-                    <div className="p-3 bg-foreground/5 rounded-xl space-y-1">
-                      <span className="text-[10px] font-bold uppercase text-foreground/45">Diet Preference</span>
-                      <div>{renderValue(form.food_preference)}</div>
-                    </div>
-                    <div className="p-3 bg-foreground/5 rounded-xl space-y-1">
-                      <span className="text-[10px] font-bold uppercase text-foreground/45">Favorite Foods</span>
-                      <div>{renderValue(form.favorite_foods)}</div>
-                    </div>
-                    <div className="p-3 bg-foreground/5 rounded-xl space-y-1">
-                      <span className="text-[10px] font-bold uppercase text-foreground/45">Disliked Foods</span>
-                      <div>{renderValue(form.disliked_foods)}</div>
-                    </div>
-                    <div className="p-3 bg-foreground/5 rounded-xl space-y-1">
-                      <span className="text-[10px] font-bold uppercase text-foreground/45">Calorie Target</span>
-                      <div>{renderValue(form.calorie_goal, " kcal")}</div>
-                    </div>
-                    <div className="p-3 bg-foreground/5 rounded-xl space-y-1">
-                      <span className="text-[10px] font-bold uppercase text-foreground/45">Protein Target</span>
-                      <div>{renderValue(form.protein_goal, " g")}</div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* 5. SLEEP INFORMATION */}
-            {activeTab === "sleep" && (
-              <div className="space-y-4">
-                <h3 className="text-sm font-bold text-foreground border-b border-foreground/10 pb-2 flex items-center gap-2">
-                  <Moon className="h-4 w-4 text-primary" /> Circadian & Sleep Goals
-                </h3>
-
-                {isEditing ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-1">
-                      <label className="text-xs font-bold text-foreground/70">Sleep Goal (Hours)</label>
-                      <input
-                        type="number"
-                        value={form.sleep_goal}
-                        onChange={e => setForm({ ...form, sleep_goal: e.target.value ? Number(e.target.value) : "" })}
-                        placeholder="e.g. 8.0"
-                        className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-foreground/10 bg-foreground/5 text-foreground"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-xs font-bold text-foreground/70">Wind Down Routine</label>
-                      <input
-                        type="text"
-                        value={form.wind_down_routine}
-                        onChange={e => setForm({ ...form, wind_down_routine: e.target.value })}
-                        placeholder="Complete in Profile"
-                        className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-foreground/10 bg-foreground/5 text-foreground"
-                      />
-                    </div>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-                    <div className="p-3 bg-foreground/5 rounded-xl space-y-1">
-                      <span className="text-[10px] font-bold uppercase text-foreground/45">Sleep Goal</span>
-                      <div>{renderValue(form.sleep_goal, " hours/night")}</div>
-                    </div>
-                    <div className="p-3 bg-foreground/5 rounded-xl space-y-1">
-                      <span className="text-[10px] font-bold uppercase text-foreground/45">Wind-down Routine</span>
-                      <div>{renderValue(form.wind_down_routine)}</div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* 6. FITNESS INFORMATION */}
-            {activeTab === "fitness" && (
-              <div className="space-y-4">
-                <h3 className="text-sm font-bold text-foreground border-b border-foreground/10 pb-2 flex items-center gap-2">
-                  <Activity className="h-4 w-4 text-primary" /> Fitness Parameters & Activity Goals
-                </h3>
-
-                {isEditing ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-1">
-                      <label className="text-xs font-bold text-foreground/70">Activity Level</label>
-                      <input
-                        type="text"
-                        value={form.activity_level}
-                        onChange={e => setForm({ ...form, activity_level: e.target.value })}
-                        placeholder="Complete in Profile"
-                        className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-foreground/10 bg-foreground/5 text-foreground"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-xs font-bold text-foreground/70">Exercise Frequency</label>
-                      <input
-                        type="text"
-                        value={form.exercise_frequency}
-                        onChange={e => setForm({ ...form, exercise_frequency: e.target.value })}
-                        placeholder="Complete in Profile"
-                        className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-foreground/10 bg-foreground/5 text-foreground"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-xs font-bold text-foreground/70">Daily Step Target</label>
-                      <input
-                        type="number"
-                        value={form.step_goal}
-                        onChange={e => setForm({ ...form, step_goal: e.target.value ? Number(e.target.value) : "" })}
-                        placeholder="e.g. 10000"
-                        className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-foreground/10 bg-foreground/5 text-foreground"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-xs font-bold text-foreground/70">Daily Water Target (ml)</label>
-                      <input
-                        type="number"
-                        value={form.water_goal}
-                        onChange={e => setForm({ ...form, water_goal: e.target.value ? Number(e.target.value) : "" })}
-                        placeholder="e.g. 2500"
-                        className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-foreground/10 bg-foreground/5 text-foreground"
-                      />
-                    </div>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 text-xs">
-                    <div className="p-3 bg-foreground/5 rounded-xl space-y-1">
-                      <span className="text-[10px] font-bold uppercase text-foreground/45">Activity Level</span>
-                      <div>{renderValue(form.activity_level)}</div>
-                    </div>
-                    <div className="p-3 bg-foreground/5 rounded-xl space-y-1">
-                      <span className="text-[10px] font-bold uppercase text-foreground/45">Exercise Frequency</span>
-                      <div>{renderValue(form.exercise_frequency)}</div>
-                    </div>
-                    <div className="p-3 bg-foreground/5 rounded-xl space-y-1">
-                      <span className="text-[10px] font-bold uppercase text-foreground/45">Daily Step Goal</span>
-                      <div>{renderValue(form.step_goal, " steps")}</div>
-                    </div>
-                    <div className="p-3 bg-foreground/5 rounded-xl space-y-1">
-                      <span className="text-[10px] font-bold uppercase text-foreground/45">Daily Hydration Goal</span>
-                      <div>{renderValue(form.water_goal, " ml")}</div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* 7. EMERGENCY CONTACT */}
-            {activeTab === "emergency" && (
-              <div className="space-y-4">
-                <h3 className="text-sm font-bold text-foreground border-b border-foreground/10 pb-2 flex items-center gap-2">
-                  <PhoneCall className="h-4 w-4 text-primary" /> Emergency Contact Details
-                </h3>
-
-                {isEditing ? (
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="space-y-1">
-                      <label className="text-xs font-bold text-foreground/70">Contact Name</label>
-                      <input
-                        type="text"
-                        value={form.emergency_contact_name}
-                        onChange={e => setForm({ ...form, emergency_contact_name: e.target.value })}
-                        placeholder="Complete in Profile"
-                        className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-foreground/10 bg-foreground/5 text-foreground"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-xs font-bold text-foreground/70">Phone Number</label>
-                      <input
-                        type="text"
-                        value={form.emergency_contact_phone}
-                        onChange={e => setForm({ ...form, emergency_contact_phone: e.target.value })}
-                        placeholder="Complete in Profile"
-                        className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-foreground/10 bg-foreground/5 text-foreground"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-xs font-bold text-foreground/70">Relationship</label>
-                      <input
-                        type="text"
-                        value={form.emergency_contact_relation}
-                        onChange={e => setForm({ ...form, emergency_contact_relation: e.target.value })}
-                        placeholder="e.g. Spouse / Parent"
-                        className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-foreground/10 bg-foreground/5 text-foreground"
-                      />
-                    </div>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
-                    <div className="p-3 bg-foreground/5 rounded-xl space-y-1">
-                      <span className="text-[10px] font-bold uppercase text-foreground/45">Contact Name</span>
-                      <div>{renderValue(form.emergency_contact_name)}</div>
-                    </div>
-                    <div className="p-3 bg-foreground/5 rounded-xl space-y-1">
-                      <span className="text-[10px] font-bold uppercase text-foreground/45">Phone Number</span>
-                      <div>{renderValue(form.emergency_contact_phone)}</div>
-                    </div>
-                    <div className="p-3 bg-foreground/5 rounded-xl space-y-1">
-                      <span className="text-[10px] font-bold uppercase text-foreground/45">Relationship</span>
-                      <div>{renderValue(form.emergency_contact_relation)}</div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* 8. AI PREFERENCES */}
-            {activeTab === "ai" && (
-              <div className="space-y-4">
-                <h3 className="text-sm font-bold text-foreground border-b border-foreground/10 pb-2 flex items-center gap-2">
-                  <Bot className="h-4 w-4 text-primary" /> AI Coach Persona & System Preferences
-                </h3>
-
-                {isEditing ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-1">
-                      <label className="text-xs font-bold text-foreground/70">Primary Fitness Goal</label>
-                      <input
-                        type="text"
-                        value={form.fitness_goal}
-                        onChange={e => setForm({ ...form, fitness_goal: e.target.value })}
-                        placeholder="Complete in Profile"
-                        className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-foreground/10 bg-foreground/5 text-foreground"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-xs font-bold text-foreground/70">AI Coach Persona Style</label>
-                      <input
-                        type="text"
-                        value={form.ai_coach_style}
-                        onChange={e => setForm({ ...form, ai_coach_style: e.target.value })}
-                        placeholder="e.g. Supportive & Clinical"
-                        className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-foreground/10 bg-foreground/5 text-foreground"
-                      />
-                    </div>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-                    <div className="p-3 bg-foreground/5 rounded-xl space-y-1">
-                      <span className="text-[10px] font-bold uppercase text-foreground/45">Primary Goal</span>
-                      <div>{renderValue(form.fitness_goal)}</div>
-                    </div>
-                    <div className="p-3 bg-foreground/5 rounded-xl space-y-1">
-                      <span className="text-[10px] font-bold uppercase text-foreground/45">AI Coach Style</span>
-                      <div>{renderValue(form.ai_coach_style)}</div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {isEditing && (
-              <div className="pt-4 border-t border-foreground/10 flex justify-end gap-3">
-                <Button
-                  type="button"
-                  onClick={() => setIsEditing(false)}
-                  variant="glass"
-                  className="text-xs font-bold"
+              <input
+                id="settings-delete-confirm-input"
+                type="text"
+                placeholder='Type "DELETE" to confirm'
+                value={deleteText}
+                onChange={e => setDeleteText(e.target.value)}
+                className="w-full text-xs px-3 py-2.5 rounded-xl border border-rose-500/30 bg-foreground/5 text-foreground placeholder-foreground/35 focus:outline-none focus:border-rose-500/50 mb-3"
+              />
+              <div className="flex gap-2">
+                <button
+                  onClick={() => { setShowDeleteConfirm(false); setDeleteText(""); }}
+                  className="flex-1 text-xs font-semibold py-2 rounded-xl border border-foreground/15 text-foreground/60 hover:bg-foreground/5 cursor-pointer transition-colors"
                 >
                   Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  disabled={saving}
-                  variant="primary"
-                  className="text-xs font-bold bg-primary text-white flex items-center gap-1.5"
+                </button>
+                <button
+                  id="settings-delete-confirm-btn"
+                  onClick={handleDeleteAccount}
+                  disabled={deleteText !== "DELETE"}
+                  className="flex-1 text-xs font-bold py-2 rounded-xl bg-rose-500 text-white hover:bg-rose-600 cursor-pointer transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                 >
-                  {saving ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-                  {saving ? "Saving..." : "Save Changes"}
-                </Button>
+                  Delete My Account
+                </button>
               </div>
-            )}
+            </div>
+          )}
+        </SettingsSection>
 
-          </form>
-        </GlassCard>
+        {/* Version footer */}
+        <div className="text-center">
+          <p className="text-[11px] text-foreground/25 font-medium">VitalCore · Health Edition</p>
+        </div>
 
       </div>
     </DashboardLayout>
