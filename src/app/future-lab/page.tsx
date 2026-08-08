@@ -32,6 +32,11 @@ export default function FutureHealthLabPage() {
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [checkedGoals, setCheckedGoals] = useState<Record<number, boolean>>({});
 
+  // Decision Impact Simulator State
+  const [simSleep, setSimSleep] = useState(0);
+  const [simWater, setSimWater] = useState(0);
+  const [simSteps, setSimSteps] = useState(0);
+
   if (loading || !metrics) {
     return (
       <DashboardLayout>
@@ -54,6 +59,7 @@ export default function FutureHealthLabPage() {
   const nutritionIntel = getNutritionIntelligence(metrics);
   const motivation = getAchievementsAndMotivation(metrics);
   const healthReport = getHealthReport(metrics, profile);
+  const simulation = simulateDecisionImpact(metrics, simSleep, simWater, simSteps);
 
   const projection30Days = timeline.find(t => t.day === 30) || timeline[1];
   const projection1Year = timeline.find(t => t.day === 365) || timeline[3];
@@ -295,13 +301,95 @@ export default function FutureHealthLabPage() {
               <p className="text-xs font-bold text-[var(--foreground)]">
                 Complete at least 7 days of health tracking to generate predictions.
               </p>
-              <p className="text-[10px] text-[var(--muted)]">
-                {metrics.trackingDaysCount > 0 
-                  ? `${metrics.trackingDaysCount} of 7 days recorded` 
-                  : "0 of 7 days recorded — log daily sleep, hydration, or activity"}
-              </p>
             </div>
           )}
+        </GlassCard>
+
+        {/* 4.5. DECISION IMPACT SIMULATOR */}
+        <GlassCard className="p-6 space-y-4">
+          <div className="flex justify-between items-center border-b border-[var(--border)] pb-3">
+            <div>
+              <span className="text-[9px] font-black text-primary uppercase tracking-widest block">Interactive AI Simulation</span>
+              <h2 className="text-sm font-bold text-[var(--foreground)] flex items-center gap-2">
+                <Zap className="h-4 w-4 text-amber-500" /> Decision Impact Simulator
+              </h2>
+            </div>
+            <span className="text-[10px] font-bold text-[var(--muted)]">Simulate habit changes</span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            
+            {/* Sleep Chip Group */}
+            <div className="space-y-1.5 bg-[var(--background)] p-3.5 rounded-2xl border border-[var(--border)]">
+              <label className="text-xs font-bold text-[var(--foreground)] block">Extra Sleep (+{simSleep} hrs)</label>
+              <div className="flex gap-1.5">
+                {[0, 1, 2].map((val) => (
+                  <button
+                    key={val}
+                    onClick={() => setSimSleep(val)}
+                    className={`flex-1 py-1.5 text-xs font-bold rounded-xl border transition-all ${
+                      simSleep === val
+                        ? "bg-primary text-white border-primary shadow-sm"
+                        : "bg-[var(--card-bg)] text-[var(--foreground)] border-[var(--border)] hover:bg-foreground/5"
+                    }`}
+                  >
+                    +{val}h
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Hydration Chip Group */}
+            <div className="space-y-1.5 bg-[var(--background)] p-3.5 rounded-2xl border border-[var(--border)]">
+              <label className="text-xs font-bold text-[var(--foreground)] block">Extra Water (+{simWater} ml)</label>
+              <div className="flex gap-1.5">
+                {[0, 500, 1000].map((val) => (
+                  <button
+                    key={val}
+                    onClick={() => setSimWater(val)}
+                    className={`flex-1 py-1.5 text-xs font-bold rounded-xl border transition-all ${
+                      simWater === val
+                        ? "bg-primary text-white border-primary shadow-sm"
+                        : "bg-[var(--card-bg)] text-[var(--foreground)] border-[var(--border)] hover:bg-foreground/5"
+                    }`}
+                  >
+                    +{val}ml
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Steps Chip Group */}
+            <div className="space-y-1.5 bg-[var(--background)] p-3.5 rounded-2xl border border-[var(--border)]">
+              <label className="text-xs font-bold text-[var(--foreground)] block">Extra Activity (+{simSteps} steps)</label>
+              <div className="flex gap-1.5">
+                {[0, 2000, 5000].map((val) => (
+                  <button
+                    key={val}
+                    onClick={() => setSimSteps(val)}
+                    className={`flex-1 py-1.5 text-xs font-bold rounded-xl border transition-all ${
+                      simSteps === val
+                        ? "bg-primary text-white border-primary shadow-sm"
+                        : "bg-[var(--card-bg)] text-[var(--foreground)] border-[var(--border)] hover:bg-foreground/5"
+                    }`}
+                  >
+                    +{val}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+          </div>
+
+          {/* Simulation Output */}
+          <div className="p-4 bg-primary/8 rounded-2xl border border-primary/20 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+            <span className="font-bold text-primary">📊 Projected Simulation Impact:</span>
+            <div className="flex flex-wrap gap-4 text-xs font-bold text-[var(--foreground)]">
+              <span>Energy: <strong className="text-emerald-500">{simulation.energyProjected}%</strong></span>
+              <span>Recovery: <strong className="text-emerald-500">{simulation.recoveryProjected}%</strong></span>
+              <span>Burnout Risk: <strong className="text-amber-500">{simulation.burnoutRiskProjected}%</strong></span>
+            </div>
+          </div>
         </GlassCard>
 
         {/* 5. COMPACT DIGITAL TWIN STATUS & NUTRITION SCORE */}
