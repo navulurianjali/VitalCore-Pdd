@@ -16,26 +16,31 @@ export default function ContactPage() {
   const [message, setMessage] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !email || !message) return;
 
     setSubmitting(true);
+    setErrorMsg("");
     try {
-      if (supabase) {
-        const { error } = await supabase.from("contact_inquiries").insert({
-          user_id: profile?.id || null,
-          name,
-          email,
-          message
-        });
-        if (error) {
-          console.error("Error submitting inquiry:", error);
-          return;
-        }
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: name.trim(),
+          email: email.trim(),
+          message: message.trim(),
+          userId: profile?.id || null
+        })
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to submit inquiry.");
       }
-      
+
       setSubmitted(true);
       setName("");
       setEmail("");
@@ -48,6 +53,9 @@ export default function ContactPage() {
         origin: { y: 0.8 },
         colors: ["#8b5cf6", "#10b981"],
       });
+    } catch (err: any) {
+      console.error("Contact submission error:", err);
+      setErrorMsg(err.message || "Failed to submit inquiry.");
     } finally {
       setSubmitting(false);
     }
@@ -105,6 +113,12 @@ export default function ContactPage() {
               </GlassCard>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-5">
+                {errorMsg && (
+                  <div className="p-3 bg-rose-500/10 border border-rose-500/20 text-rose-500 rounded-xl text-xs font-semibold">
+                    {errorMsg}
+                  </div>
+                )}
+
                 
                 <div className="space-y-2">
                   <label className="text-xs font-bold text-foreground">Name</label>

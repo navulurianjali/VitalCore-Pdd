@@ -34,7 +34,7 @@ import { calculateFutureHealthPredictions } from "@/utils/predictiveEngine";
 import { usePedometer } from "@/hooks/usePedometer";
 
 export default function DashboardPage() {
-  const { profile } = useAuth();
+  const { profile, updateProfile } = useAuth();
   const { activeMode } = useTheme();
 
   const { metrics, loading, refetch } = useHealthData();
@@ -57,12 +57,40 @@ export default function DashboardPage() {
   const [breathPhase, setBreathPhase] = useState("Ready");
   const [breathingActive, setBreathingActive] = useState(false);
 
-  // Medication (elderly mode)
-  const [meds, setMeds] = useState([
-    { name: "Blood Pressure Capsule", time: "8:00 AM", taken: true },
-    { name: "Joint Strength Vitamin D", time: "12:00 PM", taken: false },
-    { name: "Glucosamine Tablet", time: "6:00 PM", taken: false }
-  ]);
+  // Medication (elderly mode) - initialized from profile.medication_schedule / profile.medications
+  const [meds, setMeds] = useState<{ name: string; time: string; taken: boolean }[]>([]);
+
+  useEffect(() => {
+    if (profile?.medication_schedule) {
+      try {
+        const parsed = JSON.parse(profile.medication_schedule);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setMeds(parsed);
+          return;
+        }
+      } catch (e) {
+        // Fallthrough if not JSON
+      }
+    }
+    if (profile?.medications) {
+      const items = profile.medications.split(",").map(s => s.trim()).filter(Boolean);
+      if (items.length > 0) {
+        setMeds(items.map((name, i) => ({
+          name,
+          time: i === 0 ? "8:00 AM" : i === 1 ? "12:00 PM" : "6:00 PM",
+          taken: false
+        })));
+        return;
+      }
+    }
+    // Default fallback if user has no medications logged
+    setMeds([
+      { name: "Blood Pressure Capsule", time: "8:00 AM", taken: false },
+      { name: "Joint Strength Vitamin D", time: "12:00 PM", taken: false },
+      { name: "Glucosamine Tablet", time: "6:00 PM", taken: false }
+    ]);
+  }, [profile?.medications, profile?.medication_schedule]);
+
 
   // Live Pedometer integration
   const pedometer = usePedometer();
@@ -243,8 +271,16 @@ export default function DashboardPage() {
     );
   }
 
-  const handleToggleMed = (idx: number) => {
-    setMeds(prev => prev.map((m, i) => i === idx ? { ...m, taken: !m.taken } : m));
+  const handleToggleMed = async (idx: number) => {
+    const nextMeds = meds.map((m, i) => i === idx ? { ...m, taken: !m.taken } : m);
+    setMeds(nextMeds);
+    if (profile && updateProfile) {
+      try {
+        await updateProfile({ medication_schedule: JSON.stringify(nextMeds) } as any);
+      } catch (e) {
+        console.error("Medication status sync error:", e);
+      }
+    }
   };
 
   // Greeting helper

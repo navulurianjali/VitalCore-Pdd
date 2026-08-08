@@ -237,17 +237,20 @@ export default function HealthyHabitsPage() {
     setSubmitting(true);
     
     const newChallenge = {
-      title: newTitle,
-      description: newDesc,
+      title: newTitle.trim(),
+      description: newDesc.trim(),
       category: newCategory,
       difficulty: newDifficulty,
       duration_days: parseInt(newDuration) || 7,
-      xp_reward: parseInt(newXp) || 200
+      xp_reward: parseInt(newXp) || 200,
+      created_by: profile.id
     };
 
     try {
       const { data, error } = await supabase.from("challenges").insert(newChallenge).select();
-      if (!error && data && data.length > 0) {
+      if (error) {
+        console.error("Challenge creation error:", error.message);
+      } else if (data && data.length > 0) {
         await supabase.from("user_challenges").insert({
           user_id: profile.id,
           challenge_id: data[0].id,
@@ -255,7 +258,7 @@ export default function HealthyHabitsPage() {
         });
       }
     } catch (err) {
-      console.error("Create error:", err);
+      console.error("Create exception:", err);
     } finally {
       setSubmitting(false);
       setShowCreateModal(false);

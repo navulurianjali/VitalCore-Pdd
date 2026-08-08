@@ -47,8 +47,9 @@ export interface ExerciseQuery {
   excludeIds?: string[];
 }
 
-const RAPID_API_KEY = process.env.NEXT_PUBLIC_EXERCISEDB_API_KEY || '02b8970fc0mshdc16cde1585d5afp14feb1jsnc4601f04e16d';
+const RAPID_API_KEY = process.env.NEXT_PUBLIC_EXERCISEDB_API_KEY || '';
 const RAPID_API_HOST = process.env.NEXT_PUBLIC_EXERCISEDB_API_HOST || 'exercisedb.p.rapidapi.com';
+
 
 const CATEGORY_TO_BODY_PARTS: Record<string, string[]> = {
   chest:      ['Chest'],
