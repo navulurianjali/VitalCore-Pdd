@@ -48,20 +48,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
     }
   }, [user, profile, loading, router, pathname]);
 
-  if (loading) {
-    return (
-      <div className="flex h-screen w-full items-center justify-center bg-[var(--background)]">
-        <div className="flex flex-col items-center gap-2">
-          <div className="h-7 w-7 animate-spin rounded-full border-2 border-primary/20 border-t-primary" />
-          <span className="text-sm text-[var(--muted)]">Loading...</span>
-        </div>
-      </div>
-    );
-  }
-
-  if (!user) return null;
-
-  const navGroups = [
+  const navGroups = useMemo(() => [
     {
       label: "Main",
       links: [
@@ -80,17 +67,14 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
         { name: "Healthy Habits", href: "/challenges", icon: CheckSquare },
       ]
     }
-  ];
+  ], []);
 
-  const footerLinks = [
+  const footerLinks = useMemo(() => [
     { name: "Profile", href: "/profile", icon: User },
     { name: "Settings", href: "/settings", icon: Settings },
-  ];
+  ], []);
 
-  // Memoize sidebar JSX so it doesn't recreate on every render.
-  // Defining a component inline (const SidebarContent = () => ...) inside a render
-  // function creates a brand-new function reference each render; React then treats it
-  // as a different component type and unmounts+remounts the entire sidebar subtree.
+  // Memoize sidebar JSX BEFORE any early return statements to obey Rules of Hooks
   const sidebarContent = useMemo(() => (
     <div className="flex flex-col h-full bg-[var(--card-bg)]">
       {/* Logo / Brand */}
@@ -178,7 +162,20 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
       </div>
     </div>
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  ), [pathname, profile?.full_name, mobileSidebarOpen]);
+  ), [pathname, profile?.full_name, mobileSidebarOpen, navGroups, footerLinks, router, signOut]);
+
+  if (loading) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center bg-[var(--background)]">
+        <div className="flex flex-col items-center gap-2">
+          <div className="h-7 w-7 animate-spin rounded-full border-2 border-primary/20 border-t-primary" />
+          <span className="text-sm text-[var(--muted)]">Loading...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) return null;
 
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-[var(--background)]">
@@ -233,4 +230,3 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
   );
 };
 export default DashboardLayout;
-
