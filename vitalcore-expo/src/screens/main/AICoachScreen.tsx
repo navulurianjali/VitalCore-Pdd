@@ -1,29 +1,39 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   StyleSheet,
   View,
   Text,
-  TextInput,
   TouchableOpacity,
   FlatList,
   SafeAreaView,
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
+  Modal,
+  ScrollView,
+  AppState,
 } from 'react-native';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { useHealthData } from '../../hooks/useHealthData';
-import { supabase, BASE_API_URL, getAuthHeaders } from '../../services/supabase';
+import { supabase } from '../../services/supabase';
 import { generateAICoachResponse } from '../../services/aiCoachService';
-import { Send, Bot, Sparkles, AlertCircle } from 'lucide-react-native';
+import { Send, Bot, History, X, Clock, Calendar } from 'lucide-react-native';
 import { CustomTextInput } from '../../components/CustomTextInput';
+import { getLocalDateString, formatDisplayDate } from '../../utils/dateUtils';
 
 interface Message {
   id: string;
   sender: 'user' | 'ai';
   text: string;
   timestamp: string;
+  conversation_date?: string;
+}
+
+interface PastDaySummary {
+  dateStr: string;
+  count: number;
+  lastMessageSnippet: string;
 }
 
 export default function AICoachScreen() {
@@ -35,65 +45,185 @@ export default function AICoachScreen() {
   const [inputText, setInputText] = useState('');
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
+  const [currentDateStr, setCurrentDateStr] = useState<string>(
+    getLocalDateString(undefined, profile?.timezone)
+  );
+
+  // Chat History Modal States
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
+  const [pastDays, setPastDays] = useState<PastDaySummary[]>([]);
+  const [selectedPastDate, setSelectedPastDate] = useState<string | null>(null);
+  const [pastMessages, setPastMessages] = useState<Message[]>([]);
+  const [loadingPastChat, setLoadingPastChat] = useState(false);
+
   const flatListRef = useRef<FlatList>(null);
 
-  useEffect(() => {
-    // Zero out messages when switching user context
-    setMessages([]);
-    setInitialLoading(true);
+  const getTodayStr = useCallback(() => {
+    return getLocalDateString(undefined, profile?.timezone);
+  }, [profile?.timezone]);
 
-    async function loadHistory() {
-      if (!user?.id) {
-        setInitialLoading(false);
-        return;
-      }
-
-      try {
-        const { data, error } = await supabase
-          .from('ai_conversations')
-          .select('*')
-          .eq('user_id', user.id)
-          .order('created_at', { ascending: true });
-
-        if (data && data.length > 0) {
-          const loaded: Message[] = data.map((item: any) => ({
-            id: item.id,
-            sender: item.sender === 'user' ? 'user' : 'ai',
-            text: item.message,
-            timestamp: new Date(item.created_at).toLocaleTimeString([], {
-              hour: '2-digit',
-              minute: '2-digit',
-            }),
-          }));
-          setMessages(loaded);
-        } else {
-          const isBrandNew = !metrics || !metrics.hasTelemetry || metrics.trackingDaysCount === 0;
-          const welcomeText = isBrandNew
-            ? "Welcome! Start logging your daily health activities. I'll learn your habits over time and provide personalized recommendations once enough data is available."
-            : `Hello ${profile?.full_name?.split(' ')[0] || 'there'}! Today you have logged ${metrics?.hydrationMl || 0}ml water, ${metrics?.caloriesConsumed || 0} kcal, and ${metrics?.sleepHours || 0}h sleep. How can I assist your health goals today?`;
-
-          const welcomeMsg: Message = {
-            id: 'welcome',
-            sender: 'ai',
-            text: welcomeText,
-            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-          };
-          setMessages([welcomeMsg]);
-        }
-      } catch (err) {
-        console.error('Error loading AI history:', err);
-      } finally {
-        setInitialLoading(false);
-      }
+  // Load Today's Conversation Only
+  const loadTodayHistory = useCallback(async (targetDate?: string) => {
+    if (!user?.id) {
+      setInitialLoading(false);
+      return;
     }
 
-    loadHistory();
-  }, [user?.id]);
+    const dateToQuery = targetDate || getTodayStr();
+    setCurrentDateStr(dateToQuery);
+
+    try {
+      const { data, error } = await supabase
+        .from('ai_conversations')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('conversation_date', dateToQuery)
+        .order('created_at', { ascending: true });
+
+      if (!error && data && data.length > 0) {
+        const loaded: Message[] = data.map((item: any) => ({
+          id: item.id,
+          sender: item.sender === 'user' ? 'user' : 'ai',
+          text: item.message,
+          timestamp: new Date(item.created_at).toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit',
+          }),
+          conversation_date: item.conversation_date,
+        }));
+        setMessages(loaded);
+      } else {
+        const isBrandNew = !metrics || !metrics.hasTelemetry || metrics.trackingDaysCount === 0;
+        const welcomeText = isBrandNew
+          ? "Welcome! Start logging your daily health activities. I'll learn your habits over time and provide personalized recommendations once enough data is available."
+          : `Hello ${profile?.full_name?.split(' ')[0] || 'there'}! Today you have logged ${metrics?.hydrationMl || 0}ml water, ${metrics?.caloriesConsumed || 0} kcal, and ${metrics?.sleepHours || 0}h sleep. How can I assist your health goals today?`;
+
+        const welcomeMsg: Message = {
+          id: 'welcome',
+          sender: 'ai',
+          text: welcomeText,
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          conversation_date: dateToQuery,
+        };
+        setMessages([welcomeMsg]);
+      }
+    } catch (err) {
+      console.error('Error loading AI history for today:', err);
+    } finally {
+      setInitialLoading(false);
+    }
+  }, [user?.id, profile?.full_name, profile?.timezone, metrics, getTodayStr]);
+
+  useEffect(() => {
+    setMessages([]);
+    setInitialLoading(true);
+    loadTodayHistory();
+  }, [user?.id, loadTodayHistory]);
+
+  // AppState / Background Resume listener for Midnight Transition
+  useEffect(() => {
+    const handleAppStateChange = (nextState: string) => {
+      if (nextState === 'active') {
+        const todayStr = getTodayStr();
+        if (todayStr !== currentDateStr) {
+          setCurrentDateStr(todayStr);
+          loadTodayHistory(todayStr);
+        }
+      }
+    };
+
+    const subscription = AppState.addEventListener('change', handleAppStateChange);
+    return () => subscription.remove();
+  }, [currentDateStr, getTodayStr, loadTodayHistory]);
+
+  // Load Past Chat Dates
+  const loadPastChatDates = async () => {
+    if (!user?.id) return;
+    try {
+      const todayStr = getTodayStr();
+      const { data, error } = await supabase
+        .from('ai_conversations')
+        .select('conversation_date, message, created_at')
+        .eq('user_id', user.id)
+        .lt('conversation_date', todayStr)
+        .order('created_at', { ascending: false });
+
+      if (!error && data) {
+        const map = new Map<string, { count: number; lastMsg: string }>();
+        data.forEach((row: any) => {
+          const dStr = row.conversation_date || row.created_at?.split('T')[0];
+          if (dStr && dStr < todayStr) {
+            if (!map.has(dStr)) {
+              map.set(dStr, { count: 1, lastMsg: row.message });
+            } else {
+              map.get(dStr)!.count += 1;
+            }
+          }
+        });
+
+        const summaries: PastDaySummary[] = Array.from(map.entries())
+          .map(([dateStr, info]) => ({
+            dateStr,
+            count: info.count,
+            lastMessageSnippet: info.lastMsg,
+          }))
+          .sort((a, b) => b.dateStr.localeCompare(a.dateStr));
+
+        setPastDays(summaries);
+      }
+    } catch (e) {
+      console.warn('Failed to load past chat dates:', e);
+    }
+  };
+
+  const handleOpenHistoryModal = () => {
+    setShowHistoryModal(true);
+    setSelectedPastDate(null);
+    setPastMessages([]);
+    loadPastChatDates();
+  };
+
+  const handleSelectPastDate = async (dateStr: string) => {
+    if (!user?.id) return;
+    setSelectedPastDate(dateStr);
+    setLoadingPastChat(true);
+
+    try {
+      const { data, error } = await supabase
+        .from('ai_conversations')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('conversation_date', dateStr)
+        .order('created_at', { ascending: true });
+
+      if (!error && data) {
+        const loaded: Message[] = data.map((item: any) => ({
+          id: item.id,
+          sender: item.sender === 'user' ? 'user' : 'ai',
+          text: item.message,
+          timestamp: new Date(item.created_at).toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit',
+          }),
+          conversation_date: item.conversation_date,
+        }));
+        setPastMessages(loaded);
+      } else {
+        setPastMessages([]);
+      }
+    } catch (err) {
+      console.warn('Failed to load past conversation:', err);
+      setPastMessages([]);
+    } finally {
+      setLoadingPastChat(false);
+    }
+  };
 
   const handleSend = async () => {
     if (!inputText.trim() || !user?.id) return;
 
     const userPrompt = inputText.trim();
+    const todayDate = getTodayStr();
     setInputText('');
 
     const userMsg: Message = {
@@ -101,24 +231,27 @@ export default function AICoachScreen() {
       sender: 'user',
       text: userPrompt,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      conversation_date: todayDate,
     };
 
-    const currentHistory = [...messages, userMsg];
-    setMessages(currentHistory);
+    const currentTodayHistory = [...messages.filter((m) => m.id !== 'welcome'), userMsg];
+    setMessages(currentTodayHistory);
     setLoading(true);
 
+    // Save user message to DB with conversation_date
     try {
       await supabase.from('ai_conversations').insert({
         user_id: user.id,
         sender: 'user',
         message: userPrompt,
+        conversation_date: todayDate,
       });
     } catch (e) {
       console.warn('Failed to save user prompt to Supabase:', e);
     }
 
     try {
-      const historyForService = currentHistory.map((m) => ({
+      const historyForService = currentTodayHistory.map((m) => ({
         sender: m.sender,
         text: m.text,
       }));
@@ -149,15 +282,18 @@ export default function AICoachScreen() {
         sender: 'ai',
         text: aiReplyText,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        conversation_date: todayDate,
       };
 
       setMessages((prev) => [...prev, aiMsg]);
 
+      // Save AI reply to DB with conversation_date
       try {
         await supabase.from('ai_conversations').insert({
           user_id: user.id,
           sender: 'ai',
           message: aiReplyText,
+          conversation_date: todayDate,
         });
       } catch (e) {
         console.warn('Failed to save AI reply to Supabase:', e);
@@ -170,6 +306,7 @@ export default function AICoachScreen() {
         sender: 'ai',
         text: errorMsgText,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        conversation_date: todayDate,
       };
       setMessages((prev) => [...prev, errorMsg]);
     } finally {
@@ -204,9 +341,18 @@ export default function AICoachScreen() {
       >
         {/* Header */}
         <View style={[styles.header, { backgroundColor: colors.background, borderBottomColor: colors.cardBorder }]}>
-          <Text style={[styles.headerTitle, { color: colors.text, fontSize: isCareMode ? 22 : 18 }]}>
-            🤖 Digital Twin AI Health Coach
-          </Text>
+          <View style={styles.headerTopRow}>
+            <Text style={[styles.headerTitle, { color: colors.text, fontSize: isCareMode ? 20 : 17 }]}>
+              🤖 AI Coach ({formatDisplayDate(currentDateStr, profile?.timezone)})
+            </Text>
+            <TouchableOpacity
+              style={[styles.historyButton, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}
+              onPress={handleOpenHistoryModal}
+            >
+              <History size={16} color={colors.primary} />
+              <Text style={[styles.historyButtonText, { color: colors.primary }]}>History</Text>
+            </TouchableOpacity>
+          </View>
           <Text style={[styles.headerSubtitle, { color: colors.textMuted }]}>
             Telemetry: {metrics?.sleepHours || 0}h Sleep • {metrics?.hydrationMl || 0}ml Water • {metrics?.caloriesConsumed || 0} kcal
           </Text>
@@ -272,6 +418,89 @@ export default function AICoachScreen() {
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
+
+      {/* Chat History Modal */}
+      <Modal
+        visible={showHistoryModal}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setShowHistoryModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalContent, { backgroundColor: colors.background, borderColor: colors.cardBorder }]}>
+            {/* Modal Header */}
+            <View style={[styles.modalHeader, { borderBottomColor: colors.cardBorder }]}>
+              <View style={styles.modalHeaderTitleRow}>
+                <History size={20} color={colors.primary} />
+                <Text style={[styles.modalTitle, { color: colors.text }]}>AI Chat History</Text>
+              </View>
+              <TouchableOpacity onPress={() => setShowHistoryModal(false)} style={styles.closeButton}>
+                <X size={20} color={colors.textMuted} />
+              </TouchableOpacity>
+            </View>
+
+            {/* Modal Body */}
+            <ScrollView style={styles.modalBody}>
+              {!selectedPastDate ? (
+                /* List of past dates */
+                pastDays.length === 0 ? (
+                  <View style={styles.emptyHistory}>
+                    <Clock size={36} color={colors.textMuted} />
+                    <Text style={[styles.emptyHistoryText, { color: colors.textMuted }]}>
+                      No previous conversations recorded yet.
+                    </Text>
+                  </View>
+                ) : (
+                  pastDays.map((pd) => (
+                    <TouchableOpacity
+                      key={pd.dateStr}
+                      style={[styles.historyDayCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}
+                      onPress={() => handleSelectPastDate(pd.dateStr)}
+                    >
+                      <View style={styles.historyDayHeader}>
+                        <Calendar size={16} color={colors.primary} />
+                        <Text style={[styles.historyDateText, { color: colors.text }]}>
+                          {formatDisplayDate(pd.dateStr, profile?.timezone)}
+                        </Text>
+                        <View style={[styles.badge, { backgroundColor: colors.primary + '20' }]}>
+                          <Text style={[styles.badgeText, { color: colors.primary }]}>{pd.count} msgs</Text>
+                        </View>
+                      </View>
+                      <Text style={[styles.historySnippet, { color: colors.textMuted }]} numberOfLines={1}>
+                        "{pd.lastMessageSnippet}"
+                      </Text>
+                    </TouchableOpacity>
+                  ))
+                )
+              ) : (
+                /* Past conversation viewer */
+                <View>
+                  <TouchableOpacity
+                    style={styles.backButton}
+                    onPress={() => setSelectedPastDate(null)}
+                  >
+                    <Text style={[styles.backButtonText, { color: colors.primary }]}>← Back to all dates</Text>
+                  </TouchableOpacity>
+
+                  <Text style={[styles.selectedDateTitle, { color: colors.text }]}>
+                    {formatDisplayDate(selectedPastDate, profile?.timezone)}
+                  </Text>
+
+                  {loadingPastChat ? (
+                    <ActivityIndicator size="medium" color={colors.primary} style={{ marginVertical: 20 }} />
+                  ) : pastMessages.length === 0 ? (
+                    <Text style={[styles.emptyHistoryText, { color: colors.textMuted, marginVertical: 20 }]}>
+                      No messages found.
+                    </Text>
+                  ) : (
+                    pastMessages.map((m) => renderMessage({ item: m }))
+                  )}
+                </View>
+              )}
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -280,8 +509,11 @@ const styles = StyleSheet.create({
   safeArea: { flex: 1 },
   container: { flex: 1 },
   header: { padding: 16, borderBottomWidth: 1 },
-  headerTitle: { fontWeight: 'bold' },
-  headerSubtitle: { fontSize: 11, marginTop: 2 },
+  headerTopRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  headerTitle: { fontWeight: 'bold', flex: 1 },
+  historyButton: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 16, borderWidth: 1, marginLeft: 8 },
+  historyButtonText: { fontSize: 12, fontWeight: 'bold', marginLeft: 4 },
+  headerSubtitle: { fontSize: 11, marginTop: 4 },
   chipsContainer: { flexDirection: 'row', paddingHorizontal: 12, paddingVertical: 8, borderBottomWidth: 1 },
   chip: { borderRadius: 16, paddingHorizontal: 12, paddingVertical: 6, marginRight: 8, borderWidth: 1 },
   chipText: { fontSize: 12 },
@@ -290,14 +522,31 @@ const styles = StyleSheet.create({
   messageList: { padding: 16 },
   messageBubble: { maxWidth: '82%', borderRadius: 16, padding: 14, marginBottom: 12 },
   userBubble: { alignSelf: 'flex-end' },
-  aiBubble: { alignSelf: 'flex-start', borderWidth: 1 },
+  aiBubble: { alignSelf: 'start', borderWidth: 1 },
   messageText: { fontSize: 15, lineHeight: 22 },
   userText: { color: '#ffffff' },
   timestamp: { fontSize: 10, marginTop: 6, alignSelf: 'flex-end' },
   typingIndicator: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 8 },
   typingText: { fontSize: 12, marginLeft: 8 },
   inputBar: { flexDirection: 'row', padding: 12, borderTopWidth: 1 },
-  textInput: { flex: 1, borderRadius: 24, paddingHorizontal: 16, paddingVertical: 10, fontSize: 15, borderWidth: 1 },
   sendButton: { width: 44, height: 44, borderRadius: 22, justifyContent: 'center', alignItems: 'center', marginLeft: 8 },
   disabledSend: { opacity: 0.5 },
+  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'flex-end' },
+  modalContent: { height: '80%', borderTopLeftRadius: 24, borderTopRightRadius: 24, borderWidth: 1, padding: 16 },
+  modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingBottom: 12, borderBottomWidth: 1 },
+  modalHeaderTitleRow: { flexDirection: 'row', alignItems: 'center' },
+  modalTitle: { fontSize: 18, fontWeight: 'bold', marginLeft: 8 },
+  closeButton: { padding: 4 },
+  modalBody: { flex: 1, marginTop: 12 },
+  emptyHistory: { alignItems: 'center', justifyContent: 'center', paddingVertical: 40 },
+  emptyHistoryText: { marginTop: 12, fontSize: 13, textAlign: 'center' },
+  historyDayCard: { padding: 14, borderRadius: 16, borderWidth: 1, marginBottom: 10 },
+  historyDayHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 6 },
+  historyDateText: { fontSize: 14, fontWeight: 'bold', marginLeft: 6, flex: 1 },
+  badge: { borderRadius: 12, paddingHorizontal: 8, paddingVertical: 2 },
+  badgeText: { fontSize: 10, fontWeight: 'bold' },
+  historySnippet: { fontSize: 12, fontStyle: 'italic' },
+  backButton: { marginBottom: 12 },
+  backButtonText: { fontSize: 13, fontWeight: 'bold' },
+  selectedDateTitle: { fontSize: 16, fontWeight: 'bold', marginBottom: 14 },
 });

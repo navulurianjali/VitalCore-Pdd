@@ -19,6 +19,7 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 
 import { EXERCISE_LIBRARY, ExerciseDetail, generatePersonalizedWorkoutPlan } from "@/utils/exerciseLibrary";
 import { fetchExercisesForPlan } from "@/services/exerciseDatabase";
+import { getLocalDateString } from "@/utils/dateUtils";
 
 const EXERCISE_DATABASE = EXERCISE_LIBRARY;
 
@@ -769,6 +770,7 @@ export default function FitnessPage() {
       try {
         await supabase.from("workouts").insert({
           user_id: profile.id,
+          date: getLocalDateString(undefined, profile?.timezone),
           name: activeWorkoutName,
           type: focus.replace("_", " ").toUpperCase(),
           duration_minutes: mins,

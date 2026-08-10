@@ -22,6 +22,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useTheme } from "@/context/ThemeContext";
 import confetti from "canvas-confetti";
 import { supabase, isSupabaseConfigured } from "@/utils/supabase";
+import { getLocalDateString } from "@/utils/dateUtils";
 
 import {
   AreaChart,
@@ -170,7 +171,7 @@ export default function SleepPage() {
           .from("sleep_logs")
           .insert({
             user_id: profile.id,
-            date: new Date().toISOString().split("T")[0],
+            date: getLocalDateString(undefined, profile?.timezone),
             sleep_onset: onset,
             wake_time: wake,
             sleep_rating: Number(quality),

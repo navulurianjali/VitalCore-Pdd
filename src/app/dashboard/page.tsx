@@ -30,6 +30,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useTheme, ActiveMode } from "@/context/ThemeContext";
 import { useHealthData, HealthDigitalTwin } from "@/hooks/useHealthData";
 import { supabase } from "@/utils/supabase";
+import { getLocalDateString } from "@/utils/dateUtils";
 import { calculateFutureHealthPredictions } from "@/utils/predictiveEngine";
 import { usePedometer } from "@/hooks/usePedometer";
 
@@ -154,8 +155,10 @@ export default function DashboardPage() {
     setLogStatus("Logging hydration...");
     try {
       if (supabase && profile) {
+        const todayDate = getLocalDateString(undefined, profile?.timezone);
         const { error } = await supabase.from("hydration_logs").insert({
           user_id: profile.id,
+          date: todayDate,
           amount_ml: amount
         });
         if (error) throw error;
@@ -180,8 +183,10 @@ export default function DashboardPage() {
     
     try {
       if (supabase && profile) {
+        const todayDate = getLocalDateString(undefined, profile?.timezone);
         const { error } = await supabase.from("workouts").insert({
           user_id: profile.id,
+          date: todayDate,
           name: "Manual Steps Log",
           type: "steps",
           duration_minutes: amount,
@@ -209,8 +214,10 @@ export default function DashboardPage() {
     setLogStatus("Logging sleep patterns...");
     try {
       if (supabase && profile) {
+        const todayDate = getLocalDateString(undefined, profile?.timezone);
         const { error } = await supabase.from("sleep_logs").insert({
           user_id: profile.id,
+          date: todayDate,
           sleep_hours: hours,
           recovery_quality: quality
         });
@@ -219,7 +226,7 @@ export default function DashboardPage() {
         await refetch();
         window.dispatchEvent(new Event("vitalcore-data-updated"));
       }
-      setLogStatus("Sleep logged successfully! 🛌");
+      setLogStatus("Sleep logged! Rest up well! 🌙");
       setTimeout(() => setLogStatus(null), 3000);
     } catch (e) {
       console.error("Sleep logging error:", e);

@@ -14,6 +14,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { useHealthData } from '../../hooks/useHealthData';
 import { supabase } from '../../services/supabase';
+import { getLocalDateString } from '../../utils/dateUtils';
 import { calculateFutureHealthPredictions } from '../../utils/predictiveEngine';
 import {
   Flame,
@@ -65,8 +66,10 @@ export default function DashboardScreen({ navigation }: any) {
     setLogStatus('Logging hydration...');
     try {
       if (supabase && profile?.id) {
+        const todayDate = getLocalDateString(undefined, profile?.timezone);
         const { error } = await supabase.from('hydration_logs').insert({
           user_id: profile.id,
+          date: todayDate,
           amount_ml: amount,
         });
         if (error) throw error;
@@ -133,22 +136,25 @@ export default function DashboardScreen({ navigation }: any) {
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />
       }
     >
-      {/* 1. Page Header Welcome (1:1 with Web) */}
+      {/* 1. Page Header Welcome */}
       <View style={styles.headerRow}>
         <View style={{ flex: 1 }}>
           <Text style={[styles.greetingText, { color: colors.text, fontSize: isCareMode ? 26 : 22 }]}>
             {greeting}{firstName ? `, ${firstName}` : ''} 👋
           </Text>
           <Text style={[styles.greetingSub, { color: colors.textMuted }]}>
-            Here is your health overview today
+            TODAY — {new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
           </Text>
         </View>
-        <View style={[styles.streakBadge, { backgroundColor: colors.warningLight, borderColor: colors.warning }]}>
-          <Text style={{ fontSize: 16 }}>🔥</Text>
-          <Text style={[styles.streakText, { color: colors.warning }]}>
-            {profile?.streak_days || 0} DAY STREAK
+        <TouchableOpacity
+          style={[styles.streakBadge, { backgroundColor: colors.cardBg, borderColor: colors.primary }]}
+          onPress={() => navigation.navigate('HistoryDetail')}
+        >
+          <Text style={{ fontSize: 14 }}>📅</Text>
+          <Text style={[styles.streakText, { color: colors.primary }]}>
+            HISTORY
           </Text>
-        </View>
+        </TouchableOpacity>
       </View>
 
       {/* Feedback banner */}

@@ -1,25 +1,33 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { supabase } from "@/utils/supabase";
 import { useAuth } from "@/context/AuthContext";
-import { getLocalDateString, isRecordOnDate } from "@/utils/dateUtils";
+import { getLocalDateString } from "@/utils/dateUtils";
+import { getOrCreateDailyRecord, DailyHealthRecord, calculateGoalBreakdown } from "@/services/dailyTracker";
 
 export interface HealthDigitalTwin {
   caloriesBurned: number;
   caloriesTarget: number;
   caloriesConsumed: number;
   proteinG: number;
+  proteinTarget: number;
   carbsG: number;
+  carbsTarget: number;
   fatG: number;
+  fatTarget: number;
   fiberG: number;
   sugarG: number;
   sodiumMg: number;
   hydrationMl: number;
   hydrationTarget: number;
+  workoutMinutes: number;
+  workoutTarget: number;
   steps: number;
   stepsTarget: number;
   sleepHours: number;
   sleepTarget: number;
   sleepQuality: number;
+  habitCompletion: number;
+  overallGoalCompletion: number;
   stressLevel: number;
   mood: string;
   recoveryPercentage: number;
@@ -37,7 +45,8 @@ export interface HealthDigitalTwin {
   trackingDaysCount: number;
   hasTelemetry: boolean;
   hasEnergyTelemetry: boolean;
-  selectedDate?: string;
+  selectedDate: string;
+  dailyRecord: DailyHealthRecord | null;
 }
 
 export function useHealthData(selectedDateInput?: string) {
@@ -46,120 +55,84 @@ export function useHealthData(selectedDateInput?: string) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const targetDate = selectedDateInput || getLocalDateString();
+  // Active date tracking to handle midnight boundary transitions
+  const activeDateRef = useRef<string>(selectedDateInput || getLocalDateString(undefined, profile?.timezone));
 
   const fetchRealData = useCallback(async () => {
-    if (!profile?.id) {
+    if (!profile?.id || !supabase) {
       setMetrics(null);
       setLoading(false);
       return;
     }
-    
+
     try {
       setLoading(true);
       setError(null);
-      
-      const currentTargetDate = selectedDateInput || getLocalDateString();
 
-      // Concurrent Promise.all Batch Fetching
-      const [
-        { data: rawNutrition },
-        { data: allWorkouts },
-        { data: allHydration },
-        { data: sleepLogs },
-        { data: recoveryLogs },
-        { data: fatigueLogs },
-        { data: moodLogs }
-      ] = await Promise.all([
-        supabase.from("nutrition_logs").select("calories, protein_g, carbs_g, fat_g, date, created_at").eq("user_id", profile.id),
-        supabase.from("workouts").select("calories_burned, duration_minutes, type, created_at").eq("user_id", profile.id),
-        supabase.from("hydration_logs").select("amount_ml, created_at").eq("user_id", profile.id),
-        supabase.from("sleep_logs").select("*").eq("user_id", profile.id).order("created_at", { ascending: false }),
-        supabase.from("recovery_scores").select("*").eq("user_id", profile.id).order("created_at", { ascending: false }),
-        supabase.from("fatigue_logs").select("*").eq("user_id", profile.id).order("created_at", { ascending: false }),
-        supabase.from("mood_tracking").select("*").eq("user_id", profile.id).order("created_at", { ascending: false })
-      ]);
+      const currentLocalDate = getLocalDateString(undefined, profile?.timezone);
+      const targetDate = selectedDateInput || currentLocalDate;
+      activeDateRef.current = targetDate;
 
-      // Filter daily logs specifically for currentTargetDate with ZERO fallback substitution
-      const nutritionData = (rawNutrition || []).filter(item => isRecordOnDate(item.date, item.created_at, currentTargetDate));
-      const workoutData = (allWorkouts || []).filter(item => isRecordOnDate(undefined, item.created_at, currentTargetDate));
-      const hydrationData = (allHydration || []).filter(item => isRecordOnDate(undefined, item.created_at, currentTargetDate));
+      // 1. Get or create daily record via dailyTracker service (Database as source of truth)
+      const record = await getOrCreateDailyRecord(supabase, profile.id, targetDate, profile);
+      const breakdown = calculateGoalBreakdown(record);
 
-      const stepCountData = workoutData.filter((item: any) => item.type === "steps");
+      // 2. Query historical telemetry count for stability score
+      const { data: rawNutrition } = await supabase.from("nutrition_logs").select("date, created_at").eq("user_id", profile.id);
+      const { data: rawWorkouts } = await supabase.from("workouts").select("created_at").eq("user_id", profile.id);
+      const { data: rawHydration } = await supabase.from("hydration_logs").select("created_at").eq("user_id", profile.id);
 
-      // Compute distinct historical tracking dates for long-term telemetry features
       const trackingDates = new Set<string>();
       (rawNutrition || []).forEach((i: any) => { const d = i.date || i.created_at?.split('T')[0]; if (d) trackingDates.add(d); });
-      (allWorkouts || []).forEach((i: any) => { if (i.created_at) trackingDates.add(i.created_at.split('T')[0]); });
-      (allHydration || []).forEach((i: any) => { if (i.created_at) trackingDates.add(i.created_at.split('T')[0]); });
-      (sleepLogs || []).forEach((i: any) => { if (i.created_at) trackingDates.add(i.created_at.split('T')[0]); });
-      (recoveryLogs || []).forEach((i: any) => { if (i.created_at) trackingDates.add(i.created_at.split('T')[0]); });
-      (fatigueLogs || []).forEach((i: any) => { if (i.created_at) trackingDates.add(i.created_at.split('T')[0]); });
-      (moodLogs || []).forEach((i: any) => { if (i.created_at) trackingDates.add(i.created_at.split('T')[0]); });
+      (rawWorkouts || []).forEach((i: any) => { if (i.created_at) trackingDates.add(i.created_at.split('T')[0]); });
+      (rawHydration || []).forEach((i: any) => { if (i.created_at) trackingDates.add(i.created_at.split('T')[0]); });
 
       const trackingDaysCount = trackingDates.size;
-      const hasTelemetry = trackingDaysCount > 0;
-
-      const caloriesConsumed = nutritionData?.reduce((sum, item) => sum + (Number(item.calories) || 0), 0) || 0;
-      const proteinG = nutritionData?.reduce((sum, item) => sum + (Number(item.protein_g) || 0), 0) || 0;
-      const carbsG = nutritionData?.reduce((sum, item) => sum + (Number(item.carbs_g) || 0), 0) || 0;
-      const fatG = nutritionData?.reduce((sum, item) => sum + (Number(item.fat_g) || 0), 0) || 0;
-      const fiberG = 0;
-      const sugarG = 0;
-      const sodiumMg = 0;
-      const caloriesBurned = workoutData?.reduce((sum, item) => sum + (item.calories_burned || 0), 0) || 0;
-      const hydrationMl = hydrationData?.reduce((sum, item) => sum + (item.amount_ml || 0), 0) || 0;
-      const realSteps = stepCountData?.reduce((sum, item) => sum + (item.duration_minutes || 0), 0) || 0;
-      
-      const targetSleepLogs = (sleepLogs || []).filter(item => isRecordOnDate(undefined, item.created_at, currentTargetDate));
-      const lastSleep = targetSleepLogs.length > 0 ? targetSleepLogs[0] : (sleepLogs?.[0] || null);
-
-      const targetRecoveryLogs = (recoveryLogs || []).filter(item => isRecordOnDate(undefined, item.created_at, currentTargetDate));
-      const lastRecovery = targetRecoveryLogs.length > 0 ? targetRecoveryLogs[0] : (recoveryLogs?.[0] || null);
-
-      const targetFatigueLogs = (fatigueLogs || []).filter(item => isRecordOnDate(undefined, item.created_at, currentTargetDate));
-      const lastFatigue = targetFatigueLogs.length > 0 ? targetFatigueLogs[0] : (fatigueLogs?.[0] || null);
-
-      const targetMoodLogs = (moodLogs || []).filter(item => isRecordOnDate(undefined, item.created_at, currentTargetDate));
-      const lastMood = targetMoodLogs.length > 0 ? targetMoodLogs[0] : (moodLogs?.[0] || null);
-
-      const hasEnergyTelemetry = Boolean(lastSleep || lastRecovery || lastFatigue || lastMood);
+      const hasTelemetry = record.has_data;
 
       const realMetrics: HealthDigitalTwin = {
-        caloriesBurned,
-        caloriesTarget: profile.calorie_goal || 2000,
-        caloriesConsumed,
-        proteinG,
-        carbsG,
-        fatG,
-        fiberG,
-        sugarG,
-        sodiumMg,
-        hydrationMl,
-        hydrationTarget: profile.water_goal || 2500,
-        steps: realSteps,
-        stepsTarget: profile.step_goal || 10000,
-        sleepHours: lastSleep ? Number(lastSleep.sleep_hours || 0) : 0,
-        sleepTarget: profile.sleep_goal || 8.0,
-        sleepQuality: lastSleep ? Number(lastSleep.recovery_quality || 0) : 0,
-        stressLevel: lastMood ? Number(lastMood.stress_level || 0) : 0,
-        mood: lastMood ? lastMood.mood : 'neutral',
-        recoveryPercentage: lastRecovery ? Number(lastRecovery.recovery_percentage || 0) : 0,
-        fatigueScore: lastFatigue ? Number(lastFatigue.fatigue_score || 0) : 0,
-        physicalFatigue: lastFatigue ? Number(lastFatigue.physical_fatigue || 0) : 0,
-        mentalFatigue: lastFatigue ? Number(lastFatigue.mental_fatigue || 0) : 0,
-        energyLevel: lastFatigue ? Math.max(0, 100 - Number(lastFatigue.fatigue_score || 0)) : 0,
-        biologicalAge: profile.biological_age ? Number(profile.biological_age) : 0,
-        stabilityScore: hasTelemetry ? Number(profile.stability_score || 0) : 0,
-        metabolicEfficiency: 0, 
+        caloriesBurned: record.workout_minutes * 8, // Estimated calories burned from workout duration
+        caloriesTarget: record.calorie_goal,
+        caloriesConsumed: record.calories_consumed,
+        proteinG: record.protein_g,
+        proteinTarget: record.protein_goal,
+        carbsG: record.carbs_g,
+        carbsTarget: record.carbs_goal,
+        fatG: record.fat_g,
+        fatTarget: record.fat_goal,
+        fiberG: 0,
+        sugarG: 0,
+        sodiumMg: 0,
+        hydrationMl: record.water_ml,
+        hydrationTarget: record.water_goal_ml,
+        workoutMinutes: record.workout_minutes,
+        workoutTarget: record.workout_goal_minutes,
+        steps: record.steps,
+        stepsTarget: record.steps_goal,
+        sleepHours: record.sleep_hours,
+        sleepTarget: record.sleep_goal_hours,
+        sleepQuality: record.sleep_hours > 0 ? Math.min(100, Math.round((record.sleep_hours / record.sleep_goal_hours) * 100)) : 0,
+        habitCompletion: record.habit_completion,
+        overallGoalCompletion: record.overall_goal_completion,
+        stressLevel: record.stress_level || 0,
+        mood: record.mood || 'neutral',
+        recoveryPercentage: record.recovery_percentage || 0,
+        fatigueScore: 0,
+        physicalFatigue: 0,
+        mentalFatigue: 0,
+        energyLevel: record.recovery_percentage ? record.recovery_percentage : 75,
+        biologicalAge: profile.biological_age ? Number(profile.biological_age) : 25,
+        stabilityScore: hasTelemetry ? Number(profile.stability_score || 85) : 0,
+        metabolicEfficiency: 0,
         lifestyleSustainability: 0,
         glycemicIndexLoad: "low",
         sedentaryPostureRisk: "low",
         micronutrientDeficiencies: [],
         trackingDaysCount,
         hasTelemetry,
-        hasEnergyTelemetry,
-        selectedDate: currentTargetDate
+        hasEnergyTelemetry: Boolean(record.sleep_hours > 0 || record.recovery_percentage),
+        selectedDate: targetDate,
+        dailyRecord: record,
       };
 
       setMetrics(realMetrics);
@@ -174,60 +147,41 @@ export function useHealthData(selectedDateInput?: string) {
 
   useEffect(() => {
     fetchRealData();
-    
+
     const handleDataUpdate = () => {
       fetchRealData();
     };
-    
+
     window.addEventListener("vitalcore-data-updated", handleDataUpdate);
+    window.addEventListener("focus", handleDataUpdate);
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible") {
+        fetchRealData();
+      }
+    });
 
-    // Re-check date boundary periodically and on window focus
-    const handleFocus = () => {
-      fetchRealData();
-    };
-    window.addEventListener("focus", handleFocus);
+    // Periodic midnight boundary check (every 15 seconds)
+    const timer = setInterval(() => {
+      if (!selectedDateInput) {
+        const nowLocalDate = getLocalDateString(undefined, profile?.timezone);
+        if (nowLocalDate !== activeDateRef.current) {
+          activeDateRef.current = nowLocalDate;
+          fetchRealData();
+        }
+      }
+    }, 15000);
 
+    // Realtime Supabase Channels
     let channel: any = null;
     if (supabase && profile?.id) {
       const channelId = `realtime-health-${profile.id}-${Date.now()}`;
       channel = supabase
         .channel(channelId)
-        .on(
-          'postgres_changes',
-          {
-            event: '*',
-            schema: 'public',
-            table: 'hydration_logs',
-            filter: `user_id=eq.${profile.id}`,
-          },
-          () => {
-            fetchRealData();
-          }
-        )
-        .on(
-          'postgres_changes',
-          {
-            event: '*',
-            schema: 'public',
-            table: 'nutrition_logs',
-            filter: `user_id=eq.${profile.id}`,
-          },
-          () => {
-            fetchRealData();
-          }
-        )
-        .on(
-          'postgres_changes',
-          {
-            event: '*',
-            schema: 'public',
-            table: 'workouts',
-            filter: `user_id=eq.${profile.id}`,
-          },
-          () => {
-            fetchRealData();
-          }
-        )
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'hydration_logs', filter: `user_id=eq.${profile.id}` }, fetchRealData)
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'nutrition_logs', filter: `user_id=eq.${profile.id}` }, fetchRealData)
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'workouts', filter: `user_id=eq.${profile.id}` }, fetchRealData)
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'sleep_logs', filter: `user_id=eq.${profile.id}` }, fetchRealData)
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'daily_health_summary', filter: `user_id=eq.${profile.id}` }, fetchRealData)
         .subscribe();
     }
 
@@ -239,14 +193,15 @@ export function useHealthData(selectedDateInput?: string) {
     window.addEventListener("vitalcore-user-logout", handleLogout);
 
     return () => {
+      clearInterval(timer);
       window.removeEventListener("vitalcore-data-updated", handleDataUpdate);
       window.removeEventListener("vitalcore-user-logout", handleLogout);
-      window.removeEventListener("focus", handleFocus);
+      window.removeEventListener("focus", handleDataUpdate);
       if (channel) {
         supabase.removeChannel(channel);
       }
     };
-  }, [fetchRealData, profile?.id]);
+  }, [fetchRealData, profile?.id, profile?.timezone, selectedDateInput]);
 
   return { metrics, loading, error, refetch: fetchRealData };
 }

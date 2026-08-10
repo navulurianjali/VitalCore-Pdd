@@ -26,6 +26,8 @@ export interface UserProfile {
   state?: string | null;
   city?: string | null;
   occupation?: string | null;
+  timezone?: string | null;
+  workout_duration_preference?: number | null;
 
   medical_conditions?: string | null;
   medications?: string | null;

@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
-import { Brain, Send, Bot, User, Sparkles, MessageSquare } from "lucide-react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import { Brain, Send, Bot, User, Sparkles, MessageSquare, History, Calendar, X, Clock } from "lucide-react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import GlassCard from "@/components/ui/GlassCard";
 import Button from "@/components/ui/Button";
@@ -9,25 +9,49 @@ import { useAuth } from "@/context/AuthContext";
 import { useTheme } from "@/context/ThemeContext";
 import { useHealthData } from "@/hooks/useHealthData";
 import { supabase } from "@/utils/supabase";
+import { getLocalDateString, formatDisplayDate } from "@/utils/dateUtils";
 
 interface ChatMessage {
   id: string;
   sender: "user" | "ai";
   text: string;
   timestamp: Date;
+  conversation_date?: string;
+}
+
+interface HistoryDaySummary {
+  dateStr: string;
+  count: number;
+  lastMessageSnippet: string;
 }
 
 export default function AICoachPage() {
   const { profile } = useAuth();
   const { activeMode } = useTheme();
   
-  const { metrics, loading } = useHealthData();
+  const { metrics } = useHealthData();
   const [inputVal, setInputVal] = useState("");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [historyLoaded, setHistoryLoaded] = useState(false);
+  const [currentChatDate, setCurrentChatDate] = useState<string>(
+    getLocalDateString(undefined, profile?.timezone)
+  );
+
+  // State for Chat History Modal / Past Conversations
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
+  const [pastDays, setPastDays] = useState<HistoryDaySummary[]>([]);
+  const [selectedPastDate, setSelectedPastDate] = useState<string | null>(null);
+  const [pastDateMessages, setPastDateMessages] = useState<ChatMessage[]>([]);
+  const [loadingPastChat, setLoadingPastChat] = useState(false);
+
   const chatEndRef = useRef<HTMLDivElement>(null);
 
-  // Reset messages when profile changes or user logs out
+  // Get current local calendar date safely
+  const getTodayStr = useCallback(() => {
+    return getLocalDateString(undefined, profile?.timezone);
+  }, [profile?.timezone]);
+
+  // Reset & load today's messages on profile change or logout
   useEffect(() => {
     setMessages([]);
     setHistoryLoaded(false);
@@ -41,62 +65,180 @@ export default function AICoachPage() {
     return () => window.removeEventListener("vitalcore-user-logout", handleLogout);
   }, [profile?.id]);
 
-  useEffect(() => {
-    async function loadHistory() {
-      if (!profile?.id || !supabase) {
-        setMessages([]);
-        setHistoryLoaded(false);
-        return;
-      }
-      if (historyLoaded) return;
+  // Fetch TODAY'S conversation only from database
+  const loadTodayHistory = useCallback(async (targetDate?: string) => {
+    if (!profile?.id || !supabase) {
+      setMessages([]);
+      setHistoryLoaded(false);
+      return;
+    }
 
-      const { data } = await supabase
+    const dateToQuery = targetDate || getTodayStr();
+    setCurrentChatDate(dateToQuery);
+
+    try {
+      const { data, error } = await supabase
         .from("ai_conversations")
         .select("*")
         .eq("user_id", profile.id)
+        .eq("conversation_date", dateToQuery)
         .order("created_at", { ascending: true });
-        
-      if (data && data.length > 0) {
+
+      if (!error && data && data.length > 0) {
         setMessages(data.map((row: any) => ({
           id: row.id,
           sender: row.sender as "user" | "ai",
           text: row.message,
-          timestamp: new Date(row.created_at)
+          timestamp: new Date(row.created_at),
+          conversation_date: row.conversation_date
         })));
       } else {
         setMessages([]);
       }
+    } catch (err) {
+      console.warn("Failed to load today's chat history:", err);
+      setMessages([]);
+    } finally {
       setHistoryLoaded(true);
     }
-    loadHistory();
-  }, [profile?.id, historyLoaded]);
+  }, [profile?.id, profile?.timezone, getTodayStr]);
 
+  useEffect(() => {
+    loadTodayHistory();
+  }, [loadTodayHistory]);
+
+  // Midnight / Date boundary transition detector
+  useEffect(() => {
+    const checkDateTransition = () => {
+      const todayStr = getTodayStr();
+      if (todayStr !== currentChatDate) {
+        setCurrentChatDate(todayStr);
+        loadTodayHistory(todayStr);
+      }
+    };
+
+    const handleFocus = () => checkDateTransition();
+    const handleVisibility = () => {
+      if (document.visibilityState === "visible") checkDateTransition();
+    };
+
+    window.addEventListener("focus", handleFocus);
+    document.addEventListener("visibilitychange", handleVisibility);
+    const timer = setInterval(checkDateTransition, 30000); // Check every 30 seconds
+
+    return () => {
+      window.removeEventListener("focus", handleFocus);
+      document.removeEventListener("visibilitychange", handleVisibility);
+      clearInterval(timer);
+    };
+  }, [currentChatDate, getTodayStr, loadTodayHistory]);
+
+  // Fresh Chat Initial Welcome Message (only if today's DB messages are empty)
   useEffect(() => {
     if (messages.length === 0 && historyLoaded) {
       const isBrandNew = !metrics || !metrics.hasTelemetry || metrics.trackingDaysCount === 0;
       const initialWelcomeText = isBrandNew
         ? "Welcome! Start logging your daily health activities. I'll learn your habits over time and provide personalized recommendations once enough data is available."
-        : `Hi ${profile?.full_name || "friend"}! I hope you're having a wonderful day. I've had a look at your recent activity – your wellness score is looking great at ${metrics.stabilityScore}%. How are you feeling today?`;
+        : `Hi ${profile?.full_name?.split(" ")[0] || "friend"}! Good day! I've loaded your health metrics for today. How can I help you reach your goals today?`;
 
       setMessages([
         {
           id: "welcome-msg",
           sender: "ai",
           text: initialWelcomeText,
-          timestamp: new Date()
+          timestamp: new Date(),
+          conversation_date: currentChatDate
         }
       ]);
     }
-  }, [metrics, profile, historyLoaded, messages.length]);
+  }, [metrics, profile, historyLoaded, messages.length, currentChatDate]);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  // Fetch past dates for Chat History Modal
+  const loadPastChatDates = async () => {
+    if (!profile?.id || !supabase) return;
+    try {
+      const todayStr = getTodayStr();
+      const { data, error } = await supabase
+        .from("ai_conversations")
+        .select("conversation_date, message, created_at")
+        .eq("user_id", profile.id)
+        .lt("conversation_date", todayStr)
+        .order("created_at", { ascending: false });
+
+      if (!error && data) {
+        const dateMap = new Map<string, { count: number; lastMsg: string }>();
+        data.forEach((row: any) => {
+          const dStr = row.conversation_date || row.created_at?.split("T")[0];
+          if (dStr && dStr < todayStr) {
+            if (!dateMap.has(dStr)) {
+              dateMap.set(dStr, { count: 1, lastMsg: row.message });
+            } else {
+              const item = dateMap.get(dStr)!;
+              item.count += 1;
+            }
+          }
+        });
+
+        const summaries: HistoryDaySummary[] = Array.from(dateMap.entries()).map(([dateStr, info]) => ({
+          dateStr,
+          count: info.count,
+          lastMessageSnippet: info.lastMsg
+        })).sort((a, b) => b.dateStr.localeCompare(a.dateStr));
+
+        setPastDays(summaries);
+      }
+    } catch (err) {
+      console.warn("Failed to load past chat dates:", err);
+    }
+  };
+
+  const handleOpenHistoryModal = () => {
+    setShowHistoryModal(true);
+    setSelectedPastDate(null);
+    setPastDateMessages([]);
+    loadPastChatDates();
+  };
+
+  const handleSelectPastDate = async (dateStr: string) => {
+    if (!profile?.id || !supabase) return;
+    setSelectedPastDate(dateStr);
+    setLoadingPastChat(true);
+
+    try {
+      const { data, error } = await supabase
+        .from("ai_conversations")
+        .select("*")
+        .eq("user_id", profile.id)
+        .eq("conversation_date", dateStr)
+        .order("created_at", { ascending: true });
+
+      if (!error && data) {
+        setPastDateMessages(data.map((row: any) => ({
+          id: row.id,
+          sender: row.sender as "user" | "ai",
+          text: row.message,
+          timestamp: new Date(row.created_at),
+          conversation_date: row.conversation_date
+        })));
+      } else {
+        setPastDateMessages([]);
+      }
+    } catch (err) {
+      console.warn("Failed to load past conversation:", err);
+      setPastDateMessages([]);
+    } finally {
+      setLoadingPastChat(false);
+    }
+  };
+
   const generateHeuristicResponse = (userMsg: string): string => {
     const lower = userMsg.toLowerCase();
     if (lower.includes("sore") || lower.includes("workout") || lower.includes("exercise")) {
-      return `Active recovery is key, ${profile?.full_name || "Explorer"}! Your stability score is ${metrics?.stabilityScore || 100}%. Focus on foam rolling, light 15-minute walks, and taking in at least 30g of protein to repair muscle tissue.`;
+      return `Active recovery is key, ${profile?.full_name || "Explorer"}! Focus on foam rolling, light 15-minute walks, and taking in at least 30g of protein to repair muscle tissue.`;
     }
     if (lower.includes("sleep") || lower.includes("tired") || lower.includes("bed")) {
       return `Rest is essential! You logged ${metrics?.sleepHours || 7} hours of sleep recently. Try turning off screens 45 minutes before bed and keeping your bedroom temperature around 18-20°C.`;
@@ -109,26 +251,36 @@ export default function AICoachPage() {
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!inputVal.trim() || !metrics) return;
+    if (!inputVal.trim()) return;
+
+    const todayDate = getTodayStr();
 
     const userMsg: ChatMessage = {
       id: `msg-user-${Date.now()}`,
       sender: "user",
       text: inputVal,
-      timestamp: new Date()
+      timestamp: new Date(),
+      conversation_date: todayDate
     };
 
+    // Save user message to database with conversation_date
     if (supabase && profile?.id) {
-      await supabase.from("ai_conversations").insert({
-        user_id: profile.id,
-        sender: "user",
-        message: inputVal
-      });
+      try {
+        await supabase.from("ai_conversations").insert({
+          user_id: profile.id,
+          sender: "user",
+          message: inputVal,
+          conversation_date: todayDate
+        });
+      } catch (err) {
+        console.warn("Error persisting user message:", err);
+      }
     }
 
     const currentInput = inputVal;
-    const currentMessages = [...messages, userMsg];
-    setMessages(currentMessages);
+    // Pass only today's messages to AI context
+    const currentTodayMessages = [...messages.filter(m => m.id !== "welcome-msg"), userMsg];
+    setMessages(prev => [...prev.filter(m => m.id !== "welcome-msg" || prev.length === 1), userMsg]);
     setInputVal("");
 
     const aiMsgId = `msg-ai-${Date.now()}`;
@@ -138,20 +290,21 @@ export default function AICoachPage() {
       id: aiMsgId,
       sender: "ai",
       text: "...",
-      timestamp: new Date()
+      timestamp: new Date(),
+      conversation_date: todayDate
     }]);
 
     let streamedText = "";
 
     try {
-      // Call server-side Route Handler with Gemini 1.5 Flash
+      // Call server-side API with today's messages + live telemetry
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          messages: currentMessages,
+          messages: currentTodayMessages,
           profile,
           metrics
         })
@@ -177,11 +330,13 @@ export default function AICoachPage() {
         throw new Error("Empty response stream");
       }
 
+      // Persist AI message to database with conversation_date
       if (supabase && profile?.id) {
         await supabase.from("ai_conversations").insert({
           user_id: profile.id,
           sender: "ai",
-          message: streamedText
+          message: streamedText,
+          conversation_date: todayDate
         });
       }
     } catch (err: any) {
@@ -207,7 +362,8 @@ export default function AICoachPage() {
         await supabase.from("ai_conversations").insert({
           user_id: profile.id,
           sender: "ai",
-          message: fallbackText
+          message: fallbackText,
+          conversation_date: todayDate
         });
       }
     }
@@ -232,12 +388,21 @@ export default function AICoachPage() {
               Your Personal Wellness Coach
             </h1>
             <p className="text-xs text-foreground/70 font-semibold">
-              A warm, supportive space to chat about your health and daily habits
+              Today's Session ({formatDisplayDate(currentChatDate, profile?.timezone)}) • Fresh daily chat
             </p>
           </div>
-          <div className="text-xs font-bold text-foreground/50 flex items-center gap-1.5">
-            <Sparkles className="h-4 w-4 text-secondary" />
-            <span>Wellness Profile Connected</span>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handleOpenHistoryModal}
+              className="px-3 py-1.5 rounded-xl bg-foreground/10 hover:bg-foreground/15 border border-foreground/10 text-xs font-bold text-foreground flex items-center gap-1.5 transition-all"
+            >
+              <History className="h-4 w-4 text-primary" />
+              <span>Chat History</span>
+            </button>
+            <div className="text-xs font-bold text-foreground/50 flex items-center gap-1.5">
+              <Sparkles className="h-4 w-4 text-secondary" />
+              <span>Wellness Profile Connected</span>
+            </div>
           </div>
         </div>
 
@@ -321,11 +486,11 @@ export default function AICoachPage() {
               <ul className="space-y-2 text-xs text-foreground/75 font-semibold leading-normal">
                 <li className="flex gap-2">
                   <span className="text-amber-500 font-bold">•</span>
-                  <span>**Activity patterns**: You tend to skip your evening walks when you're caught up in late-night work projects.</span>
+                  <span><strong>Activity patterns</strong>: You tend to skip your evening walks when you're caught up in late-night work projects.</span>
                 </li>
                 <li className="flex gap-2">
                   <span className="text-amber-500 font-bold">•</span>
-                  <span>**Eating patterns**: We noticed you crave sweet snacks a bit more on high-stress days.</span>
+                  <span><strong>Eating patterns</strong>: We noticed you crave sweet snacks a bit more on high-stress days.</span>
                 </li>
               </ul>
             </GlassCard>
@@ -335,6 +500,120 @@ export default function AICoachPage() {
         </div>
 
       </div>
+
+      {/* Chat History Modal */}
+      {showHistoryModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="relative w-full max-w-2xl bg-background border border-foreground/10 rounded-3xl shadow-2xl p-6 overflow-hidden max-h-[85vh] flex flex-col">
+            
+            {/* Modal Header */}
+            <div className="flex items-center justify-between border-b border-foreground/10 pb-4 mb-4">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2.5 rounded-2xl bg-primary/10 text-primary">
+                  <History className="h-5 w-5" />
+                </div>
+                <div>
+                  <h2 className="text-lg font-bold text-foreground">AI Chat History</h2>
+                  <p className="text-xs text-foreground/60 font-semibold">
+                    {selectedPastDate ? formatDisplayDate(selectedPastDate, profile?.timezone) : "Select a past day to view conversation"}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowHistoryModal(false)}
+                className="p-2 rounded-xl text-foreground/60 hover:text-foreground hover:bg-foreground/10 transition-all"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="flex-1 overflow-y-auto space-y-4 pr-1">
+              {!selectedPastDate ? (
+                /* List of Past Days */
+                pastDays.length === 0 ? (
+                  <div className="text-center py-12 space-y-3">
+                    <Clock className="h-10 w-10 text-foreground/30 mx-auto" />
+                    <p className="text-xs font-semibold text-foreground/60">No previous conversations recorded yet.</p>
+                  </div>
+                ) : (
+                  <div className="space-y-2.5">
+                    {pastDays.map((pd) => (
+                      <button
+                        key={pd.dateStr}
+                        onClick={() => handleSelectPastDate(pd.dateStr)}
+                        className="w-full text-left p-4 rounded-2xl bg-foreground/5 hover:bg-foreground/10 border border-foreground/5 transition-all flex items-center justify-between group"
+                      >
+                        <div className="space-y-1 pr-4">
+                          <div className="flex items-center gap-2">
+                            <Calendar className="h-4 w-4 text-primary" />
+                            <span className="text-sm font-bold text-foreground">
+                              {formatDisplayDate(pd.dateStr, profile?.timezone)}
+                            </span>
+                            <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary/10 text-primary font-bold">
+                              {pd.count} messages
+                            </span>
+                          </div>
+                          <p className="text-xs text-foreground/60 line-clamp-1 italic font-semibold">
+                            "{pd.lastMessageSnippet}"
+                          </p>
+                        </div>
+                        <span className="text-xs text-primary font-bold opacity-0 group-hover:opacity-100 transition-opacity">
+                          View →
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                )
+              ) : (
+                /* View Past Day Chat */
+                <div className="space-y-4">
+                  <button
+                    onClick={() => setSelectedPastDate(null)}
+                    className="text-xs font-bold text-primary hover:underline flex items-center gap-1 mb-2"
+                  >
+                    ← Back to all dates
+                  </button>
+
+                  {loadingPastChat ? (
+                    <div className="text-center py-8 text-xs font-semibold text-foreground/60">
+                      Loading conversation...
+                    </div>
+                  ) : pastDateMessages.length === 0 ? (
+                    <div className="text-center py-8 text-xs font-semibold text-foreground/60">
+                      No messages found for this date.
+                    </div>
+                  ) : (
+                    <div className="space-y-3 max-h-[50vh] overflow-y-auto pr-2">
+                      {pastDateMessages.map((msg) => {
+                        const isAI = msg.sender === "ai";
+                        return (
+                          <div key={msg.id} className={`flex gap-3 max-w-[85%] ${isAI ? "mr-auto" : "ml-auto flex-row-reverse"}`}>
+                            <div className={`h-7 w-7 rounded-lg flex items-center justify-center shrink-0 text-xs ${
+                              isAI ? "bg-primary text-white" : "bg-secondary text-white"
+                            }`}>
+                              {isAI ? <Bot className="h-4 w-4" /> : <User className="h-4 w-4" />}
+                            </div>
+                            <div className={`rounded-2xl px-4 py-2.5 text-xs leading-relaxed font-semibold border ${
+                              isAI 
+                                ? "bg-foreground/5 text-foreground border-foreground/5" 
+                                : "bg-primary text-white border-primary/20"
+                            }`}>
+                              {msg.text}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+          </div>
+        </div>
+      )}
+
     </DashboardLayout>
   );
 }

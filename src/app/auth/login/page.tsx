@@ -92,6 +92,8 @@ export default function LoginPage() {
           <form onSubmit={handleLogin} className="space-y-4">
             
             <Input
+              name="email"
+              data-testid="email-input"
               label="Email Address"
               icon={Mail}
               type="email"
@@ -110,6 +112,8 @@ export default function LoginPage() {
                 </Link>
               </div>
               <Input
+                name="password"
+                data-testid="password-input"
                 icon={Lock}
                 type="password"
                 showPasswordToggle={true}

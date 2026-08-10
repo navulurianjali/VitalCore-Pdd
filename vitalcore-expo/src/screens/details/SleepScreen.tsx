@@ -16,6 +16,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { useHealthData } from '../../hooks/useHealthData';
 import { supabase } from '../../services/supabase';
+import { getLocalDateString } from '../../utils/dateUtils';
 import { CustomTextInput } from '../../components/CustomTextInput';
 
 interface SleepEntry {
@@ -97,8 +98,10 @@ export default function SleepScreen({ navigation }: any) {
       if (wakings > 2) recQuality -= 15;
       recQuality = Math.max(30, Math.min(99, recQuality));
 
+      const todayDate = getLocalDateString(undefined, profile?.timezone);
       const { error: sleepErr } = await supabase.from('sleep_logs').insert({
         user_id: user.id,
+        date: todayDate,
         sleep_onset: bedtime,
         wake_time: wakeTime,
         sleep_hours: numHours,
@@ -111,6 +114,7 @@ export default function SleepScreen({ navigation }: any) {
 
       await supabase.from('recovery_scores').insert({
         user_id: user.id,
+        date: todayDate,
         recovery_percentage: recQuality,
         sleep_debt_hours: Math.max(0, targetSleep - numHours),
       });

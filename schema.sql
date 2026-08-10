@@ -459,6 +459,7 @@ create policy "Users can manage their own emotional logs." on public.emotional_l
 create table public.ai_conversations (
     id uuid primary key default gen_random_uuid(),
     user_id uuid references public.profiles(id) on delete cascade not null,
+    conversation_date date default current_date not null,
     created_at timestamp with time zone default timezone('utc'::text, now()),
     sender text check (sender in ('user', 'ai')) not null,
     message text not null
@@ -468,6 +469,8 @@ alter table public.ai_conversations enable row level security;
 
 create policy "Users can manage their own AI conversations." on public.ai_conversations
     for all using (auth.uid() = user_id);
+
+create index idx_ai_conversations_user_date_created on public.ai_conversations (user_id, conversation_date, created_at);
 
 -- CONTACT INQUIRIES
 create table public.contact_inquiries (

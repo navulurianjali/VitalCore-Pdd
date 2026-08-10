@@ -27,6 +27,7 @@ import ChallengesScreen from '../screens/details/ChallengesScreen';
 import HealthyHabitsScreen from '../screens/details/HealthyHabitsScreen';
 import SettingsScreen from '../screens/details/SettingsScreen';
 import CameraScreen from '../screens/details/CameraScreen';
+import HistoryScreen from '../screens/details/HistoryScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -147,6 +148,7 @@ export default function AppNavigator() {
           <Stack.Screen name="HealthyHabitsDetail" component={HealthyHabitsScreen} />
           <Stack.Screen name="SettingsDetail" component={SettingsScreen} />
           <Stack.Screen name="CameraDetail" component={CameraScreen} />
+          <Stack.Screen name="HistoryDetail" component={HistoryScreen} />
         </>
       )}
     </Stack.Navigator>

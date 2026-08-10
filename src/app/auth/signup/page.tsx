@@ -138,6 +138,8 @@ export default function SignupPage() {
             
             {/* Full Name Field */}
             <Input
+              name="fullName"
+              data-testid="fullname-input"
               label="Full Name"
               icon={User}
               type="text"
@@ -151,6 +153,8 @@ export default function SignupPage() {
 
             {/* Username Field */}
             <Input
+              name="username"
+              data-testid="username-input"
               label="Username"
               icon={User}
               type="text"
@@ -164,6 +168,8 @@ export default function SignupPage() {
 
             {/* Email Field */}
             <Input
+              name="email"
+              data-testid="signup-email-input"
               label="Email Address"
               icon={Mail}
               type="email"
@@ -178,6 +184,8 @@ export default function SignupPage() {
             {/* Password Field & Requirements Tracker */}
             <div className="space-y-2">
               <Input
+                name="password"
+                data-testid="signup-password-input"
                 label="Password"
                 icon={Lock}
                 type="password"
@@ -234,6 +242,8 @@ export default function SignupPage() {
 
             {/* Confirm Password Field */}
             <Input
+              name="confirmPassword"
+              data-testid="confirm-password-input"
               label="Confirm Password"
               icon={Lock}
               type="password"

@@ -13,6 +13,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { useHealthData } from '../../hooks/useHealthData';
 import { supabase } from '../../services/supabase';
+import { getLocalDateString } from '../../utils/dateUtils';
 import { EXERCISE_LIBRARY, ExerciseDetail, generatePersonalizedWorkoutPlan } from '../../utils/exerciseLibrary';
 import { fetchLiveExercisesFromDB } from '../../services/exerciseDbApi';
 import {
@@ -244,6 +245,7 @@ export default function FitnessScreen({ navigation }: any) {
         setSavingWorkout(true);
         await supabase.from('workouts').insert({
           user_id: profile.id,
+          date: getLocalDateString(undefined, profile?.timezone),
           name: activeWorkoutName,
           type: focus,
           duration_minutes: minsSpent,

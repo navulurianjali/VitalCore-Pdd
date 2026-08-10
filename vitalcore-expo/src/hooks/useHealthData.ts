@@ -1,13 +1,16 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { AppState } from 'react-native';
 import { supabase } from '../services/supabase';
 import { useAuth } from '../context/AuthContext';
+import { getLocalDateString } from '../utils/dateUtils';
+import { getOrCreateDailyRecord, DailyHealthRecord, calculateGoalBreakdown } from '../services/dailyTracker';
 import { computeDigitalTwin, HealthDigitalTwin, BaseHealthMetrics } from '../utils/digitalTwinEngine';
-import { getLocalDateString, isRecordOnDate } from '../utils/dateUtils';
 
-export type { HealthDigitalTwin, BaseHealthMetrics };
+export type { HealthDigitalTwin, BaseHealthMetrics, DailyHealthRecord };
 
 export interface HealthDataResult {
   metrics: HealthDigitalTwin | null;
+  dailyRecord: DailyHealthRecord | null;
   loading: boolean;
   error: string | null;
   hasLoggedNutrition: boolean;
@@ -21,6 +24,7 @@ export interface HealthDataResult {
 export function useHealthData(selectedDateInput?: string): HealthDataResult {
   const { profile } = useAuth();
   const [metrics, setMetrics] = useState<HealthDigitalTwin | null>(null);
+  const [dailyRecord, setDailyRecord] = useState<DailyHealthRecord | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -29,10 +33,10 @@ export function useHealthData(selectedDateInput?: string): HealthDataResult {
   const [hasLoggedSleep, setHasLoggedSleep] = useState(false);
   const [hasLoggedWorkouts, setHasLoggedWorkouts] = useState(false);
 
-  const targetDate = selectedDateInput || getLocalDateString();
+  const activeDateRef = useRef<string>(selectedDateInput || getLocalDateString(undefined, profile?.timezone));
 
   const fetchRealData = useCallback(async () => {
-    if (!profile?.id) {
+    if (!profile?.id || !supabase) {
       setLoading(false);
       return;
     }
@@ -41,98 +45,37 @@ export function useHealthData(selectedDateInput?: string): HealthDataResult {
       setLoading(true);
       setError(null);
 
-      const currentTargetDate = selectedDateInput || getLocalDateString();
+      const currentLocalDate = getLocalDateString(undefined, profile?.timezone);
+      const targetDate = selectedDateInput || currentLocalDate;
+      activeDateRef.current = targetDate;
 
-      // 1. Fetch All Nutrition Logs for user
-      const { data: rawNutrition } = await supabase
-        .from('nutrition_logs')
-        .select('calories, protein_g, carbs_g, fat_g, date, created_at')
-        .eq('user_id', profile.id);
+      // 1. Get or create daily record via dailyTracker service (Database as source of truth)
+      const record = await getOrCreateDailyRecord(supabase, profile.id, targetDate, profile);
+      setDailyRecord(record);
 
-      const nutritionData = (rawNutrition || []).filter(item => isRecordOnDate(item.date, item.created_at, currentTargetDate));
-      const loggedNutritionCount = nutritionData.length;
-      setHasLoggedNutrition(loggedNutritionCount > 0);
-      const caloriesConsumed = nutritionData.reduce((sum, item) => sum + (Number(item.calories) || 0), 0);
-
-      // 2. Fetch Workout Logs
-      const { data: rawWorkouts } = await supabase
-        .from('workouts')
-        .select('calories_burned, duration_minutes, type, created_at')
-        .eq('user_id', profile.id);
-
-      const workoutData = (rawWorkouts || []).filter(item => isRecordOnDate(undefined, item.created_at, currentTargetDate));
-      const loggedWorkoutCount = workoutData.length;
-      setHasLoggedWorkouts(loggedWorkoutCount > 0);
-      const caloriesBurned = workoutData.reduce((sum, item) => sum + (Number(item.calories_burned) || 0), 0);
-
-      const stepWorkouts = workoutData.filter(w => w.type === 'steps');
-      const realSteps = stepWorkouts.reduce((sum, item) => sum + (Number(item.duration_minutes) || 0), 0);
-
-      // 3. Fetch Hydration Logs
-      const { data: rawHydration } = await supabase
-        .from('hydration_logs')
-        .select('amount_ml, created_at')
-        .eq('user_id', profile.id);
-      
-      const hydrationData = (rawHydration || []).filter(item => isRecordOnDate(undefined, item.created_at, currentTargetDate));
-      const loggedHydrationCount = hydrationData.length;
-      setHasLoggedHydration(loggedHydrationCount > 0);
-      const hydrationMl = hydrationData.reduce((sum, item) => sum + (Number(item.amount_ml) || 0), 0);
-
-      // 4. Fetch Sleep Logs
-      const { data: sleepData } = await supabase
-        .from('sleep_logs')
-        .select('*')
-        .eq('user_id', profile.id)
-        .order('created_at', { ascending: false });
-      
-      const targetSleepLogs = (sleepData || []).filter(item => isRecordOnDate(undefined, item.created_at, currentTargetDate));
-      const lastSleep = targetSleepLogs.length > 0 ? targetSleepLogs[0] : (sleepData?.[0] || null);
-      setHasLoggedSleep(targetSleepLogs.length > 0);
-
-      // 5. Fetch Latest Recovery/Fatigue/Mood Logs
-      const { data: recoveryData } = await supabase
-        .from('recovery_scores')
-        .select('*')
-        .eq('user_id', profile.id)
-        .order('created_at', { ascending: false })
-        .limit(1);
-      const lastRecovery = recoveryData?.[0] || null;
-
-      const { data: fatigueData } = await supabase
-        .from('fatigue_logs')
-        .select('*')
-        .eq('user_id', profile.id)
-        .order('created_at', { ascending: false })
-        .limit(1);
-      const lastFatigue = fatigueData?.[0] || null;
-
-      const { data: moodData } = await supabase
-        .from('mood_tracking')
-        .select('*')
-        .eq('user_id', profile.id)
-        .order('created_at', { ascending: false })
-        .limit(1);
-      const lastMood = moodData?.[0] || null;
+      setHasLoggedNutrition(record.calories_consumed > 0);
+      setHasLoggedHydration(record.water_ml > 0);
+      setHasLoggedWorkouts(record.workout_minutes > 0);
+      setHasLoggedSleep(record.sleep_hours > 0);
 
       const baseMetrics: BaseHealthMetrics = {
-        caloriesBurned: caloriesBurned,
-        caloriesTarget: profile.calorie_goal || 2000,
-        caloriesConsumed: caloriesConsumed,
-        hydrationMl: hydrationMl,
-        hydrationTarget: profile.water_goal || 2500,
-        steps: realSteps,
-        stepsTarget: profile.step_goal || 10000,
-        sleepHours: lastSleep ? Number(lastSleep.sleep_hours || 0) : 0,
-        sleepTarget: profile.sleep_goal || 8.0,
-        sleepQuality: lastSleep ? Number(lastSleep.recovery_quality || 0) : 0,
-        stressLevel: lastMood ? Number(lastMood.stress_level || 0) : 0,
-        mood: lastMood?.mood || 'neutral',
-        recoveryPercentage: lastRecovery ? Number(lastRecovery.recovery_percentage || 0) : 0,
-        fatigueScore: lastFatigue ? Number(lastFatigue.fatigue_score || 0) : 0,
-        physicalFatigue: lastFatigue ? Number(lastFatigue.physical_fatigue || 0) : 0,
-        mentalFatigue: lastFatigue ? Number(lastFatigue.mental_fatigue || 0) : 0,
-        energyLevel: lastFatigue ? Math.max(0, 100 - Number(lastFatigue.fatigue_score || 0)) : 0,
+        caloriesBurned: record.workout_minutes * 8,
+        caloriesTarget: record.calorie_goal,
+        caloriesConsumed: record.calories_consumed,
+        hydrationMl: record.water_ml,
+        hydrationTarget: record.water_goal_ml,
+        steps: record.steps,
+        stepsTarget: record.steps_goal,
+        sleepHours: record.sleep_hours,
+        sleepTarget: record.sleep_goal_hours,
+        sleepQuality: record.sleep_hours > 0 ? Math.min(100, Math.round((record.sleep_hours / record.sleep_goal_hours) * 100)) : 0,
+        stressLevel: record.stress_level || 0,
+        mood: record.mood || 'neutral',
+        recoveryPercentage: record.recovery_percentage || 0,
+        fatigueScore: 0,
+        physicalFatigue: 0,
+        mentalFatigue: 0,
+        energyLevel: record.recovery_percentage ? record.recovery_percentage : 75,
         biologicalAge: profile.biological_age || 25.0,
         stabilityScore: profile.stability_score || 100.0,
         metabolicEfficiency: 0,
@@ -156,66 +99,49 @@ export function useHealthData(selectedDateInput?: string): HealthDataResult {
   useEffect(() => {
     fetchRealData();
 
+    // App state listener for background -> foreground transitions in Expo
+    const subscription = AppState.addEventListener('change', nextAppState => {
+      if (nextAppState === 'active') {
+        const nowLocalDate = getLocalDateString(undefined, profile?.timezone);
+        if (!selectedDateInput && nowLocalDate !== activeDateRef.current) {
+          activeDateRef.current = nowLocalDate;
+        }
+        fetchRealData();
+      }
+    });
+
+    // Realtime Supabase Channels
     let channel: any = null;
     if (supabase && profile?.id) {
       const channelId = `expo-realtime-health-${profile.id}-${Math.random().toString(36).substring(2, 8)}`;
       channel = supabase
         .channel(channelId)
-        .on(
-          'postgres_changes',
-          {
-            event: '*',
-            schema: 'public',
-            table: 'hydration_logs',
-            filter: `user_id=eq.${profile.id}`,
-          },
-          () => {
-            fetchRealData();
-          }
-        )
-        .on(
-          'postgres_changes',
-          {
-            event: '*',
-            schema: 'public',
-            table: 'nutrition_logs',
-            filter: `user_id=eq.${profile.id}`,
-          },
-          () => {
-            fetchRealData();
-          }
-        )
-        .on(
-          'postgres_changes',
-          {
-            event: '*',
-            schema: 'public',
-            table: 'workouts',
-            filter: `user_id=eq.${profile.id}`,
-          },
-          () => {
-            fetchRealData();
-          }
-        )
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'hydration_logs', filter: `user_id=eq.${profile.id}` }, fetchRealData)
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'nutrition_logs', filter: `user_id=eq.${profile.id}` }, fetchRealData)
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'workouts', filter: `user_id=eq.${profile.id}` }, fetchRealData)
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'sleep_logs', filter: `user_id=eq.${profile.id}` }, fetchRealData)
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'daily_health_summary', filter: `user_id=eq.${profile.id}` }, fetchRealData)
         .subscribe();
     }
 
     return () => {
+      subscription.remove();
       if (channel) {
         supabase.removeChannel(channel);
       }
     };
-  }, [fetchRealData, profile?.id]);
+  }, [fetchRealData, profile?.id, profile?.timezone, selectedDateInput]);
 
   return {
     metrics,
+    dailyRecord,
     loading,
     error,
     hasLoggedNutrition,
     hasLoggedHydration,
     hasLoggedSleep,
     hasLoggedWorkouts,
-    selectedDate: targetDate,
+    selectedDate: activeDateRef.current,
     refetch: fetchRealData,
   };
 }

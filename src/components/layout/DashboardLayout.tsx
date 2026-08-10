@@ -22,7 +22,8 @@ import {
   X,
   Scan,
   Dumbbell,
-  Sparkles
+  Sparkles,
+  Calendar
 } from "lucide-react";
 
 interface DashboardLayoutProps {
@@ -73,6 +74,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
     {
       label: "Health",
       links: [
+        { name: "Health History", href: "/history", icon: Calendar, highlight: true },
         { name: "Calorie Tracker", href: "/calorie-tracker", icon: Utensils, highlight: true },
         { name: "Sleep", href: "/sleep", icon: Moon },
         { name: "Healthy Habits", href: "/challenges", icon: CheckSquare },
