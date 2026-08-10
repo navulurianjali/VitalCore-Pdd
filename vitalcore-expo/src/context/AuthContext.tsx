@@ -121,8 +121,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             ageVal = new Date().getFullYear() - dobYear;
           }
         }
+        const isCompleted = data.onboarding_completed === true || Boolean(data.age || data.weight_kg || data.height_cm || data.fitness_goal || data.gender || data.medical_conditions);
         setProfile({
           ...data,
+          onboarding_completed: isCompleted,
           age: ageVal,
         } as UserProfile);
       } else if (error && error.code === 'PGRST116') {

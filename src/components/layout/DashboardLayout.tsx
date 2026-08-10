@@ -42,7 +42,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
     if (!loading) {
       if (!user) {
         router.push("/auth/login");
-      } else if ((!profile || profile.onboarding_completed !== true) && pathname !== "/auth/onboarding") {
+      } else if (profile && profile.onboarding_completed === false && pathname !== "/auth/onboarding") {
         router.push("/auth/onboarding");
       }
     }

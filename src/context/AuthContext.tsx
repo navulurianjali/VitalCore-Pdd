@@ -171,15 +171,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         .maybeSingle();
 
       if (!error && data) {
+        const isCompleted = data.onboarding_completed === true || Boolean(data.age || data.weight_kg || data.height_cm || data.fitness_goal || data.gender || data.medical_conditions);
         setProfile({
           ...data,
           email: activeUser?.email || data.email || "",
-          onboarding_completed: data.onboarding_completed === true,
+          onboarding_completed: isCompleted,
           soreness_level: Number(data.soreness_level) || 0,
           biological_age: data.biological_age ? Number(data.biological_age) : 0,
           stability_score: data.stability_score ? Number(data.stability_score) : 0
         });
-      } else if (!data) {
+      } else if (!data && (!error || error.code === "PGRST116")) {
         const userEmail = activeUser?.email || "";
         const userFullName = activeUser?.user_metadata?.full_name || (userEmail ? userEmail.split("@")[0] : "Wellness Explorer");
 
