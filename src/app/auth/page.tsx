@@ -76,7 +76,7 @@ export default function AuthChoicePage() {
                 <Button
                   variant="primary"
                   size="md"
-                  className="w-full flex items-center justify-between gap-2 px-4 h-10.5 shadow-sm shadow-primary/10 group"
+                  className="w-full flex items-center justify-between gap-2 px-4 h-10.5 shadow-sm shadow-primary/10 group cursor-pointer"
                 >
                   <div className="flex items-center gap-2.5">
                     <UserPlus className="h-4.5 w-4.5 shrink-0" />
@@ -96,7 +96,7 @@ export default function AuthChoicePage() {
                 <Button
                   variant="glass"
                   size="md"
-                  className="w-full flex items-center justify-between gap-2 px-4 h-10.5 border border-foreground/10 hover:border-primary/30 group"
+                  className="w-full flex items-center justify-between gap-2 px-4 h-10.5 border border-foreground/10 hover:border-primary/30 group cursor-pointer"
                 >
                   <div className="flex items-center gap-2.5">
                     <LogIn className="h-4.5 w-4.5 shrink-0" />

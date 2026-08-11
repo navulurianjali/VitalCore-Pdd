@@ -11,8 +11,19 @@ import Input from "@/components/ui/Input";
 import { validateEmail } from "@/utils/validation";
 
 export default function LoginPage() {
-  const { signIn } = useAuth();
+  const { user, profile, loading: authLoading, signIn } = useAuth();
   const router = useRouter();
+
+  // If already authenticated when accessing /auth/login, redirect appropriately
+  React.useEffect(() => {
+    if (!authLoading && user) {
+      if (profile?.onboarding_completed === true) {
+        router.replace("/dashboard");
+      } else if (profile && profile.onboarding_completed === false) {
+        router.replace("/auth/onboarding");
+      }
+    }
+  }, [user, profile, authLoading, router]);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -49,11 +60,15 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const { error } = await signIn(email.trim(), password);
+      const { error, profile } = await signIn(email.trim(), password);
       if (error) {
         setErrorMsg(error.message);
       } else {
-        router.push("/dashboard");
+        if (profile?.onboarding_completed === true) {
+          router.push("/dashboard");
+        } else {
+          router.push("/auth/onboarding");
+        }
       }
     } catch (err: any) {
       setErrorMsg("An unexpected authentication error occurred.");

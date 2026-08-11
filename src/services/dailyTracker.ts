@@ -102,6 +102,94 @@ export function calculateGoalBreakdown(
 /**
  * Ensures a daily record exists for (user_id, date), calculating real totals from logs.
  */
+/**
+ * Queries a table with server-side date filtering.
+ * 
+ * Strategy:
+ * - If the table has a `date` date column, filter: .eq("date", targetDate)
+ * - Falls back to .gte("created_at", dayStart).lt("created_at", dayEnd) if date column is missing.
+ * - NEVER fetches all rows and filters client-side.
+ */
+async function queryTableForDate(
+  supabase: any,
+  table: string,
+  selectCols: string,
+  userId: string,
+  targetDate: string,
+  extraFilter?: (q: any) => any
+): Promise<any[]> {
+  try {
+    // Primary: filter by explicit `date` column (most accurate)
+    let q = supabase
+      .from(table)
+      .select(selectCols)
+      .eq("user_id", userId)
+      .eq("date", targetDate);
+    if (extraFilter) q = extraFilter(q);
+    const res = await q;
+    
+    if (!res.error) {
+      return res.data || [];
+    }
+    
+    // PGRST204: `date` column doesn't exist yet — fall back to created_at range filter
+    // This ensures we STILL only get today's records, not all records
+    if (res.error && (res.error.code === "PGRST204" || res.error.code === "42703")) {
+      console.warn(`[DAILY DATA] Table "${table}" has no \`date\` column. Falling back to created_at range filter. Run hydration_date_isolation_fix.sql in Supabase.`);
+      
+      // Calculate UTC day boundaries for the local date
+      // e.g., for "2026-08-10" in IST (+5:30): start = "2026-08-09T18:30:00Z", end = "2026-08-10T18:30:00Z"
+      const dayStart = new Date(targetDate + "T00:00:00");
+      const dayEnd = new Date(targetDate + "T23:59:59.999");
+      
+      const fallbackCols = selectCols.split(",").map(c => c.trim()).filter(c => c !== "date").join(",");
+      let fbQuery = supabase
+        .from(table)
+        .select(fallbackCols || selectCols)
+        .eq("user_id", userId)
+        .gte("created_at", dayStart.toISOString())
+        .lte("created_at", dayEnd.toISOString());
+      if (extraFilter) fbQuery = extraFilter(fbQuery);
+      const fbRes = await fbQuery;
+      return fbRes.data || [];
+    }
+    
+    console.error(`[DAILY DATA] Query error for "${table}":`, res.error);
+    return [];
+  } catch (e) {
+    console.error(`[DAILY DATA] Exception querying "${table}":`, e);
+    return [];
+  }
+}
+
+/**
+ * Legacy helper for non-date-filtered queries (telemetry count only).
+ */
+async function safeQueryTable(supabase: any, table: string, selectCols: string, userId: string, extraFilter?: (q: any) => any) {
+  try {
+    let q = supabase.from(table).select(selectCols).eq("user_id", userId);
+    if (extraFilter) q = extraFilter(q);
+    const res = await q;
+    if (!res.error && res.data) return res.data;
+    if (res.error && (res.error.code === "42703" || res.error.code === "PGRST204") && selectCols.includes("date")) {
+      const fallbackCols = selectCols.split(",").map(c => c.trim()).filter(c => c !== "date").join(",");
+      let fbQuery = supabase.from(table).select(fallbackCols).eq("user_id", userId);
+      if (extraFilter) fbQuery = extraFilter(fbQuery);
+      const fbRes = await fbQuery;
+      return fbRes.data || [];
+    }
+    return [];
+  } catch (e) {
+    return [];
+  }
+}
+
+/**
+ * Ensures a daily record exists for (user_id, date), calculating real totals from logs.
+ * 
+ * CRITICAL: All queries use server-side date filtering. 
+ * We NEVER fetch all rows and filter client-side (that was the 20,750 ml bug).
+ */
 export async function getOrCreateDailyRecord(
   supabase: any,
   userId: string,
@@ -115,36 +203,32 @@ export async function getOrCreateDailyRecord(
   const userTimezone = profile?.timezone;
   const targetDate = targetDateStr || getLocalDateString(undefined, userTimezone);
 
-  // 1. Fetch granular logs concurrently
+  console.log(`[DAILY DATA] Fetching records for user=${userId.slice(0,8)}... date=${targetDate}`);
+
+  // 1. Fetch granular logs with SERVER-SIDE date filtering
   const [
-    { data: rawNutrition },
-    { data: rawWorkouts },
-    { data: rawHydration },
-    { data: rawSleep },
-    { data: rawRecovery },
-    { data: rawFatigue },
-    { data: rawMood },
-    { data: rawHabits }
+    nutritionLogs,
+    workoutLogs,
+    hydrationLogs,
+    sleepLogs,
+    recoveryLogs,
+    fatigueLogs,
+    moodLogs,
+    habitLogs
   ] = await Promise.all([
-    supabase.from("nutrition_logs").select("calories, protein_g, carbs_g, fat_g, date, created_at").eq("user_id", userId),
-    supabase.from("workouts").select("calories_burned, duration_minutes, type, date, created_at").eq("user_id", userId),
-    supabase.from("hydration_logs").select("amount_ml, date, created_at").eq("user_id", userId),
-    supabase.from("sleep_logs").select("sleep_hours, recovery_quality, date, created_at").eq("user_id", userId).order("created_at", { ascending: false }),
-    supabase.from("recovery_scores").select("recovery_percentage, date, created_at").eq("user_id", userId).order("created_at", { ascending: false }),
-    supabase.from("fatigue_logs").select("fatigue_score, physical_fatigue, mental_fatigue, date, created_at").eq("user_id", userId).order("created_at", { ascending: false }),
-    supabase.from("mood_tracking").select("mood, stress_level, date, created_at").eq("user_id", userId).order("created_at", { ascending: false }),
-    supabase.from("habit_logs").select("completed, date, created_at").eq("user_id", userId).eq("completed", true)
+    queryTableForDate(supabase, "nutrition_logs", "calories, protein_g, carbs_g, fat_g", userId, targetDate),
+    queryTableForDate(supabase, "workouts", "calories_burned, duration_minutes, type", userId, targetDate),
+    queryTableForDate(supabase, "hydration_logs", "amount_ml, date", userId, targetDate),
+    queryTableForDate(supabase, "sleep_logs", "sleep_hours, recovery_quality", userId, targetDate, q => q.order("created_at", { ascending: false })),
+    queryTableForDate(supabase, "recovery_scores", "recovery_percentage", userId, targetDate, q => q.order("created_at", { ascending: false })),
+    queryTableForDate(supabase, "fatigue_logs", "fatigue_score, physical_fatigue, mental_fatigue", userId, targetDate, q => q.order("created_at", { ascending: false })),
+    queryTableForDate(supabase, "mood_tracking", "mood, stress_level", userId, targetDate, q => q.order("created_at", { ascending: false })),
+    queryTableForDate(supabase, "habit_logs", "completed", userId, targetDate, q => q.eq("completed", true))
   ]);
 
-  // Filter logs specifically for targetDate
-  const nutritionLogs = (rawNutrition || []).filter((item: any) => isRecordOnDate(item.date, item.created_at, targetDate, userTimezone));
-  const workoutLogs = (rawWorkouts || []).filter((item: any) => isRecordOnDate(item.date, item.created_at, targetDate, userTimezone));
-  const hydrationLogs = (rawHydration || []).filter((item: any) => isRecordOnDate(item.date, item.created_at, targetDate, userTimezone));
-  const sleepLogs = (rawSleep || []).filter((item: any) => isRecordOnDate(item.date, item.created_at, targetDate, userTimezone));
-  const recoveryLogs = (rawRecovery || []).filter((item: any) => isRecordOnDate(item.date, item.created_at, targetDate, userTimezone));
-  const fatigueLogs = (rawFatigue || []).filter((item: any) => isRecordOnDate(item.date, item.created_at, targetDate, userTimezone));
-  const moodLogs = (rawMood || []).filter((item: any) => isRecordOnDate(item.date, item.created_at, targetDate, userTimezone));
-  const habitLogs = (rawHabits || []).filter((item: any) => isRecordOnDate(item.date, item.created_at, targetDate, userTimezone));
+  const waterMl = hydrationLogs.reduce((sum: number, i: any) => sum + (Number(i.amount_ml) || 0), 0);
+  
+  console.log(`[DAILY HYDRATION] user=${userId.slice(0,8)}... date=${targetDate} rows=${hydrationLogs.length} total=${waterMl}ml`);
 
   const hasData = (
     nutritionLogs.length > 0 ||
@@ -160,7 +244,6 @@ export async function getOrCreateDailyRecord(
   const proteinG = nutritionLogs.reduce((sum: number, i: any) => sum + (Number(i.protein_g) || 0), 0);
   const carbsG = nutritionLogs.reduce((sum: number, i: any) => sum + (Number(i.carbs_g) || 0), 0);
   const fatG = nutritionLogs.reduce((sum: number, i: any) => sum + (Number(i.fat_g) || 0), 0);
-  const waterMl = hydrationLogs.reduce((sum: number, i: any) => sum + (Number(i.amount_ml) || 0), 0);
   const workoutMinutes = workoutLogs.reduce((sum: number, i: any) => sum + (Number(i.duration_minutes) || 0), 0);
   const steps = workoutLogs.filter((i: any) => i.type === 'steps').reduce((sum: number, i: any) => sum + (Number(i.duration_minutes) || 0), 0);
   

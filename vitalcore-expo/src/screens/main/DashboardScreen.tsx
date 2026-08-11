@@ -48,12 +48,34 @@ export default function DashboardScreen({ navigation }: any) {
   const [simWater, setSimWater] = useState(2000);
   const [simStress, setSimStress] = useState(30);
 
-  // Medication (elderly mode)
-  const [meds, setMeds] = useState([
-    { name: 'Blood Pressure Capsule', time: '8:00 AM', taken: true },
-    { name: 'Joint Strength Vitamin D', time: '12:00 PM', taken: false },
-    { name: 'Glucosamine Tablet', time: '6:00 PM', taken: false },
-  ]);
+  // Medication (elderly mode) - initialized from profile.medication_schedule / profile.medications
+  const [meds, setMeds] = useState<{ name: string; time: string; taken: boolean }[]>([]);
+
+  useEffect(() => {
+    if (profile?.medication_schedule) {
+      try {
+        const parsed = JSON.parse(profile.medication_schedule);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setMeds(parsed);
+          return;
+        }
+      } catch (e) {
+        // Fallthrough if not JSON
+      }
+    }
+    if (profile?.medications) {
+      const items = profile.medications.split(',').map(s => s.trim()).filter(Boolean);
+      if (items.length > 0) {
+        setMeds(items.map((name, i) => ({
+          name,
+          time: i === 0 ? '8:00 AM' : i === 1 ? '12:00 PM' : '6:00 PM',
+          taken: false
+        })));
+        return;
+      }
+    }
+    setMeds([]);
+  }, [profile?.medications, profile?.medication_schedule]);
 
   const onRefresh = React.useCallback(async () => {
     setRefreshing(true);

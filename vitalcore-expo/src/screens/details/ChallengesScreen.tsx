@@ -16,6 +16,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { supabase } from '../../services/supabase';
 import { CustomTextInput } from '../../components/CustomTextInput';
+import ScreenWrapper from '../../components/ScreenWrapper';
 import {
   Target,
   Users,
@@ -409,39 +410,30 @@ export default function ChallengesScreen({ navigation }: any) {
   };
 
   return (
-    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
-      <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
-        
-        {/* TOP HEADER */}
-        <View style={styles.headerRow}>
-          <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
-            <Text style={{ color: colors.primary, fontWeight: 'bold', fontSize: 14 }}>← Back</Text>
+    <ScreenWrapper
+      title="Health Challenges"
+      subtitle="Evidence-based health protocols & habit sprints"
+      showBack
+      onBack={() => navigation.goBack()}
+      headerRight={
+        <View style={{ flexDirection: 'row', gap: 6, alignItems: 'center' }}>
+          <TouchableOpacity
+            style={[styles.syncBtn, { borderColor: colors.cardBorder }]}
+            onPress={fetchChallenges}
+          >
+            <RefreshCw size={14} color={colors.primary} />
           </TouchableOpacity>
 
-          <View style={{ flexDirection: 'row', gap: 8 }}>
-            <TouchableOpacity
-              style={[styles.syncBtn, { borderColor: colors.cardBorder }]}
-              onPress={fetchChallenges}
-            >
-              <RefreshCw size={14} color={colors.primary} />
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[styles.createBtn, { backgroundColor: colors.primary }]}
-              onPress={() => setShowCreateModal(true)}
-            >
-              <Plus size={14} color="#ffffff" />
-              <Text style={{ color: '#ffffff', fontWeight: 'bold', fontSize: 12, marginLeft: 4 }}>Create</Text>
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity
+            style={[styles.createBtn, { backgroundColor: colors.primary }]}
+            onPress={() => setShowCreateModal(true)}
+          >
+            <Plus size={14} color="#ffffff" />
+            <Text style={{ color: '#ffffff', fontWeight: 'bold', fontSize: 12, marginLeft: 4 }}>Create</Text>
+          </TouchableOpacity>
         </View>
-
-        <Text style={[styles.pageTitle, { color: colors.text, fontSize: isCareMode ? 24 : 20 }]}>
-          Health Challenges
-        </Text>
-        <Text style={[styles.pageSubTitle, { color: colors.textMuted }]}>
-          Evidence-based health protocols & habit sprints
-        </Text>
+      }
+    >
 
         {/* METRICS STATS ROW */}
         <View style={styles.statsRow}>
@@ -648,8 +640,6 @@ export default function ChallengesScreen({ navigation }: any) {
           })
         )}
 
-      </ScrollView>
-
       {/* MODAL: CREATE CUSTOM CHALLENGE */}
       {showCreateModal && (
         <Modal visible transparent animationType="slide">
@@ -765,7 +755,7 @@ export default function ChallengesScreen({ navigation }: any) {
         </Modal>
       )}
 
-    </SafeAreaView>
+    </ScreenWrapper>
   );
 }
 

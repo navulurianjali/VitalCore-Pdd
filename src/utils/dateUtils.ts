@@ -85,15 +85,30 @@ export function addDaysToDate(dateStr: string, days: number, userTimezone?: stri
 
 /**
  * Evaluates whether a database log matches a target YYYY-MM-DD date string in local time.
+ * 
+ * Priority:
+ * 1. If the record has an explicit `date` column (YYYY-MM-DD), compare directly.
+ * 2. If only `created_at` timestamp is available, convert it to local date and compare.
+ * 
+ * IMPORTANT: Do NOT use startsWith(target) on created_at — this causes a UTC/local
+ * timezone collision where records created after 18:30 UTC on previous days appear
+ * to match the next calendar day in IST (+5:30) or other timezones ahead of UTC.
  */
 export function isRecordOnDate(recordDateStr?: string, recordCreatedAt?: string, targetDateStr?: string, userTimezone?: string | null): boolean {
   const target = targetDateStr || getLocalDateString(undefined, userTimezone);
-  if (recordDateStr && recordDateStr === target) return true;
+  
+  // First priority: explicit date column match (most reliable)
+  if (recordDateStr && recordDateStr.length === 10) {
+    return recordDateStr === target;
+  }
+  
+  // Second priority: convert created_at timestamp to local date and compare
+  // NEVER use startsWith() because created_at is UTC and target is local date
   if (recordCreatedAt) {
     const localCreatedAt = getLocalDateString(recordCreatedAt, userTimezone);
-    if (localCreatedAt === target) return true;
-    if (recordCreatedAt.startsWith(target)) return true;
+    return localCreatedAt === target;
   }
+  
   return false;
 }
 

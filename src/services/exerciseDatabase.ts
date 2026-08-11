@@ -47,9 +47,6 @@ export interface ExerciseQuery {
   excludeIds?: string[];
 }
 
-const RAPID_API_KEY = process.env.NEXT_PUBLIC_EXERCISEDB_API_KEY || '';
-const RAPID_API_HOST = process.env.NEXT_PUBLIC_EXERCISEDB_API_HOST || 'exercisedb.p.rapidapi.com';
-
 
 const CATEGORY_TO_BODY_PARTS: Record<string, string[]> = {
   chest:      ['Chest'],
@@ -130,56 +127,13 @@ export async function fetchExercisesFromSupabase(query: ExerciseQuery): Promise<
   }
 }
 
-/**
- * SECONDARY: Fetch from ExerciseDB RapidAPI and cache results into Supabase.
- */
-export async function fetchExercisesFromAPI(query: ExerciseQuery): Promise<ExerciseDetail[]> {
-  try {
-    const bodyPart = query.category && CATEGORY_TO_BODY_PARTS[query.category]
-      ? CATEGORY_TO_BODY_PARTS[query.category][0].toLowerCase()
-      : query.bodyPart?.toLowerCase();
-
-    const limit = (query.limit || 10) * 3;
-    let url = `https://${RAPID_API_HOST}/exercises?limit=${limit}&offset=0`;
-
-    if (bodyPart) {
-      const apiBodyPart = mapToApiBodyPart(bodyPart);
-      url = `https://${RAPID_API_HOST}/exercises/bodyPart/${encodeURIComponent(apiBodyPart)}?limit=${limit}`;
-    }
-
-    const response = await fetch(url, {
-      headers: {
-        'x-rapidapi-key': RAPID_API_KEY,
-        'x-rapidapi-host': RAPID_API_HOST,
-      },
-    });
-
-    if (!response.ok) {
-      console.warn('[ExerciseDB] API response not ok:', response.status);
-      return [];
-    }
-
-    const rawData = await response.json();
-    if (!Array.isArray(rawData) || rawData.length === 0) return [];
-
-    const mapped = rawData.map(mapApiToRecord);
-
-    // Cache new exercises back to Supabase (fire-and-forget)
-    cacheExercisesToSupabase(mapped).catch(e =>
-      console.warn('[ExerciseDB] Cache write failed (non-critical):', e)
-    );
-
-    const mappedDetails = mapped.map(mapRecordToDetail);
-    const shuffled = shuffleArray(mappedDetails);
-    return shuffled.slice(0, query.limit || 10);
-  } catch (err) {
-    console.warn('[ExerciseDB] API fetch exception:', err);
-    return [];
-  }
+export async function fetchExercisesFromAPI(_query: ExerciseQuery): Promise<ExerciseDetail[]> {
+  // External API calls prohibited by system design policy.
+  return [];
 }
 
 /**
- * MAIN ENTRY: Supabase-first -> ExerciseDB API -> Local Dataset fallback.
+ * MAIN ENTRY: Supabase DB -> Local Dataset fallback (Zero external API dependencies).
  */
 export async function fetchExercisesForPlan(query: ExerciseQuery): Promise<ExerciseDetail[]> {
   const needed = query.limit || 4;
@@ -191,25 +145,12 @@ export async function fetchExercisesForPlan(query: ExerciseQuery): Promise<Exerc
     return supabaseResults;
   }
 
-  // Step 2: Try ExerciseDB API
-  console.log(`[ExerciseDB] Supabase returned ${supabaseResults.length}/${needed} — calling API fallback...`);
-  const apiResults = await fetchExercisesFromAPI(query);
-  if (apiResults.length > 0) {
-    const existing = new Set(supabaseResults.map(e => e.name.toLowerCase()));
-    const newOnes = apiResults.filter(e => !existing.has(e.name.toLowerCase()));
-    const merged = [...supabaseResults, ...newOnes].slice(0, needed);
-    if (merged.length >= needed) {
-      console.log(`[ExerciseDB] Merged: ${merged.length} exercises (${supabaseResults.length} DB + ${newOnes.length} API) ✓`);
-      return merged;
-    }
-  }
-
-  // Step 3: Local Dataset fallback (guaranteed offline availability)
-  console.log(`[ExerciseDB] API/DB results (${supabaseResults.length}) under limit. Merging local dataset fallback...`);
+  // Step 2: Local Dataset fallback (guaranteed offline availability)
+  console.log(`[ExerciseDB] DB results (${supabaseResults.length}) under limit. Merging local dataset fallback...`);
   const localCandidates = filterLocalDataset(query);
-  const existingTitles = new Set([...supabaseResults, ...apiResults].map(e => e.name.toLowerCase()));
+  const existingTitles = new Set(supabaseResults.map(e => e.name.toLowerCase()));
   const newLocal = localCandidates.filter(e => !existingTitles.has(e.name.toLowerCase()));
-  const finalMerged = [...supabaseResults, ...apiResults, ...newLocal].slice(0, needed);
+  const finalMerged = [...supabaseResults, ...newLocal].slice(0, needed);
 
   return finalMerged.length > 0 ? finalMerged : EXERCISE_DATABASE_FLAT.slice(0, needed);
 }

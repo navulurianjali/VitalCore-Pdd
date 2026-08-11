@@ -1,11 +1,9 @@
 /**
  * VitalCore Food Search Engine & Unified Dataset Architecture
  *
- * NEW SEARCH PRIORITY PIPELINE:
- *   STEP 1: Search ALL local datasets (merged dataset containing Indian_Food_Nutrition_Processed, food_coded, etc.)
- *   STEP 2: If not found in local datasets, search external nutrition API (Open Food Facts fallback)
- *   STEP 3: If API finds the food: save to Supabase food_database AND cache locally for instant future lookups
- *   STEP 4: Only if ALL datasets AND API fail, show "Food not found."
+ * SEARCH PIPELINE:
+ *   - Search ALL local datasets (merged dataset containing Indian_Food_Nutrition_Processed, food_coded, etc.)
+ *   - Zero external API dependencies (Open Food Facts API removed).
  */
 
 import { supabase } from '../services/supabase';
@@ -154,56 +152,13 @@ export function searchLocalMergedDatabase(query: string): FoodItem[] {
 }
 
 // ─────────────────────────────────────────────────────────────
-// STEP 2: External Nutrition API Search (Open Food Facts API)
+// DATASET-ONLY FOOD SEARCH (ZERO EXTERNAL API DEPENDENCY)
 // ─────────────────────────────────────────────────────────────
 
-export async function searchNutritionAPIFallback(query: string): Promise<FoodItem[]> {
-  try {
-    const url = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(
-      query
-    )}&search_simple=1&action=process&json=1&page_size=10&fields=product_name,nutriments,serving_size`;
-    const res = await fetch(url, { signal: AbortSignal.timeout(6000) });
-
-    if (!res.ok) return [];
-
-    const data = await res.json();
-    const products = data.products || [];
-    const results: FoodItem[] = [];
-
-    for (const product of products) {
-      const name = product.product_name?.trim();
-      const n = product.nutriments || {};
-      const cal = Number(n['energy-kcal_100g'] || n['energy_100g'] || 0);
-      if (!name || cal === 0) continue;
-
-      results.push({
-        id: `api-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
-        name,
-        category: 'API Import',
-        servingUnit: 'g',
-        baseCalories: Math.round(cal),
-        baseProtein: Number(n['proteins_100g'] || 0),
-        baseCarbs: Number(n['carbohydrates_100g'] || 0),
-        baseFat: Number(n['fat_100g'] || 0),
-        per100gCalories: Math.round(cal),
-        per100gProtein: Number(n['proteins_100g'] || 0),
-        per100gCarbs: Number(n['carbohydrates_100g'] || 0),
-        per100gFat: Number(n['fat_100g'] || 0),
-        per100gFiber: Number(n['fiber_100g'] || 0),
-        per100gSugar: Number(n['sugars_100g'] || 0),
-        per100gSodium: Number(n['sodium_100g'] ? Number(n['sodium_100g']) * 1000 : 0),
-        source: 'api',
-      });
-    }
-    return results.slice(0, 10);
-  } catch {
-    return [];
-  }
+export async function searchNutritionAPIFallback(_query: string): Promise<FoodItem[]> {
+  // External API calls prohibited by system design policy.
+  return [];
 }
-
-// ─────────────────────────────────────────────────────────────
-// RE-ARCHITECTED SMART FOOD SEARCH (STRICT 4-STEP PRIORITY)
-// ─────────────────────────────────────────────────────────────
 
 export async function smartFoodSearch(
   query: string,
@@ -216,7 +171,7 @@ export async function smartFoodSearch(
     return { results: RUNTIME_LOCAL_DATASET.slice(0, 15).map(rowToFoodItem), source: 'dataset' };
   }
 
-  // STEP 1: Search ALL local datasets FIRST
+  // Search local merged dataset
   onStatus?.('searching-local');
   const localResults = searchLocalMergedDatabase(q);
   if (localResults.length > 0) {
@@ -224,53 +179,7 @@ export async function smartFoodSearch(
     return { results: localResults, source: 'dataset' };
   }
 
-  // STEP 2: If not found in local datasets, search external nutrition API
-  onStatus?.('searching-api');
-  const apiResults = await searchNutritionAPIFallback(q);
-
-  if (apiResults.length > 0) {
-    // STEP 3: Save to Supabase AND cache locally
-    apiResults.forEach((f) => {
-      RUNTIME_LOCAL_DATASET.push({
-        id: f.id,
-        food_name: f.name,
-        calories: f.per100gCalories,
-        protein_g: f.per100gProtein,
-        carbs_g: f.per100gCarbs,
-        fat_g: f.per100gFat,
-        fiber_g: f.per100gFiber,
-        sugar_g: f.per100gSugar,
-        sodium_mg: f.per100gSodium,
-        category: 'API Cache',
-        source: 'api',
-        search_keywords: f.name.toLowerCase().split(/\s+/),
-      });
-    });
-
-    try {
-      await supabase.from('food_database').insert(
-        apiResults.map((f) => ({
-          food_name: f.name,
-          serving_size: '100g',
-          calories: f.per100gCalories,
-          protein_g: f.per100gProtein,
-          carbs_g: f.per100gCarbs,
-          fat_g: f.per100gFat,
-          fiber_g: f.per100gFiber,
-          sugar_g: f.per100gSugar,
-          sodium_mg: f.per100gSodium,
-          source: 'api_cache',
-        }))
-      );
-    } catch {
-      // Non-blocking catch
-    }
-
-    onStatus?.('done');
-    return { results: apiResults, source: 'api' };
-  }
-
-  // STEP 4: Only if ALL datasets AND API fail, show "Food not found."
+  // If no matching food found in the local nutrition dataset
   onStatus?.('not-found');
   return { results: [], source: 'none' };
 }

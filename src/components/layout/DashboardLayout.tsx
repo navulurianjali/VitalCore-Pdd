@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
 import { useTheme } from "@/context/ThemeContext";
 import {
@@ -10,20 +11,17 @@ import {
   Brain,
   Utensils,
   Moon,
-  HeartPulse,
-  Milestone,
-  CheckSquare,
   Users,
   Settings,
   User,
-  Shield,
   Activity,
   Menu,
   X,
-  Scan,
   Dumbbell,
   Sparkles,
-  Calendar
+  Calendar,
+  CheckSquare,
+  Sun,
 } from "lucide-react";
 
 interface DashboardLayoutProps {
@@ -32,7 +30,7 @@ interface DashboardLayoutProps {
 
 export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   const { user, profile, loading, signOut } = useAuth();
-  const { activeMode } = useTheme();
+  const { theme, toggleTheme, activeMode } = useTheme();
   const router = useRouter();
   const pathname = usePathname();
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
@@ -59,12 +57,13 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
       ]
     },
     {
-      label: "Health",
+      label: "Health & Social",
       links: [
         { name: "Health History", href: "/history", icon: Calendar, highlight: true },
         { name: "Calorie Tracker", href: "/calorie-tracker", icon: Utensils, highlight: true },
         { name: "Sleep", href: "/sleep", icon: Moon },
         { name: "Healthy Habits", href: "/challenges", icon: CheckSquare },
+        { name: "Community", href: "/community", icon: Users },
       ]
     }
   ], []);
@@ -74,19 +73,19 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
     { name: "Settings", href: "/settings", icon: Settings },
   ], []);
 
-  // Memoize sidebar JSX BEFORE any early return statements to obey Rules of Hooks
+  // Sidebar content (shared for desktop & mobile drawer)
   const sidebarContent = useMemo(() => (
     <div className="flex flex-col h-full bg-[var(--card-bg)]">
-      {/* Logo / Brand */}
-      <div className="flex items-center gap-3 px-6 py-6 shrink-0">
+      {/* Logo / Brand (Visible in Desktop sidebar) */}
+      <div className="hidden lg:flex items-center gap-3 px-6 py-6 shrink-0">
         <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center shrink-0">
           <Activity className="h-4 w-4 text-white" />
         </div>
-        <span className="font-bold text-lg text-[var(--foreground)]">VitalCore</span>
+        <span className="font-bold text-lg text-[var(--foreground)]">VitalCore AI</span>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto px-4 py-2 space-y-6 scrollbar-none">
+      <nav className="flex-1 overflow-y-auto px-4 py-4 space-y-6 scrollbar-none">
         {navGroups.map((group) => (
           <div key={group.label} className="space-y-1">
             {group.label !== "Main" && (
@@ -105,7 +104,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
                     onClick={() => setMobileSidebarOpen(false)}
                     className={`flex items-center gap-3 px-4 py-2.5 rounded-full text-[14px] transition-all duration-200 ${
                       isActive
-                        ? "bg-primary text-white font-medium"
+                        ? "bg-primary text-white font-medium shadow-sm shadow-primary/20"
                         : "text-[var(--muted)] hover:text-[var(--foreground)] hover:bg-[var(--muted-bg)]/50"
                     }`}
                   >
@@ -120,7 +119,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
       </nav>
 
       {/* Footer links */}
-      <div className="px-4 py-4 space-y-1 shrink-0 mt-auto">
+      <div className="px-4 py-4 space-y-1 shrink-0 mt-auto border-t border-[var(--border)]">
         {footerLinks.map((link) => {
           const Icon = link.icon;
           const isActive = pathname === link.href;
@@ -142,18 +141,18 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
         })}
         
         {/* User Profile Mini */}
-        <div className="mt-4 pt-4 border-t border-[var(--border)] flex items-center gap-3 px-2">
-          <div className="h-8 w-8 rounded-full bg-[var(--muted-bg)] flex items-center justify-center font-bold text-xs shrink-0 text-[var(--foreground)]">
+        <div className="mt-3 pt-3 border-t border-[var(--border)] flex items-center gap-3 px-2">
+          <div className="h-8 w-8 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center font-bold text-xs shrink-0 text-primary">
             {profile?.full_name?.charAt(0)?.toUpperCase() || "U"}
           </div>
           <div className="overflow-hidden min-w-0 flex-1">
-            <p className="text-sm font-medium text-[var(--foreground)] truncate leading-tight">{profile?.full_name || "User"}</p>
+            <p className="text-xs font-semibold text-[var(--foreground)] truncate leading-tight">{profile?.full_name || "User"}</p>
             <button
               onClick={async () => {
                 await signOut();
                 router.push("/auth/login");
               }}
-              className="text-[11px] text-[var(--muted)] hover:text-[var(--foreground)] flex items-center gap-1 mt-0.5 transition-colors cursor-pointer"
+              className="text-[11px] text-[var(--muted)] hover:text-red-500 flex items-center gap-1 mt-0.5 transition-colors cursor-pointer"
             >
               Sign Out
             </button>
@@ -169,7 +168,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
       <div className="flex h-screen w-full items-center justify-center bg-[var(--background)]">
         <div className="flex flex-col items-center gap-2">
           <div className="h-7 w-7 animate-spin rounded-full border-2 border-primary/20 border-t-primary" />
-          <span className="text-sm text-[var(--muted)]">Loading...</span>
+          <span className="text-sm text-[var(--muted)]">Loading VitalCore AI...</span>
         </div>
       </div>
     );
@@ -188,40 +187,97 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
       {/* Main content area */}
       <div className="flex-1 flex flex-col overflow-hidden">
 
-        {/* Mobile top bar */}
-        <header className="lg:hidden flex h-12 items-center justify-between px-4 border-b border-[var(--border)] bg-[var(--card-bg)] shrink-0">
-          <Link href="/dashboard" className="flex items-center gap-2">
-            <div className="h-6 w-6 rounded-md bg-primary flex items-center justify-center">
-              <Activity className="h-3.5 w-3.5 text-white" />
-            </div>
-            <span className="font-semibold text-sm">VitalCore</span>
-          </Link>
+        {/* Mobile / Tablet Header Bar */}
+        <header className="lg:hidden flex h-14 items-center justify-between px-4 border-b border-[var(--border)] bg-[var(--card-bg)] shrink-0 z-30">
+          <div className="flex items-center gap-3">
+            <button
+              id="mobile-menu-btn"
+              onClick={() => setMobileSidebarOpen(!mobileSidebarOpen)}
+              className="h-9 w-9 flex items-center justify-center rounded-xl hover:bg-[var(--muted-bg)] text-[var(--foreground)] border border-[var(--border)] transition-colors cursor-pointer"
+              aria-label="Toggle menu"
+            >
+              {mobileSidebarOpen ? <X className="h-5 w-5 text-primary" /> : <Menu className="h-5 w-5 text-[var(--foreground)]" />}
+            </button>
 
-          <button
-            id="mobile-menu-btn"
-            onClick={() => setMobileSidebarOpen(!mobileSidebarOpen)}
-            className="h-8 w-8 flex items-center justify-center rounded-lg hover:bg-[var(--muted-bg)] text-[var(--foreground)] transition-colors"
-            aria-label="Toggle menu"
-          >
-            {mobileSidebarOpen ? <X className="h-4.5 w-4.5" /> : <Menu className="h-4.5 w-4.5" />}
-          </button>
+            <Link href="/dashboard" className="flex items-center gap-2">
+              <div className="h-7 w-7 rounded-full bg-primary flex items-center justify-center shrink-0">
+                <Activity className="h-4 w-4 text-white" />
+              </div>
+              <span className="font-bold text-base text-[var(--foreground)] tracking-tight">
+                VitalCore <span className="text-primary font-extrabold">AI</span>
+              </span>
+            </Link>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={toggleTheme}
+              className="h-9 w-9 flex items-center justify-center rounded-xl hover:bg-[var(--muted-bg)] text-[var(--foreground)] border border-[var(--border)] transition-colors cursor-pointer"
+              aria-label="Toggle Theme"
+            >
+              {theme === "dark" ? <Sun className="h-4.5 w-4.5 text-amber-400" /> : <Moon className="h-4.5 w-4.5 text-indigo-600" />}
+            </button>
+
+            <Link
+              href="/profile"
+              className="h-9 w-9 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center font-bold text-xs text-primary shrink-0"
+              title="My Profile"
+            >
+              {profile?.full_name?.charAt(0)?.toUpperCase() || "U"}
+            </Link>
+          </div>
         </header>
 
-        {/* Mobile drawer */}
-        {mobileSidebarOpen && (
-          <div className="fixed inset-0 z-40 lg:hidden flex">
-            <div
-              className="fixed inset-0 bg-black/40"
-              onClick={() => setMobileSidebarOpen(false)}
-            />
-            <aside className="relative flex flex-col w-56 max-w-xs h-full bg-[var(--card-bg)] border-r border-[var(--border)] z-50">
-              {sidebarContent}
-            </aside>
-          </div>
-        )}
+        {/* Mobile / Tablet Left Slide-in Drawer */}
+        <AnimatePresence>
+          {mobileSidebarOpen && (
+            <div className="fixed inset-0 z-50 lg:hidden flex">
+              {/* Semi-transparent Backdrop Overlay */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="fixed inset-0 bg-black/50 backdrop-blur-xs"
+                onClick={() => setMobileSidebarOpen(false)}
+              />
 
-        {/* Page content */}
-        <main className="flex-1 overflow-y-auto p-6">
+              {/* Left Drawer Panel */}
+              <motion.aside
+                initial={{ x: "-100%" }}
+                animate={{ x: 0 }}
+                exit={{ x: "-100%" }}
+                transition={{ type: "spring", damping: 25, stiffness: 250 }}
+                className="relative flex flex-col w-72 max-w-[80vw] h-full bg-[var(--card-bg)] border-r border-[var(--border)] z-50 shadow-2xl overflow-hidden"
+              >
+                {/* Drawer Header with Close Button */}
+                <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--border)] shrink-0">
+                  <div className="flex items-center gap-2.5">
+                    <div className="h-7 w-7 rounded-full bg-primary flex items-center justify-center shrink-0">
+                      <Activity className="h-4 w-4 text-white" />
+                    </div>
+                    <span className="font-bold text-base text-[var(--foreground)] tracking-tight">VitalCore AI</span>
+                  </div>
+                  <button
+                    onClick={() => setMobileSidebarOpen(false)}
+                    className="h-8 w-8 flex items-center justify-center rounded-lg hover:bg-[var(--muted-bg)] text-[var(--muted)] hover:text-[var(--foreground)] transition-colors cursor-pointer"
+                    aria-label="Close menu"
+                  >
+                    <X className="h-5 w-5" />
+                  </button>
+                </div>
+
+                {/* Sidebar Navigation */}
+                <div className="flex-1 overflow-y-auto">
+                  {sidebarContent}
+                </div>
+              </motion.aside>
+            </div>
+          )}
+        </AnimatePresence>
+
+        {/* Page Content Viewport */}
+        <main className="flex-1 overflow-y-auto p-4 md:p-6">
           {children}
         </main>
 

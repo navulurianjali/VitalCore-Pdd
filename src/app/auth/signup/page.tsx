@@ -11,8 +11,19 @@ import Input from "@/components/ui/Input";
 import { validateEmail, validatePassword } from "@/utils/validation";
 
 export default function SignupPage() {
-  const { signUp } = useAuth();
+  const { user, profile, loading: authLoading, signUp } = useAuth();
   const router = useRouter();
+
+  // If already authenticated when accessing /auth/signup, redirect appropriately
+  React.useEffect(() => {
+    if (!authLoading && user) {
+      if (profile?.onboarding_completed === true) {
+        router.replace("/dashboard");
+      } else if (profile && profile.onboarding_completed === false) {
+        router.replace("/auth/onboarding");
+      }
+    }
+  }, [user, profile, authLoading, router]);
 
   const [fullName, setFullName] = useState("");
   const [username, setUsername] = useState("");

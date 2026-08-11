@@ -5,7 +5,6 @@ import {
   Text,
   TouchableOpacity,
   FlatList,
-  SafeAreaView,
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
@@ -18,8 +17,9 @@ import { useTheme } from '../../context/ThemeContext';
 import { useHealthData } from '../../hooks/useHealthData';
 import { supabase } from '../../services/supabase';
 import { generateAICoachResponse } from '../../services/aiCoachService';
-import { Send, Bot, History, X, Clock, Calendar } from 'lucide-react-native';
+import { Send, History, X, Clock, Calendar } from 'lucide-react-native';
 import { CustomTextInput } from '../../components/CustomTextInput';
+import ScreenWrapper from '../../components/ScreenWrapper';
 import { getLocalDateString, formatDisplayDate } from '../../utils/dateUtils';
 
 interface Message {
@@ -36,6 +36,17 @@ interface PastDaySummary {
   lastMessageSnippet: string;
 }
 
+const INITIAL_SUGGESTIONS = [
+  'How can I improve my fitness?',
+  'Why am I feeling tired?',
+  'How much water should I drink?',
+  'What should I eat today?',
+  'How many calories do I need?',
+  'How can I sleep better?',
+  'What workout should I do?',
+  'How can I improve my recovery?',
+];
+
 export default function AICoachScreen() {
   const { profile, user } = useAuth();
   const { colors, isCareMode } = useTheme();
@@ -48,6 +59,9 @@ export default function AICoachScreen() {
   const [currentDateStr, setCurrentDateStr] = useState<string>(
     getLocalDateString(undefined, profile?.timezone)
   );
+
+  // Available Suggested Questions State
+  const [availableSuggestions, setAvailableSuggestions] = useState<string[]>(INITIAL_SUGGESTIONS);
 
   // Chat History Modal States
   const [showHistoryModal, setShowHistoryModal] = useState(false);
@@ -219,10 +233,10 @@ export default function AICoachScreen() {
     }
   };
 
-  const handleSend = async () => {
-    if (!inputText.trim() || !user?.id) return;
+  const sendUserPromptMessage = async (promptText: string) => {
+    if (!promptText.trim() || !user?.id || loading) return;
 
-    const userPrompt = inputText.trim();
+    const userPrompt = promptText.trim();
     const todayDate = getTodayStr();
     setInputText('');
 
@@ -273,6 +287,9 @@ export default function AICoachScreen() {
           chronic_conditions: profile?.chronic_conditions,
           previous_injuries: profile?.previous_injuries,
           sleep_problems: profile?.sleep_problems,
+          active_mode: profile?.active_mode,
+          ai_coach_style: profile?.ai_coach_style,
+          unit_system: profile?.unit_system,
         },
         metrics
       );
@@ -314,6 +331,76 @@ export default function AICoachScreen() {
     }
   };
 
+  const handleSend = () => {
+    sendUserPromptMessage(inputText);
+  };
+
+  const handleSelectSuggestion = (question: string) => {
+    setAvailableSuggestions((prev) => prev.filter((q) => q !== question));
+    sendUserPromptMessage(question);
+  };
+
+  const FormattedMarkdownText = ({ text, style }: { text: string; style: any }) => {
+    if (!text) return null;
+    const lines = text.split('\n');
+
+    return (
+      <View style={{ flexDirection: 'column', gap: 4 }}>
+        {lines.map((line, lineIdx) => {
+          let trimmed = line.trim();
+          if (!trimmed) {
+            return <View key={lineIdx} style={{ height: 4 }} />;
+          }
+
+          let isHeader = false;
+          if (trimmed.startsWith('###') || trimmed.startsWith('##') || trimmed.startsWith('#')) {
+            isHeader = true;
+            trimmed = trimmed.replace(/^#+\s*/, '');
+          }
+
+          let isBullet = false;
+          if (trimmed.startsWith('* ') || trimmed.startsWith('- ') || trimmed.startsWith('• ')) {
+            isBullet = true;
+            trimmed = trimmed.replace(/^[*•-]\s*/, '');
+          }
+
+          const parts = trimmed.split(/(\*\*.*?\*\*|__.*?__)/g);
+
+          const renderedLine = parts.map((part, partIdx) => {
+            if ((part.startsWith('**') && part.endsWith('**')) || (part.startsWith('__') && part.endsWith('__'))) {
+              const boldText = part.slice(2, -2);
+              return (
+                <Text key={partIdx} style={[style, { fontWeight: '700' }, isHeader && { fontSize: 15, fontWeight: '800' }]}>
+                  {boldText}
+                </Text>
+              );
+            }
+            return (
+              <Text key={partIdx} style={[style, isHeader && { fontSize: 15, fontWeight: '800' }]}>
+                {part}
+              </Text>
+            );
+          });
+
+          if (isBullet) {
+            return (
+              <View key={lineIdx} style={{ flexDirection: 'row', alignItems: 'flex-start', paddingLeft: 4 }}>
+                <Text style={[style, { marginRight: 6, fontWeight: '700' }]}>•</Text>
+                <Text style={{ flex: 1 }}>{renderedLine}</Text>
+              </View>
+            );
+          }
+
+          return (
+            <Text key={lineIdx} style={style}>
+              {renderedLine}
+            </Text>
+          );
+        })}
+      </View>
+    );
+  };
+
   const renderMessage = ({ item }: { item: Message }) => {
     const isUser = item.sender === 'user';
     return (
@@ -325,52 +412,35 @@ export default function AICoachScreen() {
             : [styles.aiBubble, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }],
         ]}
       >
-        <Text style={[styles.messageText, isUser ? styles.userText : { color: colors.text }]}>
-          {item.text}
-        </Text>
+        {isUser ? (
+          <Text style={[styles.messageText, styles.userText]}>{item.text}</Text>
+        ) : (
+          <FormattedMarkdownText text={item.text} style={[styles.messageText, { color: colors.text }]} />
+        )}
         <Text style={[styles.timestamp, { color: isUser ? '#e2e8f0' : colors.textMuted }]}>{item.timestamp}</Text>
       </View>
     );
   };
 
   return (
-    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
+    <ScreenWrapper
+      title="AI Coach"
+      subtitle={`Telemetry: ${metrics?.sleepHours || 0}h Sleep • ${metrics?.hydrationMl || 0}ml Water • ${metrics?.caloriesConsumed || 0} kcal`}
+      scrollable={false}
+      headerRight={
+        <TouchableOpacity
+          style={[styles.historyButton, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}
+          onPress={handleOpenHistoryModal}
+        >
+          <History size={16} color={colors.primary} />
+          <Text style={[styles.historyButtonText, { color: colors.primary }]}>History</Text>
+        </TouchableOpacity>
+      }
+    >
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.container}
       >
-        {/* Header */}
-        <View style={[styles.header, { backgroundColor: colors.background, borderBottomColor: colors.cardBorder }]}>
-          <View style={styles.headerTopRow}>
-            <Text style={[styles.headerTitle, { color: colors.text, fontSize: isCareMode ? 20 : 17 }]}>
-              🤖 AI Coach ({formatDisplayDate(currentDateStr, profile?.timezone)})
-            </Text>
-            <TouchableOpacity
-              style={[styles.historyButton, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}
-              onPress={handleOpenHistoryModal}
-            >
-              <History size={16} color={colors.primary} />
-              <Text style={[styles.historyButtonText, { color: colors.primary }]}>History</Text>
-            </TouchableOpacity>
-          </View>
-          <Text style={[styles.headerSubtitle, { color: colors.textMuted }]}>
-            Telemetry: {metrics?.sleepHours || 0}h Sleep • {metrics?.hydrationMl || 0}ml Water • {metrics?.caloriesConsumed || 0} kcal
-          </Text>
-        </View>
-
-        {/* Quick Suggestion Chips */}
-        <View style={[styles.chipsContainer, { borderBottomColor: colors.cardBorder }]}>
-          {['Analyze my sleep recovery', 'Suggest high-protein dinner', 'How to reduce burnout?'].map((chip) => (
-            <TouchableOpacity
-              key={chip}
-              style={[styles.chip, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}
-              onPress={() => setInputText(chip)}
-            >
-              <Text style={[styles.chipText, { color: colors.primary }]}>{chip}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-
         {/* Message History */}
         {initialLoading ? (
           <View style={styles.centerLoading}>
@@ -392,6 +462,34 @@ export default function AICoachScreen() {
           <View style={styles.typingIndicator}>
             <ActivityIndicator size="small" color={colors.primary} />
             <Text style={[styles.typingText, { color: colors.textMuted }]}>AI Coach analyzing telemetry...</Text>
+          </View>
+        )}
+
+        {/* Horizontally Scrollable Suggested Questions (Placed Below Chat, Above Input) */}
+        {availableSuggestions.length > 0 && (
+          <View style={[styles.suggestionsBarWrapper, { borderTopColor: colors.cardBorder }]}>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.suggestionsScrollContent}
+            >
+              {availableSuggestions.map((question) => (
+                <TouchableOpacity
+                  key={question}
+                  style={[
+                    styles.suggestionPill,
+                    { backgroundColor: colors.cardBg, borderColor: colors.cardBorder },
+                  ]}
+                  onPress={() => handleSelectSuggestion(question)}
+                  activeOpacity={0.7}
+                >
+                  <Text style={[styles.suggestionPillText, { color: colors.text }]}>
+                    {question}
+                  </Text>
+                  <Text style={[styles.suggestionArrow, { color: colors.primary }]}>→</Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
           </View>
         )}
 
@@ -487,7 +585,7 @@ export default function AICoachScreen() {
                   </Text>
 
                   {loadingPastChat ? (
-                    <ActivityIndicator size="medium" color={colors.primary} style={{ marginVertical: 20 }} />
+                    <ActivityIndicator size="small" color={colors.primary} style={{ marginVertical: 20 }} />
                   ) : pastMessages.length === 0 ? (
                     <Text style={[styles.emptyHistoryText, { color: colors.textMuted, marginVertical: 20 }]}>
                       No messages found.
@@ -501,7 +599,7 @@ export default function AICoachScreen() {
           </View>
         </View>
       </Modal>
-    </SafeAreaView>
+    </ScreenWrapper>
   );
 }
 
@@ -514,39 +612,41 @@ const styles = StyleSheet.create({
   historyButton: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 16, borderWidth: 1, marginLeft: 8 },
   historyButtonText: { fontSize: 12, fontWeight: 'bold', marginLeft: 4 },
   headerSubtitle: { fontSize: 11, marginTop: 4 },
-  chipsContainer: { flexDirection: 'row', paddingHorizontal: 12, paddingVertical: 8, borderBottomWidth: 1 },
-  chip: { borderRadius: 16, paddingHorizontal: 12, paddingVertical: 6, marginRight: 8, borderWidth: 1 },
-  chipText: { fontSize: 12 },
+  suggestionsBarWrapper: { borderTopWidth: 1, paddingVertical: 8 },
+  suggestionsScrollContent: { paddingHorizontal: 16, gap: 8, alignItems: 'center' },
+  suggestionPill: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20, borderWidth: 1 },
+  suggestionPillText: { fontSize: 12, fontWeight: '600', marginRight: 6 },
+  suggestionArrow: { fontSize: 13, fontWeight: '700' },
   centerLoading: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   loadingText: { marginTop: 12, fontSize: 14 },
   messageList: { padding: 16 },
-  messageBubble: { maxWidth: '82%', borderRadius: 16, padding: 14, marginBottom: 12 },
-  userBubble: { alignSelf: 'flex-end' },
-  aiBubble: { alignSelf: 'start', borderWidth: 1 },
-  messageText: { fontSize: 15, lineHeight: 22 },
+  messageBubble: { maxWidth: '80%', padding: 12, borderRadius: 16, marginBottom: 12 },
+  userBubble: { alignSelf: 'flex-end', borderBottomRightRadius: 4 },
+  aiBubble: { alignSelf: 'flex-start', borderBottomLeftRadius: 4, borderWidth: 1 },
+  messageText: { fontSize: 14, lineHeight: 20 },
   userText: { color: '#ffffff' },
-  timestamp: { fontSize: 10, marginTop: 6, alignSelf: 'flex-end' },
+  timestamp: { fontSize: 10, marginTop: 4, alignSelf: 'flex-end' },
   typingIndicator: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 8 },
-  typingText: { fontSize: 12, marginLeft: 8 },
-  inputBar: { flexDirection: 'row', padding: 12, borderTopWidth: 1 },
+  typingText: { marginLeft: 8, fontSize: 12, fontStyle: 'italic' },
+  inputBar: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 8, borderTopWidth: 1 },
   sendButton: { width: 44, height: 44, borderRadius: 22, justifyContent: 'center', alignItems: 'center', marginLeft: 8 },
   disabledSend: { opacity: 0.5 },
-  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'flex-end' },
-  modalContent: { height: '80%', borderTopLeftRadius: 24, borderTopRightRadius: 24, borderWidth: 1, padding: 16 },
-  modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingBottom: 12, borderBottomWidth: 1 },
-  modalHeaderTitleRow: { flexDirection: 'row', alignItems: 'center' },
-  modalTitle: { fontSize: 18, fontWeight: 'bold', marginLeft: 8 },
+  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
+  modalContent: { height: '80%', borderTopLeftRadius: 24, borderTopRightRadius: 24, borderTopWidth: 1, padding: 20 },
+  modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingBottom: 16, borderBottomWidth: 1 },
+  modalHeaderTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  modalTitle: { fontSize: 18, fontWeight: 'bold' },
   closeButton: { padding: 4 },
-  modalBody: { flex: 1, marginTop: 12 },
+  modalBody: { flex: 1, paddingTop: 16 },
   emptyHistory: { alignItems: 'center', justifyContent: 'center', paddingVertical: 40 },
-  emptyHistoryText: { marginTop: 12, fontSize: 13, textAlign: 'center' },
-  historyDayCard: { padding: 14, borderRadius: 16, borderWidth: 1, marginBottom: 10 },
-  historyDayHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 6 },
-  historyDateText: { fontSize: 14, fontWeight: 'bold', marginLeft: 6, flex: 1 },
-  badge: { borderRadius: 12, paddingHorizontal: 8, paddingVertical: 2 },
-  badgeText: { fontSize: 10, fontWeight: 'bold' },
+  emptyHistoryText: { marginTop: 12, fontSize: 14 },
+  historyDayCard: { padding: 16, borderRadius: 14, borderWidth: 1, marginBottom: 12 },
+  historyDayHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 6 },
+  historyDateText: { fontSize: 15, fontWeight: 'bold', flex: 1 },
+  badge: { paddingHorizontal: 8, paddingVertical: 2, borderRadius: 10 },
+  badgeText: { fontSize: 11, fontWeight: 'bold' },
   historySnippet: { fontSize: 12, fontStyle: 'italic' },
   backButton: { marginBottom: 12 },
-  backButtonText: { fontSize: 13, fontWeight: 'bold' },
-  selectedDateTitle: { fontSize: 16, fontWeight: 'bold', marginBottom: 14 },
+  backButtonText: { fontSize: 14, fontWeight: 'bold' },
+  selectedDateTitle: { fontSize: 16, fontWeight: 'bold', marginBottom: 16 },
 });

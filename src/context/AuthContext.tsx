@@ -89,8 +89,8 @@ interface AuthContextProps {
   user: any | null;
   profile: UserProfile | null;
   loading: boolean;
-  signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
-  signUp: (email: string, password: string, fullName: string, username: string) => Promise<{ error: Error | null }>;
+  signIn: (email: string, password: string) => Promise<{ error: Error | null; profile?: UserProfile | null }>;
+  signUp: (email: string, password: string, fullName?: string, username?: string) => Promise<{ error: Error | null; profile?: UserProfile | null }>;
   signOut: () => Promise<void>;
   updateProfile: (updates: Partial<UserProfile>) => Promise<{ error: Error | null }>;
   refreshProfile: () => Promise<void>;
@@ -133,12 +133,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
 
       const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-        // TOKEN_REFRESHED fires automatically when the JWT is silently refreshed.
-        // Re-fetching the profile here causes setProfile(newObject) → useEffect([profile])
-        // triggers in consumers (e.g. ProfilePage) → form state gets overwritten, losing
-        // whatever the user was typing. Only fetch on real auth events.
         if (event === "TOKEN_REFRESHED" || event === "USER_UPDATED") {
-          // Just keep the user up-to-date; don't re-fetch the whole profile.
           if (session) setUser(session.user);
           return;
         }
@@ -160,8 +155,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, []);
 
-  const fetchSupabaseProfile = async (uid: string, sessionUser?: any) => {
-    if (!supabase) return;
+  const fetchSupabaseProfile = async (uid: string, sessionUser?: any): Promise<UserProfile | null> => {
+    if (!supabase) return null;
     try {
       const activeUser = sessionUser || user;
       const { data, error } = await supabase
@@ -171,15 +166,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         .maybeSingle();
 
       if (!error && data) {
-        const isCompleted = data.onboarding_completed === true || Boolean(data.age || data.weight_kg || data.height_cm || data.fitness_goal || data.gender || data.medical_conditions);
-        setProfile({
+        const isCompleted = data.onboarding_completed === true
+          ? true
+          : (data.onboarding_completed === false
+            ? false
+            : Boolean(data.age || data.weight_kg || data.height_cm || data.fitness_goal || data.gender || data.medical_conditions));
+        
+        const fetchedProf: UserProfile = {
           ...data,
           email: activeUser?.email || data.email || "",
           onboarding_completed: isCompleted,
           soreness_level: Number(data.soreness_level) || 0,
           biological_age: data.biological_age ? Number(data.biological_age) : 0,
           stability_score: data.stability_score ? Number(data.stability_score) : 0
-        });
+        };
+        setProfile(fetchedProf);
+        return fetchedProf;
       } else if (!data && (!error || error.code === "PGRST116")) {
         const userEmail = activeUser?.email || "";
         const userFullName = activeUser?.user_metadata?.full_name || (userEmail ? userEmail.split("@")[0] : "Wellness Explorer");
@@ -194,7 +196,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           .select()
           .single();
 
-        setProfile(newProfile ? { ...newProfile, email: userEmail, onboarding_completed: false } : {
+        const newProf: UserProfile = newProfile ? { ...newProfile, email: userEmail, onboarding_completed: false } : {
           id: uid,
           email: userEmail,
           full_name: userFullName,
@@ -204,10 +206,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           soreness_level: 0,
           biological_age: 0,
           stability_score: 0
-        });
+        };
+        setProfile(newProf);
+        return newProf;
       }
+      return null;
     } catch (e) {
       console.error("Profile fetch error:", e);
+      return null;
     } finally {
       setLoading(false);
     }
@@ -220,17 +226,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signIn = async (email: string, password: string) => {
-    if (!supabase) return { error: new Error("Supabase client not initialized") };
+    if (!supabase) return { error: new Error("Supabase client not initialized"), profile: null };
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    let fetchedProf: UserProfile | null = null;
     if (!error && data?.user) {
       setUser(data.user);
-      await fetchSupabaseProfile(data.user.id, data.user);
+      fetchedProf = await fetchSupabaseProfile(data.user.id, data.user);
     }
-    return { error };
+    return { error, profile: fetchedProf };
   };
 
-  const signUp = async (email: string, password: string, fullName: string, username: string) => {
-    if (!supabase) return { error: new Error("Supabase client not initialized") };
+  const signUp = async (email: string, password: string, fullName: string = "", username: string = "") => {
+    if (!supabase) return { error: new Error("Supabase client not initialized"), profile: null };
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -241,11 +248,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
       }
     });
+    let newProf: UserProfile | null = null;
     if (!error && data?.user) {
       setUser(data.user);
-      await fetchSupabaseProfile(data.user.id, data.user);
+      newProf = await fetchSupabaseProfile(data.user.id, data.user);
     }
-    return { error };
+    return { error, profile: newProf };
   };
 
   const signOut = async () => {
@@ -260,7 +268,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     try {
       const validColumns = new Set([
-        "username", "full_name", "avatar_url", "date_of_birth", "gender", "blood_group",
+        "username", "full_name", "avatar_url", "date_of_birth", "age", "gender", "blood_group",
         "country", "state", "city", "occupation", "height_cm", "weight_kg", "bmi",
         "body_fat_estimate", "medical_conditions", "medications", "medication_schedule",
         "allergies", "food_allergies", "surgeries", "chronic_conditions", "family_history",
@@ -271,73 +279,43 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         "smoking_status", "alcohol_status", "stress_level_onboard", "working_hours",
         "sleep_schedule", "emergency_contact_name", "emergency_contact_phone",
         "emergency_contact_relation", "emergency_contact_relationship", "fitness_goal",
-        "reminder_preferences", "ai_coach_style", "unit_system", "active_mode",
+        "reminder_preferences", "ai_coach_style", "unit_system", "active_mode", "is_auto_assigned_mode",
         "soreness_level", "biological_age", "stability_score", "onboarding_completed",
         "timezone", "workout_duration_preference", "preferred_workout_time",
         "home_gym_preference", "previous_injuries", "mobility_limitations",
         "sleep_problems", "dietary_preferences", "meal_timing_habits", "caffeine_intake",
         "wearable_synced", "anxiety_rating", "motivation_level", "screen_time_hours",
-        "sitting_hours"
-        // updated_at intentionally excluded — let the DB default/trigger handle it
+        "sitting_hours", "xp", "badges", "streak_days", "notification_settings"
       ]);
 
-      const validUpdates: Record<string, any> = {};
+      const validUpdates: Record<string, any> = {
+        id: profile.id,
+        updated_at: new Date().toISOString(),
+      };
       for (const [key, val] of Object.entries(updates)) {
-        if (validColumns.has(key)) {
+        if (validColumns.has(key) && val !== undefined) {
           validUpdates[key] = val;
         }
       }
 
-      const currentUpdates: Record<string, any> = { ...validUpdates };
-      let attempt = 0;
-      let lastError: any = null;
-
-      while (attempt < 15 && Object.keys(currentUpdates).length > 0) {
-        console.log(`[AuthContext] updateProfile attempt ${attempt + 1} with columns:`, Object.keys(currentUpdates));
-
-        const { error } = await supabase
-          .from("profiles")
-          .update(currentUpdates)
-          .eq("id", profile.id);
-
-        if (!error) {
-          console.log("[AuthContext] updateProfile succeeded!");
-          setProfile({ ...profile, ...updates });
-          return { error: null };
-        }
-
-        lastError = error;
-        console.error("[AuthContext] updateProfile attempt error:", {
-          code: error.code,
-          message: error.message,
-          details: error.details,
-          hint: error.hint,
-        });
-
-        // Detect missing column error from Supabase Postgrest (e.g. "Could not find the 'food_allergies' column of 'profiles' in the schema cache")
-        const errorText = `${error.message || ""} ${error.details || ""} ${error.hint || ""}`;
-        const match =
-          errorText.match(/Could not find the '([^']+)' column/i) ||
-          errorText.match(/column ["']?([^"' ]+)["']? of relation/i) ||
-          errorText.match(/column ["']?([^"' ]+)["']? does not exist/i);
-
-        if (match && match[1]) {
-          const missingCol = match[1];
-          console.warn(`[AuthContext] Column '${missingCol}' missing in DB schema cache. Omitting '${missingCol}' and retrying...`);
-          delete currentUpdates[missingCol];
-          attempt++;
-        } else {
-          // If it's a non-missing-column error (e.g. permission/constraint), break loop and return error
-          break;
-        }
+      if (Object.keys(validUpdates).length <= 2 && Object.keys(updates).length > 0) {
+        return { error: null };
       }
 
-      // If loop finished or encountered unhandled error
-      if (lastError) {
-        return { error: lastError };
+      const { data: updatedData, error } = await supabase
+        .from("profiles")
+        .upsert(validUpdates, { onConflict: "id" })
+        .select()
+        .maybeSingle();
+
+      if (error) {
+        console.error("[AuthContext] Web updateProfile failed:", error);
+        return { error };
       }
 
-      setProfile({ ...profile, ...updates });
+      console.log("[AuthContext] Web updateProfile succeeded!");
+      const merged = { ...profile, ...updates, ...(updatedData || {}) };
+      setProfile(merged as UserProfile);
       return { error: null };
     } catch (e: any) {
       console.error("[AuthContext] updateProfile exception:", e);
@@ -345,9 +323,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-
   return (
-    <AuthContext.Provider value={{ user, profile, loading, signIn, signUp, signOut, updateProfile, refreshProfile, isMockMode }}>
+    <AuthContext.Provider value={{
+      user,
+      profile,
+      loading,
+      signIn,
+      signUp,
+      signOut,
+      updateProfile,
+      refreshProfile,
+      isMockMode
+    }}>
       {children}
     </AuthContext.Provider>
   );

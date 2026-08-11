@@ -10,6 +10,7 @@ import { useTheme } from "@/context/ThemeContext";
 import { useHealthData } from "@/hooks/useHealthData";
 import { supabase } from "@/utils/supabase";
 import { getLocalDateString, formatDisplayDate } from "@/utils/dateUtils";
+import { generateLocalAICoachResponse } from "@/services/aiCoachEngine";
 
 interface ChatMessage {
   id: string;
@@ -25,6 +26,17 @@ interface HistoryDaySummary {
   lastMessageSnippet: string;
 }
 
+const INITIAL_SUGGESTIONS = [
+  "How can I improve my fitness?",
+  "Why am I feeling tired?",
+  "How much water should I drink?",
+  "What should I eat today?",
+  "How many calories do I need?",
+  "How can I sleep better?",
+  "What workout should I do?",
+  "How can I improve my recovery?",
+];
+
 export default function AICoachPage() {
   const { profile } = useAuth();
   const { activeMode } = useTheme();
@@ -36,6 +48,9 @@ export default function AICoachPage() {
   const [currentChatDate, setCurrentChatDate] = useState<string>(
     getLocalDateString(undefined, profile?.timezone)
   );
+
+  // Available Suggested Questions State
+  const [availableSuggestions, setAvailableSuggestions] = useState<string[]>(INITIAL_SUGGESTIONS);
 
   // State for Chat History Modal / Past Conversations
   const [showHistoryModal, setShowHistoryModal] = useState(false);
@@ -65,6 +80,61 @@ export default function AICoachPage() {
     return () => window.removeEventListener("vitalcore-user-logout", handleLogout);
   }, [profile?.id]);
 
+  // Helper to query today's AI messages with fallback if conversation_date column is missing
+  const fetchAIMessagesForDate = async (userId: string, targetDate: string) => {
+    if (!supabase) return [];
+    try {
+      const { data, error } = await supabase
+        .from("ai_conversations")
+        .select("*")
+        .eq("user_id", userId)
+        .eq("conversation_date", targetDate)
+        .order("created_at", { ascending: true });
+
+      if (!error && data) return data;
+
+      if (error && (error.code === "PGRST204" || error.code === "42703")) {
+        const dayStart = new Date(targetDate + "T00:00:00");
+        const dayEnd = new Date(targetDate + "T23:59:59.999");
+        const { data: fbData } = await supabase
+          .from("ai_conversations")
+          .select("*")
+          .eq("user_id", userId)
+          .gte("created_at", dayStart.toISOString())
+          .lte("created_at", dayEnd.toISOString())
+          .order("created_at", { ascending: true });
+        return fbData || [];
+      }
+      return [];
+    } catch (err) {
+      console.warn("[AI COACH] Error querying messages:", err);
+      return [];
+    }
+  };
+
+  // Helper to safely persist AI message
+  const saveAIMessage = async (userId: string, sender: "user" | "ai", message: string, targetDate: string) => {
+    if (!supabase) return;
+    try {
+      const { error } = await supabase.from("ai_conversations").insert({
+        user_id: userId,
+        sender,
+        message,
+        conversation_date: targetDate
+      });
+
+      if (error && (error.code === "PGRST204" || error.code === "42703")) {
+        await supabase.from("ai_conversations").insert({
+          user_id: userId,
+          sender,
+          message
+        });
+      }
+    } catch (err) {
+      console.warn("[AI COACH] Error persisting message:", err);
+    }
+  };
+
   // Fetch TODAY'S conversation only from database
   const loadTodayHistory = useCallback(async (targetDate?: string) => {
     if (!profile?.id || !supabase) {
@@ -77,20 +147,15 @@ export default function AICoachPage() {
     setCurrentChatDate(dateToQuery);
 
     try {
-      const { data, error } = await supabase
-        .from("ai_conversations")
-        .select("*")
-        .eq("user_id", profile.id)
-        .eq("conversation_date", dateToQuery)
-        .order("created_at", { ascending: true });
+      const data = await fetchAIMessagesForDate(profile.id, dateToQuery);
 
-      if (!error && data && data.length > 0) {
+      if (data && data.length > 0) {
         setMessages(data.map((row: any) => ({
           id: row.id,
           sender: row.sender as "user" | "ai",
           text: row.message,
           timestamp: new Date(row.created_at),
-          conversation_date: row.conversation_date
+          conversation_date: row.conversation_date || dateToQuery
         })));
       } else {
         setMessages([]);
@@ -209,20 +274,15 @@ export default function AICoachPage() {
     setLoadingPastChat(true);
 
     try {
-      const { data, error } = await supabase
-        .from("ai_conversations")
-        .select("*")
-        .eq("user_id", profile.id)
-        .eq("conversation_date", dateStr)
-        .order("created_at", { ascending: true });
+      const data = await fetchAIMessagesForDate(profile.id, dateStr);
 
-      if (!error && data) {
+      if (data && data.length > 0) {
         setPastDateMessages(data.map((row: any) => ({
           id: row.id,
           sender: row.sender as "user" | "ai",
           text: row.message,
           timestamp: new Date(row.created_at),
-          conversation_date: row.conversation_date
+          conversation_date: row.conversation_date || dateStr
         })));
       } else {
         setPastDateMessages([]);
@@ -236,48 +296,28 @@ export default function AICoachPage() {
   };
 
   const generateHeuristicResponse = (userMsg: string): string => {
-    const lower = userMsg.toLowerCase();
-    if (lower.includes("sore") || lower.includes("workout") || lower.includes("exercise")) {
-      return `Active recovery is key, ${profile?.full_name || "Explorer"}! Focus on foam rolling, light 15-minute walks, and taking in at least 30g of protein to repair muscle tissue.`;
-    }
-    if (lower.includes("sleep") || lower.includes("tired") || lower.includes("bed")) {
-      return `Rest is essential! You logged ${metrics?.sleepHours || 7} hours of sleep recently. Try turning off screens 45 minutes before bed and keeping your bedroom temperature around 18-20°C.`;
-    }
-    if (lower.includes("eat") || lower.includes("food") || lower.includes("diet") || lower.includes("slump")) {
-      return `Fueling your body properly maintains steady glucose! You've logged ${metrics?.caloriesConsumed || 0} kcal today. Pair complex carbohydrates with high-fiber foods and drink 500ml of water to restore focus.`;
-    }
-    return `I've analyzed your telemetry (${metrics?.caloriesConsumed || 0} kcal, ${metrics?.hydrationMl || 0}ml water, ${metrics?.sleepHours || 0}h sleep). Consistency in hydration, balanced macros, and daily movement will maximize your metabolic stability!`;
+    return generateLocalAICoachResponse(userMsg, profile, metrics);
   };
 
-  const handleSendMessage = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!inputVal.trim()) return;
+  const sendUserPromptMessage = async (promptText: string) => {
+    if (!promptText.trim()) return;
 
     const todayDate = getTodayStr();
 
     const userMsg: ChatMessage = {
       id: `msg-user-${Date.now()}`,
       sender: "user",
-      text: inputVal,
+      text: promptText.trim(),
       timestamp: new Date(),
       conversation_date: todayDate
     };
 
     // Save user message to database with conversation_date
-    if (supabase && profile?.id) {
-      try {
-        await supabase.from("ai_conversations").insert({
-          user_id: profile.id,
-          sender: "user",
-          message: inputVal,
-          conversation_date: todayDate
-        });
-      } catch (err) {
-        console.warn("Error persisting user message:", err);
-      }
+    if (profile?.id) {
+      await saveAIMessage(profile.id, "user", promptText.trim(), todayDate);
     }
 
-    const currentInput = inputVal;
+    const currentInput = promptText.trim();
     // Pass only today's messages to AI context
     const currentTodayMessages = [...messages.filter(m => m.id !== "welcome-msg"), userMsg];
     setMessages(prev => [...prev.filter(m => m.id !== "welcome-msg" || prev.length === 1), userMsg]);
@@ -331,13 +371,8 @@ export default function AICoachPage() {
       }
 
       // Persist AI message to database with conversation_date
-      if (supabase && profile?.id) {
-        await supabase.from("ai_conversations").insert({
-          user_id: profile.id,
-          sender: "ai",
-          message: streamedText,
-          conversation_date: todayDate
-        });
+      if (profile?.id) {
+        await saveAIMessage(profile.id, "ai", streamedText, todayDate);
       }
     } catch (err: any) {
       console.warn("API stream failed, activating heuristic fallback:", err);
@@ -358,22 +393,28 @@ export default function AICoachPage() {
         }
       }, 25);
 
-      if (supabase && profile?.id) {
-        await supabase.from("ai_conversations").insert({
-          user_id: profile.id,
-          sender: "ai",
-          message: fallbackText,
-          conversation_date: todayDate
-        });
+      if (profile?.id) {
+        await saveAIMessage(profile.id, "ai", fallbackText, todayDate);
       }
     }
   };
 
+  const handleSendMessage = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!inputVal.trim()) return;
+    await sendUserPromptMessage(inputVal);
+  };
+
+  const handleSelectSuggestion = (question: string) => {
+    setAvailableSuggestions(prev => prev.filter(q => q !== question));
+    sendUserPromptMessage(question);
+  };
+
   const samplePrompts = [
-    "I'm feeling very sore from my workout yesterday.",
-    "Can you help me improve my sleep?",
-    "What should I eat to avoid an afternoon energy slump?",
-    "When is the best time for me to workout today?"
+    "How can I improve my fitness?",
+    "Why am I feeling tired?",
+    "How much water should I drink?",
+    "What should I eat today?"
   ];
 
   return (
@@ -436,6 +477,25 @@ export default function AICoachPage() {
               <div ref={chatEndRef} />
             </div>
 
+            {/* Horizontally Scrollable Suggested Questions Bar */}
+            {availableSuggestions.length > 0 && (
+              <div className="border-t border-foreground/5 py-2 shrink-0 overflow-hidden">
+                <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none snap-x px-1">
+                  {availableSuggestions.map((question) => (
+                    <button
+                      key={question}
+                      type="button"
+                      onClick={() => handleSelectSuggestion(question)}
+                      className="whitespace-nowrap px-3.5 py-2 rounded-xl bg-foreground/5 hover:bg-foreground/10 border border-foreground/10 text-xs font-semibold text-foreground/90 transition-all flex items-center gap-1.5 shrink-0 snap-start active:scale-95 cursor-pointer"
+                    >
+                      <span>{question}</span>
+                      <span className="text-primary font-bold">→</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Form Input footer */}
             <form onSubmit={handleSendMessage} className="border-t border-foreground/5 pt-3 flex gap-2 shrink-0">
               <input
@@ -471,8 +531,8 @@ export default function AICoachPage() {
                 {samplePrompts.map((prompt, idx) => (
                   <button
                     key={idx}
-                    onClick={() => setInputVal(prompt)}
-                    className="w-full text-left p-3 rounded-xl bg-foreground/5 border border-foreground/5 text-xs font-semibold text-foreground/80 hover:bg-foreground/10 hover:border-primary/20 transition-all leading-normal"
+                    onClick={() => handleSelectSuggestion(prompt)}
+                    className="w-full text-left p-3 rounded-xl bg-foreground/5 border border-foreground/5 text-xs font-semibold text-foreground/80 hover:bg-foreground/10 hover:border-primary/20 transition-all leading-normal cursor-pointer active:scale-98"
                   >
                     "{prompt}"
                   </button>

@@ -3,7 +3,7 @@
  * ====================================
  * Priority:
  *   1. Supabase exercise_database table (primary source)
- *   2. ExerciseDB RapidAPI (fallback + cache results back)
+ *   2. Local exercise database (zero external API dependencies)
  *
  * This service is the SINGLE point of truth for exercise fetching in the app.
  */
@@ -49,9 +49,6 @@ export interface ExerciseQuery {
 }
 
 // ── Constants ─────────────────────────────────────────────────────────────────
-
-const RAPID_API_KEY = process.env.EXPO_PUBLIC_EXERCISEDB_API_KEY || '02b8970fc0mshdc16cde1585d5afp14feb1jsnc4601f04e16d';
-const RAPID_API_HOST = process.env.EXPO_PUBLIC_EXERCISEDB_API_HOST || 'exercisedb.p.rapidapi.com';
 
 // Maps app-level category → dataset body_part values
 const CATEGORY_TO_BODY_PARTS: Record<string, string[]> = {
@@ -141,56 +138,13 @@ export async function fetchExercisesFromSupabase(query: ExerciseQuery): Promise<
   }
 }
 
-/**
- * SECONDARY: Fetch from ExerciseDB RapidAPI and cache results in Supabase.
- */
-export async function fetchExercisesFromAPI(query: ExerciseQuery): Promise<ExerciseRecord[]> {
-  try {
-    const bodyPart = query.category && CATEGORY_TO_BODY_PARTS[query.category]
-      ? CATEGORY_TO_BODY_PARTS[query.category][0].toLowerCase()
-      : query.bodyPart?.toLowerCase();
-
-    const limit = (query.limit || 10) * 3;
-    let url = `https://${RAPID_API_HOST}/exercises?limit=${limit}&offset=0`;
-
-    if (bodyPart) {
-      const apiBodyPart = mapApiBodyPart(bodyPart);
-      url = `https://${RAPID_API_HOST}/exercises/bodyPart/${encodeURIComponent(apiBodyPart)}?limit=${limit}`;
-    }
-
-    const response = await fetch(url, {
-      headers: {
-        'x-rapidapi-key': RAPID_API_KEY,
-        'x-rapidapi-host': RAPID_API_HOST,
-      },
-    });
-
-    if (!response.ok) {
-      console.warn('[ExerciseDB] API response not ok:', response.status);
-      return [];
-    }
-
-    const rawData = await response.json();
-    if (!Array.isArray(rawData) || rawData.length === 0) return [];
-
-    const mapped = rawData.map(mapApiToRecord);
-
-    // Cache new exercises back to Supabase (fire-and-forget)
-    cacheExercisesToSupabase(mapped).catch(e =>
-      console.warn('[ExerciseDB] Cache write failed (non-critical):', e)
-    );
-
-    const shuffled = shuffleArray(mapped);
-    return shuffled.slice(0, query.limit || 10);
-  } catch (err) {
-    console.warn('[ExerciseDB] API fetch exception:', err);
-    return [];
-  }
+export async function fetchExercisesFromAPI(_query: ExerciseQuery): Promise<ExerciseRecord[]> {
+  // External API calls prohibited by system design policy.
+  return [];
 }
 
 /**
- * MAIN ENTRY: Supabase-first with API fallback.
- * This is what the recommendation engine always calls.
+ * MAIN ENTRY: Supabase DB with local dataset fallback (Zero external API dependencies).
  */
 export async function fetchExercisesForPlan(query: ExerciseQuery): Promise<ExerciseRecord[]> {
   const needed = query.limit || 6;
@@ -203,22 +157,6 @@ export async function fetchExercisesForPlan(query: ExerciseQuery): Promise<Exerc
     return supabaseResults;
   }
 
-  console.log(`[ExerciseDB] Supabase returned ${supabaseResults.length}/${needed} — calling API fallback...`);
-
-  // Step 2: API fallback
-  const apiResults = await fetchExercisesFromAPI(query);
-
-  if (apiResults.length > 0) {
-    // Merge: prefer Supabase results, fill with API
-    const existing = new Set(supabaseResults.map(e => e.title.toLowerCase()));
-    const newOnes = apiResults.filter(e => !existing.has(e.title.toLowerCase()));
-    const merged = [...supabaseResults, ...newOnes].slice(0, needed);
-    console.log(`[ExerciseDB] Merged: ${merged.length} exercises (${supabaseResults.length} DB + ${newOnes.length} API) ✓`);
-    return merged;
-  }
-
-  // Step 3: Return whatever we have (even if less than needed)
-  console.warn(`[ExerciseDB] Both sources insufficient. Returning ${supabaseResults.length} exercises.`);
   return supabaseResults;
 }
 

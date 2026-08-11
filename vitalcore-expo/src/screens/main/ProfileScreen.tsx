@@ -5,16 +5,19 @@ import {
   Text,
   ScrollView,
   TouchableOpacity,
-  SafeAreaView,
   TextInput,
   Alert,
   ActivityIndicator,
+  Platform,
+  Modal,
 } from 'react-native';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { CustomTextInput } from '../../components/CustomTextInput';
+import ScreenWrapper from '../../components/ScreenWrapper';
+import { ChevronDown, Check, X } from 'lucide-react-native';
 
-type SectionId = 'personal' | 'body' | 'medical' | 'lifestyle' | 'nutrition' | 'fitness' | 'emergency';
+type SectionId = 'personal' | 'body' | 'medical' | 'lifestyle' | 'nutrition' | 'fitness' | 'emergency' | 'settings';
 
 const SECTIONS: { id: SectionId; label: string; emoji: string }[] = [
   { id: 'personal',  label: 'Personal',       emoji: '👤' },
@@ -24,10 +27,13 @@ const SECTIONS: { id: SectionId; label: string; emoji: string }[] = [
   { id: 'nutrition', label: 'Nutrition',       emoji: '🥗' },
   { id: 'fitness',   label: 'Fitness',         emoji: '💪' },
   { id: 'emergency', label: 'Emergency',       emoji: '🆘' },
+  { id: 'settings',  label: 'Settings',        emoji: '⚙️' },
 ];
 
+const BLOOD_GROUPS = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
+
 export default function ProfileScreen({ navigation }: any) {
-  const { profile, updateProfile, refreshProfile } = useAuth();
+  const { profile, updateProfile, refreshProfile, signOut } = useAuth();
   const { colors, isCareMode } = useTheme();
   const [saving, setSaving] = useState(false);
   const [activeSection, setActiveSection] = useState<SectionId>('personal');
@@ -42,6 +48,7 @@ export default function ProfileScreen({ navigation }: any) {
   const [heightCm, setHeightCm] = useState('');
   const [weightKg, setWeightKg] = useState('');
   const [bloodGroup, setBloodGroup] = useState('');
+  const [showBloodDropdown, setShowBloodDropdown] = useState(false);
 
   // Medical
   const [medicalConditions, setMedicalConditions] = useState('');
@@ -114,41 +121,43 @@ export default function ProfileScreen({ navigation }: any) {
     if (!profile?.id) return;
     try {
       setSaving(true);
-      const { error } = await updateProfile({
-        full_name: fullName,
-        date_of_birth: dateOfBirth || null as any,
-        gender: gender || null as any,
-        occupation: occupation || null as any,
-        height_cm: Number(heightCm) || null as any,
-        weight_kg: Number(weightKg) || null as any,
-        bmi: bmiValue !== '—' ? Number(bmiValue) : null as any,
-        blood_group: bloodGroup || null as any,
-        medical_conditions: medicalConditions || null as any,
-        allergies: allergies || null as any,
-        medications: medications || null as any,
-        chronic_conditions: chronicConditions || null as any,
-        smoking_status: smokingStatus || null as any,
-        alcohol_status: alcoholStatus || null as any,
-        working_hours: workingHours || null as any,
-        food_preference: foodPreference || null as any,
-        calorie_goal: Number(calorieGoal) || null as any,
-        fitness_goal: fitnessGoal || null as any,
-        activity_level: activityLevel || null as any,
-        step_goal: Number(stepGoal) || null as any,
-        water_goal: Number(waterGoal) || null as any,
-        emergency_contact_name: emergencyName || null as any,
-        emergency_contact_phone: emergencyPhone || null as any,
-        emergency_contact_relation: emergencyRelation || null as any,
-      });
+      const updates = {
+        full_name: fullName.trim(),
+        date_of_birth: dateOfBirth.trim() || (null as any),
+        gender: gender.trim() || (null as any),
+        occupation: occupation.trim() || (null as any),
+        height_cm: heightCm ? Number(heightCm) : (null as any),
+        weight_kg: weightKg ? Number(weightKg) : (null as any),
+        bmi: bmiValue !== '—' ? Number(bmiValue) : (null as any),
+        blood_group: bloodGroup || (null as any),
+        medical_conditions: medicalConditions.trim() || (null as any),
+        allergies: allergies.trim() || (null as any),
+        medications: medications.trim() || (null as any),
+        chronic_conditions: chronicConditions.trim() || (null as any),
+        smoking_status: smokingStatus.trim() || (null as any),
+        alcohol_status: alcoholStatus.trim() || (null as any),
+        working_hours: workingHours.trim() || (null as any),
+        food_preference: foodPreference.trim() || (null as any),
+        calorie_goal: calorieGoal ? Number(calorieGoal) : (null as any),
+        fitness_goal: fitnessGoal.trim() || (null as any),
+        activity_level: activityLevel.trim() || (null as any),
+        step_goal: stepGoal ? Number(stepGoal) : (null as any),
+        water_goal: waterGoal ? Number(waterGoal) : (null as any),
+        emergency_contact_name: emergencyName.trim() || (null as any),
+        emergency_contact_phone: emergencyPhone.trim() || (null as any),
+        emergency_contact_relation: emergencyRelation.trim() || (null as any),
+      };
+
+      const { error } = await updateProfile(updates);
 
       if (!error) {
         await refreshProfile();
-        Alert.alert('Profile Saved ✓', 'Your health profile has been updated.');
+        Alert.alert('Profile Saved ✓', 'Your health profile has been saved to database.');
       } else {
-        Alert.alert('Error', error.message || 'Failed to save profile.');
+        Alert.alert('Save Failed', error.message || 'Failed to save profile to database.');
       }
     } catch (e: any) {
-      Alert.alert('Error', e.message || 'Failed to save profile.');
+      Alert.alert('Save Error', e.message || 'An error occurred while saving.');
     } finally {
       setSaving(false);
     }
@@ -156,26 +165,59 @@ export default function ProfileScreen({ navigation }: any) {
 
   const handleSelectBloodGroup = async (bg: string) => {
     setBloodGroup(bg);
+    setShowBloodDropdown(false);
     if (profile?.id) {
-      await updateProfile({ blood_group: bg });
+      setSaving(true);
+      const { error } = await updateProfile({ blood_group: bg });
+      if (!error) {
+        await refreshProfile();
+      } else {
+        Alert.alert('Save Error', error.message || 'Failed to save blood group.');
+      }
+      setSaving(false);
+    }
+  };
+
+  const handleSignOut = () => {
+    if (Platform.OS === 'web') {
+      const confirmed = window.confirm('Sign Out?\n\nAre you sure you want to sign out of your account?');
+      if (confirmed) {
+        signOut();
+      }
+    } else {
+      Alert.alert(
+        'Sign Out?',
+        'Are you sure you want to sign out of your account?',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Sign Out', style: 'destructive', onPress: () => signOut() },
+        ]
+      );
     }
   };
 
   const sectionLabelSize = isCareMode ? 14 : 12;
-  const inputFontSize = isCareMode ? 15 : 13;
 
   return (
-    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
+    <ScreenWrapper title="My Profile" subtitle="Personal health profile & biometrics">
       <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
 
         {/* Header */}
-        <View style={styles.header}>
-          <Text style={[styles.title, { color: colors.text, fontSize: isCareMode ? 24 : 20 }]}>
-            My Profile
-          </Text>
-          <Text style={[styles.subtitle, { color: colors.textMuted, fontSize: isCareMode ? 13 : 11 }]}>
-            Your personal information and health data
-          </Text>
+        <View style={styles.headerRow}>
+          <View style={{ flex: 1 }}>
+            <Text style={[styles.title, { color: colors.text, fontSize: isCareMode ? 24 : 20 }]}>
+              My Profile
+            </Text>
+            <Text style={[styles.subtitle, { color: colors.textMuted, fontSize: isCareMode ? 13 : 11 }]}>
+              Your personal information and health data
+            </Text>
+          </View>
+          <TouchableOpacity
+            style={[styles.headerSettingsBtn, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}
+            onPress={() => navigation.navigate('SettingsDetail')}
+          >
+            <Text style={{ fontSize: 13, fontWeight: 'bold', color: colors.text }}>⚙️ Settings</Text>
+          </TouchableOpacity>
         </View>
 
         {/* Quick stat cards */}
@@ -202,16 +244,22 @@ export default function ProfileScreen({ navigation }: any) {
           {SECTIONS.map(sec => (
             <TouchableOpacity
               key={sec.id}
-              onPress={() => setActiveSection(sec.id)}
+              onPress={() => {
+                if (sec.id === 'settings') {
+                  navigation.navigate('SettingsDetail');
+                } else {
+                  setActiveSection(sec.id);
+                }
+              }}
               style={[
                 styles.sectionPill,
                 {
-                  backgroundColor: activeSection === sec.id ? colors.primary : colors.cardBg,
-                  borderColor: activeSection === sec.id ? colors.primary : colors.cardBorder,
+                  backgroundColor: activeSection === sec.id && sec.id !== 'settings' ? colors.primary : colors.cardBg,
+                  borderColor: activeSection === sec.id && sec.id !== 'settings' ? colors.primary : colors.cardBorder,
                 },
               ]}
             >
-              <Text style={{ fontSize: 11, fontWeight: 'bold', color: activeSection === sec.id ? '#fff' : colors.textMuted }}>
+              <Text style={{ fontSize: 11, fontWeight: 'bold', color: activeSection === sec.id && sec.id !== 'settings' ? '#fff' : colors.textMuted }}>
                 {sec.emoji} {sec.label}
               </Text>
             </TouchableOpacity>
@@ -247,21 +295,25 @@ export default function ProfileScreen({ navigation }: any) {
                 <Text style={{ color: colors.primary, fontSize: 22, fontWeight: 'bold', marginTop: 2 }}>{bmiValue}</Text>
               </View>
             )}
-            {/* Blood Group pills */}
-            <Text style={[styles.label, { color: colors.text, marginTop: 14, fontSize: sectionLabelSize }]}>Blood Group</Text>
-            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 6 }}>
-              {['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'].map(bg => (
-                <TouchableOpacity
-                  key={bg}
-                  style={[
-                    styles.bloodChip,
-                    { backgroundColor: bloodGroup === bg ? colors.primary : colors.surface, borderColor: bloodGroup === bg ? colors.primary : colors.cardBorder },
-                  ]}
-                  onPress={() => handleSelectBloodGroup(bg)}
-                >
-                  <Text style={{ color: bloodGroup === bg ? '#fff' : colors.text, fontWeight: 'bold', fontSize: 13 }}>{bg}</Text>
-                </TouchableOpacity>
-              ))}
+
+            {/* Blood Group Dropdown Select Field */}
+            <View style={{ marginTop: 12 }}>
+              <Text style={[styles.label, { color: colors.text, marginBottom: 6, fontSize: sectionLabelSize }]}>
+                Blood Group
+              </Text>
+              <TouchableOpacity
+                style={[
+                  styles.dropdownInput,
+                  { backgroundColor: colors.surface, borderColor: colors.inputBorder }
+                ]}
+                onPress={() => setShowBloodDropdown(true)}
+                activeOpacity={0.7}
+              >
+                <Text style={[styles.dropdownValueText, { color: bloodGroup ? colors.text : colors.textMuted }]}>
+                  {bloodGroup ? `Blood Group: ${bloodGroup}` : 'Select Blood Group...'}
+                </Text>
+                <ChevronDown size={18} color={colors.textMuted} />
+              </TouchableOpacity>
             </View>
           </View>
         )}
@@ -338,15 +390,83 @@ export default function ProfileScreen({ navigation }: any) {
           }
         </TouchableOpacity>
 
+        {/* Settings & Logout Quick Actions */}
+        <View style={{ marginTop: 10, gap: 10 }}>
+          <TouchableOpacity
+            style={[styles.settingsBtn, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}
+            onPress={() => navigation.navigate('SettingsDetail')}
+          >
+            <Text style={[styles.settingsBtnText, { color: colors.text }]}>⚙️ App Settings & Preferences</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.signOutBtn, { backgroundColor: colors.primaryLight, borderColor: colors.primary }]}
+            onPress={handleSignOut}
+          >
+            <Text style={[styles.signOutBtnText, { color: colors.primary }]}>🚪 Log Out Account</Text>
+          </TouchableOpacity>
+        </View>
+
       </ScrollView>
-    </SafeAreaView>
+
+      {/* Blood Group Selection Dropdown Modal */}
+      <Modal
+        visible={showBloodDropdown}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setShowBloodDropdown(false)}
+      >
+        <TouchableOpacity
+          style={styles.modalOverlay}
+          activeOpacity={1}
+          onPress={() => setShowBloodDropdown(false)}
+        >
+          <View
+            style={[
+              styles.dropdownMenu,
+              { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }
+            ]}
+          >
+            <View style={[styles.dropdownHeader, { borderBottomColor: colors.cardBorder }]}>
+              <Text style={[styles.dropdownTitle, { color: colors.text }]}>Select Blood Group</Text>
+              <TouchableOpacity onPress={() => setShowBloodDropdown(false)} style={{ padding: 4 }}>
+                <X size={18} color={colors.textMuted} />
+              </TouchableOpacity>
+            </View>
+            <ScrollView style={{ maxHeight: 300 }}>
+              {BLOOD_GROUPS.map((bg) => (
+                <TouchableOpacity
+                  key={bg}
+                  style={[
+                    styles.dropdownOption,
+                    { borderBottomColor: colors.cardBorder },
+                    bloodGroup === bg && { backgroundColor: colors.primaryLight }
+                  ]}
+                  onPress={() => handleSelectBloodGroup(bg)}
+                >
+                  <Text style={[
+                    styles.dropdownOptionText,
+                    { color: colors.text },
+                    bloodGroup === bg && { color: colors.primary, fontWeight: 'bold' }
+                  ]}>
+                    Blood Group: {bg}
+                  </Text>
+                  {bloodGroup === bg && <Check size={18} color={colors.primary} />}
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+        </TouchableOpacity>
+      </Modal>
+    </ScreenWrapper>
   );
 }
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1 },
   container: { padding: 16, paddingBottom: 40 },
-  header: { marginBottom: 14 },
+  headerRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 },
+  headerSettingsBtn: { paddingHorizontal: 12, paddingVertical: 8, borderRadius: 12, borderWidth: 1 },
   title: { fontWeight: 'bold' },
   subtitle: { marginTop: 2 },
   statGrid: { flexDirection: 'row', gap: 10, marginBottom: 14 },
@@ -357,7 +477,62 @@ const styles = StyleSheet.create({
   field: { marginBottom: 10 },
   label: { fontWeight: 'bold' },
   bmiBox: { marginTop: 12, padding: 12, borderRadius: 12, borderWidth: 1, alignItems: 'center' },
-  bloodChip: { paddingHorizontal: 14, paddingVertical: 8, borderRadius: 10, borderWidth: 1, alignItems: 'center', justifyContent: 'center', minWidth: 44 },
+  dropdownInput: {
+    height: 48,
+    borderRadius: 12,
+    borderWidth: 1,
+    paddingHorizontal: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 4,
+  },
+  dropdownValueText: {
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  dropdownMenu: {
+    width: '100%',
+    maxWidth: 340,
+    borderRadius: 16,
+    borderWidth: 1,
+    padding: 16,
+  },
+  dropdownHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingBottom: 12,
+    borderBottomWidth: 1,
+    marginBottom: 8,
+  },
+  dropdownTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  dropdownOption: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 10,
+    borderRadius: 8,
+    borderBottomWidth: 1,
+  },
+  dropdownOptionText: {
+    fontSize: 14,
+  },
   saveBtn: { paddingVertical: 14, borderRadius: 14, alignItems: 'center', marginTop: 6, marginBottom: 10 },
   saveBtnText: { color: '#fff', fontWeight: 'bold', fontSize: 15 },
+  settingsBtn: { paddingVertical: 14, borderRadius: 14, alignItems: 'center', borderWidth: 1 },
+  settingsBtnText: { fontWeight: 'bold', fontSize: 14 },
+  signOutBtn: { paddingVertical: 14, borderRadius: 14, alignItems: 'center', borderWidth: 1, marginBottom: 14 },
+  signOutBtnText: { fontWeight: 'bold', fontSize: 15 },
 });

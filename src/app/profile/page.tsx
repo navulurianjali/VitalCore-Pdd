@@ -97,7 +97,7 @@ export default function ProfilePage() {
     allergies: "",
     food_allergies: "",
     surgeries: "",
-    chronic_diseases: "",
+    chronic_conditions: "",
     family_history: "",
     pregnancy_status: "",
 
@@ -157,7 +157,7 @@ export default function ProfilePage() {
       allergies: p.allergies || "",
       food_allergies: p.food_allergies || "",
       surgeries: p.surgeries || "",
-      chronic_diseases: p.chronic_conditions || "",
+      chronic_conditions: p.chronic_conditions || "",
       family_history: p.family_history || "",
       pregnancy_status: p.pregnancy_status || "",
 
@@ -257,7 +257,7 @@ export default function ProfilePage() {
         allergies: form.allergies || null,
         food_allergies: form.food_allergies || null,
         surgeries: form.surgeries || null,
-        chronic_conditions: form.chronic_diseases || null,
+        chronic_conditions: form.chronic_conditions || null,
         family_history: form.family_history || null,
         pregnancy_status: form.pregnancy_status || null,
 
@@ -583,9 +583,9 @@ export default function ProfilePage() {
                         onChange={e => setForm({ ...form, food_allergies: e.target.value })}
                         placeholder="e.g. Peanuts, Shellfish" className={inputCls} />
                     </Field>
-                    <Field label="Chronic Conditions" id={f("chronic_diseases")}>
-                      <input type="text" value={form.chronic_diseases}
-                        onChange={e => setForm({ ...form, chronic_diseases: e.target.value })}
+                    <Field label="Chronic Conditions" id={f("chronic_conditions")}>
+                      <input type="text" value={form.chronic_conditions}
+                        onChange={e => setForm({ ...form, chronic_conditions: e.target.value })}
                         placeholder="e.g. Asthma, Arthritis" className={inputCls} />
                     </Field>
                     <Field label="Past Surgeries" id={f("surgeries")}>
@@ -613,7 +613,7 @@ export default function ProfilePage() {
                     <ViewTile label="Current Medications">{val(form.medications)}</ViewTile>
                     <ViewTile label="Allergies">{val(form.allergies)}</ViewTile>
                     <ViewTile label="Food Allergies">{val(form.food_allergies)}</ViewTile>
-                    <ViewTile label="Chronic Conditions">{val(form.chronic_diseases)}</ViewTile>
+                    <ViewTile label="Chronic Conditions">{val(form.chronic_conditions)}</ViewTile>
                     <ViewTile label="Past Surgeries">{val(form.surgeries)}</ViewTile>
                     <ViewTile label="Family History">{val(form.family_history)}</ViewTile>
                     <ViewTile label="Pregnancy Status">{val(form.pregnancy_status)}</ViewTile>

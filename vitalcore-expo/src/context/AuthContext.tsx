@@ -263,19 +263,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       const validDbColumns = new Set([
         'id', 'updated_at', 'username', 'full_name', 'avatar_url', 'date_of_birth', 'gender',
-        'weight_kg', 'height_cm', 'fitness_goal', 'activity_level', 'active_mode',
+        'blood_group', 'country', 'state', 'city', 'occupation', 'height_cm', 'weight_kg', 'bmi',
+        'body_fat_estimate', 'medical_conditions', 'medications', 'medication_schedule',
+        'allergies', 'food_allergies', 'surgeries', 'chronic_conditions', 'family_history',
+        'pregnancy_status', 'activity_level', 'exercise_frequency', 'workout_preference',
+        'fitness_experience', 'fitness_level', 'step_goal', 'water_goal', 'sleep_goal',
+        'wind_down_routine', 'food_preference', 'favorite_foods', 'disliked_foods',
+        'cuisine_preference', 'calorie_goal', 'protein_goal', 'carb_goal', 'fat_goal',
+        'smoking_status', 'alcohol_status', 'stress_level_onboard', 'working_hours',
+        'sleep_schedule', 'emergency_contact_name', 'emergency_contact_phone',
+        'emergency_contact_relation', 'emergency_contact_relationship', 'fitness_goal',
+        'reminder_preferences', 'ai_coach_style', 'unit_system', 'active_mode',
         'soreness_level', 'biological_age', 'stability_score', 'onboarding_completed',
-        'bmi', 'body_fat_estimate', 'occupation', 'timezone', 'fitness_level',
-        'workout_duration_preference', 'preferred_workout_time', 'home_gym_preference',
-        'previous_injuries', 'chronic_conditions', 'surgeries', 'mobility_limitations',
-        'sleep_problems', 'dietary_preferences', 'disliked_foods', 'favorite_foods',
-        'allergies', 'meal_timing_habits', 'caffeine_intake', 'wearable_synced',
-        'anxiety_rating', 'motivation_level', 'stress_level_onboard',
-        'screen_time_hours', 'sitting_hours', 'medical_conditions', 'medications',
-        'food_preference', 'sleep_goal', 'calorie_goal', 'protein_goal', 'water_goal',
-        'step_goal', 'carb_goal', 'fat_goal', 'country', 'state', 'city', 'blood_group'
+        'timezone', 'workout_duration_preference', 'preferred_workout_time',
+        'home_gym_preference', 'previous_injuries', 'mobility_limitations',
+        'sleep_problems', 'dietary_preferences', 'meal_timing_habits', 'caffeine_intake',
+        'wearable_synced', 'anxiety_rating', 'motivation_level', 'screen_time_hours', 'sitting_hours'
       ]);
-      
+
       const payload: Record<string, any> = {
         id: userId,
         updated_at: new Date().toISOString(),
@@ -292,40 +297,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
       }
 
-      let { error } = await supabase
-        .from('profiles')
-        .upsert(payload, { onConflict: 'id' });
-
-      if (error) {
-        console.warn('[AuthContext WARNING] Full payload upsert failed, retrying with core columns:', error);
-        
-        // Fallback with minimal guaranteed columns
-        const corePayload: Record<string, any> = {
-          id: userId,
-          full_name: updates.full_name || profile?.full_name || 'User',
-          onboarding_completed: updates.onboarding_completed ?? true,
-          updated_at: new Date().toISOString(),
-        };
-        if (updates.height_cm) corePayload.height_cm = updates.height_cm;
-        if (updates.weight_kg) corePayload.weight_kg = updates.weight_kg;
-        if (updates.fitness_goal) corePayload.fitness_goal = updates.fitness_goal;
-        if (updates.activity_level) corePayload.activity_level = updates.activity_level;
-        if (updates.bmi) corePayload.bmi = updates.bmi;
-        if (payload.date_of_birth) corePayload.date_of_birth = payload.date_of_birth;
-
-        const { error: coreError } = await supabase
-          .from('profiles')
-          .upsert(corePayload, { onConflict: 'id' });
-
-        error = coreError;
+      if (Object.keys(payload).length <= 2 && payload.id && payload.updated_at && Object.keys(updates).length > 0) {
+        console.warn('[AuthContext] No valid columns passed in updates payload.');
+        return { error: null };
       }
+
+      console.log(`[AuthContext] Executing Supabase profile upsert for ${userId}...`, payload);
+
+      const { data: updatedData, error } = await supabase
+        .from('profiles')
+        .upsert(payload, { onConflict: 'id' })
+        .select()
+        .maybeSingle();
 
       if (error) {
         console.error('[AuthContext ERROR] Supabase profile upsert failed:', error);
+        return { error };
       }
 
-      console.log('[AuthContext] Updating local state synchronously...');
-      setProfile((prev) => (prev ? { ...prev, ...updates } : ({ id: userId, ...updates } as UserProfile)));
+      console.log('[AuthContext] Profile upsert succeeded! Updating local state and re-fetching profile...');
+      const merged = updatedData ? { ...profile, ...updatedData } : { ...profile, ...payload };
+      setProfile(merged as UserProfile);
       await fetchSupabaseProfile(userId);
       return { error: null };
     } catch (e: any) {

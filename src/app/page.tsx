@@ -30,7 +30,7 @@ import Footer from "@/components/layout/Footer";
 import { useAuth } from "@/context/AuthContext";
 
 export default function LandingPage() {
-  const { user, profile } = useAuth();
+  const { user } = useAuth();
 
   const features = [
     {
@@ -70,9 +70,6 @@ export default function LandingPage() {
       color: "rose"
     }
   ];
-
-
-
 
   return (
     <div className="flex-1 flex flex-col bg-background relative overflow-hidden w-full max-w-[100vw]">
@@ -128,9 +125,13 @@ export default function LandingPage() {
                 transition={{ delay: 0.2 }}
                 className="flex flex-wrap gap-4 pt-2"
               >
-                {/* Sign Up Free → /auth choice page (or /dashboard if already logged in) */}
-                <Link href={user ? "/dashboard" : "/auth"}>
-                  <Button variant="primary" size="lg" className="flex items-center gap-2 px-6 py-3 font-semibold shadow-sm hover:scale-[1.01] transition-transform">
+                {/* Sign Up Free → /auth/signup (or /dashboard if already logged in) */}
+                <Link href={user ? "/dashboard" : "/auth/signup"}>
+                  <Button
+                    variant="primary"
+                    size="lg"
+                    className="flex items-center gap-2 px-6 py-3 font-semibold shadow-sm hover:scale-[1.01] transition-transform cursor-pointer"
+                  >
                     <span>Sign Up Free</span>
                     <ArrowRight className="h-4 w-4" />
                   </Button>
@@ -303,8 +304,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-
-
       {/* 7. PRE-FOOTER CTA CONSOLE BLOCK */}
       <section className="py-20 bg-background relative border-t border-foreground/5">
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
@@ -320,8 +319,8 @@ export default function LandingPage() {
             
             <div className="flex justify-center pt-2 relative z-10">
               {/* Bottom CTA: auth-aware */}
-              <Link href={user ? "/dashboard" : "/auth"}>
-                <Button variant="primary" size="lg" className="flex items-center gap-2 px-8">
+              <Link href={user ? "/dashboard" : "/auth/signup"}>
+                <Button variant="primary" size="lg" className="flex items-center gap-2 px-8 cursor-pointer">
                   <span>Get Started Free</span>
                   <ArrowRight className="h-4.5 w-4.5" />
                 </Button>

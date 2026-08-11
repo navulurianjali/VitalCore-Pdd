@@ -49,7 +49,8 @@ export async function GET(req: NextRequest) {
     const { createClient: createSupabaseClient } = await import("@supabase/supabase-js");
     const supabase = createSupabaseClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL || "https://bevolemwakfozxuymxsn.supabase.co",
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "placeholder-anon-key"
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "placeholder-anon-key",
+      authHeader ? { global: { headers: { Authorization: authHeader } } } : undefined
     );
 
     const today = new Date().toISOString().split("T")[0];

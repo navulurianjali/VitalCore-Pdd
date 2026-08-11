@@ -84,12 +84,8 @@ export default function DashboardPage() {
         return;
       }
     }
-    // Default fallback if user has no medications logged
-    setMeds([
-      { name: "Blood Pressure Capsule", time: "8:00 AM", taken: false },
-      { name: "Joint Strength Vitamin D", time: "12:00 PM", taken: false },
-      { name: "Glucosamine Tablet", time: "6:00 PM", taken: false }
-    ]);
+    // Set empty state if user has no medications in profile
+    setMeds([]);
   }, [profile?.medications, profile?.medication_schedule]);
 
 

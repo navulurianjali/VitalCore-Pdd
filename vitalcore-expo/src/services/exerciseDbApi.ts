@@ -1,8 +1,5 @@
 import { ExerciseDetail, EXERCISE_DATABASE_FLAT } from '../utils/exerciseLibrary';
 
-const RAPID_API_KEY = process.env.EXPO_PUBLIC_EXERCISEDB_API_KEY || '02b8970fc0mshdc16cde1585d5afp14feb1jsnc4601f04e16d';
-const RAPID_API_HOST = process.env.EXPO_PUBLIC_EXERCISEDB_API_HOST || 'exercisedb.p.rapidapi.com';
-
 interface RapidExerciseItem {
   id: string;
   name: string;
@@ -15,7 +12,7 @@ interface RapidExerciseItem {
 }
 
 /**
- * Fetch exercises live from RapidAPI ExerciseDB
+ * Fetch exercises from local offline exercise database (Zero external API dependency)
  */
 export async function fetchLiveExercisesFromDB(params?: {
   bodyPart?: string;
@@ -23,55 +20,31 @@ export async function fetchLiveExercisesFromDB(params?: {
   equipment?: string;
   limit?: number;
 }): Promise<ExerciseDetail[]> {
-  try {
-    let url = `https://${RAPID_API_HOST}/exercises?limit=${params?.limit || 20}&offset=0`;
-    if (params?.bodyPart) {
-      url = `https://${RAPID_API_HOST}/exercises/bodyPart/${encodeURIComponent(params.bodyPart)}?limit=${params?.limit || 20}`;
-    } else if (params?.target) {
-      url = `https://${RAPID_API_HOST}/exercises/target/${encodeURIComponent(params.target)}?limit=${params?.limit || 20}`;
-    } else if (params?.equipment) {
-      url = `https://${RAPID_API_HOST}/exercises/equipment/${encodeURIComponent(params.equipment)}?limit=${params?.limit || 20}`;
-    }
+  let list = [...EXERCISE_DATABASE_FLAT];
 
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: {
-        'x-rapidapi-key': RAPID_API_KEY,
-        'x-rapidapi-host': RAPID_API_HOST,
-      },
-    });
-
-    if (response.ok) {
-      const data: RapidExerciseItem[] = await response.json();
-      if (Array.isArray(data) && data.length > 0) {
-        return data.map((item, idx) => ({
-          id: item.id || `rapid-ex-${idx}`,
-          name: item.name ? item.name.charAt(0).toUpperCase() + item.name.slice(1) : 'Exercise',
-          category: mapBodyPartToCategory(item.bodyPart),
-          description: item.instructions?.join(' ') || `Targeting ${item.target} using ${item.equipment}.`,
-          primaryMuscle: item.target ? item.target.toUpperCase() : 'Full Body',
-          secondaryMuscle: item.secondaryMuscles?.join(', ') || 'Core & Stabilizers',
-          difficulty: 'Intermediate',
-          purpose: `Builds ${item.target} strength and muscle control.`,
-          contraindications: ['Avoid if experiencing acute joint pain.'],
-          durationSeconds: 45,
-          repetitions: '12 - 15 reps',
-          reps: '12-15 reps',
-          sets: 3,
-          restSeconds: 30,
-          equipment: mapEquipmentName(item.equipment),
-          instructions: item.instructions || ['Maintain controlled form', 'Exhale during exertion'],
-          commonMistakes: ['Rushing reps', 'Rounding back'],
-          safetyTips: ['Warm up prior to set execution'],
-        }));
-      }
-    }
-  } catch (err) {
-    console.warn('ExerciseDB RapidAPI request failed, using local offline fallback:', err);
+  if (params?.bodyPart) {
+    const bp = params.bodyPart.toLowerCase();
+    list = list.filter((ex) =>
+      ex.primaryMuscle.toLowerCase().includes(bp) ||
+      ex.category.toLowerCase().includes(bp)
+    );
   }
 
-  // Fallback to offline exercise database
-  return EXERCISE_DATABASE_FLAT;
+  if (params?.target) {
+    const target = params.target.toLowerCase();
+    list = list.filter((ex) =>
+      ex.primaryMuscle.toLowerCase().includes(target) ||
+      ex.description.toLowerCase().includes(target)
+    );
+  }
+
+  if (params?.equipment) {
+    const eq = params.equipment.toLowerCase();
+    list = list.filter((ex) => ex.equipment.toLowerCase().includes(eq));
+  }
+
+  const limit = params?.limit || 20;
+  return list.length > 0 ? list.slice(0, limit) : EXERCISE_DATABASE_FLAT.slice(0, limit);
 }
 
 function mapBodyPartToCategory(bodyPart?: string): ExerciseDetail['category'] {

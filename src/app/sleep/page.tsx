@@ -3,17 +3,12 @@
 import React, { useState, useEffect } from "react";
 import { 
   Moon, 
-  Sparkles, 
   AlertTriangle, 
   Clock, 
   Zap, 
-  ChevronRight, 
   Plus, 
-  Percent, 
   Calendar,
-  CheckCircle2,
-  TrendingUp,
-  BrainCircuit
+  CheckCircle2
 } from "lucide-react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import GlassCard from "@/components/ui/GlassCard";
@@ -21,22 +16,8 @@ import Button from "@/components/ui/Button";
 import { useAuth } from "@/context/AuthContext";
 import { useTheme } from "@/context/ThemeContext";
 import confetti from "canvas-confetti";
-import { supabase, isSupabaseConfigured } from "@/utils/supabase";
+import { supabase } from "@/utils/supabase";
 import { getLocalDateString } from "@/utils/dateUtils";
-
-import {
-  AreaChart,
-  Area,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  Legend,
-  CartesianGrid,
-  Line
-} from "recharts";
 
 interface SleepLog {
   date: string;
@@ -53,12 +34,6 @@ interface SleepLog {
 export default function SleepPage() {
   const { activeMode } = useTheme();
   const { profile } = useAuth();
-  
-  // Mounted check to bypass hydration bugs in Recharts
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   // Form parameters
   const [showLogForm, setShowLogForm] = useState(false);
@@ -196,7 +171,6 @@ export default function SleepPage() {
       }
     }
 
-
     setLoadingLogs(false);
     setShowLogForm(false);
     
@@ -238,23 +212,6 @@ export default function SleepPage() {
 
   // Dynamic warning alerts
   const showAlert = latestLog ? (latestLog.duration < 6.5 || latestLog.wakings >= 3 || latestLog.quality < 6) : false;
-
-  // Custom tooltips for Recharts
-  const CustomTooltip = ({ active, payload, label }: any) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="p-3 bg-background/95 border border-foreground/10 rounded-xl shadow-xl text-xs font-semibold backdrop-blur-md">
-          <p className="text-foreground/50 mb-1">Sleep Date: {label}</p>
-          {payload.map((pld: any) => (
-            <p key={pld.name} style={{ color: pld.color || pld.fill }}>
-              {pld.name}: {pld.value} {pld.name.includes("Repair") ? "%" : pld.name.includes("Duration") ? "hrs" : "/ 10"}
-            </p>
-          ))}
-        </div>
-      );
-    }
-    return null;
-  };
 
   return (
     <DashboardLayout>
@@ -369,118 +326,6 @@ export default function SleepPage() {
 
             </div>
 
-            {/* Charts */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              
-              <div className="glass-panel p-4 flex flex-col gap-3">
-                <div>
-                  <h3 className="font-semibold text-sm text-[var(--foreground)] flex items-center gap-1.5">
-                    <TrendingUp className="h-4 w-4 text-primary" />
-                    Sleep Duration & Energy
-                  </h3>
-                  <p className="text-xs text-[var(--muted)] mt-0.5">7-day trend: sleep hours vs next-day energy</p>
-                </div>
-
-                <div className="h-52 w-full min-w-0">
-                  {mounted ? (
-                    <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={200}>
-                      <AreaChart data={logs} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                        <defs>
-                          <linearGradient id="colorDuration" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.2}/>
-                            <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
-                          </linearGradient>
-                          <linearGradient id="colorEnergy" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#10b981" stopOpacity={0.2}/>
-                            <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
-                          </linearGradient>
-                        </defs>
-                        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                        <XAxis dataKey="date" stroke="rgba(255,255,255,0.3)" style={{ fontSize: "9px", fontWeight: "bold" }} />
-                        <YAxis stroke="rgba(255,255,255,0.3)" style={{ fontSize: "9px", fontWeight: "bold" }} />
-                        <Tooltip content={<CustomTooltip />} />
-                        <Legend wrapperStyle={{ fontSize: "10px", fontWeight: "bold", paddingTop: "10px" }} />
-                        <Area 
-                          type="monotone" 
-                          name="Duration (hrs)" 
-                          dataKey="duration" 
-                          stroke="#3b82f6" 
-                          fillOpacity={1} 
-                          fill="url(#colorDuration)" 
-                          strokeWidth={2}
-                        />
-                        <Area 
-                          type="monotone" 
-                          name="Energy Level" 
-                          dataKey="energy" 
-                          stroke="#10b981" 
-                          fillOpacity={1} 
-                          fill="url(#colorEnergy)" 
-                          strokeWidth={2}
-                        />
-                      </AreaChart>
-                    </ResponsiveContainer>
-                  ) : (
-                    <div className="h-full w-full flex items-center justify-center text-xs text-foreground/30 font-bold">
-                      Initializing Charts...
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div className="glass-panel p-4 flex flex-col gap-3">
-                <div>
-                  <h3 className="font-semibold text-sm text-[var(--foreground)] flex items-center gap-1.5">
-                    <BrainCircuit className="h-4 w-4 text-secondary" />
-                    Quality, Stress & Recovery
-                  </h3>
-                  <p className="text-xs text-[var(--muted)] mt-0.5">Sleep quality, stress, and muscle recovery</p>
-                </div>
-
-                <div className="h-52 w-full min-w-0">
-                  {mounted ? (
-                    <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={200}>
-                      <BarChart data={logs} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                        <XAxis dataKey="date" stroke="rgba(255,255,255,0.3)" style={{ fontSize: "9px", fontWeight: "bold" }} />
-                        <YAxis stroke="rgba(255,255,255,0.3)" style={{ fontSize: "9px", fontWeight: "bold" }} />
-                        <Tooltip content={<CustomTooltip />} />
-                        <Legend wrapperStyle={{ fontSize: "10px", fontWeight: "bold", paddingTop: "10px" }} />
-                        <Bar 
-                          name="Quality Score" 
-                          dataKey="quality" 
-                          fill="#8b5cf6" 
-                          radius={[4, 4, 0, 0]} 
-                          maxBarSize={30}
-                        />
-                        <Line 
-                          type="monotone" 
-                          name="Stress Level" 
-                          dataKey="stress" 
-                          stroke="#ef4444" 
-                          strokeWidth={2.5}
-                          dot={{ r: 3 }}
-                        />
-                        <Line 
-                          type="monotone" 
-                          name="Body Recovery Index" 
-                          dataKey="muscleRepair" 
-                          stroke="#f59e0b" 
-                          strokeWidth={2.5}
-                          dot={{ r: 3 }}
-                        />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  ) : (
-                    <div className="h-full w-full flex items-center justify-center text-xs text-foreground/30 font-bold">
-                      Initializing Charts...
-                    </div>
-                  )}
-                </div>
-              </div>
-
-            </div>
-
             {/* Sleep schedule & insights */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               
@@ -558,7 +403,7 @@ export default function SleepPage() {
           </div>
         )}
 
-        {/* 2. Redesigned Sleep Logger Form Modal Overlay */}
+        {/* Sleep Logger Form Modal Overlay */}
         {showLogForm && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
             <div className="relative w-full max-w-md bg-[var(--card-bg)] border border-[var(--border)] rounded-xl shadow-xl p-6 space-y-4">
