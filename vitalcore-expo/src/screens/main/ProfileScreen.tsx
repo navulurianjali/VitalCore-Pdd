@@ -5,7 +5,6 @@ import {
   Text,
   ScrollView,
   TouchableOpacity,
-  TextInput,
   Alert,
   ActivityIndicator,
   Platform,
@@ -198,6 +197,30 @@ export default function ProfileScreen({ navigation }: any) {
 
   const sectionLabelSize = isCareMode ? 14 : 12;
 
+  const renderBloodGroupSelectField = () => (
+    <View style={{ marginBottom: 10 }}>
+      <Text style={[{ fontSize: 13, fontWeight: '600', color: colors.textMuted, marginBottom: 6 }, isCareMode && { fontSize: 14 }]}>
+        Blood Group
+      </Text>
+      <TouchableOpacity
+        style={[
+          styles.dropdownInput,
+          {
+            backgroundColor: colors.inputBg || colors.cardBg,
+            borderColor: colors.inputBorder || colors.cardBorder,
+          }
+        ]}
+        onPress={() => setShowBloodDropdown(true)}
+        activeOpacity={0.7}
+      >
+        <Text style={[styles.dropdownValueText, { color: bloodGroup ? colors.text : colors.textMuted }]}>
+          {bloodGroup ? bloodGroup : 'Select Blood Group'}
+        </Text>
+        <ChevronDown size={18} color={colors.textMuted} />
+      </TouchableOpacity>
+    </View>
+  );
+
   return (
     <ScreenWrapper title="My Profile" subtitle="Personal health profile & biometrics">
       <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
@@ -296,25 +319,8 @@ export default function ProfileScreen({ navigation }: any) {
               </View>
             )}
 
-            {/* Blood Group Dropdown Select Field */}
-            <View style={{ marginTop: 12 }}>
-              <Text style={[styles.label, { color: colors.text, marginBottom: 6, fontSize: sectionLabelSize }]}>
-                Blood Group
-              </Text>
-              <TouchableOpacity
-                style={[
-                  styles.dropdownInput,
-                  { backgroundColor: colors.surface, borderColor: colors.inputBorder }
-                ]}
-                onPress={() => setShowBloodDropdown(true)}
-                activeOpacity={0.7}
-              >
-                <Text style={[styles.dropdownValueText, { color: bloodGroup ? colors.text : colors.textMuted }]}>
-                  {bloodGroup ? `Blood Group: ${bloodGroup}` : 'Select Blood Group...'}
-                </Text>
-                <ChevronDown size={18} color={colors.textMuted} />
-              </TouchableOpacity>
-            </View>
+            {/* Blood Group Select Field */}
+            {renderBloodGroupSelectField()}
           </View>
         )}
 
@@ -326,6 +332,9 @@ export default function ProfileScreen({ navigation }: any) {
             <CustomTextInput label="Current Medications" value={medications} onChangeText={setMedications} placeholder="e.g. Metformin 500mg" containerStyle={styles.field} />
             <CustomTextInput label="Allergies" value={allergies} onChangeText={setAllergies} placeholder="e.g. Dust, Pollen, Shellfish" containerStyle={styles.field} />
             <CustomTextInput label="Chronic Conditions" value={chronicConditions} onChangeText={setChronicConditions} placeholder="e.g. Asthma, Arthritis" containerStyle={styles.field} />
+
+            {/* Blood Group Select Field */}
+            {renderBloodGroupSelectField()}
           </View>
         )}
 
@@ -449,7 +458,7 @@ export default function ProfileScreen({ navigation }: any) {
                     { color: colors.text },
                     bloodGroup === bg && { color: colors.primary, fontWeight: 'bold' }
                   ]}>
-                    Blood Group: {bg}
+                    {bg}
                   </Text>
                   {bloodGroup === bg && <Check size={18} color={colors.primary} />}
                 </TouchableOpacity>
@@ -476,7 +485,7 @@ const styles = StyleSheet.create({
   sectionTitle: { fontWeight: 'bold', marginBottom: 10 },
   field: { marginBottom: 10 },
   label: { fontWeight: 'bold' },
-  bmiBox: { marginTop: 12, padding: 12, borderRadius: 12, borderWidth: 1, alignItems: 'center' },
+  bmiBox: { marginTop: 12, marginBottom: 12, padding: 12, borderRadius: 12, borderWidth: 1, alignItems: 'center' },
   dropdownInput: {
     height: 48,
     borderRadius: 12,
@@ -485,11 +494,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginTop: 4,
+    marginTop: 2,
   },
   dropdownValueText: {
-    fontSize: 14,
-    fontWeight: '600',
+    fontSize: 15,
+    fontWeight: '500',
   },
   modalOverlay: {
     flex: 1,
@@ -500,7 +509,7 @@ const styles = StyleSheet.create({
   },
   dropdownMenu: {
     width: '100%',
-    maxWidth: 340,
+    maxWidth: 320,
     borderRadius: 16,
     borderWidth: 1,
     padding: 16,
@@ -522,12 +531,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingVertical: 12,
-    paddingHorizontal: 10,
+    paddingHorizontal: 12,
     borderRadius: 8,
     borderBottomWidth: 1,
   },
   dropdownOptionText: {
-    fontSize: 14,
+    fontSize: 15,
   },
   saveBtn: { paddingVertical: 14, borderRadius: 14, alignItems: 'center', marginTop: 6, marginBottom: 10 },
   saveBtnText: { color: '#fff', fontWeight: 'bold', fontSize: 15 },
