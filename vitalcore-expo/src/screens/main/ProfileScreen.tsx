@@ -243,18 +243,34 @@ export default function ProfileScreen({ navigation }: any) {
           </TouchableOpacity>
         </View>
 
-        {/* Quick stat cards */}
+        {/* Quick stat cards - 3rd Card (BLOOD) is now interactive dropdown trigger! */}
         <View style={styles.statGrid}>
-          {[
-            { label: 'AGE', value: calculateAge(dateOfBirth), color: colors.primary },
-            { label: 'BMI', value: bmiValue, color: colors.success },
-            { label: 'BLOOD', value: bloodGroup || '—', color: colors.text },
-          ].map(({ label, value, color }) => (
-            <View key={label} style={[styles.statCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
-              <Text style={{ color: colors.textMuted, fontSize: 9, fontWeight: 'bold', letterSpacing: 0.5 }}>{label}</Text>
-              <Text style={{ color, fontSize: 15, fontWeight: 'bold', marginTop: 3 }}>{value}</Text>
+          <View style={[styles.statCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
+            <Text style={{ color: colors.textMuted, fontSize: 9, fontWeight: 'bold', letterSpacing: 0.5 }}>AGE</Text>
+            <Text style={{ color: colors.primary, fontSize: 15, fontWeight: 'bold', marginTop: 3 }}>{calculateAge(dateOfBirth)}</Text>
+          </View>
+
+          <View style={[styles.statCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
+            <Text style={{ color: colors.textMuted, fontSize: 9, fontWeight: 'bold', letterSpacing: 0.5 }}>BMI</Text>
+            <Text style={{ color: colors.success, fontSize: 15, fontWeight: 'bold', marginTop: 3 }}>{bmiValue}</Text>
+          </View>
+
+          <TouchableOpacity
+            style={[
+              styles.statCard,
+              { backgroundColor: colors.cardBg, borderColor: bloodGroup ? colors.primary : colors.cardBorder }
+            ]}
+            onPress={() => setShowBloodDropdown(true)}
+            activeOpacity={0.7}
+          >
+            <Text style={{ color: colors.textMuted, fontSize: 9, fontWeight: 'bold', letterSpacing: 0.5 }}>BLOOD</Text>
+            <View style={{ flexDirection: 'row', items: 'center', gap: 2, marginTop: 3 }}>
+              <Text style={{ color: bloodGroup ? colors.primary : colors.text, fontSize: 15, fontWeight: 'bold' }}>
+                {bloodGroup || 'Select'}
+              </Text>
+              <ChevronDown size={14} color={bloodGroup ? colors.primary : colors.textMuted} />
             </View>
-          ))}
+          </TouchableOpacity>
         </View>
 
         {/* Section tab pills */}
@@ -334,7 +350,7 @@ export default function ProfileScreen({ navigation }: any) {
           <View style={[styles.sectionBox, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
             <Text style={[styles.sectionTitle, { color: colors.text, fontSize: sectionLabelSize }]}>Medical & Health</Text>
             
-            {/* Blood Group Select Field - First item in Medical section */}
+            {/* Blood Group Select Field */}
             {renderBloodGroupSelectField()}
 
             <CustomTextInput label="Medical Conditions" value={medicalConditions} onChangeText={setMedicalConditions} placeholder="e.g. Diabetes, Hypertension" containerStyle={styles.field} />
