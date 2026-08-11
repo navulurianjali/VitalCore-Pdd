@@ -198,7 +198,7 @@ export default function ProfileScreen({ navigation }: any) {
   const sectionLabelSize = isCareMode ? 14 : 12;
 
   const renderBloodGroupSelectField = () => (
-    <View style={{ marginBottom: 10 }}>
+    <View style={{ marginBottom: 12 }}>
       <Text style={[{ fontSize: 13, fontWeight: '600', color: colors.textMuted, marginBottom: 6 }, isCareMode && { fontSize: 14 }]}>
         Blood Group
       </Text>
@@ -296,6 +296,10 @@ export default function ProfileScreen({ navigation }: any) {
             <CustomTextInput label="Full Name" value={fullName} onChangeText={setFullName} containerStyle={styles.field} />
             <CustomTextInput label="Date of Birth (YYYY-MM-DD)" value={dateOfBirth} onChangeText={setDateOfBirth} placeholder="e.g. 1998-05-24" containerStyle={styles.field} />
             <CustomTextInput label="Gender" value={gender} onChangeText={setGender} placeholder="e.g. Male / Female / Non-binary" containerStyle={styles.field} />
+            
+            {/* Blood Group Select Field */}
+            {renderBloodGroupSelectField()}
+
             <CustomTextInput label="Occupation" value={occupation} onChangeText={setOccupation} placeholder="e.g. Software Engineer" containerStyle={styles.field} />
           </View>
         )}
@@ -304,6 +308,10 @@ export default function ProfileScreen({ navigation }: any) {
         {activeSection === 'body' && (
           <View style={[styles.sectionBox, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
             <Text style={[styles.sectionTitle, { color: colors.text, fontSize: sectionLabelSize }]}>Body Measurements</Text>
+            
+            {/* Blood Group Select Field */}
+            {renderBloodGroupSelectField()}
+
             <View style={{ flexDirection: 'row', gap: 10 }}>
               <View style={{ flex: 1 }}>
                 <CustomTextInput label="Height (cm)" value={heightCm} onChangeText={setHeightCm} keyboardType="numeric" placeholder="e.g. 175" />
@@ -318,9 +326,6 @@ export default function ProfileScreen({ navigation }: any) {
                 <Text style={{ color: colors.primary, fontSize: 22, fontWeight: 'bold', marginTop: 2 }}>{bmiValue}</Text>
               </View>
             )}
-
-            {/* Blood Group Select Field */}
-            {renderBloodGroupSelectField()}
           </View>
         )}
 
@@ -328,13 +333,14 @@ export default function ProfileScreen({ navigation }: any) {
         {activeSection === 'medical' && (
           <View style={[styles.sectionBox, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
             <Text style={[styles.sectionTitle, { color: colors.text, fontSize: sectionLabelSize }]}>Medical & Health</Text>
+            
+            {/* Blood Group Select Field - First item in Medical section */}
+            {renderBloodGroupSelectField()}
+
             <CustomTextInput label="Medical Conditions" value={medicalConditions} onChangeText={setMedicalConditions} placeholder="e.g. Diabetes, Hypertension" containerStyle={styles.field} />
             <CustomTextInput label="Current Medications" value={medications} onChangeText={setMedications} placeholder="e.g. Metformin 500mg" containerStyle={styles.field} />
             <CustomTextInput label="Allergies" value={allergies} onChangeText={setAllergies} placeholder="e.g. Dust, Pollen, Shellfish" containerStyle={styles.field} />
             <CustomTextInput label="Chronic Conditions" value={chronicConditions} onChangeText={setChronicConditions} placeholder="e.g. Asthma, Arthritis" containerStyle={styles.field} />
-
-            {/* Blood Group Select Field */}
-            {renderBloodGroupSelectField()}
           </View>
         )}
 
@@ -528,7 +534,7 @@ const styles = StyleSheet.create({
   },
   dropdownOption: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justify.content: 'space-between',
     alignItems: 'center',
     paddingVertical: 12,
     paddingHorizontal: 12,
