@@ -534,7 +534,7 @@ const styles = StyleSheet.create({
   },
   dropdownOption: {
     flexDirection: 'row',
-    justify.content: 'space-between',
+    justifyContent: 'space-between',
     alignItems: 'center',
     paddingVertical: 12,
     paddingHorizontal: 12,
