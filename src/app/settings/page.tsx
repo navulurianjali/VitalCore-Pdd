@@ -200,7 +200,8 @@ export default function SettingsPage() {
 
   const handleSignOut = async () => {
     await signOut();
-    router.push("/auth/login");
+    router.push("/");
+    router.refresh();
   };
 
   const handleChangePassword = async (e: React.FormEvent) => {
@@ -372,9 +373,17 @@ export default function SettingsPage() {
           <SettingsRow
             id="settings-logout"
             icon={LogOut}
-            label="Sign Out"
-            description="Sign out of your VitalCore account"
-            onClick={handleSignOut}
+            label="Log Out"
+            description="Sign out of your VitalCore account on this device"
+            danger
+            rightContent={
+              <button
+                onClick={handleSignOut}
+                className="px-3.5 py-1.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-500 hover:bg-rose-500 hover:text-white text-xs font-bold transition-all cursor-pointer"
+              >
+                Log Out
+              </button>
+            }
           />
         </SettingsSection>
 

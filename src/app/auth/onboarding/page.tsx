@@ -58,6 +58,7 @@ export default function OnboardingPage() {
   // STEP 2: Body Information
   const [height, setHeight] = useState<number | "">(profile?.height_cm || "");
   const [weight, setWeight] = useState<number | "">(profile?.weight_kg || "");
+  const [bloodGroup, setBloodGroup] = useState(profile?.blood_group || "");
 
   // Auto calculated BMI
   const heightM = height && Number(height) > 0 ? Number(height) / 100 : 0;
@@ -207,6 +208,7 @@ export default function OnboardingPage() {
         full_name: fullName.trim() || profile?.full_name || "",
         age: userAge > 0 ? userAge : null,
         gender: gender,
+        blood_group: bloodGroup || null,
         weight_kg: weight !== "" ? Number(weight) : null,
         height_cm: height !== "" ? Number(height) : null,
         bmi: bmi > 0 ? bmi : null,
@@ -371,6 +373,20 @@ export default function OnboardingPage() {
                   </div>
                 </div>
 
+                <div>
+                  <label className="text-xs font-bold text-foreground">Blood Group</label>
+                  <select
+                    value={bloodGroup}
+                    onChange={e => setBloodGroup(e.target.value)}
+                    className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-foreground/10 bg-foreground/5 text-foreground focus:outline-none focus:border-primary mt-1 font-semibold"
+                  >
+                    <option value="">Select Blood Group (Optional)</option>
+                    {["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"].map(bg => (
+                      <option key={bg} value={bg}>{bg}</option>
+                    ))}
+                  </select>
+                </div>
+
                 {bmi > 0 && (
                   <div className="p-4 rounded-2xl bg-foreground/5 border border-foreground/10 flex items-center justify-between">
                     <div>
@@ -475,13 +491,13 @@ export default function OnboardingPage() {
 
                 {/* Search Box */}
                 <div className="relative">
-                  <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-foreground/40 pointer-events-none" />
+                  <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground/40 pointer-events-none" />
                   <input
                     type="text"
                     value={medicalSearchQuery}
                     onChange={e => setMedicalSearchQuery(e.target.value)}
                     placeholder="Search medical conditions..."
-                    className="w-full text-xs pl-9 pr-3.5 py-2.5 rounded-xl border border-foreground/10 bg-foreground/5 text-foreground focus:outline-none focus:border-primary"
+                    className="w-full text-xs pl-10 pr-4 py-2.5 rounded-xl border border-foreground/10 bg-foreground/5 text-foreground focus:outline-none focus:border-primary font-medium"
                   />
                 </div>
 

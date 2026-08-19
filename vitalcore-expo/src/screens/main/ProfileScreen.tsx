@@ -264,7 +264,7 @@ export default function ProfileScreen({ navigation }: any) {
             activeOpacity={0.7}
           >
             <Text style={{ color: colors.textMuted, fontSize: 9, fontWeight: 'bold', letterSpacing: 0.5 }}>BLOOD</Text>
-            <View style={{ flexDirection: 'row', items: 'center', gap: 2, marginTop: 3 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 2, marginTop: 3 }}>
               <Text style={{ color: bloodGroup ? colors.primary : colors.text, fontSize: 15, fontWeight: 'bold' }}>
                 {bloodGroup || 'Select'}
               </Text>

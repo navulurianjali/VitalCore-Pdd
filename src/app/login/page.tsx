@@ -10,10 +10,20 @@ import GlassCard from "@/components/ui/GlassCard";
 import Input from "@/components/ui/Input";
 import { validateEmail } from "@/utils/validation";
 
-export default function LoginPage() {
-  const { signIn } = useAuth();
+export default function StandaloneLoginPage() {
+  const { user, profile, loading: authLoading, signIn } = useAuth();
   const router = useRouter();
 
+  // If already authenticated when accessing /login, redirect appropriately
+  React.useEffect(() => {
+    if (!authLoading && user) {
+      if (profile?.onboarding_completed === true) {
+        router.replace("/dashboard");
+      } else if (profile && profile.onboarding_completed === false) {
+        router.replace("/auth/onboarding");
+      }
+    }
+  }, [user, profile, authLoading, router]);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -50,11 +60,11 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const { error, profile: loggedInProfile } = await signIn(email.trim(), password);
+      const { error, profile: fetchedProf } = await signIn(email.trim(), password);
       if (error) {
         setErrorMsg(error.message);
       } else {
-        if (loggedInProfile?.onboarding_completed === true || loggedInProfile?.height_cm || loggedInProfile?.weight_kg || loggedInProfile?.age || loggedInProfile?.fitness_goal) {
+        if (fetchedProf?.onboarding_completed === true || fetchedProf?.height_cm || fetchedProf?.weight_kg || fetchedProf?.age || fetchedProf?.fitness_goal) {
           router.push("/dashboard");
         } else {
           router.push("/auth/onboarding");
@@ -68,7 +78,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex-1 flex items-center justify-center bg-background px-4 py-16 relative overflow-hidden auth-page">
+    <div className="flex-1 flex items-center justify-center bg-background px-4 py-16 relative overflow-hidden auth-page min-h-[calc(100vh-72px)]">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(139,92,246,0.05),transparent_60%)]" />
       
       <div className="w-full max-w-[420px] relative z-10 space-y-6">
@@ -78,8 +88,8 @@ export default function LoginPage() {
           <Link href="/" className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-primary text-white shadow-lg shadow-primary/20 hover:scale-105 transition-transform">
             <Activity className="h-5 w-5" />
           </Link>
-          <h2 className="auth-subtitle tracking-tight text-center font-bold">Welcome Back</h2>
-          <p className="auth-helper text-[12px] flex items-center gap-1 justify-center">
+          <h2 className="auth-subtitle tracking-tight text-center font-bold text-2xl text-[var(--foreground)]">Welcome Back</h2>
+          <p className="auth-helper text-[12px] flex items-center gap-1 justify-center text-[var(--muted)]">
             <ShieldCheck className="h-4 w-4 text-secondary/80" />
             Log in to your VitalCore account
           </p>

@@ -187,11 +187,18 @@ export default function SleepPage() {
   };
 
   // Calculations
-  const latestLog = logs.length > 0 ? logs[logs.length - 1] : null;
+  // Today's Date & Sleep Log Isolation
+  const todayStr = getLocalDateString(undefined, profile?.timezone);
+  const todayLog = logs.find((l) => {
+    return l.date === todayStr || l.date === todayStr.substring(5, 10).replace("-", "/");
+  });
+  const hasLoggedToday = Boolean(todayLog);
+  const latestLog = todayLog || (logs.length > 0 ? logs[logs.length - 1] : null);
+
   const targetSleep = profile?.sleep_problems ? 8.5 : 8.0;
   
   const avgDuration = logs.length > 0 ? Math.round((logs.reduce((acc, curr) => acc + curr.duration, 0) / logs.length) * 10) / 10 : 0;
-  const sleepDebt = latestLog ? Math.max(0, Math.round((targetSleep - latestLog.duration) * 10) / 10) : 0;
+  const sleepDebt = hasLoggedToday && todayLog ? Math.max(0, Math.round((targetSleep - todayLog.duration) * 10) / 10) : 0;
   
   // Consistency index calculated based on deviation of duration
   const calculateConsistency = (items: SleepLog[]) => {
@@ -203,15 +210,10 @@ export default function SleepPage() {
   };
   const consistencyIndex = logs.length > 0 ? calculateConsistency(logs) : 0;
 
-  const recoveryScore = logs.length > 0 ? Math.round(
-    logs.reduce((acc, curr) => {
-      const score = (curr.quality * 6 + curr.refreshment * 4) - (curr.wakings * 4);
-      return acc + Math.max(10, Math.min(100, score * 10));
-    }, 0) / logs.length
-  ) : 0;
+  const recoveryScore = hasLoggedToday && todayLog ? todayLog.muscleRepair : 0;
 
-  // Dynamic warning alerts
-  const showAlert = latestLog ? (latestLog.duration < 6.5 || latestLog.wakings >= 3 || latestLog.quality < 6) : false;
+  // Dynamic warning alerts (only for today if logged and low duration)
+  const showAlert = hasLoggedToday && todayLog ? (todayLog.duration < 6.5 || todayLog.wakings >= 3 || todayLog.quality < 6) : false;
 
   return (
     <DashboardLayout>
@@ -286,13 +288,13 @@ export default function SleepPage() {
               
               <GlassCard glowColor="violet" className="p-4">
                 <span className="text-xs font-medium text-[var(--muted)] block mb-2">Sleep Quality</span>
-                <div className="analytics-number text-[var(--foreground)]">{latestLog ? `${latestLog.quality * 10}%` : "—"}</div>
+                <div className="analytics-number text-[var(--foreground)]">{hasLoggedToday && todayLog ? `${todayLog.quality * 10}%` : "0%"}</div>
                 <div className="progress-bar mt-3">
-                  {latestLog && <div className="progress-bar-fill bg-primary" style={{ width: `${latestLog.quality * 10}%` }} />}
+                  <div className="progress-bar-fill bg-primary" style={{ width: `${hasLoggedToday && todayLog ? todayLog.quality * 10 : 0}%` }} />
                 </div>
-                {latestLog && (
-                  <p className="text-xs text-[var(--muted)] mt-1.5">Deep sleep: ~{Math.round(latestLog.quality * 5.2)}% of total</p>
-                )}
+                <p className="text-xs text-[var(--muted)] mt-1.5">
+                  {hasLoggedToday && todayLog ? `Deep sleep: ~${Math.round(todayLog.quality * 5.2)}% of total` : "No sleep logged today"}
+                </p>
               </GlassCard>
 
               <GlassCard glowColor="emerald" className="p-4">
@@ -336,17 +338,23 @@ export default function SleepPage() {
                 </h3>
                 
                 <div className="space-y-0">
-                  {[
-                    { label: "Best Bedtime", value: "9:45 PM – 10:20 PM", color: "text-primary" },
-                    { label: "Deepest Sleep Time", value: "11:15 PM", color: "text-secondary" },
-                    { label: "Rest & Recovery Phase", value: "11:30 PM – 2:30 AM", color: "text-amber-500" },
-                    { label: "Wakeup Difference", value: "± 12 min (Excellent)", color: "text-emerald-500" },
-                  ].map((row) => (
-                    <div key={row.label} className="flex justify-between items-center py-2.5 border-b border-[var(--border)] last:border-0">
-                      <span className="text-sm text-[var(--muted)]">{row.label}</span>
-                      <span className={`text-sm font-medium ${row.color}`}>{row.value}</span>
+                  {logs.length > 0 ? (
+                    [
+                      { label: "Target Bedtime", value: profile?.sleep_problems ? "9:30 PM – 10:00 PM" : "10:00 PM – 10:30 PM", color: "text-primary" },
+                      { label: "Recommended Duration", value: `${targetSleep} Hours`, color: "text-secondary" },
+                      { label: "Consistency Index", value: `${consistencyIndex}%`, color: "text-amber-500" },
+                      { label: "Log Status", value: hasLoggedToday ? "Recorded Today" : "Pending Today", color: "text-emerald-500" },
+                    ].map((row) => (
+                      <div key={row.label} className="flex justify-between items-center py-2.5 border-b border-[var(--border)] last:border-0">
+                        <span className="text-sm text-[var(--muted)]">{row.label}</span>
+                        <span className={`text-sm font-medium ${row.color}`}>{row.value}</span>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="py-4 text-center text-xs text-[var(--muted)]">
+                      Log your first sleep session to calculate your personalized sleep schedule and consistency index.
                     </div>
-                  ))}
+                  )}
                 </div>
               </div>
 

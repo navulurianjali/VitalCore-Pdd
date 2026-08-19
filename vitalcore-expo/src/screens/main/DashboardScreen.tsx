@@ -137,19 +137,19 @@ export default function DashboardScreen({ navigation }: any) {
   const stepsLogged = metrics?.steps || 0;
 
   const predictions = calculateFutureHealthPredictions({
-    sleepHours: simulating ? simSleep : (sleepHrs || metrics?.sleepHours || 7),
-    sleepQuality: simulating ? (simSleep >= 8 ? 90 : simSleep >= 6 ? 70 : 45) : (metrics?.sleepQuality || 80),
-    hydrationMl: simulating ? simWater : (waterLogged || metrics?.hydrationMl || 2000),
-    hydrationTarget: metrics?.hydrationTarget || 2500,
-    stressLevel: simulating ? simStress : (metrics?.stressLevel || 30),
-    fatigueScore: metrics?.fatigueScore || 30,
-    physicalFatigue: metrics?.physicalFatigue || 25,
-    mentalFatigue: metrics?.mentalFatigue || 35,
+    sleepHours: simulating ? simSleep : (sleepHrs || metrics?.sleepHours || 0),
+    sleepQuality: simulating ? (simSleep >= 8 ? 90 : simSleep >= 6 ? 70 : 45) : (metrics?.sleepQuality || 0),
+    hydrationMl: simulating ? simWater : (waterLogged || metrics?.hydrationMl || 0),
+    hydrationTarget: metrics?.hydrationTarget || profile?.water_goal || 2500,
+    stressLevel: simulating ? simStress : (metrics?.stressLevel || 0),
+    fatigueScore: metrics?.fatigueScore || 0,
+    physicalFatigue: metrics?.physicalFatigue || 0,
+    mentalFatigue: metrics?.mentalFatigue || 0,
     sorenessLevel: profile?.soreness_level || 0,
-    recoveryPercentage: metrics?.recoveryPercentage || 85,
-    stabilityScore: metrics?.stabilityScore || 90,
-    screenTimeHours: profile?.screen_time_hours || 6,
-    caffeineIntake: profile?.caffeine_intake || 'moderate',
+    recoveryPercentage: metrics?.recoveryPercentage || 0,
+    stabilityScore: metrics?.stabilityScore || 0,
+    screenTimeHours: profile?.screen_time_hours || 0,
+    caffeineIntake: profile?.caffeine_intake || 'none',
   });
 
   return (
@@ -308,13 +308,13 @@ export default function DashboardScreen({ navigation }: any) {
           <View style={styles.perfGrid}>
             <View style={[styles.perfCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
               <Text style={[styles.perfLabel, { color: colors.textMuted }]}>CNS Fatigue</Text>
-              <Text style={[styles.perfVal, { color: colors.text }]}>42%</Text>
-              <Text style={{ color: colors.success, fontSize: 10, marginTop: 2 }}>Optimal Threshold</Text>
+              <Text style={[styles.perfVal, { color: colors.text }]}>{metrics?.fatigueScore ? `${metrics.fatigueScore}%` : '0%'}</Text>
+              <Text style={{ color: colors.success, fontSize: 10, marginTop: 2 }}>{metrics?.fatigueScore ? 'Optimal Threshold' : 'No telemetry'}</Text>
             </View>
             <View style={[styles.perfCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
               <Text style={[styles.perfLabel, { color: colors.textMuted }]}>HRV Status</Text>
-              <Text style={[styles.perfVal, { color: colors.text }]}>84 ms</Text>
-              <Text style={{ color: colors.success, fontSize: 10, marginTop: 2 }}>Stable Stance</Text>
+              <Text style={[styles.perfVal, { color: colors.text }]}>{metrics?.recoveryPercentage ? `${Math.round(metrics.recoveryPercentage * 1.1)} ms` : '--'}</Text>
+              <Text style={{ color: colors.success, fontSize: 10, marginTop: 2 }}>{metrics?.recoveryPercentage ? 'Stable Stance' : 'No telemetry'}</Text>
             </View>
           </View>
         </View>

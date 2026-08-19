@@ -3,17 +3,27 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Activity, ShieldCheck, Mail, Lock, User, CheckCircle, AlertCircle, Shield } from "lucide-react";
+import { Activity, ShieldCheck, Mail, Lock, User, CheckCircle, AlertCircle } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import Button from "@/components/ui/Button";
 import GlassCard from "@/components/ui/GlassCard";
 import Input from "@/components/ui/Input";
 import { validateEmail, validatePassword } from "@/utils/validation";
 
-export default function SignupPage() {
-  const { signUp } = useAuth();
+export default function StandaloneSignupPage() {
+  const { user, profile, loading: authLoading, signUp } = useAuth();
   const router = useRouter();
 
+  // If already authenticated when accessing /signup, redirect appropriately
+  React.useEffect(() => {
+    if (!authLoading && user) {
+      if (profile?.onboarding_completed === true) {
+        router.replace("/dashboard");
+      } else if (profile && profile.onboarding_completed === false) {
+        router.replace("/auth/onboarding");
+      }
+    }
+  }, [user, profile, authLoading, router]);
 
   const [fullName, setFullName] = useState("");
   const [username, setUsername] = useState("");
@@ -109,7 +119,7 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="flex-1 flex items-center justify-center bg-background px-4 py-16 relative overflow-hidden auth-page">
+    <div className="flex-1 flex items-center justify-center bg-background px-4 py-16 relative overflow-hidden auth-page min-h-[calc(100vh-72px)]">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(139,92,246,0.05),transparent_60%)]" />
       
       <div className="w-full max-w-[480px] relative z-10 space-y-6">
@@ -119,8 +129,8 @@ export default function SignupPage() {
           <Link href="/" className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-primary text-white shadow-lg shadow-primary/20 hover:scale-105 transition-transform">
             <Activity className="h-5 w-5" />
           </Link>
-          <h2 className="auth-subtitle tracking-tight text-center font-bold">Create Your Account</h2>
-          <p className="auth-helper text-[12px] flex items-center gap-1 justify-center">
+          <h2 className="auth-subtitle tracking-tight text-center font-bold text-2xl text-[var(--foreground)]">Create Your Account</h2>
+          <p className="auth-helper text-[12px] flex items-center gap-1 justify-center text-[var(--muted)]">
             <ShieldCheck className="h-4 w-4 text-secondary/80" />
             Verified Healthcare Authentication
           </p>
@@ -262,7 +272,7 @@ export default function SignupPage() {
               type="submit"
               isLoading={loading}
               disabled={!isFormValid || loading}
-              className="w-full mt-3 font-bold text-xs py-3.5 shadow-lg shadow-primary/25 disabled:opacity-50"
+              className="w-full mt-3 font-bold text-xs py-3.5 shadow-lg shadow-primary/25 disabled:opacity-50 cursor-pointer"
             >
               Create Verified Account
             </Button>

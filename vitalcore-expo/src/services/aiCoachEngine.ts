@@ -391,9 +391,9 @@ export function generateLocalAICoachResponse(
 
     case 'RECOVERY':
       return `${styleHeader}\nRecovery telemetry assessment for **${name}**:\n\n` +
-        `• **HRV Recovery Score**: **${metrics?.recoveryPercentage || 85}%**\n` +
-        `• **Fatigue Index**: **${metrics?.fatigueScore || 20} / 100**\n` +
-        `• **Stress Level**: **${metrics?.stressLevel || 30}%**\n\n` +
+        `• **HRV Recovery Score**: **${metrics?.recoveryPercentage || 0}%**\n` +
+        `• **Fatigue Index**: **${metrics?.fatigueScore || 0} / 100**\n` +
+        `• **Stress Level**: **${metrics?.stressLevel || 0}%**\n\n` +
         `**Optimal Recovery Protocol:**\n` +
         `• Perform 15 minutes of light stretching or foam rolling.\n` +
         `• Prioritize 8 hours of restful sleep and hydrate with 2.5L+ of water.\n` +

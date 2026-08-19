@@ -20,6 +20,7 @@ import {
   DailyHealthRecord,
   HistoryAnalytics,
 } from "@/services/dailyTracker";
+import { DatePickerPopover } from "@/components/ui/DatePickerPopover";
 import {
   Calendar as CalendarIcon,
   ChevronLeft,
@@ -43,6 +44,7 @@ export default function HealthHistoryPage() {
   const [activeTab, setActiveTab] = useState<"day" | "7days" | "30days">("day");
   const [selectedDate, setSelectedDate] = useState<string>(getLocalDateString(undefined, profile?.timezone));
   const [dayRecord, setDayRecord] = useState<DailyHealthRecord | null>(null);
+  const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
 
   const [historyRecords, setHistoryRecords] = useState<DailyHealthRecord[]>([]);
   const [analytics, setAnalytics] = useState<HistoryAnalytics | null>(null);
@@ -162,33 +164,50 @@ export default function HealthHistoryPage() {
                 variant="glass"
                 size="sm"
                 onClick={handlePrevDay}
-                className="flex items-center gap-1 text-sm text-[var(--foreground)]"
+                className="flex items-center gap-1 text-sm text-[var(--foreground)] cursor-pointer"
               >
                 <ChevronLeft className="h-4 w-4" />
                 Previous Day
               </Button>
 
-              <div className="flex items-center gap-2">
-                <CalendarIcon className="h-4 w-4 text-primary" />
+              {/* Clickable Date Display Trigger */}
+              <button
+                onClick={() => setIsDatePickerOpen(true)}
+                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--muted-bg)]/60 hover:bg-[var(--muted-bg)] border border-[var(--border)] transition-all cursor-pointer group"
+                title="Click to open calendar date picker"
+              >
+                <CalendarIcon className="h-4 w-4 text-primary group-hover:scale-110 transition-transform" />
                 <span className="font-semibold text-base text-[var(--foreground)]">
                   {formatDisplayDate(selectedDate, profile?.timezone)}
                 </span>
-                <span className="text-xs px-2 py-0.5 rounded-full bg-[var(--muted-bg)] text-[var(--muted)] font-mono">
+                <span className="text-xs px-2 py-0.5 rounded-full bg-[var(--card-bg)] text-[var(--muted)] font-mono border border-[var(--border)]">
                   {selectedDate}
                 </span>
-              </div>
+              </button>
 
               <Button
                 variant="glass"
                 size="sm"
                 onClick={handleNextDay}
                 disabled={isToday}
-                className="flex items-center gap-1 text-sm text-[var(--foreground)] disabled:opacity-30"
+                className="flex items-center gap-1 text-sm text-[var(--foreground)] disabled:opacity-30 cursor-pointer"
               >
                 Next Day
                 <ChevronRight className="h-4 w-4" />
               </Button>
             </GlassCard>
+
+            {/* Calendar Popover Modal */}
+            <DatePickerPopover
+              isOpen={isDatePickerOpen}
+              onClose={() => setIsDatePickerOpen(false)}
+              selectedDate={selectedDate}
+              onSelectDate={(newDate) => {
+                setSelectedDate(newDate);
+              }}
+              userId={user?.id}
+              timezone={profile?.timezone}
+            />
 
             {loading ? (
               <GlassCard className="p-12 text-center">

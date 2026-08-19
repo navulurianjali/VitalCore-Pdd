@@ -275,11 +275,7 @@ input[type="range"]::-webkit-slider-thumb:hover {
   transform: scale(1.15);
 }
 
-/* ==================== MODALS ==================== */
-.fixed.inset-0.z-50 {
-  background-color: rgba(0, 0, 0, 0.6) !important;
-  backdrop-filter: blur(4px) !important;
-}
+
 
 /* ==================== WELLNESS MODES ==================== */
 .wellness-mode { --glass-border: rgba(52, 211, 153, 0.12); }

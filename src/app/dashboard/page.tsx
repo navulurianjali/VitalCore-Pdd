@@ -487,26 +487,26 @@ export default function DashboardPage() {
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
               <GlassCard glowColor="violet" className="p-5 flex flex-col justify-between min-h-[130px]">
                 <span className="text-[10px] font-semibold text-[var(--muted)] block mb-1">CNS Fatigue</span>
-                <div className="analytics-number text-[var(--foreground)]">42%</div>
+                <div className="analytics-number text-[var(--foreground)]">{metrics.fatigueScore > 0 ? `${metrics.fatigueScore}%` : "0%"}</div>
                 <span className="text-[10px] text-emerald-600 mt-1 block">Optimal Threshold</span>
                 <div className="progress-bar mt-3">
-                  <div className="progress-bar-fill bg-primary" style={{ width: "42%" }} />
+                  <div className="progress-bar-fill bg-primary" style={{ width: `${metrics.fatigueScore}%` }} />
                 </div>
               </GlassCard>
 
               <GlassCard glowColor="emerald" className="p-5 flex flex-col justify-between min-h-[130px]">
                 <span className="text-[10px] font-semibold text-[var(--muted)] block mb-1">HRV Status</span>
-                <div className="analytics-number text-[var(--foreground)]">84 ms</div>
-                <span className="text-[10px] text-emerald-600 mt-1 block">Stable Stance</span>
+                <div className="analytics-number text-[var(--foreground)]">{metrics.recoveryPercentage > 0 ? `${Math.round(metrics.recoveryPercentage * 1.1)} ms` : "--"}</div>
+                <span className="text-[10px] text-emerald-600 mt-1 block">{metrics.recoveryPercentage > 0 ? "Stable Stance" : "No telemetry"}</span>
                 <div className="progress-bar mt-3">
-                  <div className="progress-bar-fill bg-secondary" style={{ width: "84%" }} />
+                  <div className="progress-bar-fill bg-secondary" style={{ width: `${metrics.recoveryPercentage}%` }} />
                 </div>
               </GlassCard>
 
               <GlassCard glowColor="rose" className="p-5 flex flex-col justify-between min-h-[130px]">
                 <span className="text-[10px] font-semibold text-[var(--muted)] block mb-1">Metabolic Rate</span>
                 <div className="analytics-number text-[var(--foreground)]">{metrics.metabolicEfficiency}%</div>
-                <span className="text-[10px] text-[var(--muted)] mt-1 block">Optimal</span>
+                <span className="text-[10px] text-[var(--muted)] mt-1 block">{metrics.metabolicEfficiency > 0 ? "Optimal" : "No telemetry"}</span>
                 <div className="progress-bar mt-3">
                   <div className="progress-bar-fill bg-rose-500/80" style={{ width: `${metrics.metabolicEfficiency}%` }} />
                 </div>
@@ -514,8 +514,8 @@ export default function DashboardPage() {
 
               <GlassCard glowColor="amber" className="p-5 flex flex-col justify-between min-h-[130px]">
                 <span className="text-[10px] font-semibold text-[var(--muted)] block mb-1">Glycemic Level</span>
-                <div className="analytics-number text-primary">{metrics.glycemicIndexLoad}</div>
-                <span className="text-[10px] text-[var(--muted)] mt-1 block">Glycogen stores primed</span>
+                <div className="analytics-number text-primary">{metrics.caloriesConsumed > 0 ? metrics.glycemicIndexLoad : "--"}</div>
+                <span className="text-[10px] text-[var(--muted)] mt-1 block">{metrics.caloriesConsumed > 0 ? "Glycogen stores tracked" : "Log meals to track"}</span>
               </GlassCard>
             </div>
 
@@ -523,18 +523,18 @@ export default function DashboardPage() {
             <GlassCard glowColor="none" className="p-5">
               <div className="flex items-center gap-2 mb-4">
                 <TrendingDown className="h-4 w-4 text-primary" />
-                <h3 className="font-semibold text-xs text-[var(--foreground)] uppercase tracking-wider">Nutrition Target Mix</h3>
+                <h3 className="font-semibold text-xs text-[var(--foreground)] uppercase tracking-wider">Nutrition Intake vs Targets</h3>
               </div>
               <div className="grid grid-cols-3 gap-4 text-center">
                 {[
-                  { label: "Protein", value: "165.4g", color: "text-primary" },
-                  { label: "Carbs", value: "210.0g", color: "text-secondary" },
-                  { label: "Healthy Fats", value: "54.2g", color: "text-accent" },
+                  { label: "Protein", value: `${metrics.proteinG} / ${metrics.proteinTarget}g`, color: "text-primary" },
+                  { label: "Carbs", value: `${metrics.carbsG} / ${metrics.carbsTarget}g`, color: "text-secondary" },
+                  { label: "Healthy Fats", value: `${metrics.fatG} / ${metrics.fatTarget}g`, color: "text-accent" },
                 ].map((m) => (
                   <div key={m.label} className="p-4 rounded-2xl bg-[var(--muted-bg)]/45 border border-[var(--border)]">
                     <span className={`text-[10px] font-semibold ${m.color} block uppercase tracking-wider`}>{m.label}</span>
                     <span className="text-base font-bold text-[var(--foreground)] block mt-1">{m.value}</span>
-                    <span className="text-[9px] text-[var(--muted)] mt-0.5 block">Recommended</span>
+                    <span className="text-[9px] text-[var(--muted)] mt-0.5 block">Logged / Target</span>
                   </div>
                 ))}
               </div>
@@ -547,26 +547,34 @@ export default function DashboardPage() {
                   <Award className="h-4 w-4 text-rose-500" /> 
                   Personal Benchmarks
                 </span>
-                <span className="text-[9px] bg-rose-500/10 text-rose-500 font-semibold px-2.5 py-0.5 rounded-full uppercase tracking-wider">Active</span>
+                <span className="text-[9px] bg-rose-500/10 text-rose-500 font-semibold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                  {metrics.workoutMinutes > 0 ? "Active" : "No Workout Recorded"}
+                </span>
               </div>
-              <div className="grid grid-cols-4 gap-3 text-center text-xs font-semibold">
-                <div className="p-3 bg-[var(--muted-bg)]/40 rounded-2xl border border-[var(--border)]">
-                  <span className="text-[9px] text-[var(--muted)] block uppercase tracking-wider">Deadlift</span>
-                  <span className="text-sm font-bold text-[var(--foreground)] block mt-0.5">160 kg</span>
+              {metrics.workoutMinutes > 0 ? (
+                <div className="grid grid-cols-4 gap-3 text-center text-xs font-semibold">
+                  <div className="p-3 bg-[var(--muted-bg)]/40 rounded-2xl border border-[var(--border)]">
+                    <span className="text-[9px] text-[var(--muted)] block uppercase tracking-wider">Workout</span>
+                    <span className="text-sm font-bold text-[var(--foreground)] block mt-0.5">{metrics.workoutMinutes} min</span>
+                  </div>
+                  <div className="p-3 bg-[var(--muted-bg)]/40 rounded-2xl border border-[var(--border)]">
+                    <span className="text-[9px] text-[var(--muted)] block uppercase tracking-wider">Active Cals</span>
+                    <span className="text-sm font-bold text-[var(--foreground)] block mt-0.5">{metrics.caloriesBurned} kcal</span>
+                  </div>
+                  <div className="p-3 bg-[var(--muted-bg)]/40 rounded-2xl border border-[var(--border)]">
+                    <span className="text-[9px] text-[var(--muted)] block uppercase tracking-wider">Steps</span>
+                    <span className="text-sm font-bold text-[var(--foreground)] block mt-0.5">{metrics.steps}</span>
+                  </div>
+                  <div className="p-3 bg-[var(--muted-bg)]/40 rounded-2xl border border-[var(--border)]">
+                    <span className="text-[9px] text-[var(--muted)] block uppercase tracking-wider">Target</span>
+                    <span className="text-sm font-bold text-[var(--foreground)] block mt-0.5">{metrics.stepsTarget}</span>
+                  </div>
                 </div>
-                <div className="p-3 bg-[var(--muted-bg)]/40 rounded-2xl border border-[var(--border)]">
-                  <span className="text-[9px] text-[var(--muted)] block uppercase tracking-wider">Squat</span>
-                  <span className="text-sm font-bold text-[var(--foreground)] block mt-0.5">135 kg</span>
-                </div>
-                <div className="p-3 bg-[var(--muted-bg)]/40 rounded-2xl border border-[var(--border)]">
-                  <span className="text-[9px] text-[var(--muted)] block uppercase tracking-wider">Bench</span>
-                  <span className="text-sm font-bold text-[var(--foreground)] block mt-0.5">105 kg</span>
-                </div>
-                <div className="p-3 bg-[var(--muted-bg)]/40 rounded-2xl border border-[var(--border)]">
-                  <span className="text-[9px] text-[var(--muted)] block uppercase tracking-wider">5K Run</span>
-                  <span className="text-sm font-bold text-[var(--foreground)] block mt-0.5">19:42 m</span>
-                </div>
-              </div>
+              ) : (
+                <p className="text-xs text-[var(--muted)] font-medium text-center py-2">
+                  No exercise sessions recorded today. Log a workout in Fitness to record personal benchmarks.
+                </p>
+              )}
             </GlassCard>
 
           </div>
@@ -581,9 +589,11 @@ export default function DashboardPage() {
               <GlassCard glowColor="violet" className="p-5 flex flex-col justify-between min-h-[120px]">
                 <div>
                   <span className="text-[10px] font-semibold text-[var(--muted)] block uppercase tracking-wider">Lifestyle Balance</span>
-                  <div className="analytics-number text-[var(--foreground)] mt-2">{metrics.lifestyleSustainability}%</div>
+                  <div className="analytics-number text-[var(--foreground)] mt-2">{metrics.hasTelemetry ? `${metrics.lifestyleSustainability}%` : "--"}</div>
                 </div>
-                <p className="text-xs text-[var(--muted)] leading-relaxed mt-2">Consistent rest schedules protect your cardiovascular rhythm.</p>
+                <p className="text-xs text-[var(--muted)] leading-relaxed mt-2">
+                  {metrics.hasTelemetry ? "Consistent rest schedules protect your cardiovascular rhythm." : "Log daily activities to compute lifestyle balance."}
+                </p>
               </GlassCard>
 
               <GlassCard glowColor="amber" className="p-5 flex flex-col justify-between min-h-[120px] border border-amber-500/20 relative overflow-hidden group">
@@ -597,16 +607,20 @@ export default function DashboardPage() {
                   
                   <div className="bg-amber-500/10 text-amber-600 p-3 rounded-xl border border-amber-500/10 shadow-inner">
                     <p className="text-[11px] font-black leading-snug flex items-start gap-1.5">
-                      <span className="mt-0.5">⚠️</span>
-                      <span>{metrics.micronutrientDeficiencies?.[0] || "Vitamin D optimization needed"}</span>
+                      <span className="mt-0.5">{metrics.micronutrientDeficiencies?.length ? "⚠️" : "✅"}</span>
+                      <span>
+                        {metrics.micronutrientDeficiencies?.[0] || (metrics.hasTelemetry ? "No active health triggers detected today." : "No health triggers recorded yet. Start logging your telemetry!")}
+                      </span>
                     </p>
                   </div>
                 </div>
                 
                 <div className="relative z-10 mt-4 pt-3 border-t border-[var(--border)]">
                   <p className="text-[11px] font-bold text-foreground/80 leading-relaxed flex items-start gap-2">
-                    <span className="text-amber-500 mt-0.5 text-sm">☀️</span> 
-                    <span className="flex-1">Action: Spend 15 minutes in natural afternoon sunlight today to recalibrate your circadian rhythm.</span>
+                    <span className="text-amber-500 mt-0.5 text-sm">💡</span> 
+                    <span className="flex-1">
+                      {metrics.micronutrientDeficiencies?.length ? "Action: Focus on dietary intake and outdoor activity today." : "Action: Keep logging your daily meals, water, and sleep to generate personalized health triggers."}
+                    </span>
                   </p>
                 </div>
               </GlassCard>

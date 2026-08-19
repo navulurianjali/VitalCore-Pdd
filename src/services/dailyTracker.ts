@@ -135,8 +135,6 @@ async function queryTableForDate(
     // PGRST204: `date` column doesn't exist yet — fall back to created_at range filter
     // This ensures we STILL only get today's records, not all records
     if (res.error && (res.error.code === "PGRST204" || res.error.code === "42703")) {
-      console.warn(`[DAILY DATA] Table "${table}" has no \`date\` column. Falling back to created_at range filter. Run hydration_date_isolation_fix.sql in Supabase.`);
-      
       // Calculate UTC day boundaries for the local date
       // e.g., for "2026-08-10" in IST (+5:30): start = "2026-08-09T18:30:00Z", end = "2026-08-10T18:30:00Z"
       const dayStart = new Date(targetDate + "T00:00:00");
@@ -434,3 +432,70 @@ export function computeHistoryAnalytics(records: DailyHealthRecord[]): HistoryAn
     totalLoggedDays: loggedCount,
   };
 }
+
+/**
+ * Fetches all unique dates in a given month where the authenticated user has stored data.
+ */
+export async function fetchActiveDatesForMonth(
+  supabase: any,
+  userId: string,
+  year: number,
+  month: number
+): Promise<Set<string>> {
+  if (!supabase || !userId) return new Set();
+
+  const pad = (n: number) => (n < 10 ? `0${n}` : `${n}`);
+  const startDate = `${year}-${pad(month)}-01`;
+  const lastDay = new Date(year, month, 0).getDate();
+  const endDate = `${year}-${pad(month)}-${pad(lastDay)}`;
+
+  const activeDates = new Set<string>();
+
+  try {
+    // 1. Fetch from daily_health_summary
+    const { data: summaries } = await supabase
+      .from("daily_health_summary")
+      .select("date, has_data")
+      .eq("user_id", userId)
+      .gte("date", startDate)
+      .lte("date", endDate);
+
+    if (summaries) {
+      summaries.forEach((s: any) => {
+        if (s.has_data && s.date) {
+          activeDates.add(s.date);
+        }
+      });
+    }
+
+    // 2. Concurrently check telemetry tables for any date entries for this user
+    const tables = ["nutrition_logs", "hydration_logs", "workouts", "sleep_logs", "habit_logs", "mood_tracking"];
+    await Promise.all(
+      tables.map(async (table) => {
+        try {
+          // First try selecting 'date'
+          let res = await supabase.from(table).select("date").eq("user_id", userId);
+          if (res.error || !res.data) {
+            // Fallback to 'created_at' if 'date' column does not exist
+            res = await supabase.from(table).select("created_at").eq("user_id", userId);
+          }
+          if (res.data) {
+            res.data.forEach((r: any) => {
+              const dStr = r.date || (r.created_at ? r.created_at.split("T")[0] : null);
+              if (dStr && dStr >= startDate && dStr <= endDate) {
+                activeDates.add(dStr);
+              }
+            });
+          }
+        } catch (e) {
+          // Table or column missing error ignored
+        }
+      })
+    );
+  } catch (e) {
+    console.error("[DAILY DATA] Error fetching active dates for month:", e);
+  }
+
+  return activeDates;
+}
+

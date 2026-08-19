@@ -102,24 +102,30 @@ export function calculateFutureHealthPredictions(data: TelemetryData): Predictio
 
   // 8. Generate preventive alerts / reminders
   const preventiveReminders: string[] = [];
-  if (data.sleepHours < 6.0) {
-    preventiveReminders.push("Rest Reminder: Your recent late-night sleep pattern may reduce recovery quality over the next week.");
-  }
-  if (hydrationRatio < 0.7) {
-    preventiveReminders.push("Hydration Check: Consistent hydration is essential to improve your workout recovery.");
-  }
-  if (data.stressLevel > 65) {
-    preventiveReminders.push("Take a Breath: High stress and low sleep together may increase fatigue. Let's take a 2-minute relaxation break.");
-  }
-  if (data.sorenessLevel > 6) {
-    preventiveReminders.push("Muscle Care: Your body is feeling quite tight. A light stretch or warm walk today will help you recover faster.");
-  }
-  if (data.physicalFatigue > 60 && data.recoveryPercentage < 50) {
-    preventiveReminders.push("Recharge Mode: Your energy is running a bit low. Let's focus on simple rest today to bounce back stronger.");
-  }
+  const hasTelemetry = Boolean(data.sleepHours > 0 || data.hydrationMl > 0 || data.recoveryPercentage > 0 || data.stressLevel > 0);
 
-  if (preventiveReminders.length === 0) {
-    preventiveReminders.push("Your current habits support stable energy levels. Keep up this beautiful daily rhythm!");
+  if (hasTelemetry) {
+    if (data.sleepHours > 0 && data.sleepHours < 6.0) {
+      preventiveReminders.push("Rest Reminder: Your recent sleep pattern indicates a recovery deficit. Focus on getting restful sleep tonight.");
+    }
+    if (data.hydrationMl > 0 && hydrationRatio < 0.7) {
+      preventiveReminders.push("Hydration Check: Your water intake is below your daily goal. Drink extra water to maintain cellular hydration.");
+    }
+    if (data.stressLevel > 65) {
+      preventiveReminders.push("Take a Breath: High stress detected. Take a 2-minute relaxation break to recalibrate.");
+    }
+    if (data.sorenessLevel > 6) {
+      preventiveReminders.push("Muscle Care: Your body is feeling tight. A gentle stretch or warm walk will accelerate recovery.");
+    }
+    if (data.physicalFatigue > 60 && data.recoveryPercentage < 50 && data.recoveryPercentage > 0) {
+      preventiveReminders.push("Recharge Mode: Your energy is running low today. Focus on light rest to bounce back stronger.");
+    }
+
+    if (preventiveReminders.length === 0) {
+      preventiveReminders.push("Your recorded habits support stable energy levels. Keep up this healthy daily rhythm!");
+    }
+  } else {
+    preventiveReminders.push("Start logging your daily activity, hydration, and sleep to generate personalized health recommendations.");
   }
 
   // 9. Generate AI future health insights

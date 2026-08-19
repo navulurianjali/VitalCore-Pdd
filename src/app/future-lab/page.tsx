@@ -54,7 +54,7 @@ export default function FutureHealthLabPage() {
   const digitalTwin = getDigitalTwinProfile(metrics, profile);
   const healthScore = getFutureHealthScore(metrics);
   const earlyWarnings = getEarlyWarnings(metrics).slice(0, 3); // Max top 3 insights
-  const timeline = getFutureTimeline(metrics, profile?.biological_age || 30);
+  const timeline = getFutureTimeline(metrics, profile?.biological_age || profile?.age || 30, profile);
   const dailyPlan = getDailyImprovementPlan(metrics, profile);
   const nutritionIntel = getNutritionIntelligence(metrics);
   const motivation = getAchievementsAndMotivation(metrics);
@@ -458,25 +458,6 @@ export default function FutureHealthLabPage() {
             )}
           </GlassCard>
 
-        </div>
-
-        {/* 6. HORIZONTAL ACHIEVEMENT CAROUSEL */}
-        <div className="space-y-2">
-          <span className="text-[10px] font-bold text-[var(--muted)] uppercase tracking-wider px-1">Recent Achievements & Streaks</span>
-          <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-none">
-            <div className="p-4 bg-[var(--card-bg)] rounded-2xl border border-[var(--border)] min-w-[200px] shrink-0 space-y-1">
-              <span className="text-base">🔥</span>
-              <h4 className="text-xs font-bold text-[var(--foreground)]">{motivation.hydrationStreakDays} Day Hydration Streak</h4>
-              <p className="text-[10px] text-[var(--muted)]">Keep logging 2500ml daily</p>
-            </div>
-            {motivation.badges.map((b) => (
-              <div key={b.id} className="p-4 bg-[var(--card-bg)] rounded-2xl border border-[var(--border)] min-w-[200px] shrink-0 space-y-1">
-                <span className="text-base">{b.unlocked ? '🏆' : '🔒'}</span>
-                <h4 className="text-xs font-bold text-[var(--foreground)]">{b.title}</h4>
-                <p className="text-[10px] text-[var(--muted)]">{b.unlocked ? 'Unlocked' : `${b.progressPct}% Progress`}</p>
-              </div>
-            ))}
-          </div>
         </div>
 
       </div>

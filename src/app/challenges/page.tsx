@@ -10,6 +10,7 @@ import {
   Droplets, Moon, Utensils, Smile, Sparkles, Award, Star,
   Clock, ArrowRight, ChevronRight, Trophy, Zap, ShieldCheck, Flame
 } from "lucide-react";
+import confetti from "canvas-confetti";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/utils/supabase";
 
@@ -104,7 +105,7 @@ const ProgressRing = ({ percentage = 0, size = 42, strokeWidth = 3.5 }: { percen
 };
 
 export default function HealthyHabitsPage() {
-  const { profile } = useAuth();
+  const { profile, updateProfile } = useAuth();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [loadingChallenges, setLoadingChallenges] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -114,6 +115,67 @@ export default function HealthyHabitsPage() {
   const [challenges, setChallenges] = useState<ChallengeItem[]>(PREDEFINED_CHALLENGES);
   const [userChallenges, setUserChallenges] = useState<any[]>([]);
   const [selectedChallengeModal, setSelectedChallengeModal] = useState<any | null>(null);
+
+  const handleCompleteChallenge = async (uc: any) => {
+    const userId = profile?.id;
+    if (!userId || !supabase) return;
+
+    const ch = uc.challenge || {};
+    const chId = uc.challenge_id || ch.id;
+    const xpReward = Number(ch.xp_reward || 200);
+    const nowIso = new Date().toISOString();
+
+    setUserChallenges((prev) =>
+      prev.map((item) => {
+        if (item.challenge_id === chId || item.challenge?.id === chId) {
+          return {
+            ...item,
+            completed: true,
+            progress_percentage: 100,
+            completed_at: nowIso,
+          };
+        }
+        return item;
+      })
+    );
+
+    try {
+      const payloadWithTime = {
+        user_id: userId,
+        challenge_id: chId,
+        completed: true,
+        progress_percentage: 100,
+        completed_at: nowIso,
+      };
+
+      const { error } = await supabase
+        .from("user_challenges")
+        .upsert(payloadWithTime, { onConflict: "user_id,challenge_id" });
+
+      if (error) {
+        // Fallback without completed_at column if column is not yet cached
+        await supabase
+          .from("user_challenges")
+          .upsert(
+            {
+              user_id: userId,
+              challenge_id: chId,
+              completed: true,
+              progress_percentage: 100,
+            },
+            { onConflict: "user_id,challenge_id" }
+          );
+      }
+
+      if (profile && updateProfile) {
+        await updateProfile({ xp: (profile.xp || 0) + xpReward });
+      }
+
+      await fetchChallenges();
+    } catch (err) {
+      console.error("Error completing challenge:", err);
+    }
+  };
   
   // Create Challenge Form state
   const [newTitle, setNewTitle] = useState("");
@@ -307,13 +369,22 @@ export default function HealthyHabitsPage() {
     return unjoined.slice(0, 3);
   }, [uniqueChallenges, profile?.fitness_goal, userChallenges]);
 
-  // Stats row calculations
-  const completedCount = useMemo(() => {
-    return userChallenges.filter(uc => (uc.progress_percentage || 0) >= 100).length;
+  // Filter active vs completed user challenges
+  const activeUserChallenges = useMemo(() => {
+    return userChallenges.filter((uc: any) => !uc.completed && (uc.progress_percentage || 0) < 100);
   }, [userChallenges]);
 
+  const completedUserChallenges = useMemo(() => {
+    return userChallenges.filter((uc: any) => uc.completed === true || (uc.progress_percentage || 0) >= 100);
+  }, [userChallenges]);
+
+  // Stats row calculations
+  const completedCount = useMemo(() => {
+    return completedUserChallenges.length;
+  }, [completedUserChallenges]);
+
   const totalXp = useMemo(() => {
-    return userChallenges.reduce((sum, uc) => sum + (uc.challenge?.xp_reward || 200), 0) + (profile?.xp || 450);
+    return userChallenges.reduce((sum, uc) => sum + (uc.challenge?.xp_reward || 200), 0) + (profile?.xp || 0);
   }, [userChallenges, profile?.xp]);
 
   const getCategoryIcon = (cat: string) => {
@@ -392,7 +463,7 @@ export default function HealthyHabitsPage() {
               </div>
               <div>
                 <span className="text-[10px] font-bold text-foreground/50 uppercase tracking-wider block">Streak</span>
-                <span className="text-sm font-bold text-foreground tabular-nums">{profile?.streak_days || 7} Days</span>
+                <span className="text-sm font-bold text-foreground tabular-nums">{profile?.streak_days || 0} Days</span>
               </div>
             </div>
 
@@ -408,16 +479,16 @@ export default function HealthyHabitsPage() {
           </div>
         </div>
 
-        {/* SECTION 1: ACTIVE CHALLENGES (Compact Dashboard Widgets) */}
-        {userChallenges.length > 0 && (
+        {/* SECTION 1: ACTIVE CHALLENGES */}
+        {activeUserChallenges.length > 0 && (
           <section className="space-y-3">
             <h2 className="text-xs font-bold text-foreground/60 uppercase tracking-wider flex items-center gap-1.5">
               <Activity className="h-3.5 w-3.5 text-primary" />
-              Active Challenges ({userChallenges.length})
+              Active Challenges ({activeUserChallenges.length})
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-              {userChallenges.map((uc: any, idx: number) => {
+              {activeUserChallenges.map((uc: any, idx: number) => {
                 const ch = uc.challenge || {};
                 const chId = uc.challenge_id || ch.id;
                 const progress = uc.progress_percentage || 0;
@@ -426,40 +497,54 @@ export default function HealthyHabitsPage() {
                 return (
                   <div 
                     key={idx} 
-                    className="p-3.5 rounded-2xl glass-panel border border-foreground/8 shadow-xs hover:border-primary/20 transition-all duration-200 flex items-center gap-3 group"
+                    className="p-3.5 rounded-2xl glass-panel border border-foreground/8 shadow-xs hover:border-primary/20 transition-all duration-200 flex flex-col gap-3 group"
                   >
-                    <ProgressRing percentage={progress} size={42} strokeWidth={3.5} />
+                    <div className="flex items-center gap-3">
+                      <ProgressRing percentage={progress} size={42} strokeWidth={3.5} />
 
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-1.5 mb-0.5">
-                        <span className="text-[9px] font-bold text-primary bg-primary/10 px-1.5 py-0.5 rounded-md flex items-center gap-1">
-                          <IconComp className="h-2.5 w-2.5" />
-                          {ch.category || "Active"}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-1.5 mb-0.5">
+                          <span className="text-[9px] font-bold text-primary bg-primary/10 px-1.5 py-0.5 rounded-md flex items-center gap-1">
+                            <IconComp className="h-2.5 w-2.5" />
+                            {ch.category || "Active"}
+                          </span>
+                          <span className="text-[9px] font-medium text-foreground/40">{ch.duration_days || 7}d sprint</span>
+                        </div>
+                        <h4 className="font-bold text-xs text-foreground truncate group-hover:text-primary transition-colors">
+                          {ch.title || "Custom Challenge"}
+                        </h4>
+                        <span className="text-[10px] font-medium text-foreground/50 flex items-center gap-1 mt-0.5">
+                          <Trophy className="h-2.5 w-2.5 text-foreground/40" /> +{ch.xp_reward || 200} XP
                         </span>
-                        <span className="text-[9px] font-medium text-foreground/40">{ch.duration_days || 7}d remaining</span>
                       </div>
-                      <h4 className="font-bold text-xs text-foreground truncate group-hover:text-primary transition-colors">
-                        {ch.title || "Custom Challenge"}
-                      </h4>
-                      <span className="text-[10px] font-medium text-foreground/50 flex items-center gap-1 mt-0.5">
-                        <Trophy className="h-2.5 w-2.5 text-foreground/40" /> +{ch.xp_reward || 200} XP
-                      </span>
+
+                      <div className="flex items-center gap-1 shrink-0">
+                        <button
+                          onClick={() => setSelectedChallengeModal(ch)}
+                          className="p-1.5 rounded-xl bg-foreground/5 hover:bg-foreground/10 text-foreground/70 transition-all text-xs cursor-pointer"
+                          title="Details"
+                        >
+                          <ChevronRight className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={() => handleLeaveChallenge(chId)}
+                          className="p-1.5 rounded-xl bg-foreground/5 hover:bg-rose-500/10 text-foreground/40 hover:text-rose-500 transition-all text-xs cursor-pointer"
+                          title="Leave"
+                        >
+                          <X className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
                     </div>
 
-                    <div className="flex items-center gap-1 shrink-0">
+                    {/* Action Button: Mark as Completed */}
+                    <div className="pt-2 border-t border-foreground/5 flex items-center justify-between">
+                      <span className="text-[10px] text-foreground/50 font-medium">Ready to claim XP?</span>
                       <button
-                        onClick={() => setSelectedChallengeModal(ch)}
-                        className="p-1.5 rounded-xl bg-foreground/5 hover:bg-foreground/10 text-foreground/70 transition-all text-xs"
-                        title="Details"
+                        onClick={() => handleCompleteChallenge(uc)}
+                        className="px-3 py-1.5 rounded-xl bg-primary hover:bg-primary/90 text-white font-bold text-xs shadow-xs flex items-center gap-1 transition-all cursor-pointer"
                       >
-                        <ChevronRight className="h-4 w-4" />
-                      </button>
-                      <button
-                        onClick={() => handleLeaveChallenge(chId)}
-                        className="p-1.5 rounded-xl bg-foreground/5 hover:bg-rose-500/10 text-foreground/40 hover:text-rose-500 transition-all text-xs"
-                        title="Leave"
-                      >
-                        <X className="h-3.5 w-3.5" />
+                        <CheckCircle className="h-3.5 w-3.5" />
+                        <span>Mark as Completed</span>
                       </button>
                     </div>
                   </div>
@@ -468,6 +553,59 @@ export default function HealthyHabitsPage() {
             </div>
           </section>
         )}
+
+        {/* SECTION 1.5: COMPLETED CHALLENGES */}
+        <section className="space-y-3">
+          <h2 className="text-xs font-bold text-emerald-500 uppercase tracking-wider flex items-center gap-1.5">
+            <ShieldCheck className="h-4 w-4 text-emerald-500" />
+            Completed Challenges ({completedUserChallenges.length})
+          </h2>
+
+          {completedUserChallenges.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+              {completedUserChallenges.map((uc: any, idx: number) => {
+                const ch = uc.challenge || {};
+                const IconComp = getCategoryIcon(ch.category);
+                const dateCompletedStr = uc.completed_at
+                  ? new Date(uc.completed_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+                  : "Recently";
+
+                return (
+                  <div
+                    key={idx}
+                    className="p-3.5 rounded-2xl glass-panel border border-emerald-500/20 bg-emerald-500/[0.03] shadow-xs flex items-center gap-3"
+                  >
+                    <div className="h-10 w-10 rounded-2xl bg-emerald-500 text-white flex items-center justify-center shrink-0 shadow-sm shadow-emerald-500/20">
+                      <CheckCircle className="h-5 w-5" />
+                    </div>
+
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1.5 mb-0.5">
+                        <span className="text-[9px] font-bold text-emerald-500 bg-emerald-500/10 px-1.5 py-0.5 rounded-md flex items-center gap-1">
+                          <IconComp className="h-2.5 w-2.5" />
+                          {ch.category || "Completed"}
+                        </span>
+                        <span className="text-[9px] font-medium text-emerald-500/80 font-mono">
+                          Completed {dateCompletedStr}
+                        </span>
+                      </div>
+                      <h4 className="font-bold text-xs text-foreground truncate">
+                        {ch.title || "Health Challenge"}
+                      </h4>
+                      <span className="text-[10px] font-bold text-emerald-500 flex items-center gap-1 mt-0.5">
+                        <Trophy className="h-3 w-3" /> +{ch.xp_reward || 200} XP Awarded
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="p-4 rounded-2xl glass-panel border border-foreground/8 text-center text-xs font-semibold text-foreground/50">
+              No completed challenges yet.
+            </div>
+          )}
+        </section>
 
         {/* SECTION 2: ⭐ RECOMMENDED FOR YOU (Medical Minimal Glass Cards) */}
         {recommendedChallenges.length > 0 && (

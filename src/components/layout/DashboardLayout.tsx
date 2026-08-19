@@ -57,13 +57,12 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
       ]
     },
     {
-      label: "Health & Social",
+      label: "Health Management",
       links: [
         { name: "Health History", href: "/history", icon: Calendar, highlight: true },
         { name: "Calorie Tracker", href: "/calorie-tracker", icon: Utensils, highlight: true },
         { name: "Sleep", href: "/sleep", icon: Moon },
         { name: "Healthy Habits", href: "/challenges", icon: CheckSquare },
-        { name: "Community", href: "/community", icon: Users },
       ]
     }
   ], []);
@@ -149,8 +148,10 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
             <p className="text-xs font-semibold text-[var(--foreground)] truncate leading-tight">{profile?.full_name || "User"}</p>
             <button
               onClick={async () => {
+                setMobileSidebarOpen(false);
                 await signOut();
-                router.push("/auth/login");
+                router.push("/");
+                router.refresh();
               }}
               className="text-[11px] text-[var(--muted)] hover:text-red-500 flex items-center gap-1 mt-0.5 transition-colors cursor-pointer"
             >
@@ -238,7 +239,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.2 }}
-                className="fixed inset-0 bg-black/50 backdrop-blur-xs"
+                className="fixed inset-0 bg-black/5 dark:bg-black/10 backdrop-blur-[2px]"
                 onClick={() => setMobileSidebarOpen(false)}
               />
 

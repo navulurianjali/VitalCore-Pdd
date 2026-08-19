@@ -367,23 +367,6 @@ export default function FutureLabScreen({ navigation }: any) {
         )}
       </View>
 
-      {/* 7. ACHIEVEMENTS & STREAKS */}
-      <Text style={[styles.sectionTitle, { color: colors.text }]}>Achievements & Streaks</Text>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.streakScroll}>
-        <View style={[styles.streakCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
-          <Text style={{ fontSize: 20 }}>🔥</Text>
-          <Text style={[styles.streakTitle, { color: colors.text }]}>{motivation.hydrationStreakDays} Day Hydration</Text>
-          <Text style={[styles.streakSub, { color: colors.textMuted }]}>Streak active</Text>
-        </View>
-
-        {motivation.badges.map((b) => (
-          <View key={b.id} style={[styles.streakCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
-            <Text style={{ fontSize: 20 }}>{b.unlocked ? '🏆' : '🔒'}</Text>
-            <Text style={[styles.streakTitle, { color: colors.text }]}>{b.title}</Text>
-            <Text style={[styles.streakSub, { color: colors.textMuted }]}>{b.unlocked ? 'Unlocked' : `${b.progressPct}% Progress`}</Text>
-          </View>
-        ))}
-      </ScrollView>
     </ScreenWrapper>
   );
 }
@@ -457,8 +440,4 @@ const styles = StyleSheet.create({
   sysName: { fontSize: 12, fontWeight: '700' },
   sysScore: { fontSize: 12, fontWeight: '800' },
   sysRec: { fontSize: 11, lineHeight: 15 },
-  streakScroll: { flexDirection: 'row', marginBottom: 20 },
-  streakCard: { borderRadius: 16, padding: 14, borderWidth: 1, minWidth: 140, marginRight: 10, gap: 2 },
-  streakTitle: { fontSize: 12, fontWeight: '700' },
-  streakSub: { fontSize: 10 },
 });

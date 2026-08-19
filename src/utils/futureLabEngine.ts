@@ -259,12 +259,12 @@ export interface FutureTimelineProjection {
   dataAttribution: string;
 }
 
-export function getFutureTimeline(data: HealthDigitalTwin, currentAge: number): FutureTimelineProjection[] {
+export function getFutureTimeline(data: HealthDigitalTwin, currentAge: number, profile?: any): FutureTimelineProjection[] {
   const baseAge = currentAge;
   const isDeclining = data.stabilityScore < 50 || data.sleepHours < 6;
   const isImproving = data.stabilityScore > 80 && data.recoveryPercentage > 75;
 
-  const currentWeight = 72; // Default baseline weight
+  const currentWeight = profile?.weight_kg ? Number(profile.weight_kg) : 70;
 
   return [
     {
@@ -468,24 +468,29 @@ export interface HealthReportPayload {
 export function getHealthReport(data: HealthDigitalTwin, profile?: any): HealthReportPayload {
   const today = new Date().toISOString().split("T")[0];
   const profileName = profile?.full_name || "Wellness Explorer";
+  const hasData = data.hasTelemetry && data.trackingDaysCount > 0;
 
   return {
     reportDate: today,
     period: "Weekly",
-    headlineSummary: `VitalCore Weekly Health Intelligence Report for ${profileName}. Overall Digital Twin stability is performing at ${Math.round(data.stabilityScore)}%.`,
-    biggestImprovements: [
-      "Hydration consistency increased by 14% compared to previous baseline.",
-      "Sleep quality index stabilized with fewer night wakings logged.",
-      "Resting heart rate strain reduced during peak evening hours."
-    ],
-    biggestConcerns: [
-      data.sleepHours < 6 ? "Sleep duration remains sub-optimal (< 6 hours)." : "Magnesium & Vitamin D intake require additional dietary focus.",
+    headlineSummary: hasData
+      ? `VitalCore Weekly Health Intelligence Report for ${profileName}. Overall Digital Twin stability is performing at ${Math.round(data.stabilityScore)}%.`
+      : `VitalCore Weekly Health Intelligence Report for ${profileName}. No health telemetry recorded yet.`,
+    biggestImprovements: hasData ? [
+      "Hydration consistency tracked compared to baseline.",
+      "Sleep quality index evaluated against target.",
+      "Heart rate strain monitored during active hours."
+    ] : [],
+    biggestConcerns: hasData ? [
+      data.sleepHours < 6 ? "Sleep duration remains sub-optimal (< 6 hours)." : "Hydration & micronutrient intake require additional dietary focus.",
       data.hydrationMl < 1800 ? "Hydration level dropped below target afternoon threshold." : "Sedentary sitting time peaked on high-workload days."
-    ],
-    predictedNextMonthOutlook: "With current habit trajectory, your Digital Twin projects a 1.2-year reduction in biological age and a 15% increase in physical recovery capacity.",
-    averageSleepHours: data.sleepHours || 7.2,
-    averageHydrationMl: data.hydrationMl || 2200,
-    totalCaloriesBurned: (data.caloriesBurned || 400) * 7,
+    ] : [],
+    predictedNextMonthOutlook: hasData
+      ? "With current habit trajectory, your Digital Twin projects steady physical recovery capacity."
+      : "Log sleep, hydration, and fitness activities to build your Digital Twin longevity outlook.",
+    averageSleepHours: data.sleepHours || 0,
+    averageHydrationMl: data.hydrationMl || 0,
+    totalCaloriesBurned: (data.caloriesBurned || 0) * 7,
     overallScore: Math.round(data.stabilityScore)
   };
 }

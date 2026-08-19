@@ -324,8 +324,8 @@ export function generateLocalAICoachResponse(
       return `Here is your sleep telemetry breakdown, **${name}**:\n\n` +
         `• **Target Sleep**: **${sleepTarget} hours**\n` +
         `• **Recorded Sleep**: **${sleepHours} hours**` +
-        (sleepDeficit > 0 ? ` (Deficit: **${sleepDeficit} hours**)` : ` (Met target!)`) + `\n` +
-        `• **Sleep Quality Score**: **${metrics?.sleepQuality || 75}%**\n\n` +
+        (sleepHours > 0 ? (sleepDeficit > 0 ? ` (Deficit: **${sleepDeficit} hours**)` : ` (Met target!)`) : ` (No sleep logged today)`) + `\n` +
+        `• **Sleep Quality Score**: **${metrics?.sleepQuality || 0}%**\n\n` +
         `**Sleep Optimization Tips:**\n` +
         `1. Keep your bedroom dark, quiet, and cool (around 18-20°C).\n` +
         `2. Stop screen exposure 45-60 minutes before bedtime.\n` +
@@ -381,9 +381,9 @@ export function generateLocalAICoachResponse(
 
     case 'RECOVERY':
       return `Recovery telemetry assessment for **${name}**:\n\n` +
-        `• **HRV Recovery Score**: **${metrics?.recoveryPercentage || 85}%**\n` +
-        `• **Fatigue Index**: **${metrics?.fatigueScore || 20} / 100**\n` +
-        `• **Stress Level**: **${metrics?.stressLevel || 30}%**\n\n` +
+        `• **HRV Recovery Score**: **${metrics?.recoveryPercentage || 0}%**\n` +
+        `• **Fatigue Index**: **${metrics?.fatigueScore || 0} / 100**\n` +
+        `• **Stress Level**: **${metrics?.stressLevel || 0}%**\n\n` +
         `**Optimal Recovery Protocol:**\n` +
         `• Perform 15 minutes of light stretching or foam rolling.\n` +
         `• Prioritize 8 hours of restful sleep and hydrate with 2.5L+ of water.\n` +

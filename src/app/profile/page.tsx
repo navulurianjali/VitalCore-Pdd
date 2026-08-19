@@ -80,6 +80,7 @@ export default function ProfilePage() {
     // Personal
     full_name: "",
     date_of_birth: "",
+    age: "" as number | "",
     gender: "",
     occupation: "",
     country: "",
@@ -139,10 +140,16 @@ export default function ProfilePage() {
 
   const populateForm = (p: typeof profile) => {
     if (!p) return;
+    const rawGender = p.gender ? String(p.gender).trim() : "";
+    const formattedGender = rawGender
+      ? (rawGender.toLowerCase() === "male" ? "Male" : rawGender.toLowerCase() === "female" ? "Female" : rawGender.toLowerCase() === "other" ? "Other" : rawGender)
+      : "";
+
     setForm({
       full_name: p.full_name || "",
       date_of_birth: p.date_of_birth || "",
-      gender: p.gender || "",
+      age: p.age ? Number(p.age) : "",
+      gender: formattedGender,
       occupation: p.occupation || "",
       country: p.country || "",
       state: p.state || "",
@@ -195,10 +202,6 @@ export default function ProfilePage() {
 
   useEffect(() => {
     if (!profile) return;
-    // Only seed the form on the very first load, OR when handleSave explicitly
-    // requests a re-seed after a successful save (pendingFormReset.current = true).
-    // This prevents TOKEN_REFRESHED / optimistic updateProfile calls from
-    // overwriting whatever the user is currently typing.
     if (!formInitialized.current || pendingFormReset.current) {
       formInitialized.current = true;
       pendingFormReset.current = false;
@@ -214,6 +217,7 @@ export default function ProfilePage() {
     return Math.abs(new Date(Date.now() - d.getTime()).getUTCFullYear() - 1970);
   };
   const calculatedAge = calculateAge(form.date_of_birth);
+  const displayAge = form.age !== "" ? Number(form.age) : (profile?.age ? Number(profile.age) : calculatedAge);
   const heightVal = form.height_cm !== "" ? Number(form.height_cm) : 0;
   const weightVal = form.weight_kg !== "" ? Number(form.weight_kg) : 0;
   const calculatedBMI = heightVal > 0 && weightVal > 0
@@ -241,6 +245,7 @@ export default function ProfilePage() {
       const { error } = await updateProfile({
         full_name: form.full_name,
         date_of_birth: form.date_of_birth || null,
+        age: form.age !== "" ? Number(form.age) : (displayAge ? Number(displayAge) : null),
         gender: form.gender || null,
         occupation: form.occupation || null,
         country: form.country || null,
@@ -394,7 +399,7 @@ export default function ProfilePage() {
         {/* Stat summary bar */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {[
-            { label: "Age", value: calculatedAge ? `${calculatedAge} yrs` : null },
+            { label: "Age", value: displayAge ? `${displayAge} yrs` : null },
             { label: "Height", value: heightVal > 0 ? `${heightVal} cm` : null },
             { label: "Weight", value: weightVal > 0 ? `${weightVal} kg` : null },
             { label: "BMI", value: calculatedBMI ? String(calculatedBMI) : null, extra: bmiInfo },
@@ -451,6 +456,11 @@ export default function ProfilePage() {
                         onChange={e => setForm({ ...form, full_name: e.target.value })}
                         placeholder="Your full name" className={inputCls} />
                     </Field>
+                    <Field label="Age" id={f("age")}>
+                      <input id="input-age" type="number" value={form.age}
+                        onChange={e => setForm({ ...form, age: e.target.value ? Number(e.target.value) : "" })}
+                        placeholder="e.g. 28" className={inputCls} />
+                    </Field>
                     <Field label="Username" id={f("username")}>
                       <input type="text" value={profile?.username || ""} disabled
                         className={inputCls + " opacity-50 cursor-not-allowed"} />
@@ -467,10 +477,10 @@ export default function ProfilePage() {
                     <Field label="Gender" id={f("gender")}>
                       <select value={form.gender} onChange={e => setForm({ ...form, gender: e.target.value })} className={selectCls}>
                         <option value="">Select gender</option>
-                        <option>Male</option>
-                        <option>Female</option>
-                        <option>Non-binary</option>
-                        <option>Prefer not to say</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other / Non-binary</option>
+                        <option value="Prefer not to say">Prefer not to say</option>
                       </select>
                     </Field>
                     <Field label="Occupation" id={f("occupation")}>
@@ -492,11 +502,11 @@ export default function ProfilePage() {
                 ) : (
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                     <ViewTile label="Full Name">{val(form.full_name)}</ViewTile>
+                    <ViewTile label="Age">{val(displayAge, " yrs")}</ViewTile>
+                    <ViewTile label="Gender">{val(form.gender || profile?.gender)}</ViewTile>
                     <ViewTile label="Username">{val(profile?.username)}</ViewTile>
                     <ViewTile label="Email">{val(user?.email || profile?.email)}</ViewTile>
                     <ViewTile label="Date of Birth">{val(form.date_of_birth)}</ViewTile>
-                    <ViewTile label="Age">{val(calculatedAge, " yrs")}</ViewTile>
-                    <ViewTile label="Gender">{val(form.gender)}</ViewTile>
                     <ViewTile label="Occupation">{val(form.occupation)}</ViewTile>
                     <ViewTile label="Country">{val(form.country)}</ViewTile>
                     <ViewTile label="City">{val(form.city)}</ViewTile>

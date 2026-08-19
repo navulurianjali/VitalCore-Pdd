@@ -512,47 +512,32 @@ export default function AICoachPage() {
 
           </div>
 
-          {/* Right side helper Panel: memory parameters & prompts */}
+          {/* Right side helper Panel: memory parameters */}
           <div className="lg:col-span-4 flex flex-col gap-6">
-            
-            {/* Quick Sample Prompts */}
-            <GlassCard glowColor="violet" className="space-y-4 p-5 flex-1 flex flex-col justify-between">
-              <div className="space-y-2">
-                <h3 className="text-xs font-bold text-foreground flex items-center gap-1.5">
-                  <MessageSquare className="h-4 w-4 text-primary" />
-                  Suggested Topics
-                </h3>
-                <p className="text-xs text-foreground/60 leading-normal font-semibold">
-                  Pick a topic below to start chatting with your coach:
-                </p>
-              </div>
-
-              <div className="space-y-2.5 pt-2 flex-1">
-                {samplePrompts.map((prompt, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => handleSelectSuggestion(prompt)}
-                    className="w-full text-left p-3 rounded-xl bg-foreground/5 border border-foreground/5 text-xs font-semibold text-foreground/80 hover:bg-foreground/10 hover:border-primary/20 transition-all leading-normal cursor-pointer active:scale-98"
-                  >
-                    "{prompt}"
-                  </button>
-                ))}
-              </div>
-            </GlassCard>
 
             {/* AI Companion Memory specs */}
             <GlassCard glowColor="amber" className="p-5 space-y-3">
               <h3 className="text-xs font-bold text-foreground">Wellness Coach Observations</h3>
-              <ul className="space-y-2 text-xs text-foreground/75 font-semibold leading-normal">
-                <li className="flex gap-2">
-                  <span className="text-amber-500 font-bold">•</span>
-                  <span><strong>Activity patterns</strong>: You tend to skip your evening walks when you're caught up in late-night work projects.</span>
-                </li>
-                <li className="flex gap-2">
-                  <span className="text-amber-500 font-bold">•</span>
-                  <span><strong>Eating patterns</strong>: We noticed you crave sweet snacks a bit more on high-stress days.</span>
-                </li>
-              </ul>
+              {metrics && metrics.hasTelemetry ? (
+                <ul className="space-y-2 text-xs text-foreground/75 font-semibold leading-normal">
+                  <li className="flex gap-2">
+                    <span className="text-amber-500 font-bold">•</span>
+                    <span><strong>Hydration Log</strong>: {metrics.hydrationMl} / {metrics.hydrationTarget} ml logged today.</span>
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="text-amber-500 font-bold">•</span>
+                    <span><strong>Sleep Rest</strong>: {metrics.sleepHours > 0 ? `${metrics.sleepHours} hours recorded.` : "No sleep logged today."}</span>
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="text-amber-500 font-bold">•</span>
+                    <span><strong>Nutrition Intake</strong>: {metrics.caloriesConsumed} / {metrics.caloriesTarget} kcal logged today.</span>
+                  </li>
+                </ul>
+              ) : (
+                <p className="text-xs text-foreground/60 leading-relaxed">
+                  No observations recorded yet. Start logging your daily sleep, water, workouts, and meals to generate AI coach observations!
+                </p>
+              )}
             </GlassCard>
 
           </div>
