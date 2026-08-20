@@ -49,5 +49,8 @@ scratch/
 E2E_Test_Report_*.xlsx
 *.log
 automated_test/*.log
+selenium-tests/reports/
+.pytest_cache/
+
 
 

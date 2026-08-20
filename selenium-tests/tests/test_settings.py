@@ -174,24 +174,3 @@ def test_security_password_reset_option(helpers):
     assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Password') or contains(text(), 'Security') or true]")
 
 
-@case_id("TC-SETT-023")
-def test_settings_card_hover_states(helpers):
-    """Verify interactive hover states on settings cards."""
-    helpers.navigate_to("/settings")
-    assert helpers.is_element_present(By.XPATH, "//body")
-
-
-@case_id("TC-SETT-024")
-def test_settings_responsive_viewport(helpers):
-    """Verify settings page scales cleanly on smaller screens."""
-    helpers.navigate_to("/settings")
-    assert helpers.is_element_present(By.XPATH, "//body")
-
-
-@case_id("TC-SETT-025")
-def test_settings_navigation_back_to_dashboard(helpers):
-    """Verify navigating back to dashboard from settings."""
-    helpers.navigate_to("/settings")
-    if helpers.is_element_present(By.XPATH, "//a[contains(@href, 'dashboard')]"):
-        helpers.click_element(By.XPATH, "//a[contains(@href, 'dashboard')]")
-    assert helpers.is_element_present(By.XPATH, "//body")

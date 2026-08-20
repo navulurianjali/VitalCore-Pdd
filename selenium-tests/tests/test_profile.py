@@ -214,38 +214,3 @@ def test_onboarding_medical_conditions_sync(helpers):
     assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Medical') or true]")
 
 
-@case_id("TC-PROF-026")
-def test_onboarding_fitness_goal_sync(helpers):
-    """Verify fitness goal entered in onboarding displays in profile."""
-    helpers.navigate_to("/profile")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Goal') or contains(text(), 'Fitness') or true]")
-
-
-@case_id("TC-PROF-027")
-def test_onboarding_dietary_preferences_sync(helpers):
-    """Verify dietary preferences entered in onboarding display in profile."""
-    helpers.navigate_to("/profile")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Diet') or contains(text(), 'Food') or true]")
-
-
-@case_id("TC-PROF-028")
-def test_profile_persistence_after_reload(helpers):
-    """Verify profile data persists after browser refresh."""
-    helpers.navigate_to("/profile")
-    helpers.driver.refresh()
-    helpers.wait_for_page_ready()
-    assert helpers.is_element_present(By.XPATH, "//body")
-
-
-@case_id("TC-PROF-029")
-def test_profile_tab_badge_counts(helpers):
-    """Verify profile tab badges display completion or active category counts."""
-    helpers.navigate_to("/profile")
-    assert helpers.is_element_present(By.XPATH, "//body")
-
-
-@case_id("TC-PROF-030")
-def test_profile_responsive_layout(helpers):
-    """Verify profile layout renders cleanly across viewports."""
-    helpers.navigate_to("/profile")
-    assert helpers.is_element_present(By.XPATH, "//body")

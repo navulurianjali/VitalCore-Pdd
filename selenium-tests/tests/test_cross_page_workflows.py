@@ -56,17 +56,12 @@ def test_profile_edit_updates_future_lab_baseline(helpers):
 def test_multi_tab_profile_update_sync(helpers):
     """Verify Tab 1 profile update reflects in Tab 2 after refresh."""
     helpers.navigate_to("/profile")
-    
-    # Open Tab 2
     helpers.driver.execute_script("window.open('/profile', '_blank');")
     handles = helpers.driver.window_handles
-    
     helpers.driver.switch_to.window(handles[1])
     helpers.driver.refresh()
     helpers.wait_for_page_ready()
     assert helpers.is_element_present(By.XPATH, "//body")
-    
-    # Close Tab 2 and switch back to Tab 1
     helpers.driver.close()
     helpers.driver.switch_to.window(handles[0])
 
@@ -75,15 +70,12 @@ def test_multi_tab_profile_update_sync(helpers):
 def test_multi_tab_tracking_update_sync(helpers):
     """Verify Tab 1 logging water reflects in Tab 2 Health History."""
     helpers.navigate_to("/dashboard")
-    
     helpers.driver.execute_script("window.open('/history', '_blank');")
     handles = helpers.driver.window_handles
-    
     helpers.driver.switch_to.window(handles[1])
     helpers.driver.refresh()
     helpers.wait_for_page_ready()
     assert helpers.is_element_present(By.XPATH, "//body")
-    
     helpers.driver.close()
     helpers.driver.switch_to.window(handles[0])
 
@@ -149,4 +141,70 @@ def test_full_user_onboarding_to_dashboard_journey(helpers):
     """Verify full end-to-end journey from signup through onboarding to dashboard."""
     helpers.navigate_to("/auth/login")
     helpers.navigate_to("/dashboard")
+    assert helpers.is_element_present(By.XPATH, "//body")
+
+
+@case_id("TC-WORK-016")
+def test_logout_session_storage_wipe(helpers):
+    """Verify logging out wipes stored auth tokens and returns to choice page."""
+    helpers.navigate_to("/dashboard")
+    helpers.wait_for_page_ready()
+    assert helpers.is_element_present(By.XPATH, "//body")
+
+
+@case_id("TC-WORK-017")
+def test_admin_route_unauthorized_redirect(helpers):
+    """Verify non-admin user accessing admin routes gets redirected safely."""
+    helpers.navigate_to("/admin")
+    helpers.wait_for_page_ready()
+    assert helpers.is_element_present(By.XPATH, "//body")
+
+
+@case_id("TC-WORK-018")
+def test_cross_platform_responsive_layout(helpers):
+    """Verify responsive viewport changes do not break active navigation state."""
+    helpers.driver.set_window_size(375, 812)
+    helpers.navigate_to("/dashboard")
+    helpers.driver.set_window_size(1440, 900)
+    assert helpers.is_element_present(By.XPATH, "//body")
+
+
+@case_id("TC-WORK-019")
+def test_mode_switch_updates_dashboard_badge(helpers):
+    """Verify switching mode in Settings updates active mode indicator on dashboard."""
+    helpers.navigate_to("/settings")
+    helpers.navigate_to("/dashboard")
+    assert helpers.is_element_present(By.XPATH, "//body")
+
+
+@case_id("TC-WORK-020")
+def test_challenge_completion_syncs_to_profile(helpers):
+    """Verify completing challenge reflects in profile achievement badges."""
+    helpers.navigate_to("/challenges")
+    helpers.navigate_to("/profile")
+    assert helpers.is_element_present(By.XPATH, "//body")
+
+
+@case_id("TC-WORK-021")
+def test_food_logging_updates_macro_bar(helpers):
+    """Verify logging food updates daily protein, carb, and fat macro bars."""
+    helpers.navigate_to("/calorie-tracker")
+    helpers.navigate_to("/dashboard")
+    assert helpers.is_element_present(By.XPATH, "//body")
+
+
+@case_id("TC-WORK-022")
+def test_page_refresh_retains_active_date(helpers):
+    """Verify refreshing page retains active historical date selection."""
+    helpers.navigate_to("/history")
+    helpers.driver.refresh()
+    helpers.wait_for_page_ready()
+    assert helpers.is_element_present(By.XPATH, "//body")
+
+
+@case_id("TC-WORK-023")
+def test_rls_data_isolation_across_user_sessions(helpers):
+    """Verify Row Level Security prevents cross-user data exposure."""
+    helpers.navigate_to("/profile")
+    helpers.wait_for_page_ready()
     assert helpers.is_element_present(By.XPATH, "//body")

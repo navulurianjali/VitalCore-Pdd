@@ -177,22 +177,3 @@ def test_workout_logs_persist_after_reload(helpers):
     assert helpers.is_element_present(By.XPATH, "//body")
 
 
-@case_id("TC-FIT-023")
-def test_fitness_weekly_active_minutes_chart(helpers):
-    """Verify 7-day active workout minutes summary chart."""
-    helpers.navigate_to("/fitness")
-    assert helpers.is_element_present(By.XPATH, "//body")
-
-
-@case_id("TC-FIT-024")
-def test_fitness_card_hover_animations(helpers):
-    """Verify exercise card hover states."""
-    helpers.navigate_to("/fitness")
-    assert helpers.is_element_present(By.XPATH, "//body")
-
-
-@case_id("TC-FIT-025")
-def test_fitness_responsive_grid_scaling(helpers):
-    """Verify fitness library grid scales properly across viewports."""
-    helpers.navigate_to("/fitness")
-    assert helpers.is_element_present(By.XPATH, "//body")

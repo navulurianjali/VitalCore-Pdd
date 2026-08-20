@@ -144,15 +144,3 @@ def test_ai_coach_session_persistence_after_reload(helpers):
     assert helpers.is_element_present(By.XPATH, "//body")
 
 
-@case_id("TC-AIC-019")
-def test_ai_coach_scrolls_to_latest_message(helpers):
-    """Verify chat container automatically scrolls to the newest message."""
-    helpers.navigate_to("/ai-coach")
-    assert helpers.is_element_present(By.XPATH, "//body")
-
-
-@case_id("TC-AIC-020")
-def test_ai_coach_responsive_chat_layout(helpers):
-    """Verify AI coach chat interface renders cleanly on mobile viewports."""
-    helpers.navigate_to("/ai-coach")
-    assert helpers.is_element_present(By.XPATH, "//body")

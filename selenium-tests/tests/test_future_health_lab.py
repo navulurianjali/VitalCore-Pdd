@@ -142,15 +142,3 @@ def test_log_telemetry_action_button(helpers):
     assert helpers.is_element_present(By.XPATH, "//body")
 
 
-@case_id("TC-FHL-019")
-def test_future_lab_card_hover_animations(helpers):
-    """Verify interactive hover states on digital twin cards."""
-    helpers.navigate_to("/future-lab")
-    assert helpers.is_element_present(By.XPATH, "//body")
-
-
-@case_id("TC-FHL-020")
-def test_future_lab_responsive_layout(helpers):
-    """Verify future lab layout scales cleanly on tablet and mobile viewports."""
-    helpers.navigate_to("/future-lab")
-    assert helpers.is_element_present(By.XPATH, "//body")

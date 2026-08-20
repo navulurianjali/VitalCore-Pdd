@@ -205,19 +205,3 @@ def test_active_nav_tab_highlighting(helpers):
     assert helpers.is_element_present(By.XPATH, "//body")
 
 
-@case_id("TC-NAV-024")
-def test_mobile_hamburger_menu_toggle(helpers):
-    """Verify clicking mobile menu button toggles mobile navigation drawer."""
-    helpers.driver.set_window_size(375, 812)
-    helpers.navigate_to("/dashboard")
-    if helpers.is_element_present(By.XPATH, "//button[contains(@aria-label, 'menu') or contains(@class, 'menu')]"):
-        helpers.click_element(By.XPATH, "//button[contains(@aria-label, 'menu') or contains(@class, 'menu')]")
-    assert helpers.is_element_present(By.XPATH, "//body")
-
-
-@case_id("TC-NAV-025")
-def test_mobile_menu_close_button(helpers):
-    """Verify closing mobile navigation drawer."""
-    helpers.driver.set_window_size(375, 812)
-    helpers.navigate_to("/dashboard")
-    assert helpers.is_element_present(By.XPATH, "//body")

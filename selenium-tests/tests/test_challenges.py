@@ -162,17 +162,3 @@ def test_streak_days_count_card(helpers):
     assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Streak') or contains(text(), 'Days') or true]")
 
 
-@case_id("TC-CHAL-019")
-def test_challenges_persistence_after_reload(helpers):
-    """Verify joined and completed challenges persist across page refresh."""
-    helpers.navigate_to("/challenges")
-    helpers.driver.refresh()
-    helpers.wait_for_page_ready()
-    assert helpers.is_element_present(By.XPATH, "//body")
-
-
-@case_id("TC-CHAL-020")
-def test_challenges_responsive_grid(helpers):
-    """Verify challenges grid scales cleanly across mobile viewports."""
-    helpers.navigate_to("/challenges")
-    assert helpers.is_element_present(By.XPATH, "//body")

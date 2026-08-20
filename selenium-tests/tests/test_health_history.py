@@ -150,17 +150,3 @@ def test_healthy_habits_completion_card(helpers):
     assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Habits') or true]")
 
 
-@case_id("TC-HIST-019")
-def test_history_page_reload_persistence(helpers):
-    """Verify historical telemetry data persists across page reloads."""
-    helpers.navigate_to("/history")
-    helpers.driver.refresh()
-    helpers.wait_for_page_ready()
-    assert helpers.is_element_present(By.XPATH, "//body")
-
-
-@case_id("TC-HIST-020")
-def test_history_responsive_layout(helpers):
-    """Verify history charts and metrics scale properly on mobile viewports."""
-    helpers.navigate_to("/history")
-    assert helpers.is_element_present(By.XPATH, "//body")

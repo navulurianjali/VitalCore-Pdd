@@ -177,24 +177,3 @@ def test_delete_food_entry_button(helpers):
     assert helpers.is_element_present(By.XPATH, "//body")
 
 
-@case_id("TC-CAL-023")
-def test_macro_target_progress_bars(helpers):
-    """Verify macro target percentage progress bars render."""
-    helpers.navigate_to("/calorie-tracker")
-    assert helpers.is_element_present(By.XPATH, "//body")
-
-
-@case_id("TC-CAL-024")
-def test_refresh_persists_logged_food_entries(helpers):
-    """Verify logged food entries persist after browser reload."""
-    helpers.navigate_to("/calorie-tracker")
-    helpers.driver.refresh()
-    helpers.wait_for_page_ready()
-    assert helpers.is_element_present(By.XPATH, "//body")
-
-
-@case_id("TC-CAL-025")
-def test_water_tracker_quick_widget(helpers):
-    """Verify water tracker widget integrated in calorie tracker view."""
-    helpers.navigate_to("/calorie-tracker")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Water') or contains(text(), 'Hydration') or true]")

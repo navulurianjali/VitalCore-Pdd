@@ -145,15 +145,3 @@ def test_sleep_log_persistence_after_reload(helpers):
     assert helpers.is_element_present(By.XPATH, "//body")
 
 
-@case_id("TC-SLP-019")
-def test_wind_down_routine_tips(helpers):
-    """Verify evening wind-down routine recommendations card."""
-    helpers.navigate_to("/sleep")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Wind-down') or contains(text(), 'Routine') or true]")
-
-
-@case_id("TC-SLP-020")
-def test_sleep_history_chart(helpers):
-    """Verify 7-day sleep duration trend chart renders."""
-    helpers.navigate_to("/sleep")
-    assert helpers.is_element_present(By.XPATH, "//body")

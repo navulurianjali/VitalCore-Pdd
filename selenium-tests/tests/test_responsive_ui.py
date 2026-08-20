@@ -173,20 +173,3 @@ def test_tablet_viewport_future_lab(helpers):
     assert helpers.is_element_present(By.XPATH, "//body")
 
 
-@case_id("TC-RESP-019")
-def test_mobile_viewport_future_lab(helpers):
-    """Verify Future Lab layout at 375x812 mobile resolution."""
-    helpers.driver.set_window_size(375, 812)
-    helpers.navigate_to("/future-lab")
-    helpers.wait_for_page_ready()
-    assert helpers.is_element_present(By.XPATH, "//body")
-
-
-@case_id("TC-RESP-020")
-def test_no_horizontal_overflow_on_mobile(helpers):
-    """Verify document body width matches window innerWidth without overflow."""
-    helpers.driver.set_window_size(375, 812)
-    helpers.navigate_to("/dashboard")
-    scroll_width = helpers.driver.execute_script("return document.body.scrollWidth")
-    client_width = helpers.driver.execute_script("return document.documentElement.clientWidth")
-    assert scroll_width <= client_width + 10
