@@ -20,7 +20,6 @@ def create_driver(headless=HEADLESS, viewport_width=1280, viewport_height=800):
     options.add_argument("--disable-extensions")
     options.add_argument("--disable-infobars")
     options.add_argument(f"--window-size={viewport_width},{viewport_height}")
-    options.add_argument("--remote-debugging-port=9222")
 
     try:
         service = ChromeService(ChromeDriverManager().install())
