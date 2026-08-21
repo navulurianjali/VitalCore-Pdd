@@ -8,6 +8,8 @@ const RATE_LIMIT = 5; // Max 5 submissions per 10 minutes per IP
 const WINDOW_MS = 10 * 60 * 1000;
 
 function checkRateLimit(ip: string): boolean {
+  // Allow disabling rate limit in CI/testing environments
+  if (process.env.CI_DISABLE_RATE_LIMIT === "true") return true;
   const now = Date.now();
   const record = rateLimitMap.get(ip);
   if (!record || now > record.resetAt) {

@@ -48,7 +48,9 @@ export async function updateSession(request: NextRequest) {
     pathname === '/features' ||
     pathname === '/privacy' ||
     pathname === '/terms' ||
-    pathname === '/contact';
+    pathname === '/contact' ||
+    pathname === '/login' ||
+    pathname === '/signup';
 
   const isApiRoute = pathname.startsWith('/api');
 
