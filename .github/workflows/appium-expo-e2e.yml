@@ -60,8 +60,11 @@ jobs:
         run: npm install --no-audit
 
       - name: "Verify TypeScript Type Checks"
-        working-directory: vitalcore-expo
-        run: npx tsc --noEmit
+        run: |
+          cd vitalcore-expo
+          npx tsc --noEmit
+          cd appium-tests
+          npx tsc --noEmit
 
       - name: "Enable KVM Hardware Acceleration"
         run: |

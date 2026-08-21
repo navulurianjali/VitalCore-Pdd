@@ -3,5 +3,6 @@
   "compilerOptions": {
     "strict": true
   },
-  "exclude": ["node_modules", "e2e"]
+  "include": ["src/**/*", "App.tsx"],
+  "exclude": ["node_modules", "e2e", "automation", "appium-tests", "load_testing"]
 }
