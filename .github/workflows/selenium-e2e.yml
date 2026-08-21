@@ -34,11 +34,6 @@ jobs:
       - name: Build Next.js Application
         run: npm run build
 
-      - name: Start Next.js Production Web Server
-        run: |
-          npm start &
-          npx wait-on http://localhost:3000 --timeout 60000
-
       - name: Setup Python Environment
         uses: actions/setup-python@v5
         with:
@@ -52,12 +47,25 @@ jobs:
 
       - name: Execute 300 Selenium E2E Tests
         env:
-          BASE_URL: "http://localhost:3000"
+          BASE_URL: "http://127.0.0.1:3000"
           TEST_EMAIL: "testuser@vitalcore.ai"
           TEST_PASSWORD: "VitalCoreTest123!"
           HEADLESS: "true"
         run: |
+          nohup npm start > nextjs_server.log 2>&1 &
+          SERVER_PID=$!
+          echo "Started Next.js production server with PID $SERVER_PID"
+          npx wait-on http://127.0.0.1:3000 --timeout 60000
           pytest selenium-tests/tests -v -n 4
+          kill $SERVER_PID || true
+
+      - name: Upload Server Log on Failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: NextJS-Server-Logs
+          path: nextjs_server.log
+          retention-days: 7
 
       - name: Upload Excel & HTML Test Reports as Artifacts
         if: always()
@@ -69,4 +77,5 @@ jobs:
             selenium-tests/reports/selenium_results.html
             selenium-tests/reports/screenshots/
           retention-days: 30
+
 
