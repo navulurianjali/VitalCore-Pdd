@@ -52,12 +52,13 @@ jobs:
           TEST_PASSWORD: "VitalCoreTest123!"
           HEADLESS: "true"
         run: |
-          nohup npm start > nextjs_server.log 2>&1 &
+          nohup npx next start -H 0.0.0.0 -p 3000 > nextjs_server.log 2>&1 &
           SERVER_PID=$!
-          echo "Started Next.js production server with PID $SERVER_PID"
-          npx wait-on http://127.0.0.1:3000 --timeout 60000
+          echo "Started Next.js production server (PID $SERVER_PID) on 0.0.0.0:3000"
+          npx wait-on -t 60000 http-get://127.0.0.1:3000
           pytest selenium-tests/tests -v -n 4
           kill $SERVER_PID || true
+
 
       - name: Upload Server Log on Failure
         if: failure()

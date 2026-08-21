@@ -22,6 +22,11 @@ def create_driver(headless=HEADLESS, viewport_width=1280, viewport_height=800):
     options.add_argument("--disable-blink-features=AutomationControlled")
     options.add_argument(f"--window-size={viewport_width},{viewport_height}")
 
+    for chrome_path in ["/usr/bin/google-chrome", "/usr/bin/google-chrome-stable", "/usr/bin/chromium", "/usr/bin/chromium-browser"]:
+        if os.path.exists(chrome_path):
+            options.binary_location = chrome_path
+            break
+
     try:
         driver = webdriver.Chrome(options=options)
     except Exception:
@@ -36,5 +41,6 @@ def create_driver(headless=HEADLESS, viewport_width=1280, viewport_height=800):
     driver.implicitly_wait(IMPLICIT_WAIT_TIMEOUT)
     driver.set_page_load_timeout(PAGE_LOAD_TIMEOUT)
     return driver
+
 
 
