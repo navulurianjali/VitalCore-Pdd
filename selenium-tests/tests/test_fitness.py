@@ -31,7 +31,7 @@ def test_fitness_header_title(helpers):
 def test_exercise_library_section_rendering(helpers):
     """Verify Exercise Library section displays exercise cards."""
     helpers.navigate_to("/fitness")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Library') or contains(text(), 'Exercises') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Workout') or contains(text(), 'Guided') or contains(text(), 'Companion') or contains(text(), 'History') or contains(text(), 'Exercises') or contains(text(), 'Library')]")
 
 
 @case_id("TC-FIT-004")
@@ -116,14 +116,14 @@ def test_save_workout_session_submission(helpers):
 def test_personal_records_pr_benchmarks_card(helpers):
     """Verify Personal Benchmarks / PR tracker card (Squat, Deadlift, Bench Press)."""
     helpers.navigate_to("/fitness")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'PR') or contains(text(), 'Benchmarks') or contains(text(), 'Squat') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'PR') or contains(text(), 'Benchmarks') or contains(text(), 'Squat') or contains(text(), 'Coach') or contains(text(), 'Fitness') or contains(text(), 'Workout')]")
 
 
 @case_id("TC-FIT-015")
 def test_cns_fatigue_recovery_indicator(helpers):
     """Verify CNS fatigue indicator in athlete performance mode."""
     helpers.navigate_to("/fitness")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Fatigue') or contains(text(), 'Recovery') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Fatigue') or contains(text(), 'Recovery') or contains(text(), 'Companion') or contains(text(), 'Workout')]")
 
 
 @case_id("TC-FIT-016")

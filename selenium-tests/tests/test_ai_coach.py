@@ -44,7 +44,7 @@ def test_send_message_button_rendering(helpers):
 def test_suggested_prompts_container(helpers):
     """Verify suggested prompt quick questions pills render."""
     helpers.navigate_to("/ai-coach")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'How') or contains(text(), 'What') or contains(text(), 'Why') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'How') or contains(text(), 'What') or contains(text(), 'Why')]")
 
 
 @case_id("TC-AIC-006")
@@ -104,7 +104,7 @@ def test_fresh_user_chat_state_isolation(helpers):
 def test_ai_coach_wellness_observations_card(helpers):
     """Verify Wellness Coach Observations card renders."""
     helpers.navigate_to("/ai-coach")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Observations') or contains(text(), 'Coach') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Observations') or contains(text(), 'Coach')]")
 
 
 @case_id("TC-AIC-014")

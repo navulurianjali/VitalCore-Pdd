@@ -36,16 +36,14 @@ export default function OnboardingPage() {
   const { user, profile, loading: authLoading, updateProfile } = useAuth();
   const router = useRouter();
 
-  // Route protection: redirect unauthenticated users to /auth/login and completed users to /dashboard
+  // Route protection: redirect unauthenticated users to /auth/login
   useEffect(() => {
     if (!authLoading) {
       if (!user) {
         router.push("/auth/login");
-      } else if (profile && profile.onboarding_completed === true) {
-        router.push("/dashboard");
       }
     }
-  }, [user, profile, authLoading, router]);
+  }, [user, authLoading, router]);
   
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);

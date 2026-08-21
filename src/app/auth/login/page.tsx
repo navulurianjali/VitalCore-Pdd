@@ -56,8 +56,22 @@ export default function LoginPage() {
       } else {
         if (loggedInProfile?.onboarding_completed === true || loggedInProfile?.height_cm || loggedInProfile?.weight_kg || loggedInProfile?.age || loggedInProfile?.fitness_goal) {
           router.push("/dashboard");
+          if (typeof window !== "undefined") {
+            setTimeout(() => {
+              if (!window.location.pathname.includes("dashboard")) {
+                window.location.href = "/dashboard";
+              }
+            }, 200);
+          }
         } else {
           router.push("/auth/onboarding");
+          if (typeof window !== "undefined") {
+            setTimeout(() => {
+              if (!window.location.pathname.includes("onboarding")) {
+                window.location.href = "/auth/onboarding";
+              }
+            }, 200);
+          }
         }
       }
     } catch (err: any) {

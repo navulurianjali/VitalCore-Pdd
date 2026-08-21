@@ -5,11 +5,18 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
   selenium-e2e-suite:
     name: Execute 300 Selenium E2E Tests
     runs-on: ubuntu-latest
+
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://bevolemwakfozxuymxsn.supabase.co' }}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJldm9sZW13YWtmb3p4dXlteHNuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5MTUyNjUsImV4cCI6MjA5NTQ5MTI2NX0.ZRyBiaR7vhG8O2FEdPEQOBErLrSF5AxK_PASy87Odlk' }}
 
     steps:
       - name: Checkout Source Code
@@ -45,7 +52,7 @@ jobs:
 
       - name: Execute 300 Selenium E2E Tests
         env:
-          BASE_URL: "https://vita-core-ai.vercel.app"
+          BASE_URL: "http://localhost:3000"
           TEST_EMAIL: "testuser@vitalcore.ai"
           TEST_PASSWORD: "VitalCoreTest123!"
           HEADLESS: "true"
@@ -62,3 +69,4 @@ jobs:
             selenium-tests/reports/selenium_results.html
             selenium-tests/reports/screenshots/
           retention-days: 30
+

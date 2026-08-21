@@ -41,6 +41,46 @@ def driver(request):
     """
     driver_instance = create_driver()
     request.node.driver_instance = driver_instance
+    try:
+        driver_instance.get(BASE_URL)
+        driver_instance.execute_script("""
+            try {
+                document.cookie = "vitalcore_test_session=1; path=/";
+                const mockUser = {
+                    id: "00000000-0000-0000-0000-000000000001",
+                    email: "testuser@vitalcore.ai",
+                    user_metadata: { full_name: "Test User", username: "testuser" },
+                    aud: "authenticated",
+                    role: "authenticated"
+                };
+                const mockProfile = {
+                    id: mockUser.id,
+                    email: "testuser@vitalcore.ai",
+                    full_name: "Test User",
+                    username: "testuser",
+                    active_mode: "wellness",
+                    onboarding_completed: true,
+                    soreness_level: 0,
+                    biological_age: 28,
+                    stability_score: 85,
+                    age: 28,
+                    height_cm: 175,
+                    weight_kg: 70,
+                    fitness_goal: "Maintain fitness",
+                    gender: "male",
+                    blood_group: "O+",
+                    activity_level: "moderate",
+                    calorie_goal: 2200,
+                    water_goal: 2500,
+                    sleep_goal: 8,
+                    xp: 1500,
+                    streak_days: 12
+                };
+                localStorage.setItem("vitalcore_test_session", JSON.stringify({ user: mockUser, profile: mockProfile }));
+            } catch(e) {}
+        """)
+    except Exception:
+        pass
     yield driver_instance
     try:
         driver_instance.quit()
@@ -158,10 +198,10 @@ def pytest_sessionfinish(session, exitstatus):
             generate_excel_report(merged_results, total_duration, SESSION_START_TIMESTAMP, SESSION_END_TIMESTAMP)
             generate_html_report(merged_results, total_duration)
             print("\n" + "="*60)
-            print("✨ Selenium Automation Test Execution Complete ✨")
-            print(f"📊 Total Tests Executed: {len(merged_results)}")
-            print(f"📊 Excel Report: selenium-tests/reports/selenium_results.xlsx")
-            print(f"🌐 HTML Report: selenium-tests/reports/selenium_results.html")
+            print("[SUCCESS] Selenium Automation Test Execution Complete")
+            print(f"[METRICS] Total Tests Executed: {len(merged_results)}")
+            print(f"[REPORTS] Excel Report: selenium-tests/reports/selenium_results.xlsx")
+            print(f"[REPORTS] HTML Report: selenium-tests/reports/selenium_results.html")
             print("="*60)
         except Exception as e:
             print(f"Failed to generate test reports: {e}")

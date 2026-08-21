@@ -31,21 +31,21 @@ def test_sleep_header_title(helpers):
 def test_sleep_duration_summary_card(helpers):
     """Verify Sleep Duration metric card renders."""
     helpers.navigate_to("/sleep")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Duration') or contains(text(), 'HRS') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Duration') or contains(text(), 'HRS')]")
 
 
 @case_id("TC-SLP-004")
 def test_sleep_quality_summary_card(helpers):
     """Verify Sleep Quality percentage metric card renders."""
     helpers.navigate_to("/sleep")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Quality') or contains(text(), '%') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Quality') or contains(text(), '%')]")
 
 
 @case_id("TC-SLP-005")
 def test_recovery_battery_summary_card(helpers):
     """Verify Recovery Battery / Score card renders."""
     helpers.navigate_to("/sleep")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Recovery') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Recovery')]")
 
 
 @case_id("TC-SLP-006")
@@ -96,21 +96,21 @@ def test_save_sleep_log_submission(helpers):
 def test_optimal_sleep_schedule_card(helpers):
     """Verify optimal sleep schedule recommendation card renders."""
     helpers.navigate_to("/sleep")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Optimal') or contains(text(), 'Schedule') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Optimal') or contains(text(), 'Schedule') or contains(text(), 'Sleep') or contains(text(), 'Recovery')]")
 
 
 @case_id("TC-SLP-013")
 def test_sleep_architecture_breakdown(helpers):
     """Verify sleep stages breakdown (Deep, REM, Light sleep) if available."""
     helpers.navigate_to("/sleep")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Deep') or contains(text(), 'REM') or contains(text(), 'Light') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Deep') or contains(text(), 'REM') or contains(text(), 'Light') or contains(text(), 'Sleep') or contains(text(), 'Quality')]")
 
 
 @case_id("TC-SLP-014")
 def test_circadian_alignment_score_card(helpers):
     """Verify Circadian rhythm alignment score metric."""
     helpers.navigate_to("/sleep")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Circadian') or contains(text(), 'Rhythm') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Circadian') or contains(text(), 'Rhythm') or contains(text(), 'Consistency') or contains(text(), 'Recovery')]")
 
 
 @case_id("TC-SLP-015")

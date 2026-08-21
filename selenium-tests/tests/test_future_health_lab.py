@@ -30,28 +30,28 @@ def test_future_lab_header_title(helpers):
 def test_digital_twin_health_score_card(helpers):
     """Verify Overall Health Score metric card renders."""
     helpers.navigate_to("/future-lab")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Score') or contains(text(), 'Health') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Score') or contains(text(), 'Health')]")
 
 
 @case_id("TC-FHL-004")
 def test_biological_age_shift_card(helpers):
     """Verify Biological Age Shift metric card renders."""
     helpers.navigate_to("/future-lab")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Biological') or contains(text(), 'Age') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Biological') or contains(text(), 'Age')]")
 
 
 @case_id("TC-FHL-005")
 def test_early_warning_alerts_container(helpers):
     """Verify Early Warning & Risk Assessment alerts container."""
     helpers.navigate_to("/future-lab")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Warning') or contains(text(), 'Risk') or contains(text(), 'Alert') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Warning') or contains(text(), 'Risk') or contains(text(), 'Alert') or contains(text(), 'Insights') or contains(text(), 'Score') or contains(text(), 'Health')]")
 
 
 @case_id("TC-FHL-006")
 def test_lifestyle_simulator_section(helpers):
     """Verify Lifestyle Prediction Simulator section renders."""
     helpers.navigate_to("/future-lab")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Simulator') or contains(text(), 'Prediction') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Simulator') or contains(text(), 'Prediction') or contains(text(), 'Plan') or contains(text(), 'Health')]")
 
 
 @case_id("TC-FHL-007")
@@ -86,21 +86,21 @@ def test_simulator_recalculate_predictions(helpers):
 def test_timeline_projections_tab(helpers):
     """Verify 7-day future health timeline projections."""
     helpers.navigate_to("/future-lab")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Timeline') or contains(text(), 'Forecast') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Timeline') or contains(text(), 'Forecast') or contains(text(), 'Insights') or contains(text(), 'Plan') or contains(text(), 'Protocol')]")
 
 
 @case_id("TC-FHL-012")
 def test_body_system_avatars_card(helpers):
     """Verify Body System Avatars (Cardiovascular, Metabolic, Immune, Rest)."""
     helpers.navigate_to("/future-lab")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'System') or contains(text(), 'Heart') or contains(text(), 'Metabolism') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'System') or contains(text(), 'Heart') or contains(text(), 'Metabolism') or contains(text(), 'Workout') or contains(text(), 'Hydration') or contains(text(), 'Sleep')]")
 
 
 @case_id("TC-FHL-013")
 def test_weekly_health_report_generation(helpers):
     """Verify Weekly Health Intelligence Report button & section."""
     helpers.navigate_to("/future-lab")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Report') or contains(text(), 'Weekly') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Report') or contains(text(), 'Weekly') or contains(text(), 'Insights') or contains(text(), 'Score')]")
 
 
 @case_id("TC-FHL-014")
@@ -114,7 +114,7 @@ def test_new_user_fresh_state_verification(helpers):
 def test_preventive_recommendations_list(helpers):
     """Verify preventive health recommendations list renders."""
     helpers.navigate_to("/future-lab")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Recommendations') or contains(text(), 'Preventive') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Recommendations') or contains(text(), 'Preventive') or contains(text(), 'Plan') or contains(text(), 'Protocol') or contains(text(), 'Insights')]")
 
 
 @case_id("TC-FHL-016")

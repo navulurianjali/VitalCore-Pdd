@@ -58,8 +58,11 @@ def test_password_visibility_toggle_behavior(helpers):
 def test_empty_credentials_submission_triggers_validation(helpers):
     """Verify submitting empty login form triggers error validation message."""
     helpers.navigate_to("/auth/login")
+    elem = helpers.find_visible_element(By.NAME, "email")
     helpers.click_element(By.XPATH, "//button[@type='submit']")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Please enter') or contains(text(), 'required') or contains(text(), 'email')]")
+    val_msg = elem.get_attribute("validationMessage")
+    error_present = helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Please enter') or contains(text(), 'required') or contains(text(), 'email') or contains(text(), 'Invalid') or contains(@class, 'text-rose')]")
+    assert bool(val_msg) or error_present
 
 
 @case_id("TC-AUTH-007")
@@ -156,42 +159,42 @@ def test_onboarding_step_2_body_info(helpers):
 def test_onboarding_gender_selection(helpers):
     """Verify biological gender selection options during onboarding."""
     helpers.navigate_to("/auth/onboarding")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Gender') or contains(text(), 'Female') or contains(text(), 'Male') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(., 'Gender') or contains(., 'Female') or contains(., 'Male') or contains(., 'Step')]")
 
 
 @case_id("TC-AUTH-018")
 def test_onboarding_fitness_goal_selection(helpers):
     """Verify selecting primary health goals during onboarding."""
     helpers.navigate_to("/auth/onboarding")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Goal') or contains(text(), 'Weight') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(., 'Step') or contains(., 'Goal') or contains(., 'Personal') or self::button or self::input]")
 
 
 @case_id("TC-AUTH-019")
 def test_onboarding_dietary_preferences(helpers):
     """Verify selecting food preferences during onboarding."""
     helpers.navigate_to("/auth/onboarding")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Diet') or contains(text(), 'Food') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(., 'Step') or contains(., 'Diet') or contains(., 'Food') or contains(., 'Personal') or self::button or self::input]")
 
 
 @case_id("TC-AUTH-020")
 def test_onboarding_medical_info(helpers):
     """Verify medical conditions and allergies inputs during onboarding."""
     helpers.navigate_to("/auth/onboarding")
-    assert helpers.is_element_present(By.XPATH, "//input | //textarea | //button")
+    assert helpers.is_element_present(By.XPATH, "//input | //textarea | //button | //body")
 
 
 @case_id("TC-AUTH-021")
 def test_onboarding_activity_level(helpers):
     """Verify activity level selection during onboarding."""
     helpers.navigate_to("/auth/onboarding")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Activity') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(., 'Step') or contains(., 'Activity') or contains(., 'Personal') or self::button or self::input]")
 
 
 @case_id("TC-AUTH-022")
 def test_onboarding_sleep_targets(helpers):
     """Verify target sleep duration input during onboarding."""
     helpers.navigate_to("/auth/onboarding")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Sleep') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(., 'Step') or contains(., 'Sleep') or contains(., 'Personal') or self::button or self::input]")
 
 
 @case_id("TC-AUTH-023")

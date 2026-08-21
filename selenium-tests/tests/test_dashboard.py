@@ -97,21 +97,21 @@ def test_steps_focus_card_renders(helpers):
 def test_everyday_wellness_mode_triggers(helpers):
     """Verify daily health triggers card in Everyday Wellness mode."""
     helpers.navigate_to("/dashboard")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Triggers') or contains(text(), 'Health') or contains(text(), 'Status') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Triggers') or contains(text(), 'Health') or contains(text(), 'Status')]")
 
 
 @case_id("TC-DASH-013")
 def test_cns_fatigue_telemetry_card(helpers):
     """Verify CNS fatigue telemetry card renders in Athlete Performance mode."""
     helpers.navigate_to("/dashboard")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Fatigue') or contains(text(), 'Telemetry') or contains(text(), 'CNS') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Fatigue') or contains(text(), 'Telemetry') or contains(text(), 'CNS')]")
 
 
 @case_id("TC-DASH-014")
 def test_hrv_status_telemetry_card(helpers):
     """Verify HRV status telemetry card renders in Athlete Performance mode."""
     helpers.navigate_to("/dashboard")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'HRV') or contains(text(), 'Status') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'HRV') or contains(text(), 'Status') or contains(text(), 'Telemetry') or contains(text(), 'Health') or contains(text(), 'Balance')]")
 
 
 @case_id("TC-DASH-015")
@@ -125,7 +125,7 @@ def test_elderly_family_alert_button(helpers):
 def test_elderly_medication_checklist(helpers):
     """Verify daily reminders & medication checklist in Elderly mode."""
     helpers.navigate_to("/dashboard")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Reminders') or contains(text(), 'Medication') or contains(text(), 'Pending') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Reminders') or contains(text(), 'Medication') or contains(text(), 'Pending') or contains(text(), 'Recommendations') or contains(text(), 'Health')]")
 
 
 @case_id("TC-DASH-017")
@@ -167,8 +167,8 @@ def test_quick_actions_section_header(helpers):
 def test_quick_action_calorie_tracker_button(helpers):
     """Verify Calorie Tracker quick action card opens tracker page."""
     helpers.navigate_to("/dashboard")
-    if helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Calorie Tracker')]"):
-        helpers.click_element(By.XPATH, "//*[contains(text(), 'Calorie Tracker')]")
+    if helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Track Intake') or contains(text(), 'Calories')]"):
+        helpers.click_element(By.XPATH, "//*[contains(text(), 'Track Intake') or contains(text(), 'Calories')]")
         assert helpers.wait_for_url_contains("calorie-tracker") or True
 
 
@@ -176,8 +176,8 @@ def test_quick_action_calorie_tracker_button(helpers):
 def test_quick_action_sleep_tracker_button(helpers):
     """Verify Sleep Log quick action card opens sleep page."""
     helpers.navigate_to("/dashboard")
-    if helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Sleep Log') or contains(text(), 'Sleep')]"):
-        helpers.click_element(By.XPATH, "//*[contains(text(), 'Sleep Log') or contains(text(), 'Sleep')]")
+    if helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Log Sleep') or contains(text(), 'Sleep')]"):
+        helpers.click_element(By.XPATH, "//*[contains(text(), 'Log Sleep') or contains(text(), 'Sleep')]")
         assert helpers.wait_for_url_contains("sleep") or True
 
 
@@ -194,8 +194,8 @@ def test_quick_action_fitness_button(helpers):
 def test_quick_action_ai_coach_button(helpers):
     """Verify AI Coach quick action card opens AI coach page."""
     helpers.navigate_to("/dashboard")
-    if helpers.is_element_present(By.XPATH, "//*[contains(text(), 'AI Coach')]"):
-        helpers.click_element(By.XPATH, "//*[contains(text(), 'AI Coach')]")
+    if helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Wellness Chat') or contains(text(), 'AI Coach')]"):
+        helpers.click_element(By.XPATH, "//*[contains(text(), 'Wellness Chat') or contains(text(), 'AI Coach')]")
         assert helpers.wait_for_url_contains("ai-coach") or True
 
 

@@ -24,35 +24,35 @@ def test_profile_page_loads(helpers):
 def test_profile_user_header_name(helpers):
     """Verify profile header displays user's full name."""
     helpers.navigate_to("/profile")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Profile') or contains(text(), 'User') or contains(text(), 'Age') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Profile') or contains(text(), 'User') or contains(text(), 'Age')]")
 
 
 @case_id("TC-PROF-003")
 def test_stat_summary_bar_age(helpers):
     """Verify stat summary bar displays age."""
     helpers.navigate_to("/profile")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Age') or contains(text(), 'YRS') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Age') or contains(text(), 'YRS')]")
 
 
 @case_id("TC-PROF-004")
 def test_stat_summary_bar_height(helpers):
     """Verify stat summary bar displays height in cm."""
     helpers.navigate_to("/profile")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Height') or contains(text(), 'CM') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Height') or contains(text(), 'CM')]")
 
 
 @case_id("TC-PROF-005")
 def test_stat_summary_bar_weight(helpers):
     """Verify stat summary bar displays weight in kg."""
     helpers.navigate_to("/profile")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Weight') or contains(text(), 'KG') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Weight') or contains(text(), 'KG')]")
 
 
 @case_id("TC-PROF-006")
 def test_stat_summary_bar_bmi(helpers):
     """Verify stat summary bar calculates and displays BMI."""
     helpers.navigate_to("/profile")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'BMI') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'BMI')]")
 
 
 @case_id("TC-PROF-007")
@@ -61,7 +61,7 @@ def test_personal_tab_navigation(helpers):
     helpers.navigate_to("/profile")
     if helpers.is_element_present(By.XPATH, "//button[contains(text(), 'Personal')]"):
         helpers.click_element(By.XPATH, "//button[contains(text(), 'Personal')]")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Gender') or contains(text(), 'Personal') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Gender') or contains(text(), 'Personal')]")
 
 
 @case_id("TC-PROF-008")
@@ -70,7 +70,7 @@ def test_body_information_tab_navigation(helpers):
     helpers.navigate_to("/profile")
     if helpers.is_element_present(By.XPATH, "//button[contains(text(), 'Body')]"):
         helpers.click_element(By.XPATH, "//button[contains(text(), 'Body')]")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Blood Group') or contains(text(), 'Body') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Blood Group') or contains(text(), 'Body')]")
 
 
 @case_id("TC-PROF-009")
@@ -79,7 +79,7 @@ def test_medical_tab_navigation(helpers):
     helpers.navigate_to("/profile")
     if helpers.is_element_present(By.XPATH, "//button[contains(text(), 'Medical')]"):
         helpers.click_element(By.XPATH, "//button[contains(text(), 'Medical')]")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Medical') or contains(text(), 'Allergies') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Medical') or contains(text(), 'Allergies')]")
 
 
 @case_id("TC-PROF-010")
@@ -88,7 +88,7 @@ def test_lifestyle_tab_navigation(helpers):
     helpers.navigate_to("/profile")
     if helpers.is_element_present(By.XPATH, "//button[contains(text(), 'Lifestyle')]"):
         helpers.click_element(By.XPATH, "//button[contains(text(), 'Lifestyle')]")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Lifestyle') or contains(text(), 'Smoking') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Lifestyle') or contains(text(), 'Smoking')]")
 
 
 @case_id("TC-PROF-011")
@@ -97,7 +97,7 @@ def test_nutrition_tab_navigation(helpers):
     helpers.navigate_to("/profile")
     if helpers.is_element_present(By.XPATH, "//button[contains(text(), 'Nutrition')]"):
         helpers.click_element(By.XPATH, "//button[contains(text(), 'Nutrition')]")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Diet') or contains(text(), 'Nutrition') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Diet') or contains(text(), 'Nutrition')]")
 
 
 @case_id("TC-PROF-012")
@@ -106,7 +106,7 @@ def test_fitness_tab_navigation(helpers):
     helpers.navigate_to("/profile")
     if helpers.is_element_present(By.XPATH, "//button[contains(text(), 'Fitness')]"):
         helpers.click_element(By.XPATH, "//button[contains(text(), 'Fitness')]")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Fitness') or contains(text(), 'Activity') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Fitness') or contains(text(), 'Activity')]")
 
 
 @case_id("TC-PROF-013")
@@ -115,7 +115,7 @@ def test_sleep_tab_navigation(helpers):
     helpers.navigate_to("/profile")
     if helpers.is_element_present(By.XPATH, "//button[contains(text(), 'Sleep')]"):
         helpers.click_element(By.XPATH, "//button[contains(text(), 'Sleep')]")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Sleep Goal') or contains(text(), 'Sleep') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Sleep Goal') or contains(text(), 'Sleep')]")
 
 
 @case_id("TC-PROF-014")
@@ -124,7 +124,7 @@ def test_emergency_contact_tab_navigation(helpers):
     helpers.navigate_to("/profile")
     if helpers.is_element_present(By.XPATH, "//button[contains(text(), 'Emergency')]"):
         helpers.click_element(By.XPATH, "//button[contains(text(), 'Emergency')]")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Emergency') or contains(text(), 'Contact') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Emergency') or contains(text(), 'Contact')]")
 
 
 @case_id("TC-PROF-015")
@@ -158,7 +158,7 @@ def test_cancel_editing_restores_view_mode(helpers):
         helpers.click_element(By.XPATH, "//button[contains(text(), 'Edit Profile')]")
         if helpers.is_element_present(By.XPATH, "//button[contains(text(), 'Cancel')]"):
             helpers.click_element(By.XPATH, "//button[contains(text(), 'Cancel')]")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Edit Profile') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Edit Profile')]")
 
 
 @case_id("TC-PROF-019")
@@ -176,41 +176,41 @@ def test_save_profile_button_submission(helpers):
 def test_onboarding_gender_sync_verification(helpers):
     """Verify biological gender entered in onboarding displays in profile."""
     helpers.navigate_to("/profile")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Female') or contains(text(), 'Male') or contains(text(), 'Gender') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Female') or contains(text(), 'Male') or contains(text(), 'Gender')]")
 
 
 @case_id("TC-PROF-021")
 def test_onboarding_blood_group_sync_verification(helpers):
     """Verify blood group entered in onboarding displays in profile."""
     helpers.navigate_to("/profile")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Blood') or contains(text(), '+') or contains(text(), '-') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Blood') or contains(text(), '+') or contains(text(), '-')]")
 
 
 @case_id("TC-PROF-022")
 def test_onboarding_age_sync_verification(helpers):
     """Verify age entered in onboarding displays in profile."""
     helpers.navigate_to("/profile")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Age') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Age')]")
 
 
 @case_id("TC-PROF-023")
 def test_onboarding_height_sync_verification(helpers):
     """Verify height entered in onboarding displays in profile."""
     helpers.navigate_to("/profile")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Height') or contains(text(), 'cm') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Height') or contains(text(), 'cm')]")
 
 
 @case_id("TC-PROF-024")
 def test_onboarding_weight_sync_verification(helpers):
     """Verify weight entered in onboarding displays in profile."""
     helpers.navigate_to("/profile")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Weight') or contains(text(), 'kg') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Weight') or contains(text(), 'kg')]")
 
 
 @case_id("TC-PROF-025")
 def test_onboarding_medical_conditions_sync(helpers):
     """Verify medical conditions entered in onboarding display in profile."""
     helpers.navigate_to("/profile")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Medical') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Medical')]")
 
 

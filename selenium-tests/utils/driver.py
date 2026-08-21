@@ -22,11 +22,10 @@ def create_driver(headless=HEADLESS, viewport_width=1280, viewport_height=800):
     options.add_argument(f"--window-size={viewport_width},{viewport_height}")
 
     try:
+        driver = webdriver.Chrome(options=options)
+    except Exception as e:
         service = ChromeService(ChromeDriverManager().install())
         driver = webdriver.Chrome(service=service, options=options)
-    except Exception as e:
-        # Fallback to default system chromedriver if manager fails
-        driver = webdriver.Chrome(options=options)
 
     driver.implicitly_wait(IMPLICIT_WAIT_TIMEOUT)
     driver.set_page_load_timeout(PAGE_LOAD_TIMEOUT)

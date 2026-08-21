@@ -30,7 +30,7 @@ def test_challenges_header_title(helpers):
 def test_predefined_challenges_list_renders(helpers):
     """Verify predefined challenges list cards render."""
     helpers.navigate_to("/challenges")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Steps') or contains(text(), 'Water') or contains(text(), 'Protein') or contains(text(), 'Sleep') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Steps') or contains(text(), 'Water') or contains(text(), 'Protein') or contains(text(), 'Sleep')]")
 
 
 @case_id("TC-CHAL-004")
@@ -152,13 +152,13 @@ def test_create_custom_challenge_modal(helpers):
 def test_total_xp_reward_points_card(helpers):
     """Verify Total XP reward points metric card."""
     helpers.navigate_to("/challenges")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'XP') or contains(text(), 'Points') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'XP') or contains(text(), 'Points')]")
 
 
 @case_id("TC-CHAL-018")
 def test_streak_days_count_card(helpers):
     """Verify streak days count metric card."""
     helpers.navigate_to("/challenges")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Streak') or contains(text(), 'Days') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Streak') or contains(text(), 'Days')]")
 
 

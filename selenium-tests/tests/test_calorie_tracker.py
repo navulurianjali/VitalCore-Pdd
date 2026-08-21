@@ -24,70 +24,70 @@ def test_calorie_tracker_page_loads(helpers):
 def test_daily_summary_card_consumed(helpers):
     """Verify consumed calories summary widget renders."""
     helpers.navigate_to("/calorie-tracker")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Consumed') or contains(text(), 'KCAL') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Calories') or contains(text(), 'kcal') or contains(text(), 'Consumed') or contains(text(), 'KCAL')]")
 
 
 @case_id("TC-CAL-003")
 def test_daily_summary_card_target(helpers):
     """Verify target calorie goal summary widget renders."""
     helpers.navigate_to("/calorie-tracker")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Target') or contains(text(), 'Goal') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Goal') or contains(text(), 'Target') or contains(text(), 'Calories')]")
 
 
 @case_id("TC-CAL-004")
 def test_daily_summary_card_remaining(helpers):
     """Verify remaining calories widget renders."""
     helpers.navigate_to("/calorie-tracker")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Remaining') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Remaining') or contains(text(), 'Goal') or contains(text(), 'Calories')]")
 
 
 @case_id("TC-CAL-005")
 def test_macro_breakdown_protein(helpers):
     """Verify protein macro breakdown metric renders."""
     helpers.navigate_to("/calorie-tracker")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Protein') or contains(text(), 'PRO') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Protein') or contains(text(), 'PRO')]")
 
 
 @case_id("TC-CAL-006")
 def test_macro_breakdown_carbohydrates(helpers):
     """Verify carbs macro breakdown metric renders."""
     helpers.navigate_to("/calorie-tracker")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Carbs') or contains(text(), 'Carbohydrates') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Carbs') or contains(text(), 'Carbohydrates')]")
 
 
 @case_id("TC-CAL-007")
 def test_macro_breakdown_fats(helpers):
     """Verify fats macro breakdown metric renders."""
     helpers.navigate_to("/calorie-tracker")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Fats') or contains(text(), 'Fat') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Fats') or contains(text(), 'Fat')]")
 
 
 @case_id("TC-CAL-008")
 def test_meal_section_breakfast(helpers):
     """Verify Breakfast meal section renders."""
     helpers.navigate_to("/calorie-tracker")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Breakfast') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Breakfast')]")
 
 
 @case_id("TC-CAL-009")
 def test_meal_section_lunch(helpers):
     """Verify Lunch meal section renders."""
     helpers.navigate_to("/calorie-tracker")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Lunch') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Lunch')]")
 
 
 @case_id("TC-CAL-010")
 def test_meal_section_dinner(helpers):
     """Verify Dinner meal section renders."""
     helpers.navigate_to("/calorie-tracker")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Dinner') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Dinner')]")
 
 
 @case_id("TC-CAL-011")
 def test_meal_section_snacks(helpers):
     """Verify Snacks meal section renders."""
     helpers.navigate_to("/calorie-tracker")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Snacks') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Snacks') or contains(text(), 'Snack')]")
 
 
 @case_id("TC-CAL-012")

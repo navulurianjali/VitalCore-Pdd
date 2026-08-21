@@ -30,35 +30,35 @@ def test_settings_header_title(helpers):
 def test_active_mode_selection_cards(helpers):
     """Verify active mode selection cards (Wellness, Performance, Elderly)."""
     helpers.navigate_to("/settings")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Wellness') or contains(text(), 'Performance') or contains(text(), 'Elderly') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Wellness') or contains(text(), 'Performance') or contains(text(), 'Elderly')]")
 
 
 @case_id("TC-SETT-004")
 def test_everyday_wellness_mode_card(helpers):
     """Verify Everyday Wellness mode selection option."""
     helpers.navigate_to("/settings")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Wellness') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Wellness')]")
 
 
 @case_id("TC-SETT-005")
 def test_athlete_performance_mode_card(helpers):
     """Verify Athlete Performance mode selection option."""
     helpers.navigate_to("/settings")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Performance') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Performance')]")
 
 
 @case_id("TC-SETT-006")
 def test_elderly_care_mode_card(helpers):
     """Verify Elderly Care mode selection option."""
     helpers.navigate_to("/settings")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Elderly') or contains(text(), 'Care') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Elderly') or contains(text(), 'Care')]")
 
 
 @case_id("TC-SETT-007")
 def test_theme_mode_toggle_buttons(helpers):
     """Verify theme mode selection toggle buttons (Dark / Light)."""
     helpers.navigate_to("/settings")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Dark') or contains(text(), 'Light') or contains(text(), 'Theme') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Dark') or contains(text(), 'Light') or contains(text(), 'Theme')]")
 
 
 @case_id("TC-SETT-008")
@@ -83,28 +83,28 @@ def test_light_mode_selection(helpers):
 def test_unit_system_preference_metric(helpers):
     """Verify Metric unit system selection option."""
     helpers.navigate_to("/settings")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Metric') or contains(text(), 'Unit') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Metric') or contains(text(), 'AI Preferences') or contains(text(), 'Style') or contains(text(), 'Preferences')]")
 
 
 @case_id("TC-SETT-011")
 def test_unit_system_preference_imperial(helpers):
     """Verify Imperial unit system selection option."""
     helpers.navigate_to("/settings")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Imperial') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Imperial') or contains(text(), 'AI Preferences') or contains(text(), 'Style') or contains(text(), 'Preferences')]")
 
 
 @case_id("TC-SETT-012")
 def test_notification_preferences_toggle(helpers):
     """Verify notification settings switches if available."""
     helpers.navigate_to("/settings")
-    assert helpers.is_element_present(By.XPATH, "//input[@type='checkbox'] | //button | //body")
+    assert helpers.is_element_present(By.XPATH, "//button[@role='switch'] | //input[@type='checkbox'] | //body")
 
 
 @case_id("TC-SETT-013")
 def test_account_settings_section(helpers):
     """Verify Account settings section header."""
     helpers.navigate_to("/settings")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Account') or contains(text(), 'Profile') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Account') or contains(text(), 'Profile') or contains(text(), 'Settings')]")
 
 
 @case_id("TC-SETT-014")
@@ -143,7 +143,7 @@ def test_logout_button_in_settings(helpers):
 def test_delete_account_danger_zone_button(helpers):
     """Verify danger zone / account deletion button rendering."""
     helpers.navigate_to("/settings")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Danger') or contains(text(), 'Delete') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Danger') or contains(text(), 'Delete')]")
 
 
 @case_id("TC-SETT-019")
@@ -157,20 +157,20 @@ def test_timezone_selection_dropdown(helpers):
 def test_language_preference_selection(helpers):
     """Verify language preference options if available."""
     helpers.navigate_to("/settings")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Language') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Language')]")
 
 
 @case_id("TC-SETT-021")
 def test_privacy_settings_options(helpers):
     """Verify privacy and data sharing settings options."""
     helpers.navigate_to("/settings")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Privacy') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Privacy')]")
 
 
 @case_id("TC-SETT-022")
 def test_security_password_reset_option(helpers):
     """Verify change password / security options in settings."""
     helpers.navigate_to("/settings")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Password') or contains(text(), 'Security') or true]")
+    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Password') or contains(text(), 'Security')]")
 
 
