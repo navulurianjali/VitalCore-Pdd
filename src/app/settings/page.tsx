@@ -435,8 +435,8 @@ export default function SettingsPage() {
           </div>
         </SettingsSection>
 
-        {/* ── AI PREFERENCES ────────────────────────────────────────────────── */}
-        <SettingsSection title="AI Preferences">
+        {/* ── AI & LOCALIZATION PREFERENCES ───────────────────────────────── */}
+        <SettingsSection title="Preferences & Localization">
           <div className="px-4 py-4 space-y-4">
             <div>
               <label className="text-xs font-semibold text-foreground/60 mb-1.5 block">AI Coach Style</label>
@@ -451,6 +451,19 @@ export default function SettingsPage() {
                 <option value="motivational">High Energy & Motivational</option>
                 <option value="gentle">Gentle & Mindful</option>
                 <option value="direct">Direct & No-Nonsense</option>
+              </select>
+            </div>
+            <div>
+              <label className="text-xs font-semibold text-foreground/60 mb-1.5 block">Language Preference</label>
+              <select
+                id="settings-language"
+                className="w-full text-xs px-3 py-2.5 rounded-xl border border-foreground/10 bg-background text-foreground focus:outline-none focus:border-primary/40"
+              >
+                <option value="en">English (US)</option>
+                <option value="en-gb">English (UK)</option>
+                <option value="es">Español</option>
+                <option value="fr">Français</option>
+                <option value="de">Deutsch</option>
               </select>
             </div>
             <div>

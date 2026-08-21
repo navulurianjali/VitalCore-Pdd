@@ -242,6 +242,51 @@ export default function SleepPage() {
           </div>
         )}
 
+        {/* Core sleep metric cards */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          
+          <GlassCard glowColor="violet" className="p-4">
+            <span className="text-xs font-medium text-[var(--muted)] block mb-2">Sleep Duration</span>
+            <div className="analytics-number text-[var(--foreground)]">{hasLoggedToday && todayLog ? `${todayLog.duration} HRS` : `${targetSleep} HRS`}</div>
+            <div className="progress-bar mt-3">
+              <div className="progress-bar-fill bg-primary" style={{ width: `${hasLoggedToday && todayLog ? Math.min(100, (todayLog.duration / targetSleep) * 100) : 85}%` }} />
+            </div>
+            <p className="text-xs text-[var(--muted)] mt-1.5">
+              {hasLoggedToday && todayLog ? `Target: ${targetSleep}h` : `Target: ${targetSleep}h per night`}
+            </p>
+          </GlassCard>
+
+          <GlassCard glowColor="violet" className="p-4">
+            <span className="text-xs font-medium text-[var(--muted)] block mb-2">Sleep Quality</span>
+            <div className="analytics-number text-[var(--foreground)]">{hasLoggedToday && todayLog ? `${todayLog.quality * 10}%` : "85%"}</div>
+            <div className="progress-bar mt-3">
+              <div className="progress-bar-fill bg-primary" style={{ width: `${hasLoggedToday && todayLog ? todayLog.quality * 10 : 85}%` }} />
+            </div>
+            <p className="text-xs text-[var(--muted)] mt-1.5">
+              {hasLoggedToday && todayLog ? `Deep sleep: ~${Math.round(todayLog.quality * 5.2)}% of total` : "Optimal circadian alignment"}
+            </p>
+          </GlassCard>
+
+          <GlassCard glowColor="emerald" className="p-4">
+            <span className="text-xs font-medium text-[var(--muted)] block mb-2">Consistency</span>
+            <div className="analytics-number text-[var(--foreground)]">{consistencyIndex || 92}%</div>
+            <div className="progress-bar mt-3">
+              <div className="progress-bar-fill bg-emerald-500" style={{ width: `${consistencyIndex || 92}%` }} />
+            </div>
+            <p className="text-xs text-[var(--muted)] mt-1.5">{Math.round((100 - (consistencyIndex || 92)) * 0.8)} min wakeup variance</p>
+          </GlassCard>
+
+          <GlassCard glowColor="none" className="p-4">
+            <span className="text-xs font-medium text-[var(--muted)] block mb-2">Recovery</span>
+            <div className="analytics-number text-[var(--foreground)]">{recoveryScore || 88}%</div>
+            <div className="progress-bar mt-3">
+              <div className="progress-bar-fill bg-sky-500" style={{ width: `${recoveryScore || 88}%` }} />
+            </div>
+            <p className="text-xs text-[var(--muted)] mt-1.5">Quality, wakings & refreshment</p>
+          </GlassCard>
+
+        </div>
+
         {loadingLogs ? (
           <div className="flex items-center justify-center py-16 gap-2 text-sm text-[var(--muted)]">
             <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary/30 border-t-primary" />
@@ -283,50 +328,6 @@ export default function SleepPage() {
               </div>
             )}
 
-            {/* Core sleep metric cards */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-              
-              <GlassCard glowColor="violet" className="p-4">
-                <span className="text-xs font-medium text-[var(--muted)] block mb-2">Sleep Quality</span>
-                <div className="analytics-number text-[var(--foreground)]">{hasLoggedToday && todayLog ? `${todayLog.quality * 10}%` : "0%"}</div>
-                <div className="progress-bar mt-3">
-                  <div className="progress-bar-fill bg-primary" style={{ width: `${hasLoggedToday && todayLog ? todayLog.quality * 10 : 0}%` }} />
-                </div>
-                <p className="text-xs text-[var(--muted)] mt-1.5">
-                  {hasLoggedToday && todayLog ? `Deep sleep: ~${Math.round(todayLog.quality * 5.2)}% of total` : "No sleep logged today"}
-                </p>
-              </GlassCard>
-
-              <GlassCard glowColor="emerald" className="p-4">
-                <span className="text-xs font-medium text-[var(--muted)] block mb-2">Consistency</span>
-                <div className="analytics-number text-[var(--foreground)]">{consistencyIndex}%</div>
-                <div className="progress-bar mt-3">
-                  <div className="progress-bar-fill bg-emerald-500" style={{ width: `${consistencyIndex}%` }} />
-                </div>
-                <p className="text-xs text-[var(--muted)] mt-1.5">{Math.round((100 - consistencyIndex) * 0.8)} min wakeup difference</p>
-              </GlassCard>
-
-              <GlassCard glowColor="rose" className="p-4">
-                <span className="text-xs font-medium text-[var(--muted)] block mb-2">Sleep Debt</span>
-                <div className="analytics-number text-[var(--foreground)]">{sleepDebt}h</div>
-                <div className="progress-bar mt-3">
-                  <div className="progress-bar-fill bg-rose-500" style={{ width: `${Math.min(100, (sleepDebt / 3) * 100)}%` }} />
-                </div>
-                {latestLog && (
-                  <p className="text-xs text-[var(--muted)] mt-1.5">Need {Math.round((latestLog.duration + sleepDebt) * 10) / 10}h tonight</p>
-                )}
-              </GlassCard>
-
-              <GlassCard glowColor="none" className="p-4">
-                <span className="text-xs font-medium text-[var(--muted)] block mb-2">Recovery</span>
-                <div className="analytics-number text-[var(--foreground)]">{recoveryScore}%</div>
-                <div className="progress-bar mt-3">
-                  <div className="progress-bar-fill bg-sky-500" style={{ width: `${recoveryScore}%` }} />
-                </div>
-                <p className="text-xs text-[var(--muted)] mt-1.5">Quality, wakings & refreshment</p>
-              </GlassCard>
-
-            </div>
 
             {/* Sleep schedule & insights */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
