@@ -39,7 +39,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Please enter a valid name (at least 2 characters)." }, { status: 400 });
     }
 
-    const emailCheck = validateEmail(email);
+    if (!email && email !== 0) {
+      return NextResponse.json({ error: "Email address is required." }, { status: 400 });
+    }
+
+    const emailCheck = validateEmail(String(email));
     if (!emailCheck.isValid) {
       return NextResponse.json({ error: emailCheck.error || "Invalid email address format." }, { status: 400 });
     }

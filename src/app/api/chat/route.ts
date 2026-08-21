@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Messages array is required." }, { status: 400 });
     }
 
-    const lastUserMessage = [...messages].reverse().find((m: any) => m.sender === "user")?.text || "";
+    const lastUserMessage = String([...messages].reverse().find((m: any) => m.sender === "user")?.text ?? "");
 
     const responseText = generateLocalAICoachResponse(lastUserMessage, profile, metrics);
 
