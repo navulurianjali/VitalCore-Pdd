@@ -143,7 +143,7 @@ export default function SleepScreen({ navigation }: any) {
       <ScrollView contentContainerStyle={styles.container}>
         {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
+          <TouchableOpacity testID="sleep_back_btn" accessibilityLabel="sleep_back_btn" style={styles.backBtn} onPress={() => navigation.goBack()}>
             <Text style={[styles.backBtnText, { color: colors.primary }]}>← Back</Text>
           </TouchableOpacity>
           <Text style={[styles.title, { color: colors.text, fontSize: isCareMode ? 24 : 20 }]}>
@@ -153,6 +153,8 @@ export default function SleepScreen({ navigation }: any) {
 
         {/* Action Button */}
         <TouchableOpacity
+          testID="sleep_log_trigger_btn"
+          accessibilityLabel="sleep_log_trigger_btn"
           style={[styles.logTriggerBtn, { backgroundColor: colors.primary }]}
           onPress={() => setShowLogModal(true)}
         >
@@ -278,11 +280,13 @@ export default function SleepScreen({ navigation }: any) {
                 </View>
 
                 <CustomTextInput
-                  label="Sleep Duration (hours)"
+                  testID="sleep_hours_input"
+                  accessibilityLabel="sleep_hours_input"
+                  label="Total Sleep Duration (Hours)"
                   value={hours}
                   onChangeText={setHours}
                   keyboardType="numeric"
-                  containerStyle={{ marginTop: 10 }}
+                  placeholder="8.0"
                 />
 
                 <Text style={[styles.inputLabel, { color: colors.textMuted, marginTop: 10 }]}>Sleep Quality Rating: {quality}/10</Text>
@@ -290,6 +294,8 @@ export default function SleepScreen({ navigation }: any) {
                   {[5, 6, 7, 8, 9, 10].map((r) => (
                     <TouchableOpacity
                       key={r}
+                      testID={`sleep_quality_rating_${r}`}
+                      accessibilityLabel={`sleep_quality_rating_${r}`}
                       style={[
                         styles.ratingChip,
                         { backgroundColor: colors.inputBg, borderColor: colors.inputBorder },
@@ -309,6 +315,8 @@ export default function SleepScreen({ navigation }: any) {
                   {[5, 6, 7, 8, 9, 10].map((r) => (
                     <TouchableOpacity
                       key={r}
+                      testID={`sleep_refreshment_${r}`}
+                      accessibilityLabel={`sleep_refreshment_${r}`}
                       style={[
                         styles.ratingChip,
                         { backgroundColor: colors.inputBg, borderColor: colors.inputBorder },
@@ -324,6 +332,8 @@ export default function SleepScreen({ navigation }: any) {
                 </View>
 
                 <CustomTextInput
+                  testID="sleep_wakings_input"
+                  accessibilityLabel="sleep_wakings_input"
                   label="Night Wakings count"
                   value={String(wakings)}
                   onChangeText={(t) => setWakings(parseInt(t) || 0)}
@@ -332,6 +342,8 @@ export default function SleepScreen({ navigation }: any) {
                 />
 
                 <TouchableOpacity
+                  testID="sleep_save_btn"
+                  accessibilityLabel="sleep_save_btn"
                   style={[styles.saveBtn, { backgroundColor: colors.primary }, logging && { opacity: 0.5 }]}
                   onPress={handleSaveSleep}
                   disabled={logging}

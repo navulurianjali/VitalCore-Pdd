@@ -274,6 +274,8 @@ export default function FitnessScreen({ navigation }: any) {
       {/* Top Segmented Controls */}
       <View style={[styles.tabRow, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
         <TouchableOpacity
+          testID="fitness_tab_coach"
+          accessibilityLabel="fitness_tab_coach"
           style={[styles.tabBtn, activeTab === 'coach' && { backgroundColor: colors.primary }]}
           onPress={() => setActiveTab('coach')}
         >
@@ -282,6 +284,8 @@ export default function FitnessScreen({ navigation }: any) {
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
+          testID="fitness_tab_history"
+          accessibilityLabel="fitness_tab_history"
           style={[styles.tabBtn, activeTab === 'history' && { backgroundColor: colors.primary }]}
           onPress={() => setActiveTab('history')}
         >

@@ -97,19 +97,21 @@ export default function LoginScreen({ navigation }: any) {
           </View>
 
           <View style={[styles.formCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-            <Text style={[styles.formTitle, { color: colors.text }]}>Sign In</Text>
+            <Text testID="login_form_title" accessibilityLabel="login_form_title" style={[styles.formTitle, { color: colors.text }]}>Sign In</Text>
 
             {!!errorMessage && (
-              <View style={styles.errorBanner}>
+              <View testID="login_error_banner" accessibilityLabel="login_error_banner" style={styles.errorBanner}>
                 <AlertCircle size={18} color="#ef4444" style={styles.errorIcon} />
                 <View style={{ flex: 1 }}>
                   <Text style={styles.errorTitle}>Authentication Error</Text>
-                  <Text style={styles.errorText}>{errorMessage}</Text>
+                  <Text testID="login_error_msg" accessibilityLabel="login_error_msg" style={styles.errorText}>{errorMessage}</Text>
                 </View>
               </View>
             )}
 
             <CustomTextInput
+              testID="login_email_input"
+              accessibilityLabel="login_email_input"
               label="Email Address"
               placeholder="name@example.com"
               value={email}
@@ -124,9 +126,11 @@ export default function LoginScreen({ navigation }: any) {
             />
 
             <CustomTextInput
+              testID="login_password_input"
+              accessibilityLabel="login_password_input"
               label="Password"
               labelRight={
-                <TouchableOpacity onPress={() => setForgotModalVisible(true)}>
+                <TouchableOpacity testID="login_forgot_btn" accessibilityLabel="login_forgot_btn" onPress={() => setForgotModalVisible(true)}>
                   <Text style={[styles.forgotText, { color: colors.primary }]}>Forgot?</Text>
                 </TouchableOpacity>
               }
@@ -139,7 +143,7 @@ export default function LoginScreen({ navigation }: any) {
               secureTextEntry={!showPassword}
               leftIcon={<Lock size={18} color={colors.textMuted} />}
               rightIcon={
-                <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={{ padding: 4 }}>
+                <TouchableOpacity testID="login_password_toggle" accessibilityLabel="login_password_toggle" onPress={() => setShowPassword(!showPassword)} style={{ padding: 4 }}>
                   {showPassword ? <EyeOff size={18} color={colors.textMuted} /> : <Eye size={18} color={colors.textMuted} />}
                 </TouchableOpacity>
               }
@@ -147,6 +151,8 @@ export default function LoginScreen({ navigation }: any) {
             />
 
             <TouchableOpacity
+              testID="login_remember_me"
+              accessibilityLabel="login_remember_me"
               style={styles.rememberRow}
               onPress={() => setRememberMe(!rememberMe)}
             >
@@ -157,12 +163,14 @@ export default function LoginScreen({ navigation }: any) {
             </TouchableOpacity>
 
             <TouchableOpacity
+              testID="login_submit_btn"
+              accessibilityLabel="login_submit_btn"
               style={[styles.primaryButton, { backgroundColor: colors.primary }, loading && styles.disabledButton]}
               onPress={handleLogin}
               disabled={loading}
             >
               {loading ? (
-                <ActivityIndicator color="#ffffff" size="small" />
+                <ActivityIndicator testID="login_loading_indicator" color="#ffffff" size="small" />
               ) : (
                 <Text style={styles.buttonText}>Sign In</Text>
               )}
@@ -170,7 +178,7 @@ export default function LoginScreen({ navigation }: any) {
 
             <View style={styles.footerRow}>
               <Text style={[styles.footerText, { color: colors.textMuted }]}>Don't have an account?</Text>
-              <TouchableOpacity onPress={() => navigation.navigate('Register')}>
+              <TouchableOpacity testID="login_signup_link" accessibilityLabel="login_signup_link" onPress={() => navigation.navigate('Register')}>
                 <Text style={[styles.linkText, { color: colors.primary }]}> Sign Up</Text>
               </TouchableOpacity>
             </View>

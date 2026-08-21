@@ -141,16 +141,18 @@ export default function RegisterScreen({ navigation }: any) {
 
           <View style={[styles.formCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
             {!!errorMessage && (
-              <View style={styles.errorBanner}>
+              <View testID="reg_error_banner" accessibilityLabel="reg_error_banner" style={styles.errorBanner}>
                 <AlertCircle size={18} color="#ef4444" style={styles.errorIcon} />
                 <View style={{ flex: 1 }}>
                   <Text style={styles.errorTitle}>Validation / Registration Error</Text>
-                  <Text style={styles.errorText}>{errorMessage}</Text>
+                  <Text testID="reg_error_msg" accessibilityLabel="reg_error_msg" style={styles.errorText}>{errorMessage}</Text>
                 </View>
               </View>
             )}
 
             <CustomTextInput
+              testID="reg_name_input"
+              accessibilityLabel="reg_name_input"
               label="Full Name"
               placeholder="John Doe"
               value={fullName}
@@ -163,6 +165,8 @@ export default function RegisterScreen({ navigation }: any) {
             />
 
             <CustomTextInput
+              testID="reg_username_input"
+              accessibilityLabel="reg_username_input"
               label="Username"
               placeholder="johndoe"
               value={username}
@@ -176,6 +180,8 @@ export default function RegisterScreen({ navigation }: any) {
             />
 
             <CustomTextInput
+              testID="reg_email_input"
+              accessibilityLabel="reg_email_input"
               label="Email Address"
               placeholder="name@example.com"
               value={email}
@@ -190,6 +196,8 @@ export default function RegisterScreen({ navigation }: any) {
             />
 
             <CustomTextInput
+              testID="reg_dob_input"
+              accessibilityLabel="reg_dob_input"
               label="Date of Birth *"
               placeholder="YYYY-MM-DD (e.g. 1998-05-24)"
               value={dateOfBirth}
@@ -205,6 +213,8 @@ export default function RegisterScreen({ navigation }: any) {
 
             <View style={styles.inputGroup}>
               <CustomTextInput
+                testID="reg_password_input"
+                accessibilityLabel="reg_password_input"
                 label="Password"
                 placeholder="••••••••"
                 value={password}
@@ -268,6 +278,8 @@ export default function RegisterScreen({ navigation }: any) {
             </View>
 
             <CustomTextInput
+              testID="reg_confirm_password_input"
+              accessibilityLabel="reg_confirm_password_input"
               label="Confirm Password"
               placeholder="••••••••"
               value={confirmPassword}
@@ -286,6 +298,8 @@ export default function RegisterScreen({ navigation }: any) {
             />
 
             <TouchableOpacity
+              testID="reg_submit_btn"
+              accessibilityLabel="reg_submit_btn"
               style={[styles.primaryButton, { backgroundColor: colors.primary }, loading && styles.disabledButton]}
               onPress={handleRegister}
               disabled={loading}
@@ -299,7 +313,7 @@ export default function RegisterScreen({ navigation }: any) {
 
             <View style={styles.footerRow}>
               <Text style={[styles.footerText, { color: colors.textMuted }]}>Already have an account?</Text>
-              <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+              <TouchableOpacity testID="reg_login_link" accessibilityLabel="reg_login_link" onPress={() => navigation.navigate('Login')}>
                 <Text style={[styles.linkText, { color: colors.primary }]}> Sign In</Text>
               </TouchableOpacity>
             </View>

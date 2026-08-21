@@ -74,11 +74,87 @@ export class ExcelReporter {
 
   public async generateAllReports(results: TestCaseResult[]): Promise<void> {
     Logger.info('Generating Excel Analysis Reports...');
+    await this.generateVitalCoreE2EReport(results);
     await this.generateMainReport(results);
     await this.generatePassedReport(results.filter((r) => r.status === 'PASS'));
     await this.generateFailedReport(results.filter((r) => r.status === 'FAIL'));
     await this.generateSummaryReport(results);
     Logger.info(`Excel Reports saved to: ${this.outputDir}`);
+  }
+
+  // ── VITALCORE APPIUM E2E REPORT (SUMMARY & DETAILED RESULTS) ──
+  private async generateVitalCoreE2EReport(results: TestCaseResult[]): Promise<void> {
+    const wb = new ExcelJS.Workbook();
+    wb.creator = 'VitalCore QA Automation – Appium E2E';
+    wb.created = new Date();
+
+    const total = results.length;
+    const passed = results.filter((r) => r.status === 'PASS').length;
+    const failed = results.filter((r) => r.status === 'FAIL').length;
+    const passPct = total > 0 ? ((passed / total) * 100).toFixed(2) : '0.00';
+    const totalTime = results.reduce((s, r) => s + r.executionTime, 0).toFixed(2);
+
+    // 1. Summary Sheet
+    const sSummary = wb.addWorksheet('Summary');
+    sSummary.columns = [
+      { header: 'Metric', key: 'metric', width: 30 },
+      { header: 'Value', key: 'value', width: 30 },
+    ];
+    styleHeader(sSummary, 2);
+
+    const summaryRows = [
+      { metric: 'Report Title', value: 'VitalCore Expo Appium E2E Automation Test Report' },
+      { metric: 'Execution Environment', value: 'Android Emulator / Appium UiAutomator2' },
+      { metric: 'Execution Timestamp', value: new Date().toISOString() },
+      { metric: 'Total Test Cases', value: total },
+      { metric: 'Executed', value: total },
+      { metric: 'Passed', value: passed },
+      { metric: 'Failed', value: failed },
+      { metric: 'Pass Percentage', value: `${passPct}%` },
+      { metric: 'Total Execution Time', value: `${totalTime}s` },
+      { metric: 'Quality Gate Status', value: parseFloat(passPct) >= 95 ? 'PASSED ✅' : 'FAILED ❌' },
+    ];
+
+    summaryRows.forEach((r, idx) => {
+      const row = sSummary.addRow(r);
+      setDefaultCellStyle(row, idx % 2 !== 0);
+      row.getCell(1).font = { name: FONT_NAME, size: 10, bold: true };
+    });
+
+    // 2. Detailed Results Sheet
+    const sDetailed = wb.addWorksheet('Detailed Results');
+    sDetailed.columns = [
+      { header: 'Test ID', key: 'id', width: 16 },
+      { header: 'Module', key: 'module', width: 22 },
+      { header: 'Test Case', key: 'name', width: 42 },
+      { header: 'Expected Result', key: 'expectedResult', width: 45 },
+      { header: 'Actual Result', key: 'actualResult', width: 45 },
+      { header: 'Status', key: 'status', width: 12 },
+      { header: 'Error Details', key: 'failureReason', width: 40 },
+      { header: 'Execution Time (s)', key: 'executionTime', width: 18 },
+    ];
+    styleHeader(sDetailed, 8);
+
+    results.forEach((r, idx) => {
+      const row = sDetailed.addRow({
+        id: r.id,
+        module: r.module,
+        name: r.name,
+        expectedResult: r.expectedResult,
+        actualResult: r.actualResult,
+        status: r.status,
+        failureReason: r.failureReason || 'None',
+        executionTime: r.executionTime,
+      });
+      setDefaultCellStyle(row, idx % 2 !== 0);
+      applyStatusFill(row.getCell(6), r.status);
+    });
+    sDetailed.autoFilter = { from: 'A1', to: 'H1' };
+    sDetailed.views = [{ state: 'frozen', ySplit: 1 }];
+
+    const filePath = path.join(this.outputDir, 'VitalCore_Appium_E2E_Report.xlsx');
+    await wb.xlsx.writeFile(filePath);
+    Logger.info(`VitalCore E2E Excel report generated: ${filePath}`);
   }
 
   // ── MAIN MULTI-SHEET REPORT ───────────────────────────────

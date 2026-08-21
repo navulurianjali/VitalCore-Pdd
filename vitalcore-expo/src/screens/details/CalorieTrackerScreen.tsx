@@ -323,7 +323,7 @@ export default function CalorieTrackerScreen({ navigation }: any) {
 
         {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
+          <TouchableOpacity testID="calorie_back_btn" accessibilityLabel="calorie_back_btn" style={styles.backBtn} onPress={() => navigation.goBack()}>
             <Text style={[styles.backBtnText, { color: colors.primary }]}>← Back</Text>
           </TouchableOpacity>
           <Text style={[styles.title, { color: colors.text, fontSize: isCareMode ? 24 : 20 }]}>
@@ -371,7 +371,12 @@ export default function CalorieTrackerScreen({ navigation }: any) {
                   <Text style={[styles.mealCal, { color: colors.primary }]}>{meal.cal} kcal</Text>
                 </View>
               </View>
-              <TouchableOpacity style={[styles.addFoodBtn, { backgroundColor: colors.primary }]} onPress={() => handleOpenAddModal(meal.type)}>
+              <TouchableOpacity
+                testID={`calorie_add_${meal.type}_btn`}
+                accessibilityLabel={`calorie_add_${meal.type}_btn`}
+                style={[styles.addFoodBtn, { backgroundColor: colors.primary }]}
+                onPress={() => handleOpenAddModal(meal.type)}
+              >
                 <Text style={styles.addFoodBtnText}>+ Add Food</Text>
               </TouchableOpacity>
             </View>

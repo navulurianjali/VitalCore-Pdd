@@ -161,7 +161,7 @@ export default function DashboardScreen({ navigation }: any) {
       {/* 1. Page Header Welcome */}
       <View style={styles.headerRow}>
         <View style={{ flex: 1 }}>
-          <Text style={[styles.greetingText, { color: colors.text, fontSize: isCareMode ? 26 : 22 }]}>
+          <Text testID="dashboard_greeting" accessibilityLabel="dashboard_greeting" style={[styles.greetingText, { color: colors.text, fontSize: isCareMode ? 26 : 22 }]}>
             {greeting}{firstName ? `, ${firstName}` : ''} 👋
           </Text>
           <Text style={[styles.greetingSub, { color: colors.textMuted }]}>
@@ -169,6 +169,8 @@ export default function DashboardScreen({ navigation }: any) {
           </Text>
         </View>
         <TouchableOpacity
+          testID="dash_history_btn"
+          accessibilityLabel="dash_history_btn"
           style={[styles.streakBadge, { backgroundColor: colors.cardBg, borderColor: colors.primary }]}
           onPress={() => navigation.navigate('HistoryDetail')}
         >
@@ -181,7 +183,7 @@ export default function DashboardScreen({ navigation }: any) {
 
       {/* Feedback banner */}
       {logStatus && (
-        <View style={[styles.logBanner, { backgroundColor: colors.primaryLight, borderColor: colors.primary }]}>
+        <View testID="dash_log_water_status" accessibilityLabel="dash_log_water_status" style={[styles.logBanner, { backgroundColor: colors.primaryLight, borderColor: colors.primary }]}>
           <Text style={[styles.logBannerText, { color: colors.primary }]}>{logStatus}</Text>
         </View>
       )}
@@ -191,6 +193,8 @@ export default function DashboardScreen({ navigation }: any) {
         <View style={styles.focusGrid}>
           {/* Calories Card */}
           <TouchableOpacity
+            testID="dash_calorie_tracker_btn"
+            accessibilityLabel="dash_calorie_tracker_btn"
             style={[styles.focusCard, { backgroundColor: colors.cardBg, borderColor: 'rgba(239, 68, 68, 0.3)' }]}
             onPress={() => navigation.navigate('CalorieTrackerDetail')}
           >
@@ -199,7 +203,7 @@ export default function DashboardScreen({ navigation }: any) {
               <Text style={{ fontSize: 10, fontWeight: '800', color: '#f87171' }}>Track Intake →</Text>
             </View>
             <View style={styles.cardValueRow}>
-              <Text style={[styles.cardBigNum, { color: colors.text }]}>{totalCalories}</Text>
+              <Text testID="dash_calories_value" accessibilityLabel="dash_calories_value" style={[styles.cardBigNum, { color: colors.text }]}>{totalCalories}</Text>
               <Text style={[styles.cardUnit, { color: colors.textMuted }]}>KCAL</Text>
             </View>
             <Text style={[styles.cardSubtitle, { color: colors.textMuted }]}>Daily Meals Logged</Text>
@@ -211,12 +215,14 @@ export default function DashboardScreen({ navigation }: any) {
               <Droplet size={20} color="#3b82f6" />
             </View>
             <View style={styles.cardValueRow}>
-              <Text style={[styles.cardBigNum, { color: colors.text }]}>{waterLogged}</Text>
+              <Text testID="dash_water_value" accessibilityLabel="dash_water_value" style={[styles.cardBigNum, { color: colors.text }]}>{waterLogged}</Text>
               <Text style={[styles.cardUnit, { color: colors.textMuted }]}>ML</Text>
             </View>
             <Text style={[styles.cardSubtitle, { color: colors.textMuted }]}>Hydration Intake</Text>
             <View style={styles.quickWaterRow}>
               <TouchableOpacity
+                testID="dash_log_water_250_btn"
+                accessibilityLabel="dash_log_water_250_btn"
                 style={[styles.quickWaterBtn, { backgroundColor: colors.primaryLight, borderColor: colors.primary }]}
                 onPress={() => handleLogWater(250)}
                 disabled={loggingInProgress}
@@ -224,6 +230,8 @@ export default function DashboardScreen({ navigation }: any) {
                 <Text style={[styles.quickWaterText, { color: colors.primary }]}>+ 250ml</Text>
               </TouchableOpacity>
               <TouchableOpacity
+                testID="dash_log_water_500_btn"
+                accessibilityLabel="dash_log_water_500_btn"
                 style={[styles.quickWaterBtn, { backgroundColor: colors.primaryLight, borderColor: colors.primary }]}
                 onPress={() => handleLogWater(500)}
                 disabled={loggingInProgress}
@@ -234,16 +242,21 @@ export default function DashboardScreen({ navigation }: any) {
           </View>
 
           {/* Sleep Card */}
-          <View style={[styles.focusCard, { backgroundColor: colors.cardBg, borderColor: 'rgba(139, 92, 246, 0.3)' }]}>
+          <TouchableOpacity
+            testID="dash_sleep_btn"
+            accessibilityLabel="dash_sleep_btn"
+            style={[styles.focusCard, { backgroundColor: colors.cardBg, borderColor: 'rgba(139, 92, 246, 0.3)' }]}
+            onPress={() => navigation.navigate('SleepDetail')}
+          >
             <View style={styles.cardTopRow}>
               <Moon size={20} color="#8b5cf6" />
             </View>
             <View style={styles.cardValueRow}>
-              <Text style={[styles.cardBigNum, { color: colors.text }]}>{sleepHrs > 0 ? sleepHrs : '0'}</Text>
+              <Text testID="dash_sleep_value" accessibilityLabel="dash_sleep_value" style={[styles.cardBigNum, { color: colors.text }]}>{sleepHrs > 0 ? sleepHrs : '0'}</Text>
               <Text style={[styles.cardUnit, { color: colors.textMuted }]}>HRS</Text>
             </View>
             <Text style={[styles.cardSubtitle, { color: colors.textMuted }]}>Sleep Duration</Text>
-          </View>
+          </TouchableOpacity>
 
           {/* Activity Steps Card */}
           <View style={[styles.focusCard, { backgroundColor: colors.cardBg, borderColor: 'rgba(245, 158, 11, 0.3)' }]}>

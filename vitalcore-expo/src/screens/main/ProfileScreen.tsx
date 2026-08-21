@@ -203,6 +203,8 @@ export default function ProfileScreen({ navigation }: any) {
         Blood Group
       </Text>
       <TouchableOpacity
+        testID="profile_blood_group_dropdown"
+        accessibilityLabel="profile_blood_group_dropdown"
         style={[
           styles.dropdownInput,
           {
@@ -213,7 +215,7 @@ export default function ProfileScreen({ navigation }: any) {
         onPress={() => setShowBloodDropdown(true)}
         activeOpacity={0.7}
       >
-        <Text style={[styles.dropdownValueText, { color: bloodGroup ? colors.text : colors.textMuted }]}>
+        <Text testID="profile_blood_group_value" accessibilityLabel="profile_blood_group_value" style={[styles.dropdownValueText, { color: bloodGroup ? colors.text : colors.textMuted }]}>
           {bloodGroup ? bloodGroup : 'Select Blood Group'}
         </Text>
         <ChevronDown size={18} color={colors.textMuted} />
@@ -309,14 +311,14 @@ export default function ProfileScreen({ navigation }: any) {
         {activeSection === 'personal' && (
           <View style={[styles.sectionBox, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
             <Text style={[styles.sectionTitle, { color: colors.text, fontSize: sectionLabelSize }]}>Personal Information</Text>
-            <CustomTextInput label="Full Name" value={fullName} onChangeText={setFullName} containerStyle={styles.field} />
-            <CustomTextInput label="Date of Birth (YYYY-MM-DD)" value={dateOfBirth} onChangeText={setDateOfBirth} placeholder="e.g. 1998-05-24" containerStyle={styles.field} />
-            <CustomTextInput label="Gender" value={gender} onChangeText={setGender} placeholder="e.g. Male / Female / Non-binary" containerStyle={styles.field} />
+            <CustomTextInput testID="profile_name_input" accessibilityLabel="profile_name_input" label="Full Name" value={fullName} onChangeText={setFullName} containerStyle={styles.field} />
+            <CustomTextInput testID="profile_dob_input" accessibilityLabel="profile_dob_input" label="Date of Birth (YYYY-MM-DD)" value={dateOfBirth} onChangeText={setDateOfBirth} placeholder="e.g. 1998-05-24" containerStyle={styles.field} />
+            <CustomTextInput testID="profile_gender_input" accessibilityLabel="profile_gender_input" label="Gender" value={gender} onChangeText={setGender} placeholder="e.g. Male / Female / Non-binary" containerStyle={styles.field} />
             
             {/* Blood Group Select Field */}
             {renderBloodGroupSelectField()}
 
-            <CustomTextInput label="Occupation" value={occupation} onChangeText={setOccupation} placeholder="e.g. Software Engineer" containerStyle={styles.field} />
+            <CustomTextInput testID="profile_occupation_input" accessibilityLabel="profile_occupation_input" label="Occupation" value={occupation} onChangeText={setOccupation} placeholder="e.g. Software Engineer" containerStyle={styles.field} />
           </View>
         )}
 
@@ -330,10 +332,10 @@ export default function ProfileScreen({ navigation }: any) {
 
             <View style={{ flexDirection: 'row', gap: 10 }}>
               <View style={{ flex: 1 }}>
-                <CustomTextInput label="Height (cm)" value={heightCm} onChangeText={setHeightCm} keyboardType="numeric" placeholder="e.g. 175" />
+                <CustomTextInput testID="profile_height_input" accessibilityLabel="profile_height_input" label="Height (cm)" value={heightCm} onChangeText={setHeightCm} keyboardType="numeric" placeholder="e.g. 175" />
               </View>
               <View style={{ flex: 1 }}>
-                <CustomTextInput label="Weight (kg)" value={weightKg} onChangeText={setWeightKg} keyboardType="numeric" placeholder="e.g. 70" />
+                <CustomTextInput testID="profile_weight_input" accessibilityLabel="profile_weight_input" label="Weight (kg)" value={weightKg} onChangeText={setWeightKg} keyboardType="numeric" placeholder="e.g. 70" />
               </View>
             </View>
             {bmiValue !== '—' && (
@@ -411,6 +413,8 @@ export default function ProfileScreen({ navigation }: any) {
 
         {/* Save button */}
         <TouchableOpacity
+          testID="profile_save_btn"
+          accessibilityLabel="profile_save_btn"
           style={[styles.saveBtn, { backgroundColor: colors.primary }]}
           onPress={handleSaveProfile}
           disabled={saving}
@@ -424,6 +428,8 @@ export default function ProfileScreen({ navigation }: any) {
         {/* Settings & Logout Quick Actions */}
         <View style={{ marginTop: 10, gap: 10 }}>
           <TouchableOpacity
+            testID="profile_settings_btn"
+            accessibilityLabel="profile_settings_btn"
             style={[styles.settingsBtn, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}
             onPress={() => navigation.navigate('SettingsDetail')}
           >
@@ -431,6 +437,8 @@ export default function ProfileScreen({ navigation }: any) {
           </TouchableOpacity>
 
           <TouchableOpacity
+            testID="profile_logout_btn"
+            accessibilityLabel="profile_logout_btn"
             style={[styles.signOutBtn, { backgroundColor: colors.primaryLight, borderColor: colors.primary }]}
             onPress={handleSignOut}
           >
@@ -460,7 +468,7 @@ export default function ProfileScreen({ navigation }: any) {
           >
             <View style={[styles.dropdownHeader, { borderBottomColor: colors.cardBorder }]}>
               <Text style={[styles.dropdownTitle, { color: colors.text }]}>Select Blood Group</Text>
-              <TouchableOpacity onPress={() => setShowBloodDropdown(false)} style={{ padding: 4 }}>
+              <TouchableOpacity testID="profile_blood_modal_close" accessibilityLabel="profile_blood_modal_close" onPress={() => setShowBloodDropdown(false)} style={{ padding: 4 }}>
                 <X size={18} color={colors.textMuted} />
               </TouchableOpacity>
             </View>
@@ -468,6 +476,8 @@ export default function ProfileScreen({ navigation }: any) {
               {BLOOD_GROUPS.map((bg) => (
                 <TouchableOpacity
                   key={bg}
+                  testID={`profile_blood_item_${bg.replace('+', 'pos').replace('-', 'neg')}`}
+                  accessibilityLabel={`profile_blood_item_${bg.replace('+', 'pos').replace('-', 'neg')}`}
                   style={[
                     styles.dropdownOption,
                     { borderBottomColor: colors.cardBorder },

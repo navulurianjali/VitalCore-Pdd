@@ -211,6 +211,8 @@ export default function SettingsScreen({ navigation }: any) {
         ].map((m) => (
           <TouchableOpacity
             key={m.id}
+            testID={`settings_mode_${m.id}`}
+            accessibilityLabel={`settings_mode_${m.id}`}
             style={[
               styles.modeBtn,
               activeMode === m.id && { backgroundColor: colors.primary },
@@ -239,6 +241,8 @@ export default function SettingsScreen({ navigation }: any) {
           <Text style={[styles.settingDesc, { color: colors.textMuted }]}>Toggle high contrast dark/light interface</Text>
         </View>
         <Switch
+          testID="settings_theme_toggle"
+          accessibilityLabel="settings_theme_toggle"
           value={theme === 'dark'}
           onValueChange={toggleTheme}
           trackColor={{ false: colors.inputBorder, true: colors.primary }}
@@ -251,6 +255,8 @@ export default function SettingsScreen({ navigation }: any) {
           {['Metric', 'Imperial'].map((u) => (
             <TouchableOpacity
               key={u}
+              testID={`settings_unit_${u.toLowerCase()}`}
+              accessibilityLabel={`settings_unit_${u.toLowerCase()}`}
               style={[
                 styles.choiceChip,
                 {
@@ -412,6 +418,8 @@ export default function SettingsScreen({ navigation }: any) {
       </TouchableOpacity>
 
       <TouchableOpacity
+        testID="settings_logout_btn"
+        accessibilityLabel="settings_logout_btn"
         style={[styles.signOutBtn, { backgroundColor: colors.primaryLight, borderColor: colors.primary }]}
         onPress={handleSignOut}
       >

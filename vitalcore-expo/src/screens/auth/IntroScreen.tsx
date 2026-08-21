@@ -220,7 +220,12 @@ export default function IntroScreen({ navigation }: IntroScreenProps) {
             {isDark ? <Sun size={18} color="#fbbf24" /> : <Moon size={18} color="#6366f1" />}
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.skipButton} onPress={() => navigation.navigate('Login')}>
+          <TouchableOpacity
+            testID="intro_skip_btn"
+            accessibilityLabel="intro_skip_btn"
+            style={styles.skipButton}
+            onPress={() => navigation.navigate('Login')}
+          >
             <Text style={[styles.skipButtonText, { color: colors.textMuted }]}>Skip</Text>
           </TouchableOpacity>
         </View>
@@ -229,6 +234,8 @@ export default function IntroScreen({ navigation }: IntroScreenProps) {
       {/* Horizontal Scrollable Carousel */}
       <ScrollView
         ref={scrollViewRef}
+        testID="intro_carousel"
+        accessibilityLabel="intro_carousel"
         horizontal
         pagingEnabled
         showsHorizontalScrollIndicator={false}
@@ -296,23 +303,43 @@ export default function IntroScreen({ navigation }: IntroScreenProps) {
 
         <View style={styles.actionRow}>
           {currentStep > 0 ? (
-            <TouchableOpacity style={[styles.secondaryBtn, { backgroundColor: colors.surface }]} onPress={handleBack}>
+            <TouchableOpacity
+              testID="intro_back_btn"
+              accessibilityLabel="intro_back_btn"
+              style={[styles.secondaryBtn, { backgroundColor: colors.surface }]}
+              onPress={handleBack}
+            >
               <ArrowLeft size={18} color={colors.text} style={{ marginRight: 6 }} />
               <Text style={[styles.secondaryBtnText, { color: colors.text }]}>Back</Text>
             </TouchableOpacity>
           ) : (
-            <TouchableOpacity style={[styles.secondaryBtn, { backgroundColor: colors.surface }]} onPress={() => navigation.navigate('Login')}>
+            <TouchableOpacity
+              testID="intro_login_btn"
+              accessibilityLabel="intro_login_btn"
+              style={[styles.secondaryBtn, { backgroundColor: colors.surface }]}
+              onPress={() => navigation.navigate('Login')}
+            >
               <Text style={[styles.secondaryBtnText, { color: colors.text }]}>Login</Text>
             </TouchableOpacity>
           )}
 
           {currentStep < TOTAL_STEPS - 1 ? (
-            <TouchableOpacity style={[styles.primaryBtn, { backgroundColor: colors.primary }]} onPress={handleNext}>
+            <TouchableOpacity
+              testID="intro_next_btn"
+              accessibilityLabel="intro_next_btn"
+              style={[styles.primaryBtn, { backgroundColor: colors.primary }]}
+              onPress={handleNext}
+            >
               <Text style={styles.primaryBtnText}>Next</Text>
               <ArrowRight size={18} color="#ffffff" style={{ marginLeft: 6 }} />
             </TouchableOpacity>
           ) : (
-            <TouchableOpacity style={[styles.primaryBtn, { backgroundColor: '#10b981' }]} onPress={() => navigation.navigate('Register')}>
+            <TouchableOpacity
+              testID="intro_get_started_btn"
+              accessibilityLabel="intro_get_started_btn"
+              style={[styles.primaryBtn, { backgroundColor: '#10b981' }]}
+              onPress={() => navigation.navigate('Register')}
+            >
               <Text style={styles.primaryBtnText}>Get Started</Text>
               <ArrowRight size={18} color="#ffffff" style={{ marginLeft: 6 }} />
             </TouchableOpacity>

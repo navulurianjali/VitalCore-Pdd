@@ -429,6 +429,8 @@ export default function AICoachScreen() {
       scrollable={false}
       headerRight={
         <TouchableOpacity
+          testID="ai_coach_history_btn"
+          accessibilityLabel="ai_coach_history_btn"
           style={[styles.historyButton, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}
           onPress={handleOpenHistoryModal}
         >
@@ -450,6 +452,8 @@ export default function AICoachScreen() {
         ) : (
           <FlatList
             ref={flatListRef}
+            testID="ai_coach_messages_list"
+            accessibilityLabel="ai_coach_messages_list"
             data={messages}
             keyExtractor={(item) => item.id}
             renderItem={renderMessage}
@@ -473,9 +477,11 @@ export default function AICoachScreen() {
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={styles.suggestionsScrollContent}
             >
-              {availableSuggestions.map((question) => (
+              {availableSuggestions.map((question, idx) => (
                 <TouchableOpacity
                   key={question}
+                  testID={`ai_coach_suggest_${idx}`}
+                  accessibilityLabel={`ai_coach_suggest_${idx}`}
                   style={[
                     styles.suggestionPill,
                     { backgroundColor: colors.cardBg, borderColor: colors.cardBorder },
@@ -496,6 +502,8 @@ export default function AICoachScreen() {
         {/* Input Bar */}
         <View style={[styles.inputBar, { backgroundColor: colors.background, borderTopColor: colors.cardBorder }]}>
           <CustomTextInput
+            testID="ai_coach_input"
+            accessibilityLabel="ai_coach_input"
             placeholder="Ask your AI Coach..."
             value={inputText}
             onChangeText={setInputText}
@@ -504,6 +512,8 @@ export default function AICoachScreen() {
             onSubmitEditing={handleSend}
           />
           <TouchableOpacity
+            testID="ai_coach_send_btn"
+            accessibilityLabel="ai_coach_send_btn"
             style={[
               styles.sendButton,
               { backgroundColor: colors.primary },

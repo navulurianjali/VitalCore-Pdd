@@ -363,6 +363,8 @@ export default function OnboardingScreen({ navigation }: any) {
               </View>
 
               <CustomTextInput
+                testID="onboarding_name_input"
+                accessibilityLabel="onboarding_name_input"
                 label="Full Name *"
                 placeholder="Enter your full name"
                 value={fullName}
@@ -372,6 +374,8 @@ export default function OnboardingScreen({ navigation }: any) {
               />
 
               <CustomTextInput
+                testID="onboarding_age_input"
+                accessibilityLabel="onboarding_age_input"
                 label="Age (Years) *"
                 placeholder="e.g. 28"
                 value={age}
@@ -394,6 +398,8 @@ export default function OnboardingScreen({ navigation }: any) {
                     return (
                       <TouchableOpacity
                         key={g}
+                        testID={`onboarding_gender_${g}`}
+                        accessibilityLabel={`onboarding_gender_${g}`}
                         style={[
                           styles.genderBtn,
                           {
@@ -413,6 +419,8 @@ export default function OnboardingScreen({ navigation }: any) {
               </View>
 
               <TouchableOpacity
+                testID="onboarding_step1_next"
+                accessibilityLabel="onboarding_step1_next"
                 style={[styles.primaryBtn, { backgroundColor: colors.primary }, !isStep1Valid && styles.disabledBtn]}
                 onPress={handleNextFromStep1}
                 disabled={!isStep1Valid}
@@ -437,6 +445,8 @@ export default function OnboardingScreen({ navigation }: any) {
               </View>
 
               <CustomTextInput
+                testID="onboarding_height_input"
+                accessibilityLabel="onboarding_height_input"
                 label="Height (cm) *"
                 placeholder="e.g. 175"
                 value={heightCm}
@@ -447,6 +457,8 @@ export default function OnboardingScreen({ navigation }: any) {
               />
 
               <CustomTextInput
+                testID="onboarding_weight_input"
+                accessibilityLabel="onboarding_weight_input"
                 label="Weight (kg) *"
                 placeholder="e.g. 70"
                 value={weightKg}
@@ -457,7 +469,7 @@ export default function OnboardingScreen({ navigation }: any) {
               />
 
               {bmiVal > 0 && (
-                <View style={[styles.bmiBox, { backgroundColor: colors.surface, borderColor: colors.cardBorder }]}>
+                <View testID="onboarding_bmi_box" accessibilityLabel="onboarding_bmi_box" style={[styles.bmiBox, { backgroundColor: colors.surface, borderColor: colors.cardBorder }]}>
                   <View style={{ flex: 1 }}>
                     <Text style={[styles.bmiLabel, { color: colors.textMuted }]}>Calculated BMI</Text>
                     <Text style={[styles.bmiValue, { color: colors.text }]}>{bmiVal} <Text style={{ fontSize: 13, fontWeight: 'normal' }}>kg/m²</Text></Text>
@@ -469,6 +481,8 @@ export default function OnboardingScreen({ navigation }: any) {
               )}
 
               <TouchableOpacity
+                testID="onboarding_step2_next"
+                accessibilityLabel="onboarding_step2_next"
                 style={[styles.primaryBtn, { backgroundColor: colors.primary }, !isStep2Valid && styles.disabledBtn]}
                 onPress={handleNextFromStep2}
                 disabled={!isStep2Valid}
@@ -493,12 +507,14 @@ export default function OnboardingScreen({ navigation }: any) {
               </View>
 
               <View style={styles.gridGoals}>
-                {availableGoals.map((g) => {
+                {availableGoals.map((g, idx) => {
                   const isSelected = goals.includes(g.label);
                   const IconComp = g.icon;
                   return (
                     <TouchableOpacity
                       key={g.label}
+                      testID={`onboarding_goal_${idx}`}
+                      accessibilityLabel={`onboarding_goal_${idx}`}
                       style={[
                         styles.goalCard,
                         {
@@ -517,6 +533,8 @@ export default function OnboardingScreen({ navigation }: any) {
               </View>
 
               <TouchableOpacity
+                testID="onboarding_step3_next"
+                accessibilityLabel="onboarding_step3_next"
                 style={[styles.primaryBtn, { backgroundColor: colors.primary }, !isStep3Valid && styles.disabledBtn]}
                 onPress={() => setStep(4)}
                 disabled={!isStep3Valid}
@@ -541,11 +559,13 @@ export default function OnboardingScreen({ navigation }: any) {
               </View>
 
               <View style={styles.radioList}>
-                {foodOptions.map((opt) => {
+                {foodOptions.map((opt, idx) => {
                   const isSelected = foodPreference === opt.label;
                   return (
                     <TouchableOpacity
                       key={opt.label}
+                      testID={`onboarding_food_${idx}`}
+                      accessibilityLabel={`onboarding_food_${idx}`}
                       style={[
                         styles.radioCard,
                         {
@@ -575,6 +595,8 @@ export default function OnboardingScreen({ navigation }: any) {
               </View>
 
               <TouchableOpacity
+                testID="onboarding_step4_next"
+                accessibilityLabel="onboarding_step4_next"
                 style={[styles.primaryBtn, { backgroundColor: colors.primary }, !isStep4Valid && styles.disabledBtn]}
                 onPress={() => setStep(5)}
                 disabled={!isStep4Valid}
@@ -612,11 +634,13 @@ export default function OnboardingScreen({ navigation }: any) {
 
               {/* Conditions Chip Grid */}
               <View style={styles.chipGrid}>
-                {filteredMedicalOptions.map((chip) => {
+                {filteredMedicalOptions.map((chip, idx) => {
                   const isSelected = selectedMedicalConditions.includes(chip);
                   return (
                     <TouchableOpacity
                       key={chip}
+                      testID={`onboarding_med_${idx}`}
+                      accessibilityLabel={`onboarding_med_${idx}`}
                       style={[
                         styles.medicalChip,
                         {
@@ -646,6 +670,8 @@ export default function OnboardingScreen({ navigation }: any) {
               )}
 
               <CustomTextInput
+                testID="onboarding_medications_input"
+                accessibilityLabel="onboarding_medications_input"
                 label="Current Medications"
                 placeholder="e.g. Metformin 500mg, Vitamin D, or None"
                 value={medications}
@@ -655,6 +681,8 @@ export default function OnboardingScreen({ navigation }: any) {
               />
 
               <CustomTextInput
+                testID="onboarding_allergies_input"
+                accessibilityLabel="onboarding_allergies_input"
                 label="Food or Drug Allergies"
                 placeholder="e.g. Peanuts, Penicillin, Lactose, or None"
                 value={allergies}
@@ -664,6 +692,8 @@ export default function OnboardingScreen({ navigation }: any) {
               />
 
               <TouchableOpacity
+                testID="onboarding_step5_next"
+                accessibilityLabel="onboarding_step5_next"
                 style={[styles.primaryBtn, { backgroundColor: colors.primary }, !isStep5Valid && styles.disabledBtn]}
                 onPress={() => setStep(6)}
                 disabled={!isStep5Valid}
@@ -690,11 +720,13 @@ export default function OnboardingScreen({ navigation }: any) {
               <View style={styles.inputGroup}>
                 <Text style={[styles.label, { color: colors.text }]}>Physical Activity Level</Text>
                 <View style={styles.radioList}>
-                  {activityOptions.map((act) => {
+                  {activityOptions.map((act, idx) => {
                     const isSelected = activityLevel === act.label;
                     return (
                       <TouchableOpacity
                         key={act.label}
+                        testID={`onboarding_activity_${idx}`}
+                        accessibilityLabel={`onboarding_activity_${idx}`}
                         style={[
                           styles.radioCard,
                           {
@@ -725,6 +757,8 @@ export default function OnboardingScreen({ navigation }: any) {
               </View>
 
               <CustomTextInput
+                testID="onboarding_sleep_input"
+                accessibilityLabel="onboarding_sleep_input"
                 label="Average Daily Sleep (hours)"
                 placeholder="7.5"
                 value={sleepDuration}
@@ -735,6 +769,8 @@ export default function OnboardingScreen({ navigation }: any) {
               />
 
               <TouchableOpacity
+                testID="onboarding_step6_next"
+                accessibilityLabel="onboarding_step6_next"
                 style={[styles.primaryBtn, { backgroundColor: colors.primary }, !isStep6Valid && styles.disabledBtn]}
                 onPress={() => setStep(7)}
                 disabled={!isStep6Valid}
@@ -766,6 +802,8 @@ export default function OnboardingScreen({ navigation }: any) {
                   <Text style={[styles.targetLabel, { color: colors.textMuted }]}>Calories</Text>
                   {isEditingTargets ? (
                     <CustomTextInput
+                      testID="onboarding_cal_input"
+                      accessibilityLabel="onboarding_cal_input"
                       value={calorieGoal}
                       onChangeText={setCalorieGoal}
                       keyboardType="numeric"
@@ -773,7 +811,7 @@ export default function OnboardingScreen({ navigation }: any) {
                       inputStyle={{ textAlign: 'center', fontSize: 13 }}
                     />
                   ) : (
-                    <Text style={[styles.targetValue, { color: colors.text }]}>{calorieGoal} kcal</Text>
+                    <Text testID="onboarding_cal_display" accessibilityLabel="onboarding_cal_display" style={[styles.targetValue, { color: colors.text }]}>{calorieGoal} kcal</Text>
                   )}
                 </View>
 
@@ -782,6 +820,8 @@ export default function OnboardingScreen({ navigation }: any) {
                   <Text style={[styles.targetLabel, { color: colors.textMuted }]}>Protein</Text>
                   {isEditingTargets ? (
                     <CustomTextInput
+                      testID="onboarding_prot_input"
+                      accessibilityLabel="onboarding_prot_input"
                       value={proteinGoal}
                       onChangeText={setProteinGoal}
                       keyboardType="numeric"
@@ -789,7 +829,7 @@ export default function OnboardingScreen({ navigation }: any) {
                       inputStyle={{ textAlign: 'center', fontSize: 13 }}
                     />
                   ) : (
-                    <Text style={[styles.targetValue, { color: colors.text }]}>{proteinGoal} g</Text>
+                    <Text testID="onboarding_prot_display" accessibilityLabel="onboarding_prot_display" style={[styles.targetValue, { color: colors.text }]}>{proteinGoal} g</Text>
                   )}
                 </View>
 
@@ -798,6 +838,8 @@ export default function OnboardingScreen({ navigation }: any) {
                   <Text style={[styles.targetLabel, { color: colors.textMuted }]}>Water</Text>
                   {isEditingTargets ? (
                     <CustomTextInput
+                      testID="onboarding_water_input"
+                      accessibilityLabel="onboarding_water_input"
                       value={waterGoal}
                       onChangeText={setWaterGoal}
                       keyboardType="numeric"
@@ -805,7 +847,7 @@ export default function OnboardingScreen({ navigation }: any) {
                       inputStyle={{ textAlign: 'center', fontSize: 13 }}
                     />
                   ) : (
-                    <Text style={[styles.targetValue, { color: colors.text }]}>{waterGoal} ml</Text>
+                    <Text testID="onboarding_water_display" accessibilityLabel="onboarding_water_display" style={[styles.targetValue, { color: colors.text }]}>{waterGoal} ml</Text>
                   )}
                 </View>
 
@@ -814,6 +856,8 @@ export default function OnboardingScreen({ navigation }: any) {
                   <Text style={[styles.targetLabel, { color: colors.textMuted }]}>Daily Steps</Text>
                   {isEditingTargets ? (
                     <CustomTextInput
+                      testID="onboarding_step_input"
+                      accessibilityLabel="onboarding_step_input"
                       value={stepGoal}
                       onChangeText={setStepGoal}
                       keyboardType="numeric"
@@ -821,7 +865,7 @@ export default function OnboardingScreen({ navigation }: any) {
                       inputStyle={{ textAlign: 'center', fontSize: 13 }}
                     />
                   ) : (
-                    <Text style={[styles.targetValue, { color: colors.text }]}>{stepGoal} steps</Text>
+                    <Text testID="onboarding_step_display" accessibilityLabel="onboarding_step_display" style={[styles.targetValue, { color: colors.text }]}>{stepGoal} steps</Text>
                   )}
                 </View>
               </View>
@@ -835,6 +879,8 @@ export default function OnboardingScreen({ navigation }: any) {
               )}
 
               <TouchableOpacity
+                testID="onboarding_edit_targets_btn"
+                accessibilityLabel="onboarding_edit_targets_btn"
                 style={[styles.editTargetsBtn, { borderColor: colors.cardBorder }]}
                 onPress={() => setIsEditingTargets(!isEditingTargets)}
               >
@@ -845,16 +891,18 @@ export default function OnboardingScreen({ navigation }: any) {
               </TouchableOpacity>
 
               <TouchableOpacity
+                testID="onboarding_finish_btn"
+                accessibilityLabel="onboarding_finish_btn"
                 style={[styles.primaryBtn, { backgroundColor: colors.primary }, !isStep7Valid && styles.disabledBtn]}
                 onPress={handleCompleteOnboarding}
                 disabled={loading || !isStep7Valid}
               >
                 {loading ? (
-                  <ActivityIndicator color="#ffffff" />
+                  <ActivityIndicator color="#ffffff" size="small" />
                 ) : (
                   <>
-                    <Text style={styles.primaryBtnText}>Complete Setup & Launch Dashboard</Text>
-                    <CheckCircle2 size={20} color="#ffffff" style={{ marginLeft: 8 }} />
+                    <Text style={styles.primaryBtnText}>Complete Setup & Enter Dashboard</Text>
+                    <Sparkles size={20} color="#ffffff" style={{ marginLeft: 8 }} />
                   </>
                 )}
               </TouchableOpacity>

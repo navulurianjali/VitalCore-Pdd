@@ -3,15 +3,15 @@ import { BasePage } from './BasePage';
 
 export class LoginPage extends BasePage {
   // Selectors (by testID)
-  private readonly EMAIL_INPUT = 'email_input';
-  private readonly PASSWORD_INPUT = 'password_input';
-  private readonly SIGN_IN_BUTTON = 'sign_in_button';
-  private readonly PASSWORD_TOGGLE = 'password_toggle';
-  private readonly FORGOT_PASSWORD = 'forgot_password_link';
-  private readonly SIGN_UP_LINK = 'sign_up_link';
-  private readonly ERROR_MESSAGE = 'error_message';
+  private readonly EMAIL_INPUT = 'login_email_input';
+  private readonly PASSWORD_INPUT = 'login_password_input';
+  private readonly SIGN_IN_BUTTON = 'login_submit_btn';
+  private readonly PASSWORD_TOGGLE = 'login_password_toggle';
+  private readonly FORGOT_PASSWORD = 'login_forgot_btn';
+  private readonly SIGN_UP_LINK = 'login_signup_link';
+  private readonly ERROR_MESSAGE = 'login_error_msg';
   private readonly LOADING_INDICATOR = 'loading_indicator';
-  private readonly GOOGLE_SIGN_IN = 'google_sign_in_button';
+  private readonly GOOGLE_SIGN_IN = 'login_google_btn';
 
   constructor(driver: Browser) { super(driver); }
 

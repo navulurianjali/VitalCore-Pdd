@@ -16,32 +16,32 @@ export abstract class BasePage {
 
   // ── Element Locators ─────────────────────────────────────
   /** By testID accessibility label (React Native standard) */
-  protected async $(testId: string): Promise<Element> {
+  public async $(testId: string): Promise<Element> {
     return this.driver.$(`~${testId}`);
   }
 
   /** By XPath */
-  protected async $x(xpath: string): Promise<Element> {
+  public async $x(xpath: string): Promise<Element> {
     return this.driver.$(xpath);
   }
 
   /** By class name */
-  protected async $class(className: string): Promise<Element> {
+  public async $class(className: string): Promise<Element> {
     return this.driver.$(`//*[@class="${className}"]`);
   }
 
   /** By text content (UiAutomator2) */
-  protected async $text(text: string): Promise<Element> {
+  public async $text(text: string): Promise<Element> {
     return this.driver.$(`android=new UiSelector().text("${text}")`);
   }
 
   /** By text containing (partial match) */
-  protected async $textContains(text: string): Promise<Element> {
+  public async $textContains(text: string): Promise<Element> {
     return this.driver.$(`android=new UiSelector().textContains("${text}")`);
   }
 
   // ── Element Interactions ──────────────────────────────────
-  protected async tap(testId: string): Promise<void> {
+  public async tap(testId: string): Promise<void> {
     await withRetry(async () => {
       const el = await this.$(testId);
       await el.waitForDisplayed({ timeout: BasePage.DEFAULT_TIMEOUT });
@@ -50,7 +50,7 @@ export abstract class BasePage {
     }, 2, 1000, testId);
   }
 
-  protected async tapByText(text: string): Promise<void> {
+  public async tapByText(text: string): Promise<void> {
     await withRetry(async () => {
       const el = await this.$text(text);
       await el.waitForDisplayed({ timeout: BasePage.DEFAULT_TIMEOUT });
@@ -59,7 +59,7 @@ export abstract class BasePage {
     }, 2, 1000, text);
   }
 
-  protected async typeText(testId: string, value: string): Promise<void> {
+  public async typeText(testId: string, value: string): Promise<void> {
     const el = await this.$(testId);
     await el.waitForDisplayed({ timeout: BasePage.DEFAULT_TIMEOUT });
     await el.clearValue();
@@ -67,13 +67,13 @@ export abstract class BasePage {
     Logger.debug(`Typed "${value}" into ~${testId}`);
   }
 
-  protected async getText(testId: string): Promise<string> {
+  public async getText(testId: string): Promise<string> {
     const el = await this.$(testId);
     await el.waitForDisplayed({ timeout: BasePage.DEFAULT_TIMEOUT });
     return el.getText();
   }
 
-  protected async isDisplayed(testId: string): Promise<boolean> {
+  public async isDisplayed(testId: string): Promise<boolean> {
     try {
       const el = await this.$(testId);
       return el.isDisplayed();
@@ -82,13 +82,13 @@ export abstract class BasePage {
     }
   }
 
-  protected async waitForElement(testId: string, timeout = BasePage.DEFAULT_TIMEOUT): Promise<Element> {
+  public async waitForElement(testId: string, timeout = BasePage.DEFAULT_TIMEOUT): Promise<Element> {
     const el = await this.$(testId);
     await el.waitForDisplayed({ timeout });
     return el;
   }
 
-  protected async waitForElementGone(testId: string, timeout = 5000): Promise<void> {
+  public async waitForElementGone(testId: string, timeout = 5000): Promise<void> {
     const el = await this.$(testId);
     await el.waitForDisplayed({ timeout, reverse: true });
   }

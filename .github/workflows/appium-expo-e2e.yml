@@ -1,0 +1,131 @@
+name: "VitalCore Expo Appium E2E Tests"
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - 'vitalcore-expo/**'
+      - '.github/workflows/appium-expo-e2e.yml'
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+concurrency:
+  group: appium-expo-e2e-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  appium-e2e-tests:
+    name: "Run Appium Android E2E Tests"
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    permissions:
+      contents: read
+      actions: read
+
+    steps:
+      - name: "Checkout Repository"
+        uses: actions/checkout@v4
+
+      - name: "Setup Java 17"
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: "Setup Node.js 20"
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: |
+            vitalcore-expo/package-lock.json
+            vitalcore-expo/appium-tests/package-lock.json
+
+      - name: "Setup Android SDK"
+        uses: android-actions/setup-android@v3
+
+      - name: "Install Appium and UiAutomator2 Driver"
+        run: |
+          npm install -g appium@latest
+          appium driver install uiautomator2
+
+      - name: "Install Expo App Dependencies"
+        working-directory: vitalcore-expo
+        run: npm ci
+
+      - name: "Install Appium Test Suite Dependencies"
+        working-directory: vitalcore-expo/appium-tests
+        run: npm ci
+
+      - name: "Verify TypeScript Type Checks"
+        working-directory: vitalcore-expo
+        run: npx tsc --noEmit
+
+      - name: "Enable KVM Hardware Acceleration"
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm || true
+
+      - name: "Run Appium E2E Tests on Android Emulator"
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 33
+          target: google_apis
+          arch: x86_64
+          profile: pixel_6
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none
+          script: |
+            set -e
+            echo "════════════════════════════════════════════════════════════════"
+            echo "🚀 Starting Appium Server on port 4723..."
+            echo "════════════════════════════════════════════════════════════════"
+            nohup appium --port 4723 --relaxed-security --log-timestamp --local-timezone > appium_server.log 2>&1 &
+            APPIUM_PID=$!
+
+            echo "⏳ Waiting for Appium Server to be ready..."
+            for i in $(seq 1 30); do
+              if curl -s http://127.0.0.1:4723/status | grep -q '"ready":true'; then
+                echo "✅ Appium server is online and ready!"
+                break
+              fi
+              sleep 1
+            done
+
+            echo "📱 Verifying Android Device..."
+            adb devices
+            adb wait-for-device
+
+            echo "════════════════════════════════════════════════════════════════"
+            echo "🧪 Executing VitalCore Appium 30 E2E Test Suite..."
+            echo "════════════════════════════════════════════════════════════════"
+            cd vitalcore-expo
+            npx ts-node appium-tests/runner/runAll.ts
+
+            echo "🛑 Stopping Appium Server..."
+            kill $APPIUM_PID || true
+
+      - name: "Upload QA Test Artifacts (Excel, HTML, JSON)"
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: VitalCore_Appium_E2E_Reports
+          path: |
+            vitalcore-expo/Test Results/Excel/VitalCore_Appium_E2E_Report.xlsx
+            vitalcore-expo/Test Results/Excel/
+            vitalcore-expo/Test Results/HTML/
+            vitalcore-expo/Test Results/JSON/
+            vitalcore-expo/Test Results/Logs/
+          retention-days: 14
+
+      - name: "Verify Master Excel Report Exists"
+        run: |
+          if [ -f "vitalcore-expo/Test Results/Excel/VitalCore_Appium_E2E_Report.xlsx" ]; then
+            echo "✅ Verified: VitalCore_Appium_E2E_Report.xlsx exists!"
+          else
+            echo "❌ Error: Master Excel Report was not generated."
+            exit 1
+          fi

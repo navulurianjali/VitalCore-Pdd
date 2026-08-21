@@ -2,17 +2,14 @@ import { Browser } from 'webdriverio';
 import { BasePage } from './BasePage';
 export class DashboardPage extends BasePage {
   private readonly GREETING = 'dashboard_greeting';
-  private readonly CALORIE_RING = 'calorie_ring_widget';
-  private readonly SLEEP_WIDGET = 'sleep_widget';
-  private readonly STEPS_WIDGET = 'steps_widget';
-  private readonly WATER_WIDGET = 'water_widget';
-  private readonly LOG_MEAL_BTN = 'quick_log_meal';
-  private readonly LOG_WORKOUT_BTN = 'quick_log_workout';
-  private readonly LOG_SLEEP_BTN = 'quick_log_sleep';
-  private readonly AI_COACH_CARD = 'ai_coach_dashboard_card';
-  private readonly WEEKLY_CHART = 'weekly_chart';
-  private readonly CHALLENGE_WIDGET = 'challenge_widget';
-  private readonly SETTINGS_ICON = 'settings_icon';
+  private readonly CALORIES_VAL = 'dash_calories_value';
+  private readonly WATER_VAL = 'dash_water_value';
+  private readonly SLEEP_VAL = 'dash_sleep_value';
+  private readonly LOG_WATER_250 = 'dash_log_water_250_btn';
+  private readonly LOG_WATER_500 = 'dash_log_water_500_btn';
+  private readonly HISTORY_BTN = 'dash_history_btn';
+  private readonly CALORIE_CARD = 'dash_calorie_tracker_btn';
+  private readonly SLEEP_CARD = 'dash_sleep_btn';
   private readonly HOME_TAB = 'tab_home';
   private readonly HABITS_TAB = 'tab_habits';
   private readonly AI_COACH_TAB = 'tab_ai_coach';
@@ -20,237 +17,232 @@ export class DashboardPage extends BasePage {
 
   constructor(driver: Browser) { super(driver); }
 
-  async waitForLoad(): Promise<void> { await this.waitForElement(this.GREETING, 8000); }
+  async waitForLoad(): Promise<void> { await this.waitForElement(this.GREETING, 10000); }
   async getGreeting(): Promise<string> { return this.getText(this.GREETING); }
-  async isCalorieRingVisible(): Promise<boolean> { return this.isDisplayed(this.CALORIE_RING); }
-  async isSleepWidgetVisible(): Promise<boolean> { return this.isDisplayed(this.SLEEP_WIDGET); }
-  async isStepsWidgetVisible(): Promise<boolean> { return this.isDisplayed(this.STEPS_WIDGET); }
-  async isWaterWidgetVisible(): Promise<boolean> { return this.isDisplayed(this.WATER_WIDGET); }
-  async tapLogMeal(): Promise<void> { await this.tap(this.LOG_MEAL_BTN); }
-  async tapLogWorkout(): Promise<void> { await this.tap(this.LOG_WORKOUT_BTN); }
-  async tapLogSleep(): Promise<void> { await this.tap(this.LOG_SLEEP_BTN); }
-  async tapAiCoach(): Promise<void> { await this.tap(this.AI_COACH_CARD); }
-  async tapSettings(): Promise<void> { await this.tap(this.SETTINGS_ICON); }
+  async isCaloriesVisible(): Promise<boolean> { return this.isDisplayed(this.CALORIES_VAL); }
+  async isWaterVisible(): Promise<boolean> { return this.isDisplayed(this.WATER_VAL); }
+  async isSleepVisible(): Promise<boolean> { return this.isDisplayed(this.SLEEP_VAL); }
+  async tapLogWater250(): Promise<void> { await this.tap(this.LOG_WATER_250); await this.pause(500); }
+  async tapLogWater500(): Promise<void> { await this.tap(this.LOG_WATER_500); await this.pause(500); }
+  async tapHistory(): Promise<void> { await this.tap(this.HISTORY_BTN); }
+  async tapCalorieTracker(): Promise<void> { await this.tap(this.CALORIE_CARD); }
+  async tapSleep(): Promise<void> { await this.tap(this.SLEEP_CARD); }
   async tapHomeTab(): Promise<void> { await this.tap(this.HOME_TAB); }
   async tapHabitsTab(): Promise<void> { await this.tap(this.HABITS_TAB); }
   async tapAiCoachTab(): Promise<void> { await this.tap(this.AI_COACH_TAB); }
   async tapProfileTab(): Promise<void> { await this.tap(this.PROFILE_TAB); }
-  async pullToRefresh(): Promise<void> { await super.pullToRefresh(); }
-  async isWeeklyChartVisible(): Promise<boolean> { return this.isDisplayed(this.WEEKLY_CHART); }
-  async isChallengeWidgetVisible(): Promise<boolean> { return this.isDisplayed(this.CHALLENGE_WIDGET); }
 }
 
 export class IntroPage extends BasePage {
-  private readonly GET_STARTED = 'get_started_button';
-  private readonly SIGN_UP = 'intro_sign_up_button';
-  private readonly LOGO = 'vitalcore_logo';
+  private readonly GET_STARTED = 'intro_get_started_btn';
+  private readonly LOGIN_BTN = 'intro_login_btn';
+  private readonly NEXT_BTN = 'intro_next_btn';
+  private readonly SKIP_BTN = 'intro_skip_btn';
 
   constructor(driver: Browser) { super(driver); }
   async tapGetStarted(): Promise<void> { await this.tap(this.GET_STARTED); }
-  async tapSignUp(): Promise<void> { await this.tap(this.SIGN_UP); }
-  async isLogoVisible(): Promise<boolean> { return this.isDisplayed(this.LOGO); }
-  async waitForLoad(): Promise<void> { await this.waitForElement(this.GET_STARTED, 10000); }
+  async tapLogin(): Promise<void> { await this.tap(this.LOGIN_BTN); }
+  async tapNext(): Promise<void> { await this.tap(this.NEXT_BTN); }
+  async tapSkip(): Promise<void> { await this.tap(this.SKIP_BTN); }
+  async waitForLoad(): Promise<void> { await this.waitForElement(this.LOGIN_BTN, 10000); }
 }
 
 export class RegisterPage extends BasePage {
-  private readonly NAME_INPUT = 'name_input';
+  private readonly NAME_INPUT = 'reg_name_input';
+  private readonly USERNAME_INPUT = 'reg_username_input';
   private readonly EMAIL_INPUT = 'reg_email_input';
+  private readonly DOB_INPUT = 'reg_dob_input';
   private readonly PASSWORD_INPUT = 'reg_password_input';
-  private readonly CONFIRM_PASSWORD = 'confirm_password_input';
-  private readonly REGISTER_BTN = 'register_button';
-  private readonly TERMS_CHECKBOX = 'terms_checkbox';
-  private readonly LOGIN_LINK = 'already_have_account_link';
-  private readonly ERROR_MSG = 'reg_error_message';
-  private readonly LOADING = 'reg_loading';
+  private readonly CONFIRM_PASSWORD = 'reg_confirm_password_input';
+  private readonly REGISTER_BTN = 'reg_submit_btn';
+  private readonly LOGIN_LINK = 'reg_login_link';
+  private readonly ERROR_MSG = 'reg_error_msg';
 
   constructor(driver: Browser) { super(driver); }
   async enterName(name: string): Promise<void> { await this.typeText(this.NAME_INPUT, name); }
+  async enterUsername(username: string): Promise<void> { await this.typeText(this.USERNAME_INPUT, username); }
   async enterEmail(email: string): Promise<void> { await this.typeText(this.EMAIL_INPUT, email); }
+  async enterDob(dob: string): Promise<void> { await this.typeText(this.DOB_INPUT, dob); }
   async enterPassword(password: string): Promise<void> { await this.typeText(this.PASSWORD_INPUT, password); }
   async enterConfirmPassword(password: string): Promise<void> { await this.typeText(this.CONFIRM_PASSWORD, password); }
-  async acceptTerms(): Promise<void> { await this.tap(this.TERMS_CHECKBOX); }
   async tapRegister(): Promise<void> { await this.tap(this.REGISTER_BTN); await this.pause(1500); }
   async tapLoginLink(): Promise<void> { await this.tap(this.LOGIN_LINK); }
-  async register(name: string, email: string, password: string): Promise<void> {
-    await this.enterName(name);
-    await this.enterEmail(email);
-    await this.enterPassword(password);
-    await this.enterConfirmPassword(password);
-    await this.acceptTerms();
-    await this.hideKeyboard();
-    await this.tapRegister();
-  }
   async getErrorMessage(): Promise<string> { return this.getText(this.ERROR_MSG); }
   async isErrorVisible(): Promise<boolean> { return this.isDisplayed(this.ERROR_MSG); }
 }
 
 export class OnboardingPage extends BasePage {
-  private readonly NEXT_BTN = 'onboarding_next';
-  private readonly BACK_BTN = 'onboarding_back';
-  private readonly PROGRESS = 'onboarding_progress';
-  private readonly WEIGHT_INPUT = 'onboarding_weight';
-  private readonly HEIGHT_INPUT = 'onboarding_height';
-  private readonly GOAL_LOSS = 'goal_weight_loss';
-  private readonly GOAL_MUSCLE = 'goal_muscle_gain';
-  private readonly GOAL_WELLNESS = 'goal_wellness';
-  private readonly ACTIVITY_MODERATE = 'activity_moderate';
-  private readonly FINISH_BTN = 'onboarding_finish';
+  private readonly NAME_INPUT = 'onboarding_name_input';
+  private readonly AGE_INPUT = 'onboarding_age_input';
+  private readonly GENDER_MALE = 'onboarding_gender_male';
+  private readonly STEP1_NEXT = 'onboarding_step1_next';
+  private readonly HEIGHT_INPUT = 'onboarding_height_input';
+  private readonly WEIGHT_INPUT = 'onboarding_weight_input';
+  private readonly STEP2_NEXT = 'onboarding_step2_next';
+  private readonly GOAL_0 = 'onboarding_goal_0';
+  private readonly STEP3_NEXT = 'onboarding_step3_next';
+  private readonly FOOD_0 = 'onboarding_food_0';
+  private readonly STEP4_NEXT = 'onboarding_step4_next';
+  private readonly MED_0 = 'onboarding_med_0';
+  private readonly STEP5_NEXT = 'onboarding_step5_next';
+  private readonly ACTIVITY_0 = 'onboarding_activity_0';
+  private readonly SLEEP_INPUT = 'onboarding_sleep_input';
+  private readonly STEP6_NEXT = 'onboarding_step6_next';
+  private readonly FINISH_BTN = 'onboarding_finish_btn';
 
   constructor(driver: Browser) { super(driver); }
-  async tapNext(): Promise<void> { await this.tap(this.NEXT_BTN); await this.pause(400); }
-  async tapBack(): Promise<void> { await this.tap(this.BACK_BTN); }
-  async selectGoalWeightLoss(): Promise<void> { await this.tap(this.GOAL_LOSS); }
-  async selectGoalMuscleGain(): Promise<void> { await this.tap(this.GOAL_MUSCLE); }
-  async selectGoalWellness(): Promise<void> { await this.tap(this.GOAL_WELLNESS); }
-  async enterWeight(weight: string): Promise<void> { await this.typeText(this.WEIGHT_INPUT, weight); }
-  async enterHeight(height: string): Promise<void> { await this.typeText(this.HEIGHT_INPUT, height); }
-  async selectModerateActivity(): Promise<void> { await this.tap(this.ACTIVITY_MODERATE); }
-  async tapFinish(): Promise<void> { await this.tap(this.FINISH_BTN); await this.pause(2000); }
-  async completeOnboarding(): Promise<void> {
-    await this.selectGoalWeightLoss();
-    await this.tapNext();
-    await this.enterWeight('70');
-    await this.enterHeight('175');
-    await this.tapNext();
-    await this.selectModerateActivity();
-    await this.tapNext();
-    await this.tapFinish();
+  async completeOnboardingSteps(): Promise<void> {
+    await this.typeText(this.NAME_INPUT, 'Test User');
+    await this.typeText(this.AGE_INPUT, '28');
+    await this.tap(this.GENDER_MALE);
+    await this.tap(this.STEP1_NEXT);
+    await this.pause(500);
+    await this.typeText(this.HEIGHT_INPUT, '175');
+    await this.typeText(this.WEIGHT_INPUT, '70');
+    await this.tap(this.STEP2_NEXT);
+    await this.pause(500);
+    await this.tap(this.GOAL_0);
+    await this.tap(this.STEP3_NEXT);
+    await this.pause(500);
+    await this.tap(this.FOOD_0);
+    await this.tap(this.STEP4_NEXT);
+    await this.pause(500);
+    await this.tap(this.MED_0);
+    await this.tap(this.STEP5_NEXT);
+    await this.pause(500);
+    await this.tap(this.ACTIVITY_0);
+    await this.typeText(this.SLEEP_INPUT, '8');
+    await this.tap(this.STEP6_NEXT);
+    await this.pause(500);
+    await this.tap(this.FINISH_BTN);
+    await this.pause(2000);
   }
 }
 
 export class AICoachPage extends BasePage {
-  private readonly CHAT_INPUT = 'ai_chat_input';
-  private readonly SEND_BUTTON = 'ai_send_button';
-  private readonly CHAT_CONTAINER = 'ai_chat_container';
-  private readonly TYPING_INDICATOR = 'ai_typing_indicator';
-  private readonly CLEAR_HISTORY = 'ai_clear_history';
+  private readonly INPUT = 'ai_coach_input';
+  private readonly SEND_BTN = 'ai_coach_send_btn';
+  private readonly SUGGEST_0 = 'ai_coach_suggest_0';
+  private readonly HISTORY_BTN = 'ai_coach_history_btn';
+  private readonly MESSAGES_LIST = 'ai_coach_messages_list';
 
   constructor(driver: Browser) { super(driver); }
-  async waitForLoad(): Promise<void> { await this.waitForElement(this.CHAT_INPUT); }
-  async typeMessage(msg: string): Promise<void> { await this.typeText(this.CHAT_INPUT, msg); }
-  async tapSend(): Promise<void> { await this.tap(this.SEND_BUTTON); }
-  async sendMessage(msg: string): Promise<void> { await this.typeMessage(msg); await this.tapSend(); }
-  async isChatVisible(): Promise<boolean> { return this.isDisplayed(this.CHAT_CONTAINER); }
-  async isTypingIndicatorVisible(): Promise<boolean> { return this.isDisplayed(this.TYPING_INDICATOR); }
-  async tapClearHistory(): Promise<void> { await this.tap(this.CLEAR_HISTORY); }
+  async waitForLoad(): Promise<void> { await this.waitForElement(this.INPUT); }
+  async sendMessage(msg: string): Promise<void> {
+    await this.typeText(this.INPUT, msg);
+    await this.tap(this.SEND_BTN);
+    await this.pause(1000);
+  }
+  async tapFirstSuggestion(): Promise<void> { await this.tap(this.SUGGEST_0); await this.pause(1000); }
+  async isChatVisible(): Promise<boolean> { return this.isDisplayed(this.MESSAGES_LIST); }
+  async tapHistory(): Promise<void> { await this.tap(this.HISTORY_BTN); }
 }
 
 export class ProfilePage extends BasePage {
-  private readonly NAME = 'profile_name';
-  private readonly EMAIL = 'profile_email';
-  private readonly EDIT_BTN = 'edit_profile_button';
-  private readonly SAVE_BTN = 'save_profile_button';
-  private readonly CANCEL_BTN = 'cancel_edit_button';
-  private readonly LOGOUT_BTN = 'logout_button';
-  private readonly DELETE_ACCOUNT = 'delete_account_button';
-  private readonly NAME_FIELD = 'edit_name_field';
-  private readonly WEIGHT_FIELD = 'edit_weight_field';
+  private readonly NAME_INPUT = 'profile_name_input';
+  private readonly DOB_INPUT = 'profile_dob_input';
+  private readonly GENDER_INPUT = 'profile_gender_input';
+  private readonly BLOOD_DROPDOWN = 'profile_blood_group_dropdown';
+  private readonly BLOOD_OPOS = 'profile_blood_item_Opos';
+  private readonly SAVE_BTN = 'profile_save_btn';
+  private readonly SETTINGS_BTN = 'profile_settings_btn';
+  private readonly LOGOUT_BTN = 'profile_logout_btn';
 
   constructor(driver: Browser) { super(driver); }
-  async waitForLoad(): Promise<void> { await this.waitForElement(this.NAME); }
-  async getName(): Promise<string> { return this.getText(this.NAME); }
-  async tapEdit(): Promise<void> { await this.tap(this.EDIT_BTN); }
+  async waitForLoad(): Promise<void> { await this.waitForElement(this.SAVE_BTN); }
+  async tapBloodGroupDropdown(): Promise<void> { await this.tap(this.BLOOD_DROPDOWN); await this.pause(400); }
+  async selectBloodGroupOpos(): Promise<void> { await this.tap(this.BLOOD_OPOS); await this.pause(400); }
+  async editName(name: string): Promise<void> { await this.typeText(this.NAME_INPUT, name); }
   async tapSave(): Promise<void> { await this.tap(this.SAVE_BTN); await this.pause(1000); }
-  async tapCancel(): Promise<void> { await this.tap(this.CANCEL_BTN); }
-  async tapLogout(): Promise<void> { await this.tap(this.LOGOUT_BTN); await this.pause(2000); }
-  async tapDeleteAccount(): Promise<void> { await this.tap(this.DELETE_ACCOUNT); }
-  async editName(name: string): Promise<void> { await this.typeText(this.NAME_FIELD, name); }
-  async editWeight(weight: string): Promise<void> { await this.typeText(this.WEIGHT_FIELD, weight); }
+  async tapSettings(): Promise<void> { await this.tap(this.SETTINGS_BTN); }
+  async tapLogout(): Promise<void> { await this.tap(this.LOGOUT_BTN); await this.pause(1000); }
 }
 
 export class SleepPage extends BasePage {
-  private readonly LOG_SLEEP_BTN = 'log_sleep_button';
-  private readonly BEDTIME_INPUT = 'bedtime_input';
-  private readonly WAKE_INPUT = 'wake_time_input';
-  private readonly QUALITY_RATING = 'sleep_quality_rating';
-  private readonly SAVE_SLEEP = 'save_sleep_button';
-  private readonly WEEKLY_CHART = 'sleep_weekly_chart';
-  private readonly AVERAGE_DISPLAY = 'sleep_average';
+  private readonly LOG_TRIGGER = 'sleep_log_trigger_btn';
+  private readonly BACK_BTN = 'sleep_back_btn';
+  private readonly HOURS_INPUT = 'sleep_hours_input';
+  private readonly QUALITY_8 = 'sleep_quality_rating_8';
+  private readonly SAVE_BTN = 'sleep_save_btn';
 
   constructor(driver: Browser) { super(driver); }
-  async waitForLoad(): Promise<void> { await this.waitForElement(this.LOG_SLEEP_BTN); }
-  async tapLogSleep(): Promise<void> { await this.tap(this.LOG_SLEEP_BTN); }
-  async setBedtime(time: string): Promise<void> { await this.typeText(this.BEDTIME_INPUT, time); }
-  async setWakeTime(time: string): Promise<void> { await this.typeText(this.WAKE_INPUT, time); }
-  async selectQualityRating(rating: number): Promise<void> { await this.tap(`sleep_quality_${rating}`); }
-  async tapSave(): Promise<void> { await this.tap(this.SAVE_SLEEP); await this.pause(1000); }
-  async isWeeklyChartVisible(): Promise<boolean> { return this.isDisplayed(this.WEEKLY_CHART); }
-  async getAverageSleep(): Promise<string> { return this.getText(this.AVERAGE_DISPLAY); }
+  async waitForLoad(): Promise<void> { await this.waitForElement(this.LOG_TRIGGER); }
+  async tapLogSleep(): Promise<void> { await this.tap(this.LOG_TRIGGER); await this.pause(400); }
+  async enterSleepHours(h: string): Promise<void> { await this.typeText(this.HOURS_INPUT, h); }
+  async selectQuality8(): Promise<void> { await this.tap(this.QUALITY_8); }
+  async tapSave(): Promise<void> { await this.tap(this.SAVE_BTN); await this.pause(1000); }
+  async tapBack(): Promise<void> { await this.tap(this.BACK_BTN); }
 }
 
 export class FitnessPage extends BasePage {
-  private readonly SEARCH_INPUT = 'exercise_search';
-  private readonly LOG_WORKOUT_BTN = 'log_workout_button';
-  private readonly EXERCISE_LIST = 'exercise_list';
-  private readonly HISTORY_TAB = 'fitness_history_tab';
+  private readonly TAB_COACH = 'fitness_tab_coach';
+  private readonly TAB_HISTORY = 'fitness_tab_history';
 
   constructor(driver: Browser) { super(driver); }
-  async waitForLoad(): Promise<void> { await this.waitForElement(this.SEARCH_INPUT); }
-  async searchExercise(query: string): Promise<void> { await this.typeText(this.SEARCH_INPUT, query); await this.pause(500); }
-  async tapLogWorkout(): Promise<void> { await this.tap(this.LOG_WORKOUT_BTN); }
-  async isExerciseListVisible(): Promise<boolean> { return this.isDisplayed(this.EXERCISE_LIST); }
-  async tapHistoryTab(): Promise<void> { await this.tap(this.HISTORY_TAB); }
+  async waitForLoad(): Promise<void> { await this.waitForElement(this.TAB_COACH); }
+  async tapCoachTab(): Promise<void> { await this.tap(this.TAB_COACH); }
+  async tapHistoryTab(): Promise<void> { await this.tap(this.TAB_HISTORY); }
 }
 
 export class CalorieTrackerPage extends BasePage {
-  private readonly FOOD_SEARCH = 'food_search_input';
-  private readonly ADD_TO_BREAKFAST = 'add_to_breakfast';
-  private readonly CALORIE_TOTAL = 'daily_calorie_total';
-  private readonly CALORIE_RING = 'calorie_progress_ring';
-  private readonly BARCODE_SCAN = 'barcode_scan_button';
-  private readonly WATER_ADD = 'water_add_button';
+  private readonly BACK_BTN = 'calorie_back_btn';
+  private readonly ADD_BREAKFAST = 'calorie_add_breakfast_btn';
 
   constructor(driver: Browser) { super(driver); }
-  async waitForLoad(): Promise<void> { await this.waitForElement(this.FOOD_SEARCH); }
-  async searchFood(query: string): Promise<void> { await this.typeText(this.FOOD_SEARCH, query); await this.pause(600); }
-  async tapAddToBreakfast(): Promise<void> { await this.tap(this.ADD_TO_BREAKFAST); }
-  async getCalorieTotal(): Promise<string> { return this.getText(this.CALORIE_TOTAL); }
-  async isCalorieRingVisible(): Promise<boolean> { return this.isDisplayed(this.CALORIE_RING); }
-  async tapBarcodeScan(): Promise<void> { await this.tap(this.BARCODE_SCAN); }
-  async addWater(): Promise<void> { await this.tap(this.WATER_ADD); }
+  async waitForLoad(): Promise<void> { await this.waitForElement(this.ADD_BREAKFAST); }
+  async tapAddBreakfast(): Promise<void> { await this.tap(this.ADD_BREAKFAST); }
+  async tapBack(): Promise<void> { await this.tap(this.BACK_BTN); }
 }
 
 export class ChallengesPage extends BasePage {
-  private readonly CHALLENGE_LIST = 'challenge_list';
-  private readonly JOIN_BTN = 'join_challenge_button';
-  private readonly ACTIVE_CHALLENGE = 'active_challenge_widget';
-  private readonly FILTER_BTN = 'challenge_filter';
+  private readonly TAB_ALL = 'challenges_tab_All';
+  private readonly TAB_FITNESS = 'challenges_tab_Fitness';
+  private readonly TAB_NUTRITION = 'challenges_tab_Nutrition';
+  private readonly JOIN_BTN_0 = 'challenge_join_btn_0';
 
   constructor(driver: Browser) { super(driver); }
-  async waitForLoad(): Promise<void> { await this.waitForElement(this.CHALLENGE_LIST); }
-  async tapJoin(): Promise<void> { await this.tap(this.JOIN_BTN); await this.pause(800); }
-  async isActiveChallengeVisible(): Promise<boolean> { return this.isDisplayed(this.ACTIVE_CHALLENGE); }
-  async tapFilter(category: string): Promise<void> { await this.tap(this.FILTER_BTN); await this.tapByText(category); }
+  async waitForLoad(): Promise<void> { await this.waitForElement(this.TAB_ALL); }
+  async selectCategoryFitness(): Promise<void> { await this.tap(this.TAB_FITNESS); await this.pause(400); }
+  async selectCategoryNutrition(): Promise<void> { await this.tap(this.TAB_NUTRITION); await this.pause(400); }
+  async tapJoinFirstChallenge(): Promise<void> { await this.tap(this.JOIN_BTN_0); await this.pause(1000); }
 }
 
 export class SettingsPage extends BasePage {
-  private readonly DARK_TOGGLE = 'dark_mode_toggle';
-  private readonly NOTIF_TOGGLE = 'notifications_toggle';
-  private readonly LOGOUT_BTN = 'settings_logout_button';
-  private readonly CALORIE_GOAL = 'calorie_goal_edit';
-  private readonly PRIVACY_LINK = 'privacy_policy_link';
+  private readonly THEME_TOGGLE = 'settings_theme_toggle';
+  private readonly MODE_WELLNESS = 'settings_mode_wellness';
+  private readonly MODE_PERF = 'settings_mode_performance';
+  private readonly MODE_ELDERLY = 'settings_mode_elderly';
+  private readonly UNIT_METRIC = 'settings_unit_metric';
+  private readonly UNIT_IMPERIAL = 'settings_unit_imperial';
+  private readonly LOGOUT_BTN = 'settings_logout_btn';
 
   constructor(driver: Browser) { super(driver); }
-  async waitForLoad(): Promise<void> { await this.waitForElement(this.DARK_TOGGLE); }
-  async toggleDarkMode(): Promise<void> { await this.tap(this.DARK_TOGGLE); }
-  async toggleNotifications(): Promise<void> { await this.tap(this.NOTIF_TOGGLE); }
-  async tapLogout(): Promise<void> { await this.tap(this.LOGOUT_BTN); await this.pause(2000); }
-  async editCalorieGoal(goal: string): Promise<void> { await this.typeText(this.CALORIE_GOAL, goal); }
-  async tapPrivacyPolicy(): Promise<void> { await this.tap(this.PRIVACY_LINK); }
+  async waitForLoad(): Promise<void> { await this.waitForElement(this.THEME_TOGGLE); }
+  async toggleTheme(): Promise<void> { await this.tap(this.THEME_TOGGLE); await this.pause(300); }
+  async selectModeWellness(): Promise<void> { await this.tap(this.MODE_WELLNESS); }
+  async selectModePerformance(): Promise<void> { await this.tap(this.MODE_PERF); }
+  async selectUnitMetric(): Promise<void> { await this.tap(this.UNIT_METRIC); }
+  async selectUnitImperial(): Promise<void> { await this.tap(this.UNIT_IMPERIAL); }
+  async tapLogout(): Promise<void> { await this.tap(this.LOGOUT_BTN); await this.pause(1000); }
 }
 
 export class HistoryPage extends BasePage {
-  private readonly HISTORY_LIST = 'history_list';
-  private readonly DATE_FILTER = 'date_range_filter';
-  private readonly TYPE_FILTER = 'type_filter';
-  private readonly EXPORT_BTN = 'export_history_button';
+  private readonly BACK_BTN = 'history_back_btn';
+  private readonly TAB_DAY = 'history_tab_day';
+  private readonly TAB_7DAYS = 'history_tab_7days';
+  private readonly TAB_30DAYS = 'history_tab_30days';
+  private readonly PREV_DATE_BTN = 'history_prev_date_btn';
+  private readonly NEXT_DATE_BTN = 'history_next_date_btn';
+  private readonly DATE_TEXT = 'history_current_date_text';
 
   constructor(driver: Browser) { super(driver); }
-  async waitForLoad(): Promise<void> { await this.waitForElement(this.HISTORY_LIST); }
-  async isHistoryListVisible(): Promise<boolean> { return this.isDisplayed(this.HISTORY_LIST); }
-  async tapDateFilter(): Promise<void> { await this.tap(this.DATE_FILTER); }
-  async tapTypeFilter(type: string): Promise<void> { await this.tap(this.TYPE_FILTER); await this.tapByText(type); }
-  async tapExport(): Promise<void> { await this.tap(this.EXPORT_BTN); }
+  async waitForLoad(): Promise<void> { await this.waitForElement(this.TAB_DAY); }
+  async tapTab7Days(): Promise<void> { await this.tap(this.TAB_7DAYS); }
+  async tapTab30Days(): Promise<void> { await this.tap(this.TAB_30DAYS); }
+  async tapPrevDate(): Promise<void> { await this.tap(this.PREV_DATE_BTN); await this.pause(400); }
+  async tapNextDate(): Promise<void> { await this.tap(this.NEXT_DATE_BTN); await this.pause(400); }
+  async getDateText(): Promise<string> { return this.getText(this.DATE_TEXT); }
+  async tapBack(): Promise<void> { await this.tap(this.BACK_BTN); }
 }
 
 export class FutureLabPage extends BasePage {

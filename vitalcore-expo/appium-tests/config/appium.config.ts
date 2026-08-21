@@ -20,8 +20,8 @@ export interface AppiumCapabilities {
 export const appiumConfig = {
   host: process.env.APPIUM_HOST || '127.0.0.1',
   port: parseInt(process.env.APPIUM_PORT || '4723', 10),
-  connectionRetryTimeout: 120000,
-  connectionRetryCount: 3,
+  connectionRetryTimeout: 10000,
+  connectionRetryCount: 1,
   capabilities: {
     platformName: 'Android',
     'appium:automationName': 'UiAutomator2',
@@ -41,6 +41,10 @@ export const appiumConfig = {
 };
 
 export const testCredentials = {
+  validUser: {
+    email: process.env.TEST_EMAIL || 'testuser@vitalcore.app',
+    password: process.env.TEST_PASSWORD || 'TestPass@123',
+  },
   email: process.env.TEST_EMAIL || 'testuser@vitalcore.app',
   password: process.env.TEST_PASSWORD || 'TestPass@123',
 };

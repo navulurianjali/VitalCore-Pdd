@@ -97,7 +97,7 @@ export default function HistoryScreen({ navigation }: any) {
     <View style={[styles.container, { backgroundColor: colors.background, paddingTop: insets.top }]}>
       {/* Top Header */}
       <View style={[styles.header, { borderBottomColor: colors.navBorder }]}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+        <TouchableOpacity testID="history_back_btn" accessibilityLabel="history_back_btn" onPress={() => navigation.goBack()} style={styles.backButton}>
           <ChevronLeft size={24} color={colors.text} />
         </TouchableOpacity>
         <Text style={[styles.headerTitle, { color: colors.text }]}>Health History</Text>
@@ -107,18 +107,24 @@ export default function HistoryScreen({ navigation }: any) {
       {/* Tabs */}
       <View style={[styles.tabBar, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
         <TouchableOpacity
+          testID="history_tab_day"
+          accessibilityLabel="history_tab_day"
           style={[styles.tabItem, activeTab === 'day' && { backgroundColor: colors.primary }]}
           onPress={() => setActiveTab('day')}
         >
           <Text style={[styles.tabText, { color: activeTab === 'day' ? '#FFF' : colors.textMuted }]}>Day</Text>
         </TouchableOpacity>
         <TouchableOpacity
+          testID="history_tab_7days"
+          accessibilityLabel="history_tab_7days"
           style={[styles.tabItem, activeTab === '7days' && { backgroundColor: colors.primary }]}
           onPress={() => setActiveTab('7days')}
         >
           <Text style={[styles.tabText, { color: activeTab === '7days' ? '#FFF' : colors.textMuted }]}>7 Days</Text>
         </TouchableOpacity>
         <TouchableOpacity
+          testID="history_tab_30days"
+          accessibilityLabel="history_tab_30days"
           style={[styles.tabItem, activeTab === '30days' && { backgroundColor: colors.primary }]}
           onPress={() => setActiveTab('30days')}
         >
@@ -131,16 +137,16 @@ export default function HistoryScreen({ navigation }: any) {
           <View style={styles.section}>
             {/* Date Selector */}
             <View style={[styles.dateNav, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
-              <TouchableOpacity onPress={handlePrevDay} style={styles.navBtn}>
+              <TouchableOpacity testID="history_prev_date_btn" accessibilityLabel="history_prev_date_btn" onPress={handlePrevDay} style={styles.navBtn}>
                 <ChevronLeft size={20} color={colors.text} />
               </TouchableOpacity>
               <View style={styles.dateLabelContainer}>
                 <Calendar size={16} color={colors.primary} />
-                <Text style={[styles.dateText, { color: colors.text }]}>
+                <Text testID="history_current_date_text" accessibilityLabel="history_current_date_text" style={[styles.dateText, { color: colors.text }]}>
                   {formatDisplayDate(selectedDate, profile?.timezone)}
                 </Text>
               </View>
-              <TouchableOpacity onPress={handleNextDay} disabled={isToday} style={[styles.navBtn, isToday && { opacity: 0.3 }]}>
+              <TouchableOpacity testID="history_next_date_btn" accessibilityLabel="history_next_date_btn" onPress={handleNextDay} disabled={isToday} style={[styles.navBtn, isToday && { opacity: 0.3 }]}>
                 <ChevronRight size={20} color={colors.text} />
               </TouchableOpacity>
             </View>

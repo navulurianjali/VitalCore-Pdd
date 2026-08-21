@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, Text, ActivityIndicator, StyleSheet, TouchableOpacity } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -62,6 +62,7 @@ function MainTabNavigator() {
         component={DashboardScreen}
         options={{
           tabBarLabel: 'Home',
+          tabBarButton: (props) => <TouchableOpacity {...(props as any)} testID="tab_home" accessibilityLabel="tab_home" />,
           tabBarIcon: ({ color, focused }) => (
             <View style={[styles.iconContainer, focused && styles.iconActive]}>
               <Text style={{ fontSize: 18, color }}>🏠</Text>
@@ -74,6 +75,7 @@ function MainTabNavigator() {
         component={HealthyHabitsScreen}
         options={{
           tabBarLabel: 'Habits',
+          tabBarButton: (props) => <TouchableOpacity {...(props as any)} testID="tab_habits" accessibilityLabel="tab_habits" />,
           tabBarIcon: ({ color, focused }) => (
             <View style={[styles.iconContainer, focused && styles.iconActive]}>
               <Text style={{ fontSize: 18, color }}>🎯</Text>
@@ -86,6 +88,7 @@ function MainTabNavigator() {
         component={AICoachScreen}
         options={{
           tabBarLabel: 'AI Coach',
+          tabBarButton: (props) => <TouchableOpacity {...(props as any)} testID="tab_ai_coach" accessibilityLabel="tab_ai_coach" />,
           tabBarIcon: ({ color, focused }) => (
             <View style={[styles.iconContainer, focused && styles.iconActive]}>
               <Text style={{ fontSize: 18, color }}>🤖</Text>
@@ -98,6 +101,7 @@ function MainTabNavigator() {
         component={ProfileScreen}
         options={{
           tabBarLabel: 'Profile',
+          tabBarButton: (props) => <TouchableOpacity {...(props as any)} testID="tab_profile" accessibilityLabel="tab_profile" />,
           tabBarIcon: ({ color, focused }) => (
             <View style={[styles.iconContainer, focused && styles.iconActive]}>
               <Text style={{ fontSize: 18, color }}>👤</Text>

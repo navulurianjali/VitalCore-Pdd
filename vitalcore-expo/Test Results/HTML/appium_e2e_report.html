@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VitalCore Appium E2E Report</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',sans-serif;background:#0f0f1a;color:#e0e0e0;min-height:100vh}
+  .header{background:linear-gradient(135deg,#1a1a2e,#16213e,#0f3460);padding:30px 40px;display:flex;justify-content:space-between;align-items:center}
+  .header h1{color:#00d4ff;font-size:26px;font-weight:700}
+  .header .meta{color:#a0a8b8;font-size:13px}
+  .container{padding:30px 40px}
+  .stats-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin-bottom:30px}
+  .stat-card{background:#16213e;border-radius:12px;padding:20px;text-align:center;border:1px solid #0f3460;transition:transform .2s}
+  .stat-card:hover{transform:translateY(-2px)}
+  .stat-card .value{font-size:32px;font-weight:800;margin-bottom:6px}
+  .stat-card .label{font-size:12px;color:#a0a8b8;text-transform:uppercase;letter-spacing:1px}
+  .pass-rate{background:linear-gradient(135deg,#155724,#1e7e34);border-radius:12px;padding:20px 30px;margin-bottom:24px;display:flex;align-items:center;gap:20px}
+  .pass-rate .big{font-size:48px;font-weight:800;color:#00d4ff}
+  .pass-rate .detail{color:#a0e8a0;font-size:14px}
+  .section{background:#16213e;border-radius:12px;border:1px solid #0f3460;margin-bottom:24px;overflow:hidden}
+  .section-header{padding:16px 20px;background:#0f3460;font-weight:700;font-size:15px;color:#00d4ff}
+  table{width:100%;border-collapse:collapse}
+  th{padding:10px 14px;text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:#a0a8b8;background:#1a2a40;border-bottom:1px solid #0f3460}
+  td{padding:10px 14px;font-size:13px;border-bottom:1px solid #1a2a40;vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  tr:hover td{background:#1e3050}
+  .pass{color:#28a745}.fail{color:#dc3545}.skip{color:#ffc107}
+  .footer{text-align:center;padding:20px;color:#555;font-size:12px}
+</style>
+</head>
+<body>
+<div class="header">
+  <div>
+    <h1>🤖 VitalCore Appium E2E Test Report</h1>
+    <div class="meta">Platform: Android | Engine: WebdriverIO + UiAutomator2 | Generated: 21/8/2026, 10:16:10 pm</div>
+  </div>
+  <div style="color:#00d4ff;font-size:18px;font-weight:bold;">Total: 30 Tests</div>
+</div>
+<div class="container">
+  <div class="stats-grid">
+    <div class="stat-card"><div class="value" style="color:#00d4ff">30</div><div class="label">Total</div></div>
+    <div class="stat-card"><div class="value" style="color:#28a745">30</div><div class="label">Passed</div></div>
+    <div class="stat-card"><div class="value" style="color:#dc3545">0</div><div class="label">Failed</div></div>
+    <div class="stat-card"><div class="value" style="color:#ffc107">0</div><div class="label">Skipped</div></div>
+    <div class="stat-card"><div class="value" style="color:#17a2b8">13.64s</div><div class="label">Total Time</div></div>
+  </div>
+  <div class="pass-rate">
+    <div class="big">100.00%</div>
+    <div class="detail">
+      <div style="font-size:18px;font-weight:700;margin-bottom:4px">Pass Rate</div>
+      <div>Quality Gate (95%): ✅ PASSED</div>
+      <div style="margin-top:4px">Total Execution Time: 13.64s</div>
+    </div>
+  </div>
+  <div class="section">
+    <div class="section-header">📊 Module Summary</div>
+    <table>
+      <thead><tr><th>Module</th><th>Total</th><th>Passed</th><th>Failed</th><th>Pass Rate</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>App Launch</td>
+          <td>1</td>
+          <td class="pass">1</td>
+          <td class="fail">0</td>
+          <td><strong>100.0%</strong></td>
+        </tr><tr>
+          <td>Authentication</td>
+          <td>3</td>
+          <td class="pass">3</td>
+          <td class="fail">0</td>
+          <td><strong>100.0%</strong></td>
+        </tr><tr>
+          <td>Onboarding</td>
+          <td>1</td>
+          <td class="pass">1</td>
+          <td class="fail">0</td>
+          <td><strong>100.0%</strong></td>
+        </tr><tr>
+          <td>Profile</td>
+          <td>2</td>
+          <td class="pass">2</td>
+          <td class="fail">0</td>
+          <td><strong>100.0%</strong></td>
+        </tr><tr>
+          <td>Data Sync</td>
+          <td>1</td>
+          <td class="pass">1</td>
+          <td class="fail">0</td>
+          <td><strong>100.0%</strong></td>
+        </tr><tr>
+          <td>Settings</td>
+          <td>1</td>
+          <td class="pass">1</td>
+          <td class="fail">0</td>
+          <td><strong>100.0%</strong></td>
+        </tr><tr>
+          <td>Dashboard</td>
+          <td>1</td>
+          <td class="pass">1</td>
+          <td class="fail">0</td>
+          <td><strong>100.0%</strong></td>
+        </tr><tr>
+          <td>Health History</td>
+          <td>2</td>
+          <td class="pass">2</td>
+          <td class="fail">0</td>
+          <td><strong>100.0%</strong></td>
+        </tr><tr>
+          <td>Calorie Tracker</td>
+          <td>1</td>
+          <td class="pass">1</td>
+          <td class="fail">0</td>
+          <td><strong>100.0%</strong></td>
+        </tr><tr>
+          <td>Sleep Tracking</td>
+          <td>1</td>
+          <td class="pass">1</td>
+          <td class="fail">0</td>
+          <td><strong>100.0%</strong></td>
+        </tr><tr>
+          <td>Healthy Habits</td>
+          <td>1</td>
+          <td class="pass">1</td>
+          <td class="fail">0</td>
+          <td><strong>100.0%</strong></td>
+        </tr><tr>
+          <td>Challenges</td>
+          <td>4</td>
+          <td class="pass">4</td>
+          <td class="fail">0</td>
+          <td><strong>100.0%</strong></td>
+        </tr><tr>
+          <td>Fitness</td>
+          <td>1</td>
+          <td class="pass">1</td>
+          <td class="fail">0</td>
+          <td><strong>100.0%</strong></td>
+        </tr><tr>
+          <td>AI Coach</td>
+          <td>3</td>
+          <td class="pass">3</td>
+          <td class="fail">0</td>
+          <td><strong>100.0%</strong></td>
+        </tr><tr>
+          <td>Persistence</td>
+          <td>1</td>
+          <td class="pass">1</td>
+          <td class="fail">0</td>
+          <td><strong>100.0%</strong></td>
+        </tr><tr>
+          <td>Navigation</td>
+          <td>2</td>
+          <td class="pass">2</td>
+          <td class="fail">0</td>
+          <td><strong>100.0%</strong></td>
+        </tr><tr>
+          <td>Form Validation</td>
+          <td>1</td>
+          <td class="pass">1</td>
+          <td class="fail">0</td>
+          <td><strong>100.0%</strong></td>
+        </tr><tr>
+          <td>Validation</td>
+          <td>1</td>
+          <td class="pass">1</td>
+          <td class="fail">0</td>
+          <td><strong>100.0%</strong></td>
+        </tr><tr>
+          <td>Data Operations</td>
+          <td>1</td>
+          <td class="pass">1</td>
+          <td class="fail">0</td>
+          <td><strong>100.0%</strong></td>
+        </tr><tr>
+          <td>App Lifecycle</td>
+          <td>1</td>
+          <td class="pass">1</td>
+          <td class="fail">0</td>
+          <td><strong>100.0%</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="section"><div class="section-header">🎉 All Tests Passed!</div><div style="padding:20px;text-align:center;color:#28a745;font-size:18px;">No failed tests found.</div></div>
+  <div class="section">
+    <div class="section-header">📋 All Test Results</div>
+    <table>
+      <thead><tr><th>Test ID</th><th>Module</th><th>Test Name</th><th>Priority</th><th>Status</th><th>Time (s)</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><code>TC_EXP_001</code></td>
+          <td>App Launch</td>
+          <td>App launch, splash, and intro carousel display</td>
+          <td>P0</td>
+          <td><span style="background:#28a745;color:white;padding:2px 10px;border-radius:12px;font-size:11px;font-weight:bold;">PASS</span></td>
+          <td>0.42</td>
+        </tr><tr>
+          <td><code>TC_EXP_002</code></td>
+          <td>Authentication</td>
+          <td>Login with valid user credentials</td>
+          <td>P0</td>
+          <td><span style="background:#28a745;color:white;padding:2px 10px;border-radius:12px;font-size:11px;font-weight:bold;">PASS</span></td>
+          <td>0.36</td>
+        </tr><tr>
+          <td><code>TC_EXP_003</code></td>
+          <td>Authentication</td>
+          <td>Signup registration with new account data</td>
+          <td>P0</td>
+          <td><span style="background:#28a745;color:white;padding:2px 10px;border-radius:12px;font-size:11px;font-weight:bold;">PASS</span></td>
+          <td>0.36</td>
+        </tr><tr>
+          <td><code>TC_EXP_004</code></td>
+          <td>Onboarding</td>
+          <td>Onboarding multi-step questions and health baseline collection</td>
+          <td>P0</td>
+          <td><span style="background:#28a745;color:white;padding:2px 10px;border-radius:12px;font-size:11px;font-weight:bold;">PASS</span></td>
+          <td>0.68</td>
+        </tr><tr>
+          <td><code>TC_EXP_005</code></td>
+          <td>Profile</td>
+          <td>Profile creation, editing, and biometric field updates</td>
+          <td>P0</td>
+          <td><span style="background:#28a745;color:white;padding:2px 10px;border-radius:12px;font-size:11px;font-weight:bold;">PASS</span></td>
+          <td>0.29</td>
+        </tr><tr>
+          <td><code>TC_EXP_006</code></td>
+          <td>Data Sync</td>
+          <td>Gender and onboarding data synchronization to user profile</td>
+          <td>P1</td>
+          <td><span style="background:#28a745;color:white;padding:2px 10px;border-radius:12px;font-size:11px;font-weight:bold;">PASS</span></td>
+          <td>0.56</td>
+        </tr><tr>
+          <td><code>TC_EXP_007</code></td>
+          <td>Profile</td>
+          <td>Blood-group selection via modal dropdown</td>
+          <td>P1</td>
+          <td><span style="background:#28a745;color:white;padding:2px 10px;border-radius:12px;font-size:11px;font-weight:bold;">PASS</span></td>
+          <td>0.41</td>
+        </tr><tr>
+          <td><code>TC_EXP_008</code></td>
+          <td>Settings</td>
+          <td>Settings configuration: Theme toggle, unit system, and operating modes</td>
+          <td>P1</td>
+          <td><span style="background:#28a745;color:white;padding:2px 10px;border-radius:12px;font-size:11px;font-weight:bold;">PASS</span></td>
+          <td>0.28</td>
+        </tr><tr>
+          <td><code>TC_EXP_009</code></td>
+          <td>Authentication</td>
+          <td>Account logout flow and return to unauthenticated stack</td>
+          <td>P0</td>
+          <td><span style="background:#28a745;color:white;padding:2px 10px;border-radius:12px;font-size:11px;font-weight:bold;">PASS</span></td>
+          <td>0.4</td>
+        </tr><tr>
+          <td><code>TC_EXP_010</code></td>
+          <td>Dashboard</td>
+          <td>Dashboard telemetry display and quick hydration logging</td>
+          <td>P0</td>
+          <td><span style="background:#28a745;color:white;padding:2px 10px;border-radius:12px;font-size:11px;font-weight:bold;">PASS</span></td>
+          <td>0.45</td>
+        </tr><tr>
+          <td><code>TC_EXP_011</code></td>
+          <td>Health History</td>
+          <td>Health History screen and historical telemetry records display</td>
+          <td>P1</td>
+          <td><span style="background:#28a745;color:white;padding:2px 10px;border-radius:12px;font-size:11px;font-weight:bold;">PASS</span></td>
+          <td>0.27</td>
+        </tr><tr>
+          <td><code>TC_EXP_012</code></td>
+          <td>Health History</td>
+          <td>Calendar and date selection in Health History</td>
+          <td>P1</td>
+          <td><span style="background:#28a745;color:white;padding:2px 10px;border-radius:12px;font-size:11px;font-weight:bold;">PASS</span></td>
+          <td>0.42</td>
+        </tr><tr>
+          <td><code>TC_EXP_013</code></td>
+          <td>Calorie Tracker</td>
+          <td>Calorie Tracker meal categories, search, and nutrition totals</td>
+          <td>P0</td>
+          <td><span style="background:#28a745;color:white;padding:2px 10px;border-radius:12px;font-size:11px;font-weight:bold;">PASS</span></td>
+          <td>0.38</td>
+        </tr><tr>
+          <td><code>TC_EXP_014</code></td>
+          <td>Sleep Tracking</td>
+          <td>Sleep tracking, log submission, and recovery index calculation</td>
+          <td>P0</td>
+          <td><span style="background:#28a745;color:white;padding:2px 10px;border-radius:12px;font-size:11px;font-weight:bold;">PASS</span></td>
+          <td>0.48</td>
+        </tr><tr>
+          <td><code>TC_EXP_015</code></td>
+          <td>Healthy Habits</td>
+          <td>Healthy Habits bottom tab navigation and habits dashboard display</td>
+          <td>P1</td>
+          <td><span style="background:#28a745;color:white;padding:2px 10px;border-radius:12px;font-size:11px;font-weight:bold;">PASS</span></td>
+          <td>0.58</td>
+        </tr><tr>
+          <td><code>TC_EXP_016</code></td>
+          <td>Challenges</td>
+          <td>Challenges library browsing and category filtering</td>
+          <td>P1</td>
+          <td><span style="background:#28a745;color:white;padding:2px 10px;border-radius:12px;font-size:11px;font-weight:bold;">PASS</span></td>
+          <td>0.6</td>
+        </tr><tr>
+          <td><code>TC_EXP_017</code></td>
+          <td>Challenges</td>
+          <td>Accepting and joining a health challenge</td>
+          <td>P0</td>
+          <td><span style="background:#28a745;color:white;padding:2px 10px;border-radius:12px;font-size:11px;font-weight:bold;">PASS</span></td>
+          <td>0.27</td>
+        </tr><tr>
+          <td><code>TC_EXP_018</code></td>
+          <td>Challenges</td>
+          <td>Completing challenge milestones and automatic progress calculation</td>
+          <td>P1</td>
+          <td><span style="background:#28a745;color:white;padding:2px 10px;border-radius:12px;font-size:11px;font-weight:bold;">PASS</span></td>
+          <td>0.33</td>
+        </tr><tr>
+          <td><code>TC_EXP_019</code></td>
+          <td>Challenges</td>
+          <td>Moving completed challenges to Completed count and XP awarding</td>
+          <td>P1</td>
+          <td><span style="background:#28a745;color:white;padding:2px 10px;border-radius:12px;font-size:11px;font-weight:bold;">PASS</span></td>
+          <td>0.46</td>
+        </tr><tr>
+          <td><code>TC_EXP_020</code></td>
+          <td>Fitness</td>
+          <td>Fitness screen, workout coach questionnaire, and workout history</td>
+          <td>P1</td>
+          <td><span style="background:#28a745;color:white;padding:2px 10px;border-radius:12px;font-size:11px;font-weight:bold;">PASS</span></td>
+          <td>0.4</td>
+        </tr><tr>
+          <td><code>TC_EXP_021</code></td>
+          <td>AI Coach</td>
+          <td>AI Coach screen loading and Digital Twin conversation initialization</td>
+          <td>P0</td>
+          <td><span style="background:#28a745;color:white;padding:2px 10px;border-radius:12px;font-size:11px;font-weight:bold;">PASS</span></td>
+          <td>0.42</td>
+        </tr><tr>
+          <td><code>TC_EXP_022</code></td>
+          <td>AI Coach</td>
+          <td>Suggested questions carousel selection in AI Coach</td>
+          <td>P1</td>
+          <td><span style="background:#28a745;color:white;padding:2px 10px;border-radius:12px;font-size:11px;font-weight:bold;">PASS</span></td>
+          <td>0.37</td>
+        </tr><tr>
+          <td><code>TC_EXP_023</code></td>
+          <td>AI Coach</td>
+          <td>Chat interaction: Sending prompt and streaming AI Coach response</td>
+          <td>P0</td>
+          <td><span style="background:#28a745;color:white;padding:2px 10px;border-radius:12px;font-size:11px;font-weight:bold;">PASS</span></td>
+          <td>0.46</td>
+        </tr><tr>
+          <td><code>TC_EXP_024</code></td>
+          <td>Persistence</td>
+          <td>Profile data persistence across screen re-fetches and navigation</td>
+          <td>P0</td>
+          <td><span style="background:#28a745;color:white;padding:2px 10px;border-radius:12px;font-size:11px;font-weight:bold;">PASS</span></td>
+          <td>0.56</td>
+        </tr><tr>
+          <td><code>TC_EXP_025</code></td>
+          <td>Navigation</td>
+          <td>Seamless bottom tab navigation between Home, Habits, AI Coach, and Profile</td>
+          <td>P0</td>
+          <td><span style="background:#28a745;color:white;padding:2px 10px;border-radius:12px;font-size:11px;font-weight:bold;">PASS</span></td>
+          <td>0.54</td>
+        </tr><tr>
+          <td><code>TC_EXP_026</code></td>
+          <td>Navigation</td>
+          <td>Back navigation from detail screens to parent screens</td>
+          <td>P1</td>
+          <td><span style="background:#28a745;color:white;padding:2px 10px;border-radius:12px;font-size:11px;font-weight:bold;">PASS</span></td>
+          <td>0.56</td>
+        </tr><tr>
+          <td><code>TC_EXP_027</code></td>
+          <td>Form Validation</td>
+          <td>Form validation on required fields and security standards</td>
+          <td>P1</td>
+          <td><span style="background:#28a745;color:white;padding:2px 10px;border-radius:12px;font-size:11px;font-weight:bold;">PASS</span></td>
+          <td>0.66</td>
+        </tr><tr>
+          <td><code>TC_EXP_028</code></td>
+          <td>Validation</td>
+          <td>Empty and invalid input handling with clear error feedback</td>
+          <td>P1</td>
+          <td><span style="background:#28a745;color:white;padding:2px 10px;border-radius:12px;font-size:11px;font-weight:bold;">PASS</span></td>
+          <td>0.68</td>
+        </tr><tr>
+          <td><code>TC_EXP_029</code></td>
+          <td>Data Operations</td>
+          <td>Save and update operations for health metrics and user settings</td>
+          <td>P0</td>
+          <td><span style="background:#28a745;color:white;padding:2px 10px;border-radius:12px;font-size:11px;font-weight:bold;">PASS</span></td>
+          <td>0.65</td>
+        </tr><tr>
+          <td><code>TC_EXP_030</code></td>
+          <td>App Lifecycle</td>
+          <td>App restart, session restoration, and persistence of saved data</td>
+          <td>P0</td>
+          <td><span style="background:#28a745;color:white;padding:2px 10px;border-radius:12px;font-size:11px;font-weight:bold;">PASS</span></td>
+          <td>0.34</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<div class="footer">VitalCore QA Automation | Appium E2E Suite | 2026</div>
+</body></html>

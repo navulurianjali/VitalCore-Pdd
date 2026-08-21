@@ -68,7 +68,7 @@ export default function DatePickerModal({
       let isMounted = true;
       setLoading(true);
       fetchActiveDatesForMonth(supabase, userId, viewYear, viewMonth)
-        .then(dates => {
+        .then((dates: Set<string>) => {
           if (isMounted) setActiveDates(dates);
         })
         .finally(() => {

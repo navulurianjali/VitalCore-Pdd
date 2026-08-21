@@ -335,3 +335,38 @@ export function computeHistoryAnalytics(records: DailyHealthRecord[]): HistoryAn
     totalLoggedDays: loggedCount,
   };
 }
+
+/**
+ * Fetches all dates within a given month that have active health logs in Supabase.
+ */
+export async function fetchActiveDatesForMonth(
+  supabase: any,
+  userId: string,
+  year: number,
+  month: number
+): Promise<Set<string>> {
+  const activeDates = new Set<string>();
+  const monthStr = month < 10 ? `0${month}` : `${month}`;
+  const startStr = `${year}-${monthStr}-01`;
+  const nextMonth = month === 12 ? 1 : month + 1;
+  const nextYear = month === 12 ? year + 1 : year;
+  const nextMonthStr = nextMonth < 10 ? `0${nextMonth}` : `${nextMonth}`;
+  const endStr = `${nextYear}-${nextMonthStr}-01`;
+
+  try {
+    const [hyd, nut, slp, wkt] = await Promise.all([
+      supabase.from('hydration_logs').select('date').eq('user_id', userId).gte('date', startStr).lt('date', endStr),
+      supabase.from('nutrition_logs').select('date').eq('user_id', userId).gte('date', startStr).lt('date', endStr),
+      supabase.from('sleep_logs').select('date').eq('user_id', userId).gte('date', startStr).lt('date', endStr),
+      supabase.from('workouts').select('date').eq('user_id', userId).gte('date', startStr).lt('date', endStr),
+    ]);
+
+    [...(hyd.data || []), ...(nut.data || []), ...(slp.data || []), ...(wkt.data || [])].forEach((item: any) => {
+      if (item.date) activeDates.add(item.date);
+    });
+  } catch (e) {
+    console.error('fetchActiveDatesForMonth error:', e);
+  }
+
+  return activeDates;
+}

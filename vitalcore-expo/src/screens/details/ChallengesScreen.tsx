@@ -579,6 +579,8 @@ export default function ChallengesScreen({ navigation }: any) {
               return (
                 <TouchableOpacity
                   key={cat}
+                  testID={`challenges_tab_${cat.replace(/\s+/g, '_')}`}
+                  accessibilityLabel={`challenges_tab_${cat.replace(/\s+/g, '_')}`}
                   style={[
                     styles.categoryPill,
                     {
@@ -601,12 +603,12 @@ export default function ChallengesScreen({ navigation }: any) {
         {loading ? (
           <ActivityIndicator size="large" color={colors.primary} style={{ marginVertical: 30 }} />
         ) : (
-          filteredChallenges.map(c => {
+          filteredChallenges.map((c, idx) => {
             const isJoined = Boolean(userJoinedMap[c.id]);
             const IconComp = getCategoryIcon(c.category);
 
             return (
-              <View key={c.id} style={[styles.libraryCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
+              <View key={c.id} testID={`challenge_card_${idx}`} accessibilityLabel={`challenge_card_${idx}`} style={[styles.libraryCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
                 <View style={styles.rowBetween}>
                   <View style={[styles.miniCategoryTag, { backgroundColor: colors.primaryLight + '22' }]}>
                     <IconComp size={10} color={colors.primary} />
@@ -628,6 +630,8 @@ export default function ChallengesScreen({ navigation }: any) {
                     </View>
                   ) : (
                     <TouchableOpacity
+                      testID={`challenge_join_btn_${idx}`}
+                      accessibilityLabel={`challenge_join_btn_${idx}`}
                       style={[styles.joinBtnLib, { backgroundColor: colors.primary }]}
                       onPress={() => handleJoinChallenge(c)}
                     >
