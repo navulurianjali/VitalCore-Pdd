@@ -1,0 +1,169 @@
+name: VitalCore Backend Tests
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  backend-api-tests:
+    name: Backend API Integration Tests
+    runs-on: ubuntu-latest
+
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://bevolemwakfozxuymxsn.supabase.co' }}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJldm9sZW13YWtmb3p4dXlteHNuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5MTUyNjUsImV4cCI6MjA5NTQ5MTI2NX0.ZRyBiaR7vhG8O2FEdPEQOBErLrSF5AxK_PASy87Odlk' }}
+
+    steps:
+      # ── 1. Checkout and build Next.js ──────────────────────────────
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install Node Dependencies
+        run: npm ci || npm install
+
+      - name: Build Next.js Application
+        run: npm run build
+
+      # ── 2. Start app and wait ──────────────────────────────────────
+      - name: Start VitalCore Application Server
+        run: |
+          nohup npx next start -H 0.0.0.0 -p 3000 > nextjs_server.log 2>&1 &
+          echo "APP_SERVER_PID=$!" >> $GITHUB_ENV
+          echo "VitalCore server launched on 0.0.0.0:3000"
+
+      - name: Wait for Application to Become Reachable
+        run: |
+          npx wait-on -t 90000 http-get://127.0.0.1:3000
+          echo "Application is reachable at http://127.0.0.1:3000"
+
+      - name: Verify Application Health
+        run: |
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:3000)
+          echo "HTTP response: $HTTP_CODE"
+          if [ "$HTTP_CODE" -lt 200 ] || [ "$HTTP_CODE" -ge 500 ]; then
+            echo "ERROR: Application returned HTTP $HTTP_CODE"
+            cat nextjs_server.log
+            exit 1
+          fi
+          echo "Application healthy (HTTP $HTTP_CODE)"
+
+      # ── 3. Python backend test environment ────────────────────────
+      - name: Setup Python Environment
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install Python Backend Test Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r backend-tests/requirements.txt
+
+      # ── 4. Run the REAL backend tests ─────────────────────────────
+      - name: Run VitalCore Backend API Tests
+        env:
+          BASE_URL: "http://127.0.0.1:3000"
+        run: |
+          mkdir -p backend-tests/reports
+          pytest backend-tests/test_backend.py \
+            -v \
+            --tb=short \
+            --no-header \
+            -p no:cacheprovider \
+            2>&1 | tee backend-tests/reports/pytest_console.log
+          echo "PYTEST_EXIT=${PIPESTATUS[0]}" >> $GITHUB_ENV
+
+      # ── 5. Print summary to job log ───────────────────────────────
+      - name: Print Test Summary
+        if: always()
+        run: |
+          echo "======================================================="
+          echo "  VitalCore Backend Test Summary"
+          echo "======================================================="
+          if [ -f backend-tests/reports/backend_results.json ]; then
+            python3 << 'PYEOF'
+          import json
+          with open('backend-tests/reports/backend_results.json') as f:
+              results = json.load(f)
+          total = len(results)
+          passed = sum(1 for r in results if r['Pass/Fail'] == 'PASS')
+          failed = total - passed
+          pct = round(passed / total * 100, 1) if total else 0
+          print(f'  Total  : {total}')
+          print(f'  Passed : {passed}')
+          print(f'  Failed : {failed}')
+          print(f'  Rate   : {pct}%')
+          if failed > 0:
+              print('')
+              print('  FAILED TESTS:')
+              for r in results:
+                  if r['Pass/Fail'] == 'FAIL':
+                      print(f"    [{r['Test ID']}] {r['Test Case']} -- {r['Error Details'][:80]}")
+          PYEOF
+          else
+            echo "  (JSON report not found; check pytest_console.log)"
+          fi
+          echo "======================================================="
+
+      # ── 6. Upload reports ─────────────────────────────────────────
+      - name: Upload Backend Test Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: VitalCore-Backend-Test-Reports
+          path: |
+            backend-tests/reports/backend_results.xlsx
+            backend-tests/reports/backend_results.html
+            backend-tests/reports/backend_results.json
+            backend-tests/reports/pytest_console.log
+          retention-days: 30
+
+      - name: Upload Server Log on Failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: VitalCore-Backend-Server-Log
+          path: nextjs_server.log
+          retention-days: 7
+
+      # ── 7. Teardown ───────────────────────────────────────────────
+      - name: Stop VitalCore Application Server
+        if: always()
+        run: |
+          if [ -n "$APP_SERVER_PID" ]; then
+            kill "$APP_SERVER_PID" 2>/dev/null || true
+            echo "Application server stopped."
+          fi
+
+      # ── 8. Fail the job if any test failed ────────────────────────
+      - name: Check Test Results and Set Final Status
+        if: always()
+        run: |
+          if [ -f backend-tests/reports/backend_results.json ]; then
+            FAILED=$(python3 << 'PYEOF'
+          import json
+          r = json.load(open('backend-tests/reports/backend_results.json'))
+          print(sum(1 for x in r if x['Pass/Fail'] == 'FAIL'))
+          PYEOF
+          )
+            echo "Failed tests: $FAILED"
+            if [ "$FAILED" -gt 0 ]; then
+              echo "::error::$FAILED backend test(s) FAILED. See VitalCore-Backend-Test-Reports artifact."
+              exit 1
+            fi
+            echo "All backend tests PASSED."
+          else
+            echo "::error::No test results file found. Test runner may have crashed."
+            exit 1
+          fi
