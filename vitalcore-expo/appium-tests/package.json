@@ -1,0 +1,25 @@
+{
+  "name": "vitalcore-appium-tests",
+  "version": "1.0.0",
+  "description": "VitalCore Expo App – Appium E2E Test Suite with Excel Analysis Reporting",
+  "main": "runner/runAll.ts",
+  "scripts": {
+    "test": "ts-node runner/runAll.ts",
+    "test:simulate": "cross-env SIMULATE=true ts-node runner/runAll.ts",
+    "test:module": "ts-node runner/runAll.ts --module",
+    "build": "tsc --noEmit",
+    "clean": "rimraf \"Test Results\""
+  },
+  "dependencies": {
+    "webdriverio": "^8.32.0",
+    "@wdio/appium-service": "^8.32.0",
+    "exceljs": "^4.4.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3",
+    "dotenv": "^16.4.1",
+    "cross-env": "^7.0.3"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0"
+  }
+}

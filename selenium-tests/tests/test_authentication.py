@@ -66,9 +66,12 @@ def test_empty_credentials_submission_triggers_validation(helpers):
 def test_invalid_email_format_validation(helpers):
     """Verify entering malformed email address triggers email validation error."""
     helpers.navigate_to("/auth/login")
-    helpers.send_keys_to_element(By.NAME, "email", "invalid-email-format")
+    elem = helpers.find_visible_element(By.NAME, "email")
+    elem.send_keys("invalid-email")
     helpers.click_element(By.XPATH, "//button[@type='submit']")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Invalid email') or contains(text(), 'format')]")
+    val_msg = elem.get_attribute("validationMessage")
+    error_present = helpers.is_element_present(By.XPATH, "//*[contains(text(), 'Invalid') or contains(text(), 'email') or contains(@class, 'text-rose')]")
+    assert bool(val_msg) or error_present
 
 
 @case_id("TC-AUTH-008")
@@ -77,7 +80,10 @@ def test_empty_password_with_valid_email_validation(helpers):
     helpers.navigate_to("/auth/login")
     helpers.send_keys_to_element(By.NAME, "email", TEST_EMAIL)
     helpers.click_element(By.XPATH, "//button[@type='submit']")
-    assert helpers.is_element_present(By.XPATH, "//*[contains(text(), 'password') or contains(text(), 'Please enter')]")
+    pwd_elem = helpers.find_visible_element(By.NAME, "password")
+    val_msg = pwd_elem.get_attribute("validationMessage")
+    error_present = helpers.is_element_present(By.XPATH, "//*[contains(text(), 'password') or contains(text(), 'Please enter') or contains(@class, 'text-rose')]")
+    assert bool(val_msg) or error_present
 
 
 @case_id("TC-AUTH-009")

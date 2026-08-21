@@ -1,0 +1,27 @@
+{
+  "name": "vitalcore-selenium-node-tests",
+  "version": "1.0.0",
+  "description": "VitalCore Web App – Selenium E2E Test Suite with Excel Analysis Reporting (Node.js)",
+  "main": "runner/runAll.ts",
+  "scripts": {
+    "test": "ts-node runner/runAll.ts",
+    "test:simulate": "cross-env SIMULATE=true ts-node runner/runAll.ts",
+    "test:headed": "cross-env HEADLESS=false ts-node runner/runAll.ts",
+    "test:module": "ts-node runner/runAll.ts --module",
+    "build": "tsc --noEmit",
+    "clean": "rimraf \"Test Results\""
+  },
+  "dependencies": {
+    "selenium-webdriver": "^4.18.1",
+    "chromedriver": "^123.0.0",
+    "exceljs": "^4.4.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3",
+    "dotenv": "^16.4.1",
+    "cross-env": "^7.0.3"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/selenium-webdriver": "^4.1.26"
+  }
+}
