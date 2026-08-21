@@ -53,11 +53,11 @@ jobs:
 
       - name: "Install Expo App Dependencies"
         working-directory: vitalcore-expo
-        run: npm ci
+        run: npm install --no-audit
 
       - name: "Install Appium Test Suite Dependencies"
         working-directory: vitalcore-expo/appium-tests
-        run: npm ci
+        run: npm install --no-audit
 
       - name: "Verify TypeScript Type Checks"
         working-directory: vitalcore-expo
