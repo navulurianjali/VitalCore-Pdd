@@ -28,18 +28,42 @@ export interface DigitalTwinHealthProfile {
 }
 
 export function getDigitalTwinProfile(data: HealthDigitalTwin, profile?: any): DigitalTwinHealthProfile {
-  const chronoAge = profile?.biological_age || 30;
+  const chronoAge = profile?.biological_age || profile?.age || 30;
   const hasTelemetry = Boolean(data.hasTelemetry && data.trackingDaysCount > 0);
 
   if (!hasTelemetry) {
+    const emptyDomainScores: DigitalTwinDomainScore[] = [
+      { name: "Nutrition", score: 0, status: 'Needs Attention', trend: 'Stable', description: "Start logging meals to generate your nutrition analysis." },
+      { name: "Hydration", score: 0, status: 'Needs Attention', trend: 'Stable', description: "Start tracking your water intake to see hydration insights." },
+      { name: "Sleep Quality", score: 0, status: 'Needs Attention', trend: 'Stable', description: "Log your sleep to generate recovery insights." },
+      { name: "Cellular Recovery", score: 0, status: 'Needs Attention', trend: 'Stable', description: "Log sleep and activity to calculate tissue restoration." },
+      { name: "Fitness & Exertion", score: 0, status: 'Needs Attention', trend: 'Stable', description: "Complete workouts to build your fitness insights." },
+      { name: "Stress Resilience", score: 0, status: 'Needs Attention', trend: 'Stable', description: "Track daily wellness to evaluate autonomic stress resilience." },
+      { name: "Cardiovascular Health", score: 0, status: 'Needs Attention', trend: 'Stable', description: "Cardiovascular telemetry activates with recorded workouts & sleep." },
+      { name: "Metabolic Efficiency", score: 0, status: 'Needs Attention', trend: 'Stable', description: "Metabolic rate projections require nutrition & activity logs." },
+      { name: "Immune Defense", score: 0, status: 'Needs Attention', trend: 'Stable', description: "Immune resilience index calculates from sleep & nutrition consistency." },
+      { name: "Lifestyle Consistency", score: 0, status: 'Needs Attention', trend: 'Stable', description: "Build a multi-day streak to establish your consistency baseline." }
+    ];
+
+    const emptyBodySystems: BodySystemAvatar[] = [
+      { system: "cardiovascular", name: "Cardiovascular System", status: 'Needs Attention', score: 0, iconName: "Heart", recommendation: "Collect more health activity to build your Digital Twin." },
+      { system: "muscular", name: "Muscular & Tissue System", status: 'Needs Attention', score: 0, iconName: "Dumbbell", recommendation: "Collect more health activity to build your Digital Twin." },
+      { system: "metabolic", name: "Metabolic System", status: 'Needs Attention', score: 0, iconName: "Flame", recommendation: "Collect more health activity to build your Digital Twin." },
+      { system: "hydration", name: "Renal & Hydration System", status: 'Needs Attention', score: 0, iconName: "Droplet", recommendation: "Collect more health activity to build your Digital Twin." },
+      { system: "nutrition", name: "Digestive & Nutrition System", status: 'Needs Attention', score: 0, iconName: "Utensils", recommendation: "Collect more health activity to build your Digital Twin." },
+      { system: "recovery", name: "Autonomic Recovery System", status: 'Needs Attention', score: 0, iconName: "Activity", recommendation: "Collect more health activity to build your Digital Twin." },
+      { system: "sleep", name: "Circadian Sleep System", status: 'Needs Attention', score: 0, iconName: "Moon", recommendation: "Collect more health activity to build your Digital Twin." },
+      { system: "immunity", name: "Immune Defense System", status: 'Needs Attention', score: 0, iconName: "Shield", recommendation: "Collect more health activity to build your Digital Twin." }
+    ];
+
     return {
       overallHealthScore: 0,
       biologicalAge: 0,
       chronologicalAge: chronoAge,
       ageDifference: 0,
       stabilityScore: 0,
-      domainScores: [],
-      bodySystems: []
+      domainScores: emptyDomainScores,
+      bodySystems: emptyBodySystems
     };
   }
 
@@ -259,12 +283,74 @@ export interface FutureTimelineProjection {
   dataAttribution: string;
 }
 
-export function getFutureTimeline(data: HealthDigitalTwin, currentAge: number): FutureTimelineProjection[] {
+export function getFutureTimeline(data: HealthDigitalTwin, currentAge: number, profile?: any): FutureTimelineProjection[] {
   const baseAge = currentAge;
+  const currentWeight = profile?.weight_kg ? Number(profile.weight_kg) : 70;
+  const hasTelemetry = Boolean(data.hasTelemetry && data.trackingDaysCount > 0);
+
+  if (!hasTelemetry) {
+    return [
+      {
+        day: 7,
+        label: '7 Days',
+        energy: 0,
+        recovery: 0,
+        sleep: 0,
+        wellness: 0,
+        vitalityAge: baseAge,
+        predictedWeightKg: currentWeight,
+        predictionText: "Continue using VitalCore to generate personalized 7-day predictions.",
+        precautions: "Start tracking daily hydration, sleep, and workouts to build predictive accuracy.",
+        confidenceScore: 0,
+        dataAttribution: "Awaiting telemetry data"
+      },
+      {
+        day: 30,
+        label: '30 Days',
+        energy: 0,
+        recovery: 0,
+        sleep: 0,
+        wellness: 0,
+        vitalityAge: baseAge,
+        predictedWeightKg: currentWeight,
+        predictionText: "Continue using VitalCore to generate personalized 30-day projections.",
+        precautions: "Integrate multi-day activity logging to calculate cardiovascular trends.",
+        confidenceScore: 0,
+        dataAttribution: "Awaiting telemetry data"
+      },
+      {
+        day: 90,
+        label: '90 Days',
+        energy: 0,
+        recovery: 0,
+        sleep: 0,
+        wellness: 0,
+        vitalityAge: baseAge,
+        predictedWeightKg: currentWeight,
+        predictionText: "Continue using VitalCore to generate personalized 90-day metabolic outlooks.",
+        precautions: "Maintain regular nutrition logging to analyze cellular vitality trajectory.",
+        confidenceScore: 0,
+        dataAttribution: "Awaiting telemetry data"
+      },
+      {
+        day: 365,
+        label: '1 Year',
+        energy: 0,
+        recovery: 0,
+        sleep: 0,
+        wellness: 0,
+        vitalityAge: baseAge,
+        predictedWeightKg: currentWeight,
+        predictionText: "Continue using VitalCore to project 1-year biological age trajectory.",
+        precautions: "Build continuous logging consistency to unlock full Digital Twin forecasting.",
+        confidenceScore: 0,
+        dataAttribution: "Awaiting telemetry data"
+      }
+    ];
+  }
+
   const isDeclining = data.stabilityScore < 50 || data.sleepHours < 6;
   const isImproving = data.stabilityScore > 80 && data.recoveryPercentage > 75;
-
-  const currentWeight = 72;
 
   return [
     {
@@ -468,24 +554,29 @@ export interface HealthReportPayload {
 export function getHealthReport(data: HealthDigitalTwin, profile?: any): HealthReportPayload {
   const today = new Date().toISOString().split("T")[0];
   const profileName = profile?.full_name || "Wellness Explorer";
+  const hasData = data.hasTelemetry && data.trackingDaysCount > 0;
 
   return {
     reportDate: today,
     period: "Weekly",
-    headlineSummary: `VitalCore Weekly Health Intelligence Report for ${profileName}. Overall Digital Twin stability is performing at ${Math.round(data.stabilityScore)}%.`,
-    biggestImprovements: [
-      "Hydration consistency increased by 14% compared to previous baseline.",
-      "Sleep quality index stabilized with fewer night wakings logged.",
-      "Resting heart rate strain reduced during peak evening hours."
-    ],
-    biggestConcerns: [
-      data.sleepHours < 6 ? "Sleep duration remains sub-optimal (< 6 hours)." : "Magnesium & Vitamin D intake require additional dietary focus.",
+    headlineSummary: hasData
+      ? `VitalCore Weekly Health Intelligence Report for ${profileName}. Overall Digital Twin stability is performing at ${Math.round(data.stabilityScore)}%.`
+      : `VitalCore Weekly Health Intelligence Report for ${profileName}. No health telemetry recorded yet.`,
+    biggestImprovements: hasData ? [
+      "Hydration consistency tracked compared to baseline.",
+      "Sleep quality index evaluated against target.",
+      "Heart rate strain monitored during active hours."
+    ] : [],
+    biggestConcerns: hasData ? [
+      data.sleepHours < 6 ? "Sleep duration remains sub-optimal (< 6 hours)." : "Hydration & micronutrient intake require additional dietary focus.",
       data.hydrationMl < 1800 ? "Hydration level dropped below target afternoon threshold." : "Sedentary sitting time peaked on high-workload days."
-    ],
-    predictedNextMonthOutlook: "With current habit trajectory, your Digital Twin projects a 1.2-year reduction in biological age and a 15% increase in physical recovery capacity.",
-    averageSleepHours: data.sleepHours || 7.2,
-    averageHydrationMl: data.hydrationMl || 2200,
-    totalCaloriesBurned: (data.caloriesBurned || 400) * 7,
+    ] : [],
+    predictedNextMonthOutlook: hasData
+      ? "With current habit trajectory, your Digital Twin projects steady physical recovery capacity."
+      : "Log sleep, hydration, and fitness activities to build your Digital Twin longevity outlook.",
+    averageSleepHours: data.sleepHours || 0,
+    averageHydrationMl: data.hydrationMl || 0,
+    totalCaloriesBurned: (data.caloriesBurned || 0) * 7,
     overallScore: Math.round(data.stabilityScore)
   };
 }
@@ -502,6 +593,7 @@ export function simulateDecisionImpact(baseData: HealthDigitalTwin, sleepAdd: nu
   };
 }
 
+// Keep existing exports for backward compatibility
 export interface FutureHealthScore {
   direction: 'Improving' | 'Stable' | 'Declining';
   explanation: string;
@@ -579,41 +671,106 @@ export function getRiskScores(data: HealthDigitalTwin) {
 }
 
 export function getDailyImprovementPlan(data: HealthDigitalTwin, profile?: any) {
-  const isDeclining = data.stabilityScore < 50 || data.sleepHours < 6;
-  const isImproving = data.stabilityScore > 80 && data.recoveryPercentage > 75;
-  const dietPref = profile?.dietary_preferences || "Standard";
-  const isIndian = ["South Indian", "North Indian", "Indian", "Vegetarian"].includes(dietPref);
+  const hasTelemetry = Boolean(data.hasTelemetry && data.trackingDaysCount > 0);
+  const waterTarget = profile?.water_goal || 2500;
+  const sleepTarget = profile?.sleep_goal || 8.0;
+  const workoutTarget = profile?.workout_goal_minutes || (profile?.workout_duration_preference ? Number(profile.workout_duration_preference) : 30);
+  const calorieTarget = profile?.calorie_goal || 2000;
+  const dietPref = profile?.dietary_preferences || profile?.food_preference || "Balanced";
+  const fitnessGoal = profile?.fitness_goal || "General Health & Longevity";
 
-  let breakfast = isIndian ? "Spiced Besan Chilla with Mint Chutney" : "Oatmeal with Almonds and Chia Seeds";
-  let lunch = isIndian ? "Dal Tadka with Multigrain Roti & Cucumber Salad" : "Grilled Chicken Quinoa Bowl";
-  let dinner = isIndian ? "Palak Paneer with Brown Rice" : "Baked Salmon with Broccoli";
+  if (!hasTelemetry) {
+    return {
+      headline: "Personalized Longevity Protocol",
+      statusMessage: "Not enough data yet. Start logging your meals, hydration, sleep and activity to generate personalized insights.",
+      recommendedMeals: [],
+      hydrationGoalMl: waterTarget,
+      sleepSchedule: {
+        windDown: "22:00",
+        targetHours: sleepTarget,
+        tip: "Set a consistent sleep schedule to establish your circadian rhythm."
+      },
+      workoutRoutine: {
+        title: `${fitnessGoal} Protocol`,
+        durationMin: workoutTarget,
+        intensity: "Moderate",
+        focus: "Baseline physical activity & habit building"
+      },
+      recoveryActivities: ["Log your daily activities to receive personalized recovery suggestions."],
+      recommendedSupplements: [],
+      wellnessGoals: [
+        `Log your first meal or reach ${waterTarget}ml water intake`,
+        `Record ${sleepTarget}h sleep tonight`,
+        `Complete a ${workoutTarget}-min workout or walk`
+      ]
+    };
+  }
+
+  const isDeclining = data.stabilityScore < 50 || (data.sleepHours > 0 && data.sleepHours < 6);
+  const isImproving = data.stabilityScore > 80 && data.recoveryPercentage > 75;
+
+  const remainingCalories = Math.max(0, calorieTarget - (data.caloriesConsumed || 0));
+  const isVeg = ["Vegetarian", "Vegan", "South Indian", "North Indian", "Jain", "Lacto-Vegetarian"].some(v => dietPref.toLowerCase().includes(v.toLowerCase()));
+  const isKeto = dietPref.toLowerCase().includes("keto");
+  const isHighProtein = dietPref.toLowerCase().includes("high protein") || fitnessGoal.toLowerCase().includes("muscle");
+
+  // Dynamic meal calculation
+  const recommendedMeals = [];
+  if (data.caloriesConsumed === 0) {
+    const mealPortion = Math.round(calorieTarget / 3);
+    recommendedMeals.push({
+      mealType: "Breakfast",
+      name: isVeg ? "High-Fiber Whole Grain Bowl with Sprouted Legumes" : (isKeto ? "Avocado and Free-Range Egg Scramble" : "Energizing Whole Grain Protein Breakfast"),
+      calories: mealPortion,
+      why: "Initial metabolic fuel to stabilize blood glucose throughout the morning."
+    });
+  } else if (remainingCalories > 200) {
+    recommendedMeals.push({
+      mealType: "Next Recommended Meal",
+      name: isVeg ? (isHighProtein ? "Tofu & Lentil High-Protein Bowl with Greens" : "Nutrient-Dense Vegetable & Quinoa Medley") : (isKeto ? "Grilled Herb Salmon with Asparagus" : "Lean Protein Bowl with Steamed Greens & Sweet Potato"),
+      calories: Math.min(remainingCalories, Math.round(calorieTarget * 0.4)),
+      why: `Targeted to fulfill your remaining daily deficit of ${remainingCalories} kcal based on your ${dietPref} preference.`
+    });
+  }
+
+  // Dynamic wellness goals based on actual gaps
+  const dynamicGoals: string[] = [];
+  if (data.hydrationMl < waterTarget) {
+    dynamicGoals.push(`Log remaining ${Math.max(0, waterTarget - data.hydrationMl)}ml water to reach daily target`);
+  } else {
+    dynamicGoals.push(`Hydration goal of ${waterTarget}ml achieved! Maintain fluid balance`);
+  }
+
+  if (data.sleepHours === 0 || data.sleepHours < sleepTarget) {
+    dynamicGoals.push(`Target ${sleepTarget}h restful sleep tonight`);
+  } else {
+    dynamicGoals.push(`Optimal sleep of ${data.sleepHours}h recorded today`);
+  }
+
+  if (data.workoutMinutes < workoutTarget) {
+    dynamicGoals.push(`Complete remaining ${Math.max(0, workoutTarget - data.workoutMinutes)}m of active exertion`);
+  } else {
+    dynamicGoals.push(`Activity target of ${workoutTarget}m completed`);
+  }
 
   return {
     headline: isImproving ? "Peak Performance & Endurance Protocol" : isDeclining ? "Active Recovery & Decompression Plan" : "Balanced Longevity & Metabolic Protocol",
-    statusMessage: isImproving ? "Your Digital Twin shows outstanding stability! Today's plan pushes your endurance thresholds." : "Your body shows signs of sleep debt. Today's plan scales back intensity for restorative recovery.",
-    recommendedMeals: [
-      { mealType: "Breakfast", name: breakfast, calories: 380, why: "Complex carbs to restock glycogen without morning insulin spikes." },
-      { mealType: "Lunch", name: lunch, calories: 520, why: "Lean amino acid profile to rebuild worked muscle fibers." },
-      { mealType: "Dinner", name: dinner, calories: 480, why: "Magnesium-rich foods to soothe muscle fibers before sleep." }
-    ],
-    hydrationGoalMl: isDeclining ? 3000 : 2500,
+    statusMessage: isImproving ? "Your Digital Twin shows outstanding stability! Today's plan maintains peak vitality." : isDeclining ? "Your body telemetry indicates elevated fatigue or sleep debt. Today's plan prioritizes active recovery." : "Maintaining steady baseline metrics across nutrition, hydration, and recovery.",
+    recommendedMeals,
+    hydrationGoalMl: waterTarget,
     sleepSchedule: {
       windDown: isDeclining ? "21:30" : "22:15",
-      targetHours: isDeclining ? 8.5 : 8.0,
-      tip: "Turn off screens 45 minutes prior to sleep to maximize blue-light avoidance."
+      targetHours: sleepTarget,
+      tip: isDeclining ? "Turn off digital screens 45 minutes prior to sleep to maximize melatonin production." : "Maintain consistent bedtime to anchor your circadian rhythm."
     },
     workoutRoutine: {
-      title: isDeclining ? "Restorative Yoga & Mobility" : "Moderate Zone 2 Cardio & Resistance",
-      durationMin: isDeclining ? 20 : 35,
-      intensity: isDeclining ? "Low" : "Moderate",
-      focus: "Parasympathetic tone & mitochondrial density"
+      title: isDeclining ? "Restorative Mobility & Foam Rolling" : `${fitnessGoal} Routine`,
+      durationMin: isDeclining ? Math.min(20, workoutTarget) : workoutTarget,
+      intensity: isDeclining ? "Low" : (isImproving ? "High" : "Moderate"),
+      focus: isDeclining ? "Tissue repair & autonomic decompression" : "Aerobic base & metabolic conditioning"
     },
-    recoveryActivities: ["Post-workout active stretching", "5-min cold rinse", "Hydration check at 4 PM"],
-    recommendedSupplements: ["Magnesium Glycinate (300mg)", "Omega-3 Fatty Acids (1000mg)", "Vitamin D3 + K2"],
-    wellnessGoals: [
-      `Hit ${isDeclining ? 3000 : 2500}ml hydration target`,
-      `Log at least ${isDeclining ? 7.5 : 8.0} hours of quality sleep`,
-      "Complete 10 minutes of evening stress reduction"
-    ]
+    recoveryActivities: isDeclining ? ["20-minute light mobility walk", "Diaphragmatic breathwork", "Hydration replenishment"] : ["Post-exercise active stretching", "Electrolyte hydration check"],
+    recommendedSupplements: isDeclining ? ["Magnesium Glycinate", "Vitamin D3"] : [],
+    wellnessGoals: dynamicGoals
   };
 }

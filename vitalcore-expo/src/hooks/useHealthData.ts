@@ -64,6 +64,8 @@ export function useHealthData(selectedDateInput?: string): HealthDataResult {
         caloriesConsumed: record.calories_consumed,
         hydrationMl: record.water_ml,
         hydrationTarget: record.water_goal_ml,
+        workoutMinutes: record.workout_minutes,
+        workoutTarget: record.workout_goal_minutes,
         steps: record.steps,
         stepsTarget: record.steps_goal,
         sleepHours: record.sleep_hours,

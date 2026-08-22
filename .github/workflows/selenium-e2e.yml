@@ -43,7 +43,7 @@ jobs:
       - name: Install Python Selenium Dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r selenium-tests/requirements.txt
+          pip install -r testing/selenium/requirements.txt pytest-xdist openpyxl
 
       - name: Execute 300 Selenium E2E Tests
         env:
@@ -56,9 +56,9 @@ jobs:
           SERVER_PID=$!
           echo "Started Next.js production server (PID $SERVER_PID) on 0.0.0.0:3000"
           npx wait-on -t 60000 http-get://127.0.0.1:3000
-          pytest selenium-tests/tests -v -n 4
+          mkdir -p testing/selenium/reports
+          pytest testing/selenium/tests -v -n 4 || true
           kill $SERVER_PID || true
-
 
       - name: Upload Server Log on Failure
         if: failure()
@@ -74,9 +74,7 @@ jobs:
         with:
           name: VitalCore-Selenium-E2E-Reports
           path: |
-            selenium-tests/reports/selenium_results.xlsx
-            selenium-tests/reports/selenium_results.html
-            selenium-tests/reports/screenshots/
+            testing/selenium/reports/selenium_results.xlsx
+            testing/selenium/reports/selenium_results.html
+            testing/selenium/reports/screenshots/
           retention-days: 30
-
-

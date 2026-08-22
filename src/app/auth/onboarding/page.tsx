@@ -205,6 +205,7 @@ export default function OnboardingPage() {
       const updates = {
         full_name: fullName.trim() || profile?.full_name || "",
         age: userAge > 0 ? userAge : null,
+        date_of_birth: profile?.date_of_birth || (userAge > 0 ? `${new Date().getFullYear() - userAge}-01-01` : null),
         gender: gender,
         blood_group: bloodGroup || null,
         weight_kg: weight !== "" ? Number(weight) : null,

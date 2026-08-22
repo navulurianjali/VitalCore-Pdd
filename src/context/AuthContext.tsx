@@ -100,41 +100,9 @@ interface AuthContextProps {
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<any>(() => {
-    if (typeof window !== "undefined") {
-      try {
-        const stored = localStorage.getItem("vitalcore_test_session");
-        if (stored) {
-          const parsed = JSON.parse(stored);
-          if (parsed?.user) return parsed.user;
-        }
-      } catch (e) {}
-    }
-    return null;
-  });
-
-  const [profile, setProfile] = useState<UserProfile | null>(() => {
-    if (typeof window !== "undefined") {
-      try {
-        const stored = localStorage.getItem("vitalcore_test_session");
-        if (stored) {
-          const parsed = JSON.parse(stored);
-          if (parsed?.profile) return parsed.profile;
-        }
-      } catch (e) {}
-    }
-    return null;
-  });
-
-  const [loading, setLoading] = useState<boolean>(() => {
-    if (typeof window !== "undefined") {
-      try {
-        const stored = localStorage.getItem("vitalcore_test_session");
-        if (stored) return false;
-      } catch (e) {}
-    }
-    return true;
-  });
+  const [user, setUser] = useState<any>(null);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
   const isMockMode = false;
 
@@ -154,32 +122,57 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   useEffect(() => {
-    // Check if test session exists in localStorage
-    if (typeof window !== "undefined") {
-      const testSessionStr = localStorage.getItem("vitalcore_test_session");
-      if (testSessionStr) {
-        try {
-          const testSession = JSON.parse(testSessionStr);
-          if (testSession?.user && testSession?.profile) {
-            setUser(testSession.user);
-            setProfile(testSession.profile);
-            setLoading(false);
-            return;
-          }
-        } catch (e) {}
+    let profileChannel: any = null;
+
+    const setupProfileSubscription = (uid: string) => {
+      if (profileChannel && supabase) {
+        supabase.removeChannel(profileChannel);
       }
-    }
+      if (supabase) {
+        profileChannel = supabase
+          .channel(`profile-realtime-web-${uid}`)
+          .on(
+            "postgres_changes",
+            {
+              event: "*",
+              schema: "public",
+              table: "profiles",
+              filter: `id=eq.${uid}`,
+            },
+            (payload: any) => {
+              console.log("[Web AuthContext Realtime] Profile change received:", payload.eventType);
+              if (payload.new) {
+                const data = payload.new;
+                const isCompleted = data.onboarding_completed === true
+                  ? true
+                  : (data.onboarding_completed === false
+                    ? false
+                    : Boolean(data.age || data.weight_kg || data.height_cm || data.fitness_goal || data.gender || data.medical_conditions));
+
+                setProfile((prev) => ({
+                  ...(prev || {}),
+                  ...data,
+                  onboarding_completed: isCompleted,
+                  soreness_level: Number(data.soreness_level) || 0,
+                  biological_age: data.biological_age ? Number(data.biological_age) : 0,
+                  stability_score: data.stability_score ? Number(data.stability_score) : 0,
+                } as UserProfile));
+              } else {
+                fetchSupabaseProfile(uid);
+              }
+            }
+          )
+          .subscribe();
+      }
+    };
 
     if (supabase) {
       supabase.auth.getSession().then(({ data: { session } }) => {
-        if (session) {
+        if (session?.user) {
           setUser(session.user);
           fetchSupabaseProfile(session.user.id, session.user);
+          setupProfileSubscription(session.user.id);
         } else {
-          if (typeof window !== "undefined" && localStorage.getItem("vitalcore_test_session")) {
-            setLoading(false);
-            return;
-          }
           clearClientState();
           setLoading(false);
         }
@@ -187,25 +180,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
         if (event === "TOKEN_REFRESHED" || event === "USER_UPDATED") {
-          if (session) setUser(session.user);
+          if (session?.user) setUser(session.user);
           return;
         }
 
-        if (session) {
+        if (session?.user) {
           setUser(session.user);
           fetchSupabaseProfile(session.user.id, session.user);
+          setupProfileSubscription(session.user.id);
         } else {
-          if (typeof window !== "undefined" && localStorage.getItem("vitalcore_test_session")) {
-            setLoading(false);
-            return;
-          }
           clearClientState();
           setLoading(false);
+          if (profileChannel && supabase) {
+            supabase.removeChannel(profileChannel);
+            profileChannel = null;
+          }
         }
       });
 
       return () => {
         subscription.unsubscribe();
+        if (profileChannel && supabase) {
+          supabase.removeChannel(profileChannel);
+        }
       };
     } else {
       setLoading(false);
@@ -283,49 +280,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signIn = async (email: string, password: string) => {
-    const trimmedEmail = email.trim().toLowerCase();
-    if (trimmedEmail === "testuser@vitalcore.ai" || trimmedEmail.endsWith("@vitalcore.ai") || trimmedEmail === "demo@vitalcore.ai") {
-      const mockUser = {
-        id: "00000000-0000-0000-0000-000000000001",
-        email: email.trim(),
-        user_metadata: { full_name: "Test User", username: "testuser" },
-        aud: "authenticated",
-        role: "authenticated",
-      };
-      const mockProfile: UserProfile = {
-        id: mockUser.id,
-        email: email.trim(),
-        full_name: "Test User",
-        username: "testuser",
-        active_mode: "wellness",
-        onboarding_completed: true,
-        soreness_level: 0,
-        biological_age: 28,
-        stability_score: 85,
-        age: 28,
-        height_cm: 175,
-        weight_kg: 70,
-        fitness_goal: "Maintain fitness",
-        gender: "male",
-        blood_group: "O+",
-        activity_level: "moderate",
-        calorie_goal: 2200,
-        water_goal: 2500,
-        sleep_goal: 8,
-        xp: 1500,
-        streak_days: 12,
-      };
-      setUser(mockUser);
-      setProfile(mockProfile);
-      setLoading(false);
-      if (typeof window !== "undefined") {
-        localStorage.setItem("vitalcore_test_session", JSON.stringify({ user: mockUser, profile: mockProfile }));
-      }
-      return { error: null, profile: mockProfile };
-    }
-
     if (!supabase) return { error: new Error("Supabase client not initialized"), profile: null };
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data, error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
     let fetchedProf: UserProfile | null = null;
     if (!error && data?.user) {
       setUser(data.user);
@@ -335,38 +291,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signUp = async (email: string, password: string, fullName: string = "", username: string = "") => {
-    const trimmedEmail = email.trim().toLowerCase();
-    if (trimmedEmail.endsWith("@vitalcore.ai") || trimmedEmail === "testuser@vitalcore.ai" || trimmedEmail.includes("test")) {
-      const mockUser = {
-        id: "00000000-0000-0000-0000-000000000002",
-        email: email.trim(),
-        user_metadata: { full_name: fullName || "Test User", username: username || "testuser" },
-        aud: "authenticated",
-        role: "authenticated",
-      };
-      const mockProfile: UserProfile = {
-        id: mockUser.id,
-        email: email.trim(),
-        full_name: fullName || "Test User",
-        username: username || "testuser",
-        active_mode: "wellness",
-        onboarding_completed: false,
-        soreness_level: 0,
-        biological_age: 28,
-        stability_score: 85,
-      };
-      setUser(mockUser);
-      setProfile(mockProfile);
-      setLoading(false);
-      if (typeof window !== "undefined") {
-        localStorage.setItem("vitalcore_test_session", JSON.stringify({ user: mockUser, profile: mockProfile }));
-      }
-      return { error: null, profile: mockProfile };
-    }
-
     if (!supabase) return { error: new Error("Supabase client not initialized"), profile: null };
     const { data, error } = await supabase.auth.signUp({
-      email,
+      email: email.trim(),
       password,
       options: {
         data: {
@@ -439,17 +366,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       const merged = { ...profile, ...updates };
       setProfile(merged as UserProfile);
-
-      if (typeof window !== "undefined") {
-        try {
-          const sessStr = localStorage.getItem("vitalcore_test_session");
-          if (sessStr) {
-            const sess = JSON.parse(sessStr);
-            sess.profile = merged;
-            localStorage.setItem("vitalcore_test_session", JSON.stringify(sess));
-          }
-        } catch (e) {}
-      }
 
       if (supabase && profile.id !== "00000000-0000-0000-0000-000000000001" && profile.id !== "00000000-0000-0000-0000-000000000002") {
         const { data: updatedData, error } = await supabase

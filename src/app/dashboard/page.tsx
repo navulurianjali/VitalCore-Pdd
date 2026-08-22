@@ -21,7 +21,9 @@ import {
   Award,
   ArrowRight,
   Scan,
-  Dumbbell
+  Dumbbell,
+  CheckSquare,
+  Scale
 } from "lucide-react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import GlassCard from "@/components/ui/GlassCard";
@@ -248,46 +250,46 @@ export default function DashboardPage() {
   }, [breathingActive]);
 
   const fallbackDigitalTwin: HealthDigitalTwin = {
-    caloriesBurned: 350,
+    caloriesBurned: 0,
     caloriesTarget: profile?.calorie_goal || 2200,
-    caloriesConsumed: totalCalories || 1850,
-    proteinG: 120,
+    caloriesConsumed: totalCalories || 0,
+    proteinG: 0,
     proteinTarget: profile?.protein_goal || 140,
-    carbsG: 210,
+    carbsG: 0,
     carbsTarget: profile?.carb_goal || 240,
-    fatG: 55,
+    fatG: 0,
     fatTarget: profile?.fat_goal || 65,
-    fiberG: 25,
-    sugarG: 30,
-    sodiumMg: 1800,
-    hydrationMl: waterLogged || 1750,
+    fiberG: 0,
+    sugarG: 0,
+    sodiumMg: 0,
+    hydrationMl: waterLogged || 0,
     hydrationTarget: profile?.water_goal || 2500,
-    workoutMinutes: 45,
+    workoutMinutes: 0,
     workoutTarget: 60,
-    steps: stepsLogged || 6500,
+    steps: stepsLogged || 0,
     stepsTarget: 10000,
-    sleepHours: sleepHrs || 7.5,
+    sleepHours: sleepHrs || 0,
     sleepTarget: profile?.sleep_goal || 8,
-    sleepQuality: 82,
-    habitCompletion: 80,
-    overallGoalCompletion: 85,
-    stressLevel: 25,
-    mood: "Energized",
-    recoveryPercentage: 85,
-    fatigueScore: 20,
-    physicalFatigue: 20,
-    mentalFatigue: 25,
-    energyLevel: 80,
-    biologicalAge: profile?.biological_age || 28,
-    stabilityScore: profile?.stability_score || 85,
-    metabolicEfficiency: 88,
-    lifestyleSustainability: 84,
+    sleepQuality: 0,
+    habitCompletion: 0,
+    overallGoalCompletion: 0,
+    stressLevel: 0,
+    mood: "neutral",
+    recoveryPercentage: 0,
+    fatigueScore: 0,
+    physicalFatigue: 0,
+    mentalFatigue: 0,
+    energyLevel: 0,
+    biologicalAge: profile?.biological_age ? Number(profile.biological_age) : 0,
+    stabilityScore: 0,
+    metabolicEfficiency: 0,
+    lifestyleSustainability: 0,
     glycemicIndexLoad: "low",
     sedentaryPostureRisk: "low",
     micronutrientDeficiencies: [],
-    trackingDaysCount: 12,
-    hasTelemetry: true,
-    hasEnergyTelemetry: true,
+    trackingDaysCount: 0,
+    hasTelemetry: false,
+    hasEnergyTelemetry: false,
     selectedDate: getLocalDateString(),
     dailyRecord: null,
   };
@@ -311,26 +313,36 @@ export default function DashboardPage() {
   const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
   const today = new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" });
 
-  const calorieTarget = activeMetrics.caloriesTarget * 3;
-  const hydrationPct = Math.min(100, (waterLogged / activeMetrics.hydrationTarget) * 100);
-  const caloriePct = Math.min(100, (totalCalories / calorieTarget) * 100);
-  const sleepPct = Math.min(100, (sleepHrs / activeMetrics.sleepTarget) * 100);
-  const stepsPct = Math.min(100, (stepsLogged / activeMetrics.stepsTarget) * 100);
+  const calorieTarget = (activeMetrics.caloriesTarget || 2200) * 3;
+  const hydrationPct = activeMetrics.hydrationTarget > 0 ? Math.min(100, (waterLogged / activeMetrics.hydrationTarget) * 100) : 0;
+  const caloriePct = calorieTarget > 0 ? Math.min(100, (totalCalories / calorieTarget) * 100) : 0;
+  const sleepPct = activeMetrics.sleepTarget > 0 ? Math.min(100, (sleepHrs / activeMetrics.sleepTarget) * 100) : 0;
+  const stepsPct = activeMetrics.stepsTarget > 0 ? Math.min(100, (stepsLogged / activeMetrics.stepsTarget) * 100) : 0;
+
+  const hasUserActivity = Boolean(
+    simulating ||
+    totalCalories > 0 ||
+    waterLogged > 0 ||
+    sleepHrs > 0 ||
+    stepsLogged > 0 ||
+    (metrics?.hasTelemetry && metrics?.trackingDaysCount > 0)
+  );
 
   const predictions = calculateFutureHealthPredictions({
-    sleepHours: simulating ? simSleep : (sleepHrs || activeMetrics.sleepHours),
-    sleepQuality: simulating ? (simSleep >= 8 ? 90 : simSleep >= 6 ? 70 : 45) : (sleepHrs > 0 ? 80 : activeMetrics.sleepQuality),
-    hydrationMl: simulating ? simWater : (waterLogged || activeMetrics.hydrationMl),
-    hydrationTarget: activeMetrics.hydrationTarget,
-    stressLevel: simulating ? simStress : activeMetrics.stressLevel,
-    fatigueScore: simulating ? (simStress > 60 ? 70 : 30) : activeMetrics.fatigueScore,
-    physicalFatigue: simulating ? (simStress > 60 ? 60 : 25) : activeMetrics.physicalFatigue,
-    mentalFatigue: simulating ? (simStress > 60 ? 75 : 35) : activeMetrics.mentalFatigue,
+    sleepHours: simulating ? simSleep : sleepHrs,
+    sleepQuality: simulating ? (simSleep >= 8 ? 90 : simSleep >= 6 ? 70 : 45) : (sleepHrs > 0 ? (metrics?.sleepQuality || 80) : 0),
+    hydrationMl: simulating ? simWater : waterLogged,
+    hydrationTarget: activeMetrics.hydrationTarget || 2500,
+    stressLevel: simulating ? simStress : (hasUserActivity ? activeMetrics.stressLevel : 0),
+    fatigueScore: simulating ? (simStress > 60 ? 70 : 30) : (hasUserActivity ? activeMetrics.fatigueScore : 0),
+    physicalFatigue: simulating ? (simStress > 60 ? 60 : 25) : (hasUserActivity ? activeMetrics.physicalFatigue : 0),
+    mentalFatigue: simulating ? (simStress > 60 ? 75 : 35) : (hasUserActivity ? activeMetrics.mentalFatigue : 0),
     sorenessLevel: profile?.soreness_level || 0,
-    recoveryPercentage: simulating ? (simSleep >= 8 ? 85 : 45) : activeMetrics.recoveryPercentage,
-    stabilityScore: activeMetrics.stabilityScore,
-    screenTimeHours: profile?.screen_time_hours || 6,
-    caffeineIntake: profile?.caffeine_intake || 'moderate'
+    recoveryPercentage: simulating ? (simSleep >= 8 ? 85 : 45) : (hasUserActivity ? activeMetrics.recoveryPercentage : 0),
+    stabilityScore: hasUserActivity ? activeMetrics.stabilityScore : 0,
+    screenTimeHours: profile?.screen_time_hours ?? undefined,
+    caffeineIntake: profile?.caffeine_intake ?? undefined,
+    hasTelemetry: hasUserActivity
   });
 
   return (
@@ -346,18 +358,35 @@ export default function DashboardPage() {
               Here is your health overview today
             </p>
           </div>
-          <div className="flex flex-col items-center justify-center bg-orange-500/10 border border-orange-500/30 px-5 py-2 rounded-2xl shadow-sm shadow-orange-500/10 hover:scale-105 transition-transform cursor-pointer">
+          <Link
+            href="/history"
+            className="flex flex-col items-center justify-center bg-orange-500/10 border border-orange-500/30 px-5 py-2 rounded-2xl shadow-sm shadow-orange-500/10 hover:scale-105 hover:bg-orange-500/20 transition-all cursor-pointer group"
+            title="View Health History & Streaks"
+          >
             <span className="text-xl animate-bounce mt-0.5">🔥</span>
-            <span className="text-[9px] font-black text-orange-500 uppercase tracking-widest mt-1">{profile?.streak_days || 0} Day Streak</span>
-          </div>
+            <span className="text-[9px] font-black text-orange-500 uppercase tracking-widest mt-1 group-hover:underline">
+              {profile?.streak_days || 0} Day Streak
+            </span>
+          </Link>
         </div>
+
+        {/* Feedback banner */}
+        {logStatus && (
+          <div className="mb-6 p-3 rounded-xl bg-primary/10 border border-primary/30 text-primary text-xs font-bold text-center animate-[fadeIn_0.2s_ease-out]">
+            {logStatus}
+          </div>
+        )}
 
         {/* ======= COMMON FOCUS CARDS GRID ======= */}
         {activeMode !== "elderly" && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
 
             {/* Calories */}
-            <Link href="/calorie-tracker" className="bg-[var(--card-bg)] border border-rose-500/30 rounded-xl p-5 hover:border-rose-500/60 transition-colors shadow-sm shadow-rose-500/5 group cursor-pointer block">
+            <Link
+              href="/calorie-tracker"
+              className="bg-[var(--card-bg)] border border-rose-500/30 rounded-xl p-5 hover:border-rose-500/60 hover:shadow-md hover:shadow-rose-500/10 transition-all shadow-sm group cursor-pointer block"
+              title="Open Calorie & Nutrition Tracker"
+            >
               <div className="flex justify-between items-center mb-3">
                 <Flame className="h-[18px] w-[18px] text-rose-500" />
                 <span className="text-[10px] text-rose-400 font-extrabold group-hover:underline">Track Intake →</span>
@@ -370,39 +399,66 @@ export default function DashboardPage() {
             </Link>
 
             {/* Hydration */}
-            <div className="bg-[var(--card-bg)] border border-blue-500/30 rounded-xl p-5 hover:border-blue-500/60 transition-colors shadow-sm shadow-blue-500/5 flex flex-col justify-between">
-              <div>
-                <div className="mb-3">
+            <div className="bg-[var(--card-bg)] border border-blue-500/30 rounded-xl p-5 hover:border-blue-500/60 hover:shadow-md hover:shadow-blue-500/10 transition-all shadow-sm flex flex-col justify-between group">
+              <Link href="/history" className="block cursor-pointer" title="Open Hydration Logs in Health History">
+                <div className="flex justify-between items-center mb-3">
                   <Droplet className="h-[18px] w-[18px] text-blue-500" />
+                  <span className="text-[10px] text-blue-400 font-extrabold group-hover:underline">Track Water →</span>
                 </div>
                 <div className="flex items-baseline gap-2 mb-0.5">
                   <div className="text-2xl font-bold text-[var(--foreground)]">{waterLogged}</div>
                   <div className="text-[10px] text-[var(--muted)] font-medium uppercase">ml</div>
                 </div>
                 <div className="text-[11px] text-[var(--muted)] font-medium mb-3">Hydration Intake</div>
-              </div>
+              </Link>
               <div className="flex gap-2 mt-auto pt-2">
-                <button onClick={() => handleLogWater(250)} className="flex-1 text-[10px] font-bold text-blue-500 bg-blue-500/5 border border-blue-500/30 rounded-lg py-1.5 hover:bg-blue-500/15 transition-all active:scale-95 shadow-sm">+ 250ml</button>
-                <button onClick={() => handleLogWater(500)} className="flex-1 text-[10px] font-bold text-blue-500 bg-blue-500/5 border border-blue-500/30 rounded-lg py-1.5 hover:bg-blue-500/15 transition-all active:scale-95 shadow-sm">+ 500ml</button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleLogWater(250);
+                  }}
+                  className="flex-1 text-[10px] font-bold text-blue-500 bg-blue-500/5 border border-blue-500/30 rounded-lg py-1.5 hover:bg-blue-500/15 transition-all active:scale-95 shadow-sm cursor-pointer"
+                >
+                  + 250ml
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleLogWater(500);
+                  }}
+                  className="flex-1 text-[10px] font-bold text-blue-500 bg-blue-500/5 border border-blue-500/30 rounded-lg py-1.5 hover:bg-blue-500/15 transition-all active:scale-95 shadow-sm cursor-pointer"
+                >
+                  + 500ml
+                </button>
               </div>
             </div>
 
             {/* Sleep */}
-            <div className="bg-[var(--card-bg)] border border-violet-500/30 rounded-xl p-5 hover:border-violet-500/60 transition-colors shadow-sm shadow-violet-500/5">
-              <div className="mb-3">
+            <Link
+              href="/sleep"
+              className="bg-[var(--card-bg)] border border-violet-500/30 rounded-xl p-5 hover:border-violet-500/60 hover:shadow-md hover:shadow-violet-500/10 transition-all shadow-sm group cursor-pointer block"
+              title="Open Sleep Tracking"
+            >
+              <div className="flex justify-between items-center mb-3">
                 <Moon className="h-[18px] w-[18px] text-violet-500" />
+                <span className="text-[10px] text-violet-400 font-extrabold group-hover:underline">Track Sleep →</span>
               </div>
               <div className="flex items-baseline gap-2 mb-0.5">
                 <div className="text-2xl font-bold text-[var(--foreground)]">{sleepHrs > 0 ? sleepHrs : "0"}</div>
                 <div className="text-[10px] text-[var(--muted)] font-medium uppercase">hrs</div>
               </div>
               <div className="text-[11px] text-[var(--muted)] font-medium">Sleep Duration</div>
-            </div>
+            </Link>
 
-            {/* Steps */}
-            <div className="bg-[var(--card-bg)] border border-amber-500/30 rounded-xl p-5 hover:border-amber-500/60 transition-colors relative overflow-hidden shadow-sm shadow-amber-500/5">
-              <div className="mb-3">
+            {/* Steps / Activity */}
+            <Link
+              href="/fitness"
+              className="bg-[var(--card-bg)] border border-amber-500/30 rounded-xl p-5 hover:border-amber-500/60 hover:shadow-md hover:shadow-amber-500/10 transition-all relative overflow-hidden shadow-sm group cursor-pointer block"
+              title="Open Fitness & Activity Tracker"
+            >
+              <div className="flex justify-between items-center mb-3">
                 <Footprints className="h-[18px] w-[18px] text-amber-500" />
+                <span className="text-[10px] text-amber-400 font-extrabold group-hover:underline">Track Activity →</span>
               </div>
               <div className="flex items-baseline gap-2 mb-0.5">
                 <div className="text-2xl font-bold text-[var(--foreground)]">{stepsLogged.toLocaleString()}</div>
@@ -416,7 +472,7 @@ export default function DashboardPage() {
                    <span className="text-[9px] text-amber-500 font-bold uppercase tracking-widest">Live</span>
                 </div>
               )}
-            </div>
+            </Link>
 
           </div>
         )}
@@ -444,26 +500,36 @@ export default function DashboardPage() {
 
             {/* Accessible metrics */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <GlassCard glowColor="emerald" className="p-6 text-center rounded-3xl">
-                <Footprints className="h-10 w-10 text-primary mx-auto mb-2" />
-                <span className="text-xs font-semibold text-[var(--muted)] block">Steps Today</span>
-                <span className="text-3xl font-bold text-[var(--foreground)] block my-1">{activeMetrics.steps}</span>
-                <span className="text-xs text-[var(--muted)]">Target: 5,000 steps</span>
-              </GlassCard>
+              <Link href="/fitness" className="block cursor-pointer group" title="Open Steps & Activity Tracker">
+                <GlassCard glowColor="emerald" className="p-6 text-center rounded-3xl group-hover:border-primary/50 transition-all">
+                  <Footprints className="h-10 w-10 text-primary mx-auto mb-2" />
+                  <span className="text-xs font-semibold text-[var(--muted)] block">Steps Today</span>
+                  <span className="text-3xl font-bold text-[var(--foreground)] block my-1">{activeMetrics.steps}</span>
+                  <span className="text-xs text-primary font-semibold group-hover:underline">Target: 5,000 steps →</span>
+                </GlassCard>
+              </Link>
 
-              <GlassCard glowColor="violet" className="p-6 text-center rounded-3xl">
-                <Droplet className="h-10 w-10 text-secondary mx-auto mb-2" />
-                <span className="text-xs font-semibold text-[var(--muted)] block">Water Logged</span>
-                <span className="text-3xl font-bold text-[var(--foreground)] block my-1">{waterLogged} ml</span>
-                <Button
-                  variant="glass"
-                  size="md"
-                  onClick={() => setWaterLogged(w => w + 250)}
-                  className="mt-3 w-full border-primary/20 text-primary bg-primary/5 rounded-2xl"
-                >
-                  + Add 1 Cup (250ml)
-                </Button>
-              </GlassCard>
+              <div className="block">
+                <GlassCard glowColor="violet" className="p-6 text-center rounded-3xl">
+                  <Link href="/history" className="block cursor-pointer group" title="Open Hydration History">
+                    <Droplet className="h-10 w-10 text-secondary mx-auto mb-2" />
+                    <span className="text-xs font-semibold text-[var(--muted)] block">Water Logged</span>
+                    <span className="text-3xl font-bold text-[var(--foreground)] block my-1">{waterLogged} ml</span>
+                    <span className="text-xs text-secondary font-semibold group-hover:underline">View History →</span>
+                  </Link>
+                  <Button
+                    variant="glass"
+                    size="md"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleLogWater(250);
+                    }}
+                    className="mt-3 w-full border-primary/20 text-primary bg-primary/5 rounded-2xl cursor-pointer"
+                  >
+                    + Add 1 Cup (250ml)
+                  </Button>
+                </GlassCard>
+              </div>
             </div>
 
             {/* Medication list */}
@@ -505,97 +571,112 @@ export default function DashboardPage() {
 
             {/* Performance metrics row */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-              <GlassCard glowColor="violet" className="p-5 flex flex-col justify-between min-h-[130px]">
-                <span className="text-[10px] font-semibold text-[var(--muted)] block mb-1">CNS Fatigue</span>
-                <div className="analytics-number text-[var(--foreground)]">{activeMetrics.fatigueScore > 0 ? `${activeMetrics.fatigueScore}%` : "0%"}</div>
-                <span className="text-[10px] text-emerald-600 mt-1 block">Optimal Threshold</span>
-                <div className="progress-bar mt-3">
-                  <div className="progress-bar-fill bg-primary" style={{ width: `${activeMetrics.fatigueScore}%` }} />
-                </div>
-              </GlassCard>
+              <Link href="/future-lab" className="block cursor-pointer group" title="Open Future Health Lab Telemetry">
+                <GlassCard glowColor="violet" className="p-5 flex flex-col justify-between min-h-[130px] group-hover:border-violet-500/50 transition-all">
+                  <span className="text-[10px] font-semibold text-[var(--muted)] block mb-1">CNS Fatigue</span>
+                  <div className="analytics-number text-[var(--foreground)]">{activeMetrics.fatigueScore > 0 ? `${activeMetrics.fatigueScore}%` : "0%"}</div>
+                  <span className="text-[10px] text-emerald-600 mt-1 block">Optimal Threshold</span>
+                  <div className="progress-bar mt-3">
+                    <div className="progress-bar-fill bg-primary" style={{ width: `${activeMetrics.fatigueScore}%` }} />
+                  </div>
+                </GlassCard>
+              </Link>
 
-              <GlassCard glowColor="emerald" className="p-5 flex flex-col justify-between min-h-[130px]">
-                <span className="text-[10px] font-semibold text-[var(--muted)] block mb-1">HRV Status</span>
-                <div className="analytics-number text-[var(--foreground)]">{activeMetrics.recoveryPercentage > 0 ? `${Math.round(activeMetrics.recoveryPercentage * 1.1)} ms` : "--"}</div>
-                <span className="text-[10px] text-emerald-600 mt-1 block">{activeMetrics.recoveryPercentage > 0 ? "Stable Stance" : "No telemetry"}</span>
-                <div className="progress-bar mt-3">
-                  <div className="progress-bar-fill bg-secondary" style={{ width: `${activeMetrics.recoveryPercentage}%` }} />
-                </div>
-              </GlassCard>
+              <Link href="/future-lab" className="block cursor-pointer group" title="Open HRV Status in Future Health Lab">
+                <GlassCard glowColor="emerald" className="p-5 flex flex-col justify-between min-h-[130px] group-hover:border-emerald-500/50 transition-all">
+                  <span className="text-[10px] font-semibold text-[var(--muted)] block mb-1">HRV Status</span>
+                  <div className="analytics-number text-[var(--foreground)]">{activeMetrics.recoveryPercentage > 0 ? `${Math.round(activeMetrics.recoveryPercentage * 1.1)} ms` : "--"}</div>
+                  <span className="text-[10px] text-emerald-600 mt-1 block">{activeMetrics.recoveryPercentage > 0 ? "Stable Stance" : "No telemetry"}</span>
+                  <div className="progress-bar mt-3">
+                    <div className="progress-bar-fill bg-secondary" style={{ width: `${activeMetrics.recoveryPercentage}%` }} />
+                  </div>
+                </GlassCard>
+              </Link>
 
-              <GlassCard glowColor="rose" className="p-5 flex flex-col justify-between min-h-[130px]">
-                <span className="text-[10px] font-semibold text-[var(--muted)] block mb-1">Metabolic Rate</span>
-                <div className="analytics-number text-[var(--foreground)]">{activeMetrics.metabolicEfficiency}%</div>
-                <span className="text-[10px] text-[var(--muted)] mt-1 block">{activeMetrics.metabolicEfficiency > 0 ? "Optimal" : "No telemetry"}</span>
-                <div className="progress-bar mt-3">
-                  <div className="progress-bar-fill bg-rose-500/80" style={{ width: `${activeMetrics.metabolicEfficiency}%` }} />
-                </div>
-              </GlassCard>
+              <Link href="/future-lab" className="block cursor-pointer group" title="Open Metabolic Rate in Future Health Lab">
+                <GlassCard glowColor="rose" className="p-5 flex flex-col justify-between min-h-[130px] group-hover:border-rose-500/50 transition-all">
+                  <span className="text-[10px] font-semibold text-[var(--muted)] block mb-1">Metabolic Rate</span>
+                  <div className="analytics-number text-[var(--foreground)]">{activeMetrics.metabolicEfficiency}%</div>
+                  <span className="text-[10px] text-[var(--muted)] mt-1 block">{activeMetrics.metabolicEfficiency > 0 ? "Optimal" : "No telemetry"}</span>
+                  <div className="progress-bar mt-3">
+                    <div className="progress-bar-fill bg-rose-500/80" style={{ width: `${activeMetrics.metabolicEfficiency}%` }} />
+                  </div>
+                </GlassCard>
+              </Link>
 
-              <GlassCard glowColor="amber" className="p-5 flex flex-col justify-between min-h-[130px]">
-                <span className="text-[10px] font-semibold text-[var(--muted)] block mb-1">Glycemic Level</span>
-                <div className="analytics-number text-primary">{activeMetrics.caloriesConsumed > 0 ? activeMetrics.glycemicIndexLoad : "--"}</div>
-                <span className="text-[10px] text-[var(--muted)] mt-1 block">{activeMetrics.caloriesConsumed > 0 ? "Glycogen stores tracked" : "Log meals to track"}</span>
-              </GlassCard>
+              <Link href="/calorie-tracker" className="block cursor-pointer group" title="Open Glycemic Intake in Calorie Tracker">
+                <GlassCard glowColor="amber" className="p-5 flex flex-col justify-between min-h-[130px] group-hover:border-amber-500/50 transition-all">
+                  <span className="text-[10px] font-semibold text-[var(--muted)] block mb-1">Glycemic Level</span>
+                  <div className="analytics-number text-primary">{activeMetrics.caloriesConsumed > 0 ? activeMetrics.glycemicIndexLoad : "--"}</div>
+                  <span className="text-[10px] text-[var(--muted)] mt-1 block">{activeMetrics.caloriesConsumed > 0 ? "Glycogen stores tracked" : "Log meals to track"}</span>
+                </GlassCard>
+              </Link>
             </div>
 
             {/* Precision macros */}
-            <GlassCard glowColor="none" className="p-5">
-              <div className="flex items-center gap-2 mb-4">
-                <TrendingDown className="h-4 w-4 text-primary" />
-                <h3 className="font-semibold text-xs text-[var(--foreground)] uppercase tracking-wider">Nutrition Intake vs Targets</h3>
-              </div>
-              <div className="grid grid-cols-3 gap-4 text-center">
-                {[
-                  { label: "Protein", value: `${activeMetrics.proteinG} / ${activeMetrics.proteinTarget}g`, color: "text-primary" },
-                  { label: "Carbs", value: `${activeMetrics.carbsG} / ${activeMetrics.carbsTarget}g`, color: "text-secondary" },
-                  { label: "Healthy Fats", value: `${activeMetrics.fatG} / ${activeMetrics.fatTarget}g`, color: "text-accent" },
-                ].map((m) => (
-                  <div key={m.label} className="p-4 rounded-2xl bg-[var(--muted-bg)]/45 border border-[var(--border)]">
-                    <span className={`text-[10px] font-semibold ${m.color} block uppercase tracking-wider`}>{m.label}</span>
-                    <span className="text-base font-bold text-[var(--foreground)] block mt-1">{m.value}</span>
-                    <span className="text-[9px] text-[var(--muted)] mt-0.5 block">Logged / Target</span>
+            <Link href="/calorie-tracker" className="block cursor-pointer group" title="Open Macro Breakdown in Calorie Tracker">
+              <GlassCard glowColor="none" className="p-5 group-hover:border-primary/40 transition-all">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <TrendingDown className="h-4 w-4 text-primary" />
+                    <h3 className="font-semibold text-xs text-[var(--foreground)] uppercase tracking-wider">Nutrition Intake vs Targets</h3>
                   </div>
-                ))}
-              </div>
-            </GlassCard>
+                  <span className="text-[10px] text-primary font-bold group-hover:underline">Open Tracker →</span>
+                </div>
+                <div className="grid grid-cols-3 gap-4 text-center">
+                  {[
+                    { label: "Protein", value: `${activeMetrics.proteinG} / ${activeMetrics.proteinTarget}g`, color: "text-primary" },
+                    { label: "Carbs", value: `${activeMetrics.carbsG} / ${activeMetrics.carbsTarget}g`, color: "text-secondary" },
+                    { label: "Healthy Fats", value: `${activeMetrics.fatG} / ${activeMetrics.fatTarget}g`, color: "text-accent" },
+                  ].map((m) => (
+                    <div key={m.label} className="p-4 rounded-2xl bg-[var(--muted-bg)]/45 border border-[var(--border)]">
+                      <span className={`text-[10px] font-semibold ${m.color} block uppercase tracking-wider`}>{m.label}</span>
+                      <span className="text-base font-bold text-[var(--foreground)] block mt-1">{m.value}</span>
+                      <span className="text-[9px] text-[var(--muted)] mt-0.5 block">Logged / Target</span>
+                    </div>
+                  ))}
+                </div>
+              </GlassCard>
+            </Link>
 
             {/* PR Tracker */}
-            <GlassCard glowColor="rose" className="p-5">
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-xs font-semibold text-[var(--muted)] flex items-center gap-1.5">
-                  <Award className="h-4 w-4 text-rose-500" /> 
-                  Personal Benchmarks
-                </span>
-                <span className="text-[9px] bg-rose-500/10 text-rose-500 font-semibold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
-                  {activeMetrics.workoutMinutes > 0 ? "Active" : "No Workout Recorded"}
-                </span>
-              </div>
-              {activeMetrics.workoutMinutes > 0 ? (
-                <div className="grid grid-cols-4 gap-3 text-center text-xs font-semibold">
-                  <div className="p-3 bg-[var(--muted-bg)]/40 rounded-2xl border border-[var(--border)]">
-                    <span className="text-[9px] text-[var(--muted)] block uppercase tracking-wider">Workout</span>
-                    <span className="text-sm font-bold text-[var(--foreground)] block mt-0.5">{activeMetrics.workoutMinutes} min</span>
-                  </div>
-                  <div className="p-3 bg-[var(--muted-bg)]/40 rounded-2xl border border-[var(--border)]">
-                    <span className="text-[9px] text-[var(--muted)] block uppercase tracking-wider">Active Cals</span>
-                    <span className="text-sm font-bold text-[var(--foreground)] block mt-0.5">{activeMetrics.caloriesBurned} kcal</span>
-                  </div>
-                  <div className="p-3 bg-[var(--muted-bg)]/40 rounded-2xl border border-[var(--border)]">
-                    <span className="text-[9px] text-[var(--muted)] block uppercase tracking-wider">Steps</span>
-                    <span className="text-sm font-bold text-[var(--foreground)] block mt-0.5">{activeMetrics.steps}</span>
-                  </div>
-                  <div className="p-3 bg-[var(--muted-bg)]/40 rounded-2xl border border-[var(--border)]">
-                    <span className="text-[9px] text-[var(--muted)] block uppercase tracking-wider">Target</span>
-                    <span className="text-sm font-bold text-[var(--foreground)] block mt-0.5">{activeMetrics.stepsTarget}</span>
-                  </div>
+            <Link href="/fitness" className="block cursor-pointer group" title="Open Fitness Benchmarks">
+              <GlassCard glowColor="rose" className="p-5 group-hover:border-rose-500/40 transition-all">
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-xs font-semibold text-[var(--muted)] flex items-center gap-1.5">
+                    <Award className="h-4 w-4 text-rose-500" /> 
+                    Personal Benchmarks
+                  </span>
+                  <span className="text-[9px] bg-rose-500/10 text-rose-500 font-semibold px-2.5 py-0.5 rounded-full uppercase tracking-wider group-hover:underline">
+                    {activeMetrics.workoutMinutes > 0 ? "Active →" : "Log Workout →"}
+                  </span>
                 </div>
-              ) : (
-                <p className="text-xs text-[var(--muted)] font-medium text-center py-2">
-                  No exercise sessions recorded today. Log a workout in Fitness to record personal benchmarks.
-                </p>
-              )}
-            </GlassCard>
+                {activeMetrics.workoutMinutes > 0 ? (
+                  <div className="grid grid-cols-4 gap-3 text-center text-xs font-semibold">
+                    <div className="p-3 bg-[var(--muted-bg)]/40 rounded-2xl border border-[var(--border)]">
+                      <span className="text-[9px] text-[var(--muted)] block uppercase tracking-wider">Workout</span>
+                      <span className="text-sm font-bold text-[var(--foreground)] block mt-0.5">{activeMetrics.workoutMinutes} min</span>
+                    </div>
+                    <div className="p-3 bg-[var(--muted-bg)]/40 rounded-2xl border border-[var(--border)]">
+                      <span className="text-[9px] text-[var(--muted)] block uppercase tracking-wider">Active Cals</span>
+                      <span className="text-sm font-bold text-[var(--foreground)] block mt-0.5">{activeMetrics.caloriesBurned} kcal</span>
+                    </div>
+                    <div className="p-3 bg-[var(--muted-bg)]/40 rounded-2xl border border-[var(--border)]">
+                      <span className="text-[9px] text-[var(--muted)] block uppercase tracking-wider">Steps</span>
+                      <span className="text-sm font-bold text-[var(--foreground)] block mt-0.5">{activeMetrics.steps}</span>
+                    </div>
+                    <div className="p-3 bg-[var(--muted-bg)]/40 rounded-2xl border border-[var(--border)]">
+                      <span className="text-[9px] text-[var(--muted)] block uppercase tracking-wider">Target</span>
+                      <span className="text-sm font-bold text-[var(--foreground)] block mt-0.5">{activeMetrics.stepsTarget}</span>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-xs text-[var(--muted)] font-medium text-center py-2 group-hover:text-[var(--foreground)] transition-colors">
+                    No exercise sessions recorded today. Log a workout in Fitness to record personal benchmarks.
+                  </p>
+                )}
+              </GlassCard>
+            </Link>
 
           </div>
         )}
@@ -606,44 +687,48 @@ export default function DashboardPage() {
 
             {/* Wellness indicators */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <GlassCard glowColor="violet" className="p-5 flex flex-col justify-between min-h-[120px]">
-                <div>
-                  <span className="text-[10px] font-semibold text-[var(--muted)] block uppercase tracking-wider">Lifestyle Balance</span>
-                  <div className="analytics-number text-[var(--foreground)] mt-2">{activeMetrics.hasTelemetry ? `${activeMetrics.lifestyleSustainability}%` : "--"}</div>
-                </div>
-                <p className="text-xs text-[var(--muted)] leading-relaxed mt-2">
-                  {activeMetrics.hasTelemetry ? "Consistent rest schedules protect your cardiovascular rhythm." : "Log daily activities to compute lifestyle balance."}
-                </p>
-              </GlassCard>
+              <Link href="/future-lab" className="block cursor-pointer group" title="Open Lifestyle Balance in Future Health Lab">
+                <GlassCard glowColor="violet" className="p-5 flex flex-col justify-between min-h-[120px] group-hover:border-violet-500/50 transition-all">
+                  <div>
+                    <span className="text-[10px] font-semibold text-[var(--muted)] block uppercase tracking-wider">Lifestyle Balance</span>
+                    <div className="analytics-number text-[var(--foreground)] mt-2">{activeMetrics.hasTelemetry ? `${activeMetrics.lifestyleSustainability}%` : "--"}</div>
+                  </div>
+                  <p className="text-xs text-[var(--muted)] leading-relaxed mt-2">
+                    {activeMetrics.hasTelemetry ? "Consistent rest schedules protect your cardiovascular rhythm." : "Log daily activities to compute lifestyle balance."}
+                  </p>
+                </GlassCard>
+              </Link>
 
-              <GlassCard glowColor="amber" className="p-5 flex flex-col justify-between min-h-[120px] border border-amber-500/20 relative overflow-hidden group">
-                <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-                  <ShieldAlert className="w-16 h-16 text-amber-500" />
-                </div>
-                <div className="relative z-10 space-y-3">
-                  <span className="text-[10px] font-bold text-amber-500 block uppercase tracking-wider flex items-center gap-1.5">
-                    <span className="animate-pulse">🚨</span> Daily Health Triggers
-                  </span>
+              <Link href="/ai-coach" className="block cursor-pointer group" title="Consult AI Coach on Health Triggers">
+                <GlassCard glowColor="amber" className="p-5 flex flex-col justify-between min-h-[120px] border border-amber-500/20 relative overflow-hidden group-hover:border-amber-500/60 transition-all">
+                  <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                    <ShieldAlert className="w-16 h-16 text-amber-500" />
+                  </div>
+                  <div className="relative z-10 space-y-3">
+                    <span className="text-[10px] font-bold text-amber-500 block uppercase tracking-wider flex items-center gap-1.5">
+                      <span className="animate-pulse">🚨</span> Daily Health Triggers
+                    </span>
+                    
+                    <div className="bg-amber-500/10 text-amber-600 p-3 rounded-xl border border-amber-500/10 shadow-inner">
+                      <p className="text-[11px] font-black leading-snug flex items-start gap-1.5">
+                        <span className="mt-0.5">{activeMetrics.micronutrientDeficiencies?.length ? "⚠️" : "✅"}</span>
+                        <span>
+                          {activeMetrics.micronutrientDeficiencies?.[0] || (activeMetrics.hasTelemetry ? "No active health triggers detected today." : "No health triggers recorded yet. Start logging your telemetry!")}
+                        </span>
+                      </p>
+                    </div>
+                  </div>
                   
-                  <div className="bg-amber-500/10 text-amber-600 p-3 rounded-xl border border-amber-500/10 shadow-inner">
-                    <p className="text-[11px] font-black leading-snug flex items-start gap-1.5">
-                      <span className="mt-0.5">{activeMetrics.micronutrientDeficiencies?.length ? "⚠️" : "✅"}</span>
-                      <span>
-                        {activeMetrics.micronutrientDeficiencies?.[0] || (activeMetrics.hasTelemetry ? "No active health triggers detected today." : "No health triggers recorded yet. Start logging your telemetry!")}
+                  <div className="relative z-10 mt-4 pt-3 border-t border-[var(--border)]">
+                    <p className="text-[11px] font-bold text-foreground/80 leading-relaxed flex items-start gap-2">
+                      <span className="text-amber-500 mt-0.5 text-sm">💡</span> 
+                      <span className="flex-1 group-hover:underline">
+                        {activeMetrics.micronutrientDeficiencies?.length ? "Action: Focus on dietary intake and outdoor activity today." : "Action: Keep logging your daily meals, water, and sleep to generate personalized health triggers."}
                       </span>
                     </p>
                   </div>
-                </div>
-                
-                <div className="relative z-10 mt-4 pt-3 border-t border-[var(--border)]">
-                  <p className="text-[11px] font-bold text-foreground/80 leading-relaxed flex items-start gap-2">
-                    <span className="text-amber-500 mt-0.5 text-sm">💡</span> 
-                    <span className="flex-1">
-                      {activeMetrics.micronutrientDeficiencies?.length ? "Action: Focus on dietary intake and outdoor activity today." : "Action: Keep logging your daily meals, water, and sleep to generate personalized health triggers."}
-                    </span>
-                  </p>
-                </div>
-              </GlassCard>
+                </GlassCard>
+              </Link>
             </div>
 
           </div>
@@ -656,7 +741,7 @@ export default function DashboardPage() {
               <h2 className="text-[15px] font-bold text-[var(--foreground)]">Health Insights</h2>
               <button
                 onClick={() => setSimulating(!simulating)}
-                className="text-[11px] font-semibold text-[var(--muted)] hover:text-[var(--foreground)] transition-colors"
+                className="text-[11px] font-semibold text-[var(--muted)] hover:text-[var(--foreground)] transition-colors cursor-pointer"
               >
                 {simulating ? "Close Simulator" : "Try Simulator"}
               </button>
@@ -709,68 +794,94 @@ export default function DashboardPage() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
               
               {/* Energy Balance */}
-              <div className="bg-[var(--card-bg)] border border-[var(--border)] rounded-xl p-5 hover:border-primary/30 transition-colors">
+              <Link
+                href="/future-lab"
+                className="bg-[var(--card-bg)] border border-[var(--border)] rounded-xl p-5 hover:border-emerald-500/50 hover:shadow-md transition-all block cursor-pointer group"
+                title="View Energy Analytics in Future Health Lab"
+              >
                 <div className="flex justify-between items-center mb-4">
                   <div className="h-8 w-8 rounded-lg bg-green-500/10 flex items-center justify-center">
                     <Zap className="h-4 w-4 text-green-500" />
                   </div>
                   <span className={`text-xl font-bold ${
-                    (totalCalories > 0 || waterLogged > 0 || sleepHrs > 0 || stepsLogged > 0)
+                    hasUserActivity
                       ? (predictions.burnoutRisk > 60 ? "text-rose-500" : predictions.burnoutRisk > 35 ? "text-amber-500" : "text-green-500")
                       : "text-[var(--muted)]"
                   }`}>
-                    {(totalCalories > 0 || waterLogged > 0 || sleepHrs > 0 || stepsLogged > 0) ? `${100 - predictions.burnoutRisk}%` : "--"}
+                    {hasUserActivity ? `${100 - predictions.burnoutRisk}%` : "--"}
                   </span>
                 </div>
-                <h3 className="text-[13px] font-semibold text-[var(--foreground)] mb-1">Energy Balance</h3>
+                <div className="flex items-center justify-between mb-1">
+                  <h3 className="text-[13px] font-semibold text-[var(--foreground)]">Energy Balance</h3>
+                  <span className="text-[10px] text-emerald-500 font-bold group-hover:underline">View Lab →</span>
+                </div>
                 <p className="text-[11px] text-[var(--muted)]">
-                  {(totalCalories > 0 || waterLogged > 0 || sleepHrs > 0 || stepsLogged > 0)
+                  {hasUserActivity
                     ? (predictions.burnoutRisk > 60 ? "Focus on restorative periods today." : "Optimal energy reservoir.")
-                    : "Not enough telemetry data available yet."}
+                    : "No telemetry data available yet."}
                 </p>
-              </div>
+              </Link>
 
               {/* Rest Profile */}
-              <div className="bg-[var(--card-bg)] border border-[var(--border)] rounded-xl p-5 hover:border-primary/30 transition-colors">
+              <Link
+                href="/sleep"
+                className="bg-[var(--card-bg)] border border-[var(--border)] rounded-xl p-5 hover:border-indigo-500/50 hover:shadow-md transition-all block cursor-pointer group"
+                title="View Sleep & Rest Analysis"
+              >
                 <div className="flex justify-between items-center mb-4">
                   <div className="h-8 w-8 rounded-lg bg-indigo-500/10 flex items-center justify-center">
                     <Moon className="h-4 w-4 text-indigo-500" />
                   </div>
                   <span className={`text-xl font-bold ${
-                    (totalCalories > 0 || waterLogged > 0 || sleepHrs > 0 || stepsLogged > 0)
+                    hasUserActivity
                       ? (predictions.fatigueBuildup > 65 ? "text-rose-500" : predictions.fatigueBuildup > 40 ? "text-amber-500" : "text-indigo-500")
                       : "text-[var(--muted)]"
                   }`}>
-                    {(totalCalories > 0 || waterLogged > 0 || sleepHrs > 0 || stepsLogged > 0) ? `${100 - predictions.fatigueBuildup}%` : "--"}
+                    {hasUserActivity ? `${100 - predictions.fatigueBuildup}%` : "--"}
                   </span>
                 </div>
-                <h3 className="text-[13px] font-semibold text-[var(--foreground)] mb-1">Rest Profile</h3>
+                <div className="flex items-center justify-between mb-1">
+                  <h3 className="text-[13px] font-semibold text-[var(--foreground)]">Rest Profile</h3>
+                  <span className="text-[10px] text-indigo-500 font-bold group-hover:underline">Track Sleep →</span>
+                </div>
                 <p className="text-[11px] text-[var(--muted)]">
-                  {(totalCalories > 0 || waterLogged > 0 || sleepHrs > 0 || stepsLogged > 0)
+                  {hasUserActivity
                     ? (predictions.fatigueBuildup > 65 ? "Slight rest debt. Wind down early." : "Recovery battery fully charged.")
-                    : "Log sleep or workouts to calculate rest profile."}
+                    : "Start logging your sleep or workouts."}
                 </p>
-              </div>
+              </Link>
 
               {/* Recommendations */}
-              <div className="bg-[var(--card-bg)] border border-[var(--border)] rounded-xl p-5 hover:border-primary/30 transition-colors flex flex-col justify-center">
-                <div className="flex items-center gap-2 mb-3">
-                  <ShieldAlert className="h-4 w-4 text-[var(--muted)]" />
-                  <h3 className="text-[13px] font-semibold text-[var(--foreground)]">Recommendations</h3>
+              <Link
+                href="/ai-coach"
+                className="bg-[var(--card-bg)] border border-[var(--border)] rounded-xl p-5 hover:border-primary/50 hover:shadow-md transition-all flex flex-col justify-center min-h-[140px] block cursor-pointer group"
+                title="Ask AI Coach for Personalized Recommendations"
+              >
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <ShieldAlert className="h-4 w-4 text-[var(--muted)]" />
+                    <h3 className="text-[13px] font-semibold text-[var(--foreground)]">Recommendations</h3>
+                  </div>
+                  <span className="text-[10px] text-primary font-bold group-hover:underline">Consult AI →</span>
                 </div>
-                <div className="space-y-2">
-                  {predictions.preventiveReminders.length > 0 ? (
-                    predictions.preventiveReminders.slice(0, 2).map((reminder, idx) => (
+                {hasUserActivity && predictions.preventiveReminders.length > 0 ? (
+                  <div className="space-y-2">
+                    {predictions.preventiveReminders.slice(0, 2).map((reminder, idx) => (
                       <div key={idx} className="flex gap-2">
                         <Sparkles className="h-3 w-3 text-indigo-500 shrink-0 mt-0.5" />
                         <span className="text-[11px] text-[var(--muted)] leading-snug">{reminder.replace("Circadian Debt Alert", "Rest Alert")}</span>
                       </div>
-                    ))
-                  ) : (
-                    <span className="text-[11px] text-[var(--muted)]">Keep up the great work! No urgent alerts.</span>
-                  )}
-                </div>
-              </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="space-y-1">
+                    <p className="text-[12px] font-semibold text-[var(--foreground)]">No recommendations yet</p>
+                    <p className="text-[11px] text-[var(--muted)] leading-relaxed">
+                      Start tracking your health activities to receive personalized recommendations.
+                    </p>
+                  </div>
+                )}
+              </Link>
 
             </div>
           </div>
@@ -779,59 +890,119 @@ export default function DashboardPage() {
         {/* ======= QUICK ACTIONS (all modes except elderly) ======= */}
         {activeMode !== "elderly" && (
           <div className="mb-8">
-            <h2 className="text-[15px] font-bold text-[var(--foreground)] mb-4">Quick Actions</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <h2 className="text-[15px] font-bold text-[var(--foreground)] mb-4">Quick Actions & Features</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               
-              <Link href="/sleep" className="bg-[var(--card-bg)] border border-[var(--border)] rounded-xl p-4 flex items-center justify-between hover:border-primary/30 transition-colors group">
-                <div className="flex items-center gap-4">
+              {/* Calorie Tracker */}
+              <Link href="/calorie-tracker" className="bg-[var(--card-bg)] border border-[var(--border)] rounded-xl p-4 flex items-center justify-between hover:border-rose-500/40 hover:shadow-md transition-all group cursor-pointer" title="Calorie & Meal Tracker">
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-xl bg-rose-500/10 flex items-center justify-center shrink-0 shadow-sm shadow-rose-500/10">
+                    <Flame className="h-5 w-5 text-rose-500" />
+                  </div>
+                  <div>
+                    <div className="text-[13px] font-semibold text-[var(--foreground)] mb-0.5 group-hover:text-rose-500 transition-colors">Calorie Tracker</div>
+                    <div className="text-[11px] text-[var(--muted)]">Log meals & nutrition</div>
+                  </div>
+                </div>
+                <ArrowRight className="h-4 w-4 text-[var(--muted)] group-hover:text-rose-500 transition-colors" />
+              </Link>
+
+              {/* Log Sleep */}
+              <Link href="/sleep" className="bg-[var(--card-bg)] border border-[var(--border)] rounded-xl p-4 flex items-center justify-between hover:border-teal-500/40 hover:shadow-md transition-all group cursor-pointer" title="Sleep Tracker">
+                <div className="flex items-center gap-3">
                   <div className="h-10 w-10 rounded-xl bg-teal-500/10 flex items-center justify-center shrink-0 shadow-sm shadow-teal-500/10">
                     <Moon className="h-5 w-5 text-teal-500" />
                   </div>
                   <div>
-                    <div className="text-[13px] font-semibold text-[var(--foreground)] mb-0.5">Log Sleep</div>
+                    <div className="text-[13px] font-semibold text-[var(--foreground)] mb-0.5 group-hover:text-teal-500 transition-colors">Log Sleep</div>
                     <div className="text-[11px] text-[var(--muted)]">Note last night's rest</div>
                   </div>
                 </div>
-                <ArrowRight className="h-4 w-4 text-[var(--muted)] group-hover:text-primary transition-colors" />
+                <ArrowRight className="h-4 w-4 text-[var(--muted)] group-hover:text-teal-500 transition-colors" />
               </Link>
 
-              <Link href="/ai-coach" className="bg-[var(--card-bg)] border border-[var(--border)] rounded-xl p-4 flex items-center justify-between hover:border-primary/30 transition-colors group">
-                <div className="flex items-center gap-4">
+              {/* AI Coach */}
+              <Link href="/ai-coach" className="bg-[var(--card-bg)] border border-[var(--border)] rounded-xl p-4 flex items-center justify-between hover:border-indigo-500/40 hover:shadow-md transition-all group cursor-pointer" title="AI Wellness Coach">
+                <div className="flex items-center gap-3">
                   <div className="h-10 w-10 rounded-xl bg-indigo-500/10 flex items-center justify-center shrink-0 shadow-sm shadow-indigo-500/10">
                     <Brain className="h-5 w-5 text-indigo-500" />
                   </div>
                   <div>
-                    <div className="text-[13px] font-semibold text-[var(--foreground)] mb-0.5">Wellness Chat</div>
-                    <div className="text-[11px] text-[var(--muted)]">Speak with your AI companion</div>
+                    <div className="text-[13px] font-semibold text-[var(--foreground)] mb-0.5 group-hover:text-indigo-500 transition-colors">Wellness Chat</div>
+                    <div className="text-[11px] text-[var(--muted)]">Speak with AI Coach</div>
                   </div>
                 </div>
-                <ArrowRight className="h-4 w-4 text-[var(--muted)] group-hover:text-primary transition-colors" />
+                <ArrowRight className="h-4 w-4 text-[var(--muted)] group-hover:text-indigo-500 transition-colors" />
               </Link>
 
-              <Link href="/fitness" className="bg-[var(--card-bg)] border border-[var(--border)] rounded-xl p-4 flex items-center justify-between hover:border-primary/30 transition-colors group">
-                <div className="flex items-center gap-4">
-                  <div className="h-10 w-10 rounded-xl bg-rose-500/10 flex items-center justify-center shrink-0 shadow-sm shadow-rose-500/10">
-                    <Dumbbell className="h-5 w-5 text-rose-500" />
+              {/* Fitness */}
+              <Link href="/fitness" className="bg-[var(--card-bg)] border border-[var(--border)] rounded-xl p-4 flex items-center justify-between hover:border-red-500/40 hover:shadow-md transition-all group cursor-pointer" title="Fitness & Workouts">
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-xl bg-red-500/10 flex items-center justify-center shrink-0 shadow-sm shadow-red-500/10">
+                    <Dumbbell className="h-5 w-5 text-red-500" />
                   </div>
                   <div>
-                    <div className="text-[13px] font-semibold text-[var(--foreground)] mb-0.5">Fitness</div>
-                    <div className="text-[11px] text-[var(--muted)]">Track and log your workouts</div>
+                    <div className="text-[13px] font-semibold text-[var(--foreground)] mb-0.5 group-hover:text-red-500 transition-colors">Fitness</div>
+                    <div className="text-[11px] text-[var(--muted)]">Track & log workouts</div>
                   </div>
                 </div>
-                <ArrowRight className="h-4 w-4 text-[var(--muted)] group-hover:text-primary transition-colors" />
+                <ArrowRight className="h-4 w-4 text-[var(--muted)] group-hover:text-red-500 transition-colors" />
               </Link>
 
-              <Link href="/future-lab" className="bg-[var(--card-bg)] border border-[var(--border)] rounded-xl p-4 flex items-center justify-between hover:border-primary/30 transition-colors group">
-                <div className="flex items-center gap-4">
+              {/* Future Health Lab */}
+              <Link href="/future-lab" className="bg-[var(--card-bg)] border border-[var(--border)] rounded-xl p-4 flex items-center justify-between hover:border-fuchsia-500/40 hover:shadow-md transition-all group cursor-pointer" title="Future Health Lab">
+                <div className="flex items-center gap-3">
                   <div className="h-10 w-10 rounded-xl bg-fuchsia-500/10 flex items-center justify-center shrink-0 shadow-sm shadow-fuchsia-500/10">
                     <Sparkles className="h-5 w-5 text-fuchsia-500" />
                   </div>
                   <div>
-                    <div className="text-[13px] font-semibold text-[var(--foreground)] mb-0.5">Future Health Lab</div>
-                    <div className="text-[11px] text-[var(--muted)]">Predict future health trends</div>
+                    <div className="text-[13px] font-semibold text-[var(--foreground)] mb-0.5 group-hover:text-fuchsia-500 transition-colors">Future Health Lab</div>
+                    <div className="text-[11px] text-[var(--muted)]">Predict future trends</div>
                   </div>
                 </div>
-                <ArrowRight className="h-4 w-4 text-[var(--muted)] group-hover:text-primary transition-colors" />
+                <ArrowRight className="h-4 w-4 text-[var(--muted)] group-hover:text-fuchsia-500 transition-colors" />
+              </Link>
+
+              {/* Healthy Habits */}
+              <Link href="/challenges" className="bg-[var(--card-bg)] border border-[var(--border)] rounded-xl p-4 flex items-center justify-between hover:border-emerald-500/40 hover:shadow-md transition-all group cursor-pointer" title="Healthy Habits & Challenges">
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-xl bg-emerald-500/10 flex items-center justify-center shrink-0 shadow-sm shadow-emerald-500/10">
+                    <CheckSquare className="h-5 w-5 text-emerald-500" />
+                  </div>
+                  <div>
+                    <div className="text-[13px] font-semibold text-[var(--foreground)] mb-0.5 group-hover:text-emerald-500 transition-colors">Healthy Habits</div>
+                    <div className="text-[11px] text-[var(--muted)]">Daily goals & quests</div>
+                  </div>
+                </div>
+                <ArrowRight className="h-4 w-4 text-[var(--muted)] group-hover:text-emerald-500 transition-colors" />
+              </Link>
+
+              {/* Health History */}
+              <Link href="/history" className="bg-[var(--card-bg)] border border-[var(--border)] rounded-xl p-4 flex items-center justify-between hover:border-amber-500/40 hover:shadow-md transition-all group cursor-pointer" title="Health History & Analytics">
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-xl bg-amber-500/10 flex items-center justify-center shrink-0 shadow-sm shadow-amber-500/10">
+                    <Calendar className="h-5 w-5 text-amber-500" />
+                  </div>
+                  <div>
+                    <div className="text-[13px] font-semibold text-[var(--foreground)] mb-0.5 group-hover:text-amber-500 transition-colors">Health History</div>
+                    <div className="text-[11px] text-[var(--muted)]">Telemetry & trends</div>
+                  </div>
+                </div>
+                <ArrowRight className="h-4 w-4 text-[var(--muted)] group-hover:text-amber-500 transition-colors" />
+              </Link>
+
+              {/* BMI & Body Metrics */}
+              <Link href="/profile" className="bg-[var(--card-bg)] border border-[var(--border)] rounded-xl p-4 flex items-center justify-between hover:border-sky-500/40 hover:shadow-md transition-all group cursor-pointer" title="BMI & Body Metrics">
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-xl bg-sky-500/10 flex items-center justify-center shrink-0 shadow-sm shadow-sky-500/10">
+                    <Scale className="h-5 w-5 text-sky-500" />
+                  </div>
+                  <div>
+                    <div className="text-[13px] font-semibold text-[var(--foreground)] mb-0.5 group-hover:text-sky-500 transition-colors">BMI & Body Metrics</div>
+                    <div className="text-[11px] text-[var(--muted)]">Biometrics & targets</div>
+                  </div>
+                </div>
+                <ArrowRight className="h-4 w-4 text-[var(--muted)] group-hover:text-sky-500 transition-colors" />
               </Link>
 
             </div>

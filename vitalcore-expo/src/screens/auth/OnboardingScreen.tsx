@@ -74,8 +74,13 @@ export default function OnboardingScreen({ navigation }: any) {
   const [loading, setLoading] = useState(false);
 
   // STEP 1: Personal Information
+  const initialAge = profile?.age
+    ? profile.age.toString()
+    : profile?.date_of_birth
+    ? (new Date().getFullYear() - new Date(profile.date_of_birth).getFullYear()).toString()
+    : '';
   const [fullName, setFullName] = useState(profile?.full_name || '');
-  const [age, setAge] = useState(profile?.age ? profile.age.toString() : '');
+  const [age, setAge] = useState(initialAge);
   const [gender, setGender] = useState(profile?.gender || '');
 
   // STEP 2: Body Information
@@ -260,6 +265,7 @@ export default function OnboardingScreen({ navigation }: any) {
       const profileUpdates = {
         full_name: fullName.trim() || profile?.full_name || 'Wellness Explorer',
         age: a,
+        date_of_birth: profile?.date_of_birth || `${new Date().getFullYear() - a}-01-01`,
         gender: gender || 'male',
         weight_kg: w,
         height_cm: h,

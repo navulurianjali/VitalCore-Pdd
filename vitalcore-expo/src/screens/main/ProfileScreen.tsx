@@ -105,11 +105,17 @@ export default function ProfileScreen({ navigation }: any) {
 
   // Calculated values
   const calculateAge = (dob?: string): string => {
-    if (!dob || dob.trim() === '') return '—';
-    const d = new Date(dob);
-    if (isNaN(d.getTime())) return '—';
-    const age = new Date().getFullYear() - d.getFullYear();
-    return age > 0 ? `${age} yrs` : '—';
+    if (dob && dob.trim() !== '') {
+      const d = new Date(dob);
+      if (!isNaN(d.getTime())) {
+        const calculated = new Date().getFullYear() - d.getFullYear();
+        if (calculated > 0) return `${calculated} yrs`;
+      }
+    }
+    if (profile?.age && profile.age > 0) {
+      return `${profile.age} yrs`;
+    }
+    return '—';
   };
 
   const hNum = Number(heightCm);
@@ -120,9 +126,14 @@ export default function ProfileScreen({ navigation }: any) {
     if (!profile?.id) return;
     try {
       setSaving(true);
+      const calcAgeNum = dateOfBirth.trim() 
+        ? new Date().getFullYear() - new Date(dateOfBirth.trim()).getFullYear() 
+        : (profile?.age || null);
+
       const updates = {
         full_name: fullName.trim(),
         date_of_birth: dateOfBirth.trim() || (null as any),
+        age: calcAgeNum && !isNaN(calcAgeNum) && calcAgeNum > 0 ? calcAgeNum : (null as any),
         gender: gender.trim() || (null as any),
         occupation: occupation.trim() || (null as any),
         height_cm: heightCm ? Number(heightCm) : (null as any),
@@ -137,6 +148,7 @@ export default function ProfileScreen({ navigation }: any) {
         alcohol_status: alcoholStatus.trim() || (null as any),
         working_hours: workingHours.trim() || (null as any),
         food_preference: foodPreference.trim() || (null as any),
+        dietary_preferences: foodPreference.trim() || (null as any),
         calorie_goal: calorieGoal ? Number(calorieGoal) : (null as any),
         fitness_goal: fitnessGoal.trim() || (null as any),
         activity_level: activityLevel.trim() || (null as any),

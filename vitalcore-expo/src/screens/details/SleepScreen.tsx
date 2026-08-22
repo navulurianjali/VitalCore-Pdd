@@ -85,7 +85,7 @@ export default function SleepScreen({ navigation }: any) {
     const stdDev = Math.sqrt(variance);
     return Math.max(45, Math.round(100 - stdDev * 16));
   };
-  const consistencyIndex = history.length > 0 ? calculateConsistency(history) : 100;
+  const consistencyIndex = history.length > 0 ? calculateConsistency(history) : 0;
   const recoveryScore = latestLog ? Number(latestLog.recovery_quality || 0) : 0;
 
   const handleSaveSleep = async () => {
@@ -143,7 +143,13 @@ export default function SleepScreen({ navigation }: any) {
       <ScrollView contentContainerStyle={styles.container}>
         {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity testID="sleep_back_btn" accessibilityLabel="sleep_back_btn" style={styles.backBtn} onPress={() => navigation.goBack()}>
+          <TouchableOpacity
+            testID="sleep_back_btn"
+            accessibilityLabel="sleep_back_btn"
+            style={styles.backBtn}
+            hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+            onPress={() => (navigation.canGoBack() ? navigation.goBack() : navigation.navigate('MainTabs', { screen: 'Home' }))}
+          >
             <Text style={[styles.backBtnText, { color: colors.primary }]}>← Back</Text>
           </TouchableOpacity>
           <Text style={[styles.title, { color: colors.text, fontSize: isCareMode ? 24 : 20 }]}>

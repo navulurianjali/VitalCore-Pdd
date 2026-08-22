@@ -273,6 +273,7 @@ export default function ProfilePage() {
         sleep_schedule: form.sleep_schedule || null,
 
         food_preference: form.food_preference || null,
+        dietary_preferences: form.food_preference || null,
         favorite_foods: form.favorite_foods ? form.favorite_foods.split(",").map(s => s.trim()).filter(Boolean) : null,
         disliked_foods: form.disliked_foods ? form.disliked_foods.split(",").map(s => s.trim()).filter(Boolean) : null,
         cuisine_preference: form.cuisine_preference || null,

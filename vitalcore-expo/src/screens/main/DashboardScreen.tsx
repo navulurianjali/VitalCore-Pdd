@@ -31,6 +31,9 @@ import {
   Award,
   ArrowRight,
   Dumbbell,
+  CheckSquare,
+  Calendar,
+  Scale,
 } from 'lucide-react-native';
 
 export default function DashboardScreen({ navigation }: any) {
@@ -136,20 +139,30 @@ export default function DashboardScreen({ navigation }: any) {
   const sleepHrs = metrics?.sleepHours || 0;
   const stepsLogged = metrics?.steps || 0;
 
+  const hasUserActivity = Boolean(
+    simulating ||
+    totalCalories > 0 ||
+    waterLogged > 0 ||
+    sleepHrs > 0 ||
+    stepsLogged > 0 ||
+    (metrics?.hasTelemetry && (metrics?.trackingDaysCount || 0) > 0)
+  );
+
   const predictions = calculateFutureHealthPredictions({
-    sleepHours: simulating ? simSleep : (sleepHrs || metrics?.sleepHours || 0),
-    sleepQuality: simulating ? (simSleep >= 8 ? 90 : simSleep >= 6 ? 70 : 45) : (metrics?.sleepQuality || 0),
-    hydrationMl: simulating ? simWater : (waterLogged || metrics?.hydrationMl || 0),
+    sleepHours: simulating ? simSleep : sleepHrs,
+    sleepQuality: simulating ? (simSleep >= 8 ? 90 : simSleep >= 6 ? 70 : 45) : (sleepHrs > 0 ? (metrics?.sleepQuality || 80) : 0),
+    hydrationMl: simulating ? simWater : waterLogged,
     hydrationTarget: metrics?.hydrationTarget || profile?.water_goal || 2500,
-    stressLevel: simulating ? simStress : (metrics?.stressLevel || 0),
+    stressLevel: simulating ? simStress : (hasUserActivity ? (metrics?.stressLevel || 0) : 0),
     fatigueScore: metrics?.fatigueScore || 0,
     physicalFatigue: metrics?.physicalFatigue || 0,
     mentalFatigue: metrics?.mentalFatigue || 0,
     sorenessLevel: profile?.soreness_level || 0,
     recoveryPercentage: metrics?.recoveryPercentage || 0,
-    stabilityScore: metrics?.stabilityScore || 0,
+    stabilityScore: hasUserActivity ? (metrics?.stabilityScore || 0) : 0,
     screenTimeHours: profile?.screen_time_hours || 0,
     caffeineIntake: profile?.caffeine_intake || 'none',
+    hasTelemetry: hasUserActivity,
   });
 
   return (
@@ -161,7 +174,7 @@ export default function DashboardScreen({ navigation }: any) {
       {/* 1. Page Header Welcome */}
       <View style={styles.headerRow}>
         <View style={{ flex: 1 }}>
-          <Text testID="dashboard_greeting" accessibilityLabel="dashboard_greeting" style={[styles.greetingText, { color: colors.text, fontSize: isCareMode ? 26 : 22 }]}>
+          <Text style={[styles.greetingText, { color: colors.text, fontSize: isCareMode ? 26 : 22 }]}>
             {greeting}{firstName ? `, ${firstName}` : ''} 👋
           </Text>
           <Text style={[styles.greetingSub, { color: colors.textMuted }]}>
@@ -169,10 +182,9 @@ export default function DashboardScreen({ navigation }: any) {
           </Text>
         </View>
         <TouchableOpacity
-          testID="dash_history_btn"
-          accessibilityLabel="dash_history_btn"
           style={[styles.streakBadge, { backgroundColor: colors.cardBg, borderColor: colors.primary }]}
           onPress={() => navigation.navigate('HistoryDetail')}
+          activeOpacity={0.7}
         >
           <Text style={{ fontSize: 14 }}>📅</Text>
           <Text style={[styles.streakText, { color: colors.primary }]}>
@@ -183,7 +195,7 @@ export default function DashboardScreen({ navigation }: any) {
 
       {/* Feedback banner */}
       {logStatus && (
-        <View testID="dash_log_water_status" accessibilityLabel="dash_log_water_status" style={[styles.logBanner, { backgroundColor: colors.primaryLight, borderColor: colors.primary }]}>
+        <View style={[styles.logBanner, { backgroundColor: colors.primaryLight, borderColor: colors.primary }]}>
           <Text style={[styles.logBannerText, { color: colors.primary }]}>{logStatus}</Text>
         </View>
       )}
@@ -193,82 +205,89 @@ export default function DashboardScreen({ navigation }: any) {
         <View style={styles.focusGrid}>
           {/* Calories Card */}
           <TouchableOpacity
-            testID="dash_calorie_tracker_btn"
-            accessibilityLabel="dash_calorie_tracker_btn"
             style={[styles.focusCard, { backgroundColor: colors.cardBg, borderColor: 'rgba(239, 68, 68, 0.3)' }]}
             onPress={() => navigation.navigate('CalorieTrackerDetail')}
+            activeOpacity={0.7}
           >
             <View style={styles.cardTopRow}>
               <Flame size={20} color="#ef4444" />
               <Text style={{ fontSize: 10, fontWeight: '800', color: '#f87171' }}>Track Intake →</Text>
             </View>
             <View style={styles.cardValueRow}>
-              <Text testID="dash_calories_value" accessibilityLabel="dash_calories_value" style={[styles.cardBigNum, { color: colors.text }]}>{totalCalories}</Text>
+              <Text style={[styles.cardBigNum, { color: colors.text }]}>{totalCalories}</Text>
               <Text style={[styles.cardUnit, { color: colors.textMuted }]}>KCAL</Text>
             </View>
             <Text style={[styles.cardSubtitle, { color: colors.textMuted }]}>Daily Meals Logged</Text>
           </TouchableOpacity>
 
           {/* Hydration Card */}
-          <View style={[styles.focusCard, { backgroundColor: colors.cardBg, borderColor: 'rgba(59, 130, 246, 0.3)' }]}>
+          <TouchableOpacity
+            style={[styles.focusCard, { backgroundColor: colors.cardBg, borderColor: 'rgba(59, 130, 246, 0.3)' }]}
+            onPress={() => navigation.navigate('HistoryDetail')}
+            activeOpacity={0.7}
+          >
             <View style={styles.cardTopRow}>
               <Droplet size={20} color="#3b82f6" />
+              <Text style={{ fontSize: 10, fontWeight: '800', color: '#60a5fa' }}>Track Water →</Text>
             </View>
             <View style={styles.cardValueRow}>
-              <Text testID="dash_water_value" accessibilityLabel="dash_water_value" style={[styles.cardBigNum, { color: colors.text }]}>{waterLogged}</Text>
+              <Text style={[styles.cardBigNum, { color: colors.text }]}>{waterLogged}</Text>
               <Text style={[styles.cardUnit, { color: colors.textMuted }]}>ML</Text>
             </View>
             <Text style={[styles.cardSubtitle, { color: colors.textMuted }]}>Hydration Intake</Text>
             <View style={styles.quickWaterRow}>
               <TouchableOpacity
-                testID="dash_log_water_250_btn"
-                accessibilityLabel="dash_log_water_250_btn"
                 style={[styles.quickWaterBtn, { backgroundColor: colors.primaryLight, borderColor: colors.primary }]}
                 onPress={() => handleLogWater(250)}
                 disabled={loggingInProgress}
+                activeOpacity={0.8}
               >
                 <Text style={[styles.quickWaterText, { color: colors.primary }]}>+ 250ml</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                testID="dash_log_water_500_btn"
-                accessibilityLabel="dash_log_water_500_btn"
                 style={[styles.quickWaterBtn, { backgroundColor: colors.primaryLight, borderColor: colors.primary }]}
                 onPress={() => handleLogWater(500)}
                 disabled={loggingInProgress}
+                activeOpacity={0.8}
               >
                 <Text style={[styles.quickWaterText, { color: colors.primary }]}>+ 500ml</Text>
               </TouchableOpacity>
             </View>
-          </View>
+          </TouchableOpacity>
 
           {/* Sleep Card */}
           <TouchableOpacity
-            testID="dash_sleep_btn"
-            accessibilityLabel="dash_sleep_btn"
             style={[styles.focusCard, { backgroundColor: colors.cardBg, borderColor: 'rgba(139, 92, 246, 0.3)' }]}
             onPress={() => navigation.navigate('SleepDetail')}
+            activeOpacity={0.7}
           >
             <View style={styles.cardTopRow}>
               <Moon size={20} color="#8b5cf6" />
+              <Text style={{ fontSize: 10, fontWeight: '800', color: '#a78bfa' }}>Track Sleep →</Text>
             </View>
             <View style={styles.cardValueRow}>
-              <Text testID="dash_sleep_value" accessibilityLabel="dash_sleep_value" style={[styles.cardBigNum, { color: colors.text }]}>{sleepHrs > 0 ? sleepHrs : '0'}</Text>
+              <Text style={[styles.cardBigNum, { color: colors.text }]}>{sleepHrs > 0 ? sleepHrs : '0'}</Text>
               <Text style={[styles.cardUnit, { color: colors.textMuted }]}>HRS</Text>
             </View>
             <Text style={[styles.cardSubtitle, { color: colors.textMuted }]}>Sleep Duration</Text>
           </TouchableOpacity>
 
           {/* Activity Steps Card */}
-          <View style={[styles.focusCard, { backgroundColor: colors.cardBg, borderColor: 'rgba(245, 158, 11, 0.3)' }]}>
+          <TouchableOpacity
+            style={[styles.focusCard, { backgroundColor: colors.cardBg, borderColor: 'rgba(245, 158, 11, 0.3)' }]}
+            onPress={() => navigation.navigate('FitnessDetail')}
+            activeOpacity={0.7}
+          >
             <View style={styles.cardTopRow}>
               <Footprints size={20} color="#f59e0b" />
+              <Text style={{ fontSize: 10, fontWeight: '800', color: '#fbbf24' }}>Track Activity →</Text>
             </View>
             <View style={styles.cardValueRow}>
               <Text style={[styles.cardBigNum, { color: colors.text }]}>{stepsLogged.toLocaleString()}</Text>
               <Text style={[styles.cardUnit, { color: colors.textMuted }]}>STEPS</Text>
             </View>
             <Text style={[styles.cardSubtitle, { color: colors.textMuted }]}>Activity Tracker</Text>
-          </View>
+          </TouchableOpacity>
         </View>
       )}
 
@@ -284,6 +303,7 @@ export default function DashboardScreen({ navigation }: any) {
             <TouchableOpacity
               style={[styles.elderlyAlertBtn, { backgroundColor: colors.danger }]}
               onPress={() => Alert.alert('Family Alert', 'Signal broadcasted to your care circle! Urgent assistance requested.')}
+              activeOpacity={0.8}
             >
               <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 12 }}>Send Alert</Text>
             </TouchableOpacity>
@@ -300,6 +320,7 @@ export default function DashboardScreen({ navigation }: any) {
                   med.taken && { opacity: 0.6, borderColor: colors.success },
                 ]}
                 onPress={() => handleToggleMed(idx)}
+                activeOpacity={0.7}
               >
                 <View>
                   <Text style={[styles.medName, { color: colors.text }]}>{med.name}</Text>
@@ -319,16 +340,24 @@ export default function DashboardScreen({ navigation }: any) {
         <View style={styles.sectionSpacing}>
           <Text style={[styles.sectionTitle, { color: colors.text }]}>Athlete Performance Telemetry</Text>
           <View style={styles.perfGrid}>
-            <View style={[styles.perfCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
+            <TouchableOpacity
+              style={[styles.perfCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}
+              onPress={() => navigation.navigate('FutureLabDetail')}
+              activeOpacity={0.7}
+            >
               <Text style={[styles.perfLabel, { color: colors.textMuted }]}>CNS Fatigue</Text>
               <Text style={[styles.perfVal, { color: colors.text }]}>{metrics?.fatigueScore ? `${metrics.fatigueScore}%` : '0%'}</Text>
-              <Text style={{ color: colors.success, fontSize: 10, marginTop: 2 }}>{metrics?.fatigueScore ? 'Optimal Threshold' : 'No telemetry'}</Text>
-            </View>
-            <View style={[styles.perfCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
+              <Text style={{ color: colors.success, fontSize: 10, marginTop: 2 }}>{metrics?.fatigueScore ? 'Optimal Threshold →' : 'View Future Lab →'}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.perfCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}
+              onPress={() => navigation.navigate('FutureLabDetail')}
+              activeOpacity={0.7}
+            >
               <Text style={[styles.perfLabel, { color: colors.textMuted }]}>HRV Status</Text>
               <Text style={[styles.perfVal, { color: colors.text }]}>{metrics?.recoveryPercentage ? `${Math.round(metrics.recoveryPercentage * 1.1)} ms` : '--'}</Text>
-              <Text style={{ color: colors.success, fontSize: 10, marginTop: 2 }}>{metrics?.recoveryPercentage ? 'Stable Stance' : 'No telemetry'}</Text>
-            </View>
+              <Text style={{ color: colors.success, fontSize: 10, marginTop: 2 }}>{metrics?.recoveryPercentage ? 'Stable Stance →' : 'View Future Lab →'}</Text>
+            </TouchableOpacity>
           </View>
         </View>
       )}
@@ -338,60 +367,82 @@ export default function DashboardScreen({ navigation }: any) {
         <Text style={[styles.sectionTitle, { color: colors.text }]}>Health Insights</Text>
         <View style={styles.insightsGrid}>
           {/* Energy Balance */}
-          <View style={[styles.insightCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
+          <TouchableOpacity
+            style={[styles.insightCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}
+            onPress={() => navigation.navigate('FutureLabDetail')}
+            activeOpacity={0.7}
+          >
             <View style={styles.insightHeader}>
               <Zap size={18} color={colors.success} />
               <Text style={[styles.insightScore, { color: colors.success }]}>
-                {totalCalories > 0 || waterLogged > 0 || sleepHrs > 0 ? `${100 - predictions.burnoutRisk}%` : '--'}
+                {hasUserActivity ? `${100 - predictions.burnoutRisk}%` : '--'}
               </Text>
             </View>
-            <Text style={[styles.insightTitle, { color: colors.text }]}>Energy Balance</Text>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Text style={[styles.insightTitle, { color: colors.text }]}>Energy Balance</Text>
+              <Text style={{ fontSize: 10, fontWeight: '800', color: colors.success }}>View Lab →</Text>
+            </View>
             <Text style={[styles.insightSub, { color: colors.textMuted }]}>
-              {totalCalories > 0 || waterLogged > 0 || sleepHrs > 0
+              {hasUserActivity
                 ? predictions.burnoutRisk > 60 ? 'Focus on restorative periods today.' : 'Optimal energy reservoir.'
-                : 'Not enough telemetry data available yet.'}
+                : 'No telemetry data available yet.'}
             </Text>
-          </View>
+          </TouchableOpacity>
 
           {/* Rest Profile */}
-          <View style={[styles.insightCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
+          <TouchableOpacity
+            style={[styles.insightCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}
+            onPress={() => navigation.navigate('SleepDetail')}
+            activeOpacity={0.7}
+          >
             <View style={styles.insightHeader}>
               <Moon size={18} color="#8b5cf6" />
               <Text style={[styles.insightScore, { color: '#8b5cf6' }]}>
-                {totalCalories > 0 || waterLogged > 0 || sleepHrs > 0 ? `${100 - predictions.fatigueBuildup}%` : '--'}
+                {hasUserActivity ? `${100 - predictions.fatigueBuildup}%` : '--'}
               </Text>
             </View>
-            <Text style={[styles.insightTitle, { color: colors.text }]}>Rest Profile</Text>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Text style={[styles.insightTitle, { color: colors.text }]}>Rest Profile</Text>
+              <Text style={{ fontSize: 10, fontWeight: '800', color: '#8b5cf6' }}>Track Sleep →</Text>
+            </View>
             <Text style={[styles.insightSub, { color: colors.textMuted }]}>
-              {totalCalories > 0 || waterLogged > 0 || sleepHrs > 0
+              {hasUserActivity
                 ? predictions.fatigueBuildup > 65 ? 'Slight rest debt. Wind down early.' : 'Recovery battery fully charged.'
-                : 'Log sleep or workouts to calculate rest profile.'}
+                : 'Start logging your sleep or workouts.'}
             </Text>
-          </View>
+          </TouchableOpacity>
 
           {/* Recommendations */}
-          <View style={[styles.insightCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
+          <TouchableOpacity
+            style={[styles.insightCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}
+            onPress={() => navigation.navigate('AICoach')}
+            activeOpacity={0.7}
+          >
             <View style={styles.insightHeader}>
               <ShieldAlert size={18} color={colors.primary} />
             </View>
-            <Text style={[styles.insightTitle, { color: colors.text }]}>Recommendations</Text>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Text style={[styles.insightTitle, { color: colors.text }]}>Recommendations</Text>
+              <Text style={{ fontSize: 10, fontWeight: '800', color: colors.primary }}>Consult AI →</Text>
+            </View>
             <Text style={[styles.insightSub, { color: colors.textMuted }]}>
-              {predictions.preventiveReminders.length > 0
+              {hasUserActivity && predictions.preventiveReminders.length > 0
                 ? predictions.preventiveReminders[0]
-                : 'Keep up the great work! No urgent alerts.'}
+                : 'No recommendations yet\nStart tracking your health activities to receive personalized recommendations.'}
             </Text>
-          </View>
+          </TouchableOpacity>
         </View>
       </View>
 
       {/* 6. QUICK ACTIONS GRID (1:1 with Web) */}
       {activeMode !== 'elderly' && (
         <View style={styles.sectionSpacing}>
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>Quick Actions</Text>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>Quick Actions & Features</Text>
           <View style={styles.quickActionsGrid}>
             <TouchableOpacity
               style={[styles.quickCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}
               onPress={() => navigation.navigate('CalorieTrackerDetail')}
+              activeOpacity={0.7}
             >
               <View style={[styles.actionIconCircle, { backgroundColor: 'rgba(239, 68, 68, 0.12)' }]}>
                 <Flame size={20} color="#ef4444" />
@@ -406,6 +457,7 @@ export default function DashboardScreen({ navigation }: any) {
             <TouchableOpacity
               style={[styles.quickCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}
               onPress={() => navigation.navigate('SleepDetail')}
+              activeOpacity={0.7}
             >
               <View style={[styles.actionIconCircle, { backgroundColor: 'rgba(20, 184, 166, 0.12)' }]}>
                 <Moon size={20} color={colors.primary} />
@@ -420,6 +472,7 @@ export default function DashboardScreen({ navigation }: any) {
             <TouchableOpacity
               style={[styles.quickCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}
               onPress={() => navigation.navigate('AICoach')}
+              activeOpacity={0.7}
             >
               <View style={[styles.actionIconCircle, { backgroundColor: 'rgba(139, 92, 246, 0.12)' }]}>
                 <Brain size={20} color="#8b5cf6" />
@@ -434,6 +487,7 @@ export default function DashboardScreen({ navigation }: any) {
             <TouchableOpacity
               style={[styles.quickCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}
               onPress={() => navigation.navigate('FitnessDetail')}
+              activeOpacity={0.7}
             >
               <View style={[styles.actionIconCircle, { backgroundColor: 'rgba(239, 68, 68, 0.12)' }]}>
                 <Dumbbell size={20} color="#ef4444" />
@@ -448,6 +502,7 @@ export default function DashboardScreen({ navigation }: any) {
             <TouchableOpacity
               style={[styles.quickCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}
               onPress={() => navigation.navigate('FutureLabDetail')}
+              activeOpacity={0.7}
             >
               <View style={[styles.actionIconCircle, { backgroundColor: 'rgba(217, 70, 239, 0.12)' }]}>
                 <Sparkles size={20} color="#d946ef" />
@@ -455,6 +510,51 @@ export default function DashboardScreen({ navigation }: any) {
               <View style={{ flex: 1 }}>
                 <Text style={[styles.actionTitle, { color: colors.text }]}>Future Health Lab</Text>
                 <Text style={[styles.actionSub, { color: colors.textMuted }]}>Predict future health trends</Text>
+              </View>
+              <ArrowRight size={16} color={colors.textMuted} />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.quickCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}
+              onPress={() => navigation.navigate('HealthyHabitsDetail')}
+              activeOpacity={0.7}
+            >
+              <View style={[styles.actionIconCircle, { backgroundColor: 'rgba(16, 185, 129, 0.12)' }]}>
+                <CheckSquare size={20} color="#10b981" />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={[styles.actionTitle, { color: colors.text }]}>Healthy Habits</Text>
+                <Text style={[styles.actionSub, { color: colors.textMuted }]}>Daily goals & habit quests</Text>
+              </View>
+              <ArrowRight size={16} color={colors.textMuted} />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.quickCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}
+              onPress={() => navigation.navigate('HistoryDetail')}
+              activeOpacity={0.7}
+            >
+              <View style={[styles.actionIconCircle, { backgroundColor: 'rgba(245, 158, 11, 0.12)' }]}>
+                <Calendar size={20} color="#f59e0b" />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={[styles.actionTitle, { color: colors.text }]}>Health History</Text>
+                <Text style={[styles.actionSub, { color: colors.textMuted }]}>Telemetry logs & trend analytics</Text>
+              </View>
+              <ArrowRight size={16} color={colors.textMuted} />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.quickCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}
+              onPress={() => navigation.navigate('Profile')}
+              activeOpacity={0.7}
+            >
+              <View style={[styles.actionIconCircle, { backgroundColor: 'rgba(14, 165, 233, 0.12)' }]}>
+                <Scale size={20} color="#0ea5e9" />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={[styles.actionTitle, { color: colors.text }]}>BMI & Health Profile</Text>
+                <Text style={[styles.actionSub, { color: colors.textMuted }]}>Biometrics, BMI & body metrics</Text>
               </View>
               <ArrowRight size={16} color={colors.textMuted} />
             </TouchableOpacity>

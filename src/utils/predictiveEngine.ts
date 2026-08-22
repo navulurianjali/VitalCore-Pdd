@@ -15,6 +15,7 @@ export interface TelemetryData {
   stabilityScore: number;
   caffeineIntake?: string; // e.g., 'high', 'moderate', 'none'
   screenTimeHours?: number;
+  hasTelemetry?: boolean;
 }
 
 export interface PredictionResult {
@@ -31,9 +32,37 @@ export interface PredictionResult {
 
 /**
  * Calculates a complete suite of future health predictions and alerts
- * based on user habits and daily lifestyle inputs.
+ * based strictly on real user habits and daily lifestyle inputs.
+ * Returns empty recommendations and insights for new users with no data.
  */
 export function calculateFutureHealthPredictions(data: TelemetryData): PredictionResult {
+  const hasActualTelemetry = Boolean(
+    data.hasTelemetry ||
+    data.sleepHours > 0 ||
+    data.hydrationMl > 0 ||
+    data.physicalFatigue > 0 ||
+    data.mentalFatigue > 0 ||
+    data.fatigueScore > 0 ||
+    data.stressLevel > 0 ||
+    data.sorenessLevel > 0 ||
+    data.recoveryPercentage > 0
+  );
+
+  // New user with no telemetry data: completely empty recommendations & insights
+  if (!hasActualTelemetry) {
+    return {
+      burnoutRisk: 0,
+      fatigueBuildup: 0,
+      stressOverloadRisk: 0,
+      sleepDeteriorationRisk: 0,
+      recoveryDeclineRisk: 0,
+      biologicalAgeShift: 0,
+      futureEnergyTrends: [],
+      preventiveReminders: [],
+      aiInsights: []
+    };
+  }
+
   // 1. Compute Burnout Risk
   let burnout = Math.round(
     data.stressLevel * 0.45 + 
@@ -43,7 +72,7 @@ export function calculateFutureHealthPredictions(data: TelemetryData): Predictio
   burnout = Math.min(100, Math.max(0, burnout));
 
   // 2. Compute Fatigue Buildup
-  const sleepDebtHrs = Math.max(0, 8.0 - data.sleepHours);
+  const sleepDebtHrs = data.sleepHours > 0 ? Math.max(0, 8.0 - data.sleepHours) : 0;
   let fatigue = Math.round(
     data.physicalFatigue * 0.35 + 
     data.mentalFatigue * 0.35 + 
@@ -62,7 +91,7 @@ export function calculateFutureHealthPredictions(data: TelemetryData): Predictio
   const screenTimeImpact = data.screenTimeHours && data.screenTimeHours > 8 ? 15 : 0;
   const caffeineImpact = data.caffeineIntake === "high" ? 20 : data.caffeineIntake === "moderate" ? 8 : 0;
   let sleepDecline = Math.round(
-    (100 - data.sleepQuality) * 0.4 + 
+    (100 - (data.sleepQuality || 100)) * 0.4 + 
     data.stressLevel * 0.3 + 
     screenTimeImpact + 
     caffeineImpact
@@ -70,10 +99,11 @@ export function calculateFutureHealthPredictions(data: TelemetryData): Predictio
   sleepDecline = Math.min(100, Math.max(0, sleepDecline));
 
   // 5. Compute Recovery Decline Risk
-  const hydrationRatio = data.hydrationMl / data.hydrationTarget;
-  const hydrationDebtImpact = hydrationRatio < 0.8 ? (1.0 - hydrationRatio) * 40 : 0;
+  const hydrationTarget = data.hydrationTarget || 2500;
+  const hydrationRatio = hydrationTarget > 0 ? data.hydrationMl / hydrationTarget : 1;
+  const hydrationDebtImpact = (data.hydrationMl > 0 && hydrationRatio < 0.8) ? (1.0 - hydrationRatio) * 40 : 0;
   let recoveryDecline = Math.round(
-    (100 - data.recoveryPercentage) * 0.5 + 
+    (100 - (data.recoveryPercentage || 100)) * 0.5 + 
     data.sorenessLevel * 4 + 
     hydrationDebtImpact
   );
@@ -83,9 +113,9 @@ export function calculateFutureHealthPredictions(data: TelemetryData): Predictio
   let ageShift = 0.0;
   if (data.stabilityScore >= 85) {
     ageShift = -1.5 - ((data.stabilityScore - 85) * 0.1);
-  } else if (data.stabilityScore < 60) {
+  } else if (data.stabilityScore > 0 && data.stabilityScore < 60) {
     ageShift = 1.0 + ((60 - data.stabilityScore) * 0.15);
-  } else {
+  } else if (data.stabilityScore > 0) {
     ageShift = -0.5;
   }
   ageShift = Math.round(ageShift * 10) / 10;
@@ -100,12 +130,12 @@ export function calculateFutureHealthPredictions(data: TelemetryData): Predictio
     futureEnergyTrends.push(Math.min(95, Math.max(15, estVal)));
   }
 
-  // 8. Generate preventive alerts / reminders (strictly using simple, friendly words)
+  // 8. Generate preventive alerts / reminders (strictly derived from user's actual saved data)
   const preventiveReminders: string[] = [];
-  if (data.sleepHours < 6.0) {
+  if (data.sleepHours > 0 && data.sleepHours < 6.0) {
     preventiveReminders.push("Rest Reminder: Your recent late-night sleep pattern may reduce recovery quality over the next week.");
   }
-  if (hydrationRatio < 0.7) {
+  if (data.hydrationMl > 0 && hydrationRatio < 0.7) {
     preventiveReminders.push("Hydration Check: Consistent hydration is essential to improve your workout recovery.");
   }
   if (data.stressLevel > 65) {
@@ -114,38 +144,42 @@ export function calculateFutureHealthPredictions(data: TelemetryData): Predictio
   if (data.sorenessLevel > 6) {
     preventiveReminders.push("Muscle Care: Your body is feeling quite tight. A light stretch or warm walk today will help you recover faster.");
   }
-  if (data.physicalFatigue > 60 && data.recoveryPercentage < 50) {
+  if (data.physicalFatigue > 60 && data.recoveryPercentage > 0 && data.recoveryPercentage < 50) {
     preventiveReminders.push("Recharge Mode: Your energy is running a bit low. Let's focus on simple rest today to bounce back stronger.");
   }
 
-  if (preventiveReminders.length === 0) {
-    preventiveReminders.push("Your current habits support stable energy levels. Keep up this beautiful daily rhythm!");
-  }
-
-  // 9. Generate AI future health insights
+  // 9. Generate AI future health insights (strictly from actual data)
   const aiInsights: string[] = [];
-  if (hydrationRatio < 0.85) {
-    aiInsights.push("Drinking a little less water recently might slow down your muscle repair. Keeping your cup full helps you feel fresh and less sore.");
-  } else {
-    aiInsights.push("Your consistent water drinking is doing wonders! It is actively keeping your muscles hydrated and speeding up your workout recovery.");
+  if (data.hydrationMl > 0) {
+    if (hydrationRatio < 0.85) {
+      aiInsights.push("Drinking a little less water recently might slow down your muscle repair. Keeping your cup full helps you feel fresh and less sore.");
+    } else {
+      aiInsights.push("Your consistent water drinking is doing wonders! It is actively keeping your muscles hydrated and speeding up your workout recovery.");
+    }
   }
 
-  if (data.sleepQuality < 70) {
-    aiInsights.push("A few restless nights can start building up fatigue. Winding down without screens 30 minutes before bed will help you get deeper rest.");
-  } else {
-    aiInsights.push("Your sleep has been wonderfully regular! This consistent rest is the reason you are feeling so focused and energetic in the mornings.");
+  if (data.sleepHours > 0) {
+    if (data.sleepQuality < 70) {
+      aiInsights.push("A few restless nights can start building up fatigue. Winding down without screens 30 minutes before bed will help you get deeper rest.");
+    } else {
+      aiInsights.push("Your sleep has been wonderfully regular! This consistent rest is the reason you are feeling so focused and energetic in the mornings.");
+    }
   }
 
-  if (burnout > 55) {
-    aiInsights.push("Your body is carrying a bit of stress lately. Slowing down your evening routine will help prevent you from feeling burnt out next week.");
-  } else {
-    aiInsights.push("Your stress and work levels are in perfect balance. You're doing a fantastic job managing your daily pace.");
+  if (data.stressLevel > 0) {
+    if (burnout > 55) {
+      aiInsights.push("Your body is carrying a bit of stress lately. Slowing down your evening routine will help prevent you from feeling burnt out next week.");
+    } else {
+      aiInsights.push("Your stress and work levels are in perfect balance. You're doing a fantastic job managing your daily pace.");
+    }
   }
 
-  if (data.stabilityScore >= 80) {
-    aiInsights.push("Your current lifestyle decisions are supporting great long-term health! You will likely notice even better stamina if you keep this up.");
-  } else {
-    aiInsights.push("It looks like you've been a little less active this week. Just a quick 10-minute walk today can significantly boost your energy tomorrow.");
+  if (data.stabilityScore > 0) {
+    if (data.stabilityScore >= 80) {
+      aiInsights.push("Your current lifestyle decisions are supporting great long-term health! You will likely notice even better stamina if you keep this up.");
+    } else {
+      aiInsights.push("It looks like you've been a little less active this week. Just a quick 10-minute walk today can significantly boost your energy tomorrow.");
+    }
   }
 
   return {

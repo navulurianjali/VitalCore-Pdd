@@ -1,0 +1,46 @@
+import os
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service as ChromeService
+from selenium.webdriver.chrome.options import Options as ChromeOptions
+from .config import HEADLESS, IMPLICIT_WAIT_TIMEOUT, PAGE_LOAD_TIMEOUT
+
+def create_driver(headless=HEADLESS, viewport_width=1280, viewport_height=800):
+    """
+    Creates and configures a Selenium Chrome WebDriver instance.
+    Supports headless mode, isolated ports for parallel xdist workers, and custom viewports.
+    """
+    options = ChromeOptions()
+    if headless:
+        options.add_argument("--headless=new")
+    
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
+    options.add_argument("--disable-gpu")
+    options.add_argument("--disable-extensions")
+    options.add_argument("--disable-infobars")
+    options.add_argument("--remote-debugging-port=0")
+    options.add_argument("--disable-blink-features=AutomationControlled")
+    options.add_argument(f"--window-size={viewport_width},{viewport_height}")
+
+    for chrome_path in ["/usr/bin/google-chrome", "/usr/bin/google-chrome-stable", "/usr/bin/chromium", "/usr/bin/chromium-browser"]:
+        if os.path.exists(chrome_path):
+            options.binary_location = chrome_path
+            break
+
+    try:
+        driver = webdriver.Chrome(options=options)
+    except Exception:
+        try:
+            from webdriver_manager.chrome import ChromeDriverManager
+            service = ChromeService(ChromeDriverManager().install())
+            driver = webdriver.Chrome(service=service, options=options)
+        except Exception:
+            service = ChromeService()
+            driver = webdriver.Chrome(service=service, options=options)
+
+    driver.implicitly_wait(IMPLICIT_WAIT_TIMEOUT)
+    driver.set_page_load_timeout(PAGE_LOAD_TIMEOUT)
+    return driver
+
+
+

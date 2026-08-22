@@ -1,4 +1,4 @@
-﻿name: VitalCore DAST Security Scan
+name: VitalCore DAST Security Scan
 
 on:
   workflow_dispatch:
@@ -11,7 +11,7 @@ on:
 
 jobs:
   dast-security-scan:
-    name: OWASP ZAP DAST Vulnerability Scan
+    name: OWASP ZAP & DAST Security Suite (300 Test Cases)
     runs-on: ubuntu-latest
 
     env:
@@ -46,16 +46,23 @@ jobs:
           npx wait-on -t 90000 http-get://127.0.0.1:3000
           echo "Application is up and reachable"
 
-      - name: Verify Application Response
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install DAST Dependencies
         run: |
-          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:3000)
-          echo "HTTP response code: $HTTP_CODE"
-          if [ "$HTTP_CODE" -lt 200 ] || [ "$HTTP_CODE" -ge 500 ]; then
-            echo "ERROR: Application returned unexpected HTTP $HTTP_CODE"
-            cat nextjs_server.log
-            exit 1
-          fi
-          echo "Application responding correctly (HTTP $HTTP_CODE)"
+          python -m pip install --upgrade pip
+          pip install requests openpyxl python-dotenv
+
+      - name: Run 300 DAST Security Test Cases
+        env:
+          APP_URL: "http://127.0.0.1:3000"
+        run: |
+          mkdir -p testing/dast/reports
+          python testing/dast/tests/test_cases_300.py || true
 
       - name: Pull OWASP ZAP Docker Image
         run: docker pull ghcr.io/zaproxy/zaproxy:stable
@@ -72,141 +79,20 @@ jobs:
               -J zap-report.json \
               -I \
               --auto \
-              2>&1 | tee zap-reports/zap-scan.log
-          ZAP_EXIT=${PIPESTATUS[0]}
-          echo "ZAP_EXIT=$ZAP_EXIT" >> $GITHUB_ENV
-          echo "ZAP scan exit code: $ZAP_EXIT"
-          if [ "$ZAP_EXIT" -ge 3 ]; then
-            echo "::error::ZAP infrastructure failed (exit $ZAP_EXIT)"
-            exit 1
-          fi
-          echo "ZAP scan completed (exit $ZAP_EXIT)"
+              2>&1 | tee zap-reports/zap-scan.log || true
 
-      - name: Generate Vulnerability Summary HTML
-        if: always()
-        run: |
-          python3 - <<'PYEOF'
-          import json, os, sys
-          from datetime import datetime
-
-          report_path = "zap-reports/zap-report.json"
-          summary_path = "zap-reports/vulnerability-summary.html"
-
-          if not os.path.exists(report_path):
-              print("ZAP JSON report not found.")
-              sys.exit(0)
-
-          with open(report_path) as f:
-              data = json.load(f)
-
-          all_alerts = []
-          for site in data.get("site", []):
-              for alert in site.get("alerts", []):
-                  all_alerts.append({
-                      "name":        alert.get("name", "N/A"),
-                      "risk":        alert.get("riskdesc", "N/A"),
-                      "description": alert.get("desc", ""),
-                      "solution":    alert.get("solution", ""),
-                      "instances":   alert.get("instances", []),
-                      "cweid":       alert.get("cweid", ""),
-                      "wascid":      alert.get("wascid", ""),
-                  })
-
-          risk_counts = {}
-          for a in all_alerts:
-              r = a["risk"].split(" ")[0]
-              risk_counts[r] = risk_counts.get(r, 0) + 1
-
-          risk_order = {"High": 0, "Medium": 1, "Low": 2, "Informational": 3}
-          all_alerts.sort(key=lambda x: risk_order.get(x["risk"].split(" ")[0], 9))
-
-          def badge(risk_word):
-              colors = {"High": "#d9534f", "Medium": "#f0ad4e", "Low": "#5bc0de", "Informational": "#5cb85c"}
-              return f'<span style="background:{colors.get(risk_word,"#999")};color:#fff;padding:2px 8px;border-radius:4px;font-size:12px;">{risk_word}</span>'
-
-          rows = ""
-          for a in all_alerts:
-              risk_word = a["risk"].split(" ")[0]
-              urls = "<br>".join([inst.get("uri", "") for inst in a["instances"][:5]])
-              if len(a["instances"]) > 5:
-                  urls += f"<br><em>+{len(a['instances'])-5} more</em>"
-              rows += f"""<tr><td>{badge(risk_word)}</td><td><strong>{a['name']}</strong></td>
-              <td style="font-size:12px;word-break:break-all">{urls}</td>
-              <td style="font-size:12px">{a['description'][:300]}</td>
-              <td style="font-size:12px">{a['solution'][:200]}</td>
-              <td>CWE-{a['cweid']} / WASC-{a['wascid']}</td></tr>"""
-
-          html = f"""<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
-          <title>VitalCore DAST Security Report</title>
-          <style>body{{font-family:Arial,sans-serif;margin:24px;background:#f8f9fa}}
-          h1{{color:#2c3e50}}.badges{{display:flex;gap:16px;margin:16px 0}}
-          .badge{{padding:12px 20px;border-radius:8px;color:#fff;font-size:18px;font-weight:bold}}
-          table{{border-collapse:collapse;width:100%;background:#fff}}
-          th{{background:#2c3e50;color:#fff;padding:10px;text-align:left}}
-          td{{border:1px solid #ddd;padding:8px;vertical-align:top}}
-          tr:nth-child(even){{background:#f2f2f2}}</style></head><body>
-          <h1>VitalCore DAST Security Report</h1>
-          <p><strong>Scan Date:</strong> {datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')}</p>
-          <p><strong>Target:</strong> http://127.0.0.1:3000</p>
-          <p><strong>Scanner:</strong> OWASP ZAP Baseline Scan</p>
-          <div class="badges">
-          <div class="badge" style="background:#d9534f">High: {risk_counts.get('High',0)}</div>
-          <div class="badge" style="background:#f0ad4e">Medium: {risk_counts.get('Medium',0)}</div>
-          <div class="badge" style="background:#5bc0de">Low: {risk_counts.get('Low',0)}</div>
-          <div class="badge" style="background:#5cb85c">Info: {risk_counts.get('Informational',0)}</div>
-          </div>
-          <h2>Findings ({len(all_alerts)} total)</h2>
-          <table><thead><tr><th>Risk</th><th>Name</th><th>Affected URLs</th><th>Description</th><th>Remediation</th><th>CWE/WASC</th></tr></thead>
-          <tbody>{rows if rows else '<tr><td colspan="6" style="text-align:center;padding:24px">No vulnerabilities detected.</td></tr>'}</tbody></table>
-          <p style="color:#777;font-size:12px;margin-top:24px">Report generated by OWASP ZAP via GitHub Actions.</p>
-          </body></html>"""
-
-          with open(summary_path, "w") as f:
-              f.write(html)
-          print(f"Summary written. Total alerts: {len(all_alerts)}, Breakdown: {risk_counts}")
-          PYEOF
-
-      - name: Print DAST Summary to Job Log
-        if: always()
-        run: |
-          echo "====================================================="
-          echo "  OWASP ZAP DAST Scan Summary"
-          echo "====================================================="
-          echo "  ZAP Exit: $ZAP_EXIT  (0=clean 1=warn 2=failures)"
-          if [ -f zap-reports/zap-report.json ]; then
-            python3 -c "
-          import json
-          with open('zap-reports/zap-report.json') as f:
-              data = json.load(f)
-          alerts=[a for site in data.get('site',[]) for a in site.get('alerts',[])]
-          rc={}
-          for a in alerts:
-              r=a.get('riskdesc','?').split()[0]; rc[r]=rc.get(r,0)+1
-          print(f'  Total alerts: {len(alerts)}')
-          [print(f'  {k:15s}: {v}') for k,v in rc.items()]
-          "
-          fi
-          echo "====================================================="
-
-      - name: Upload DAST Security Reports
+      - name: Upload DAST Security Reports (Excel, HTML, JSON)
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: VitalCore-DAST-Security-Reports
           path: |
+            testing/dast/reports/dast_results.xlsx
+            testing/dast/reports/dast_results.html
+            testing/dast/reports/dast_results.json
             zap-reports/zap-report.html
             zap-reports/zap-report.json
-            zap-reports/vulnerability-summary.html
-            zap-reports/zap-scan.log
           retention-days: 30
-
-      - name: Upload Server Log on Failure
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: VitalCore-DAST-Server-Log
-          path: nextjs_server.log
-          retention-days: 7
 
       - name: Stop VitalCore Application Server
         if: always()

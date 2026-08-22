@@ -28,7 +28,7 @@ adb devices
 adb wait-for-device
 
 echo "════════════════════════════════════════════════════════════════"
-echo "🧪 Executing VitalCore Appium 30 E2E Test Suite..."
+echo "🧪 Executing VitalCore Appium 300 E2E Test Suite..."
 echo "════════════════════════════════════════════════════════════════"
 cd vitalcore-expo
 npx ts-node appium-tests/runner/runAll.ts

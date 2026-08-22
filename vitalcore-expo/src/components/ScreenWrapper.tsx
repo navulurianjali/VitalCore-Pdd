@@ -7,6 +7,7 @@ import {
   StatusBar,
   ScrollView,
   RefreshControlProps,
+  Platform,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../context/ThemeContext';
@@ -44,8 +45,18 @@ export default function ScreenWrapper({
   const insets = useSafeAreaInsets();
   const { colors, isDark, toggleTheme, isCareMode } = useTheme();
 
-  const paddingTop = Math.max(insets.top + 8, 20);
-  const paddingBottom = Math.max(insets.bottom + 12, 20);
+  const handleBack = () => {
+    if (onBack) {
+      onBack();
+    } else if (navigation.canGoBack()) {
+      navigation.goBack();
+    } else {
+      navigation.navigate('MainTabs', { screen: 'Home' });
+    }
+  };
+
+  const paddingTop = Math.max(insets.top, Platform.OS === 'android' ? (StatusBar.currentHeight || 24) : 16) + 4;
+  const paddingBottom = Math.max(insets.bottom, 12);
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -60,7 +71,13 @@ export default function ScreenWrapper({
         <View style={styles.topRow}>
           <View style={styles.headerLeft}>
             {showBack ? (
-              <TouchableOpacity style={styles.backButton} onPress={onBack}>
+              <TouchableOpacity
+                style={styles.backButton}
+                onPress={handleBack}
+                hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+                accessibilityLabel="Go Back"
+                accessibilityRole="button"
+              >
                 <ArrowLeft size={18} color={colors.primary} style={{ marginRight: 4 }} />
                 <Text style={[styles.backButtonText, { color: colors.primary }]}>Back</Text>
               </TouchableOpacity>

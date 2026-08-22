@@ -38,10 +38,9 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
   // Route guard
   useEffect(() => {
     if (!loading) {
-      const hasTestSession = typeof window !== "undefined" && Boolean(localStorage.getItem("vitalcore_test_session"));
-      if (!user && !hasTestSession) {
+      if (!user) {
         router.push("/auth/login");
-      } else if (profile && profile.onboarding_completed === false && pathname !== "/auth/onboarding" && !hasTestSession) {
+      } else if (profile && profile.onboarding_completed === false && pathname !== "/auth/onboarding") {
         router.push("/auth/onboarding");
       }
     }

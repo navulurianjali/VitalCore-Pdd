@@ -173,10 +173,53 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const refreshProfile = refetchProfile;
 
   useEffect(() => {
+    let profileChannel: any = null;
+
+    const setupProfileSubscription = (uid: string) => {
+      if (profileChannel) {
+        supabase.removeChannel(profileChannel);
+      }
+      profileChannel = supabase
+        .channel(`profile-realtime-${uid}`)
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'profiles',
+            filter: `id=eq.${uid}`,
+          },
+          (payload: any) => {
+            console.log('[AuthContext Realtime] Profile change received:', payload.eventType);
+            if (payload.new) {
+              const data = payload.new;
+              let ageVal = data.age;
+              if (!ageVal && data.date_of_birth) {
+                const dobYear = new Date(data.date_of_birth).getFullYear();
+                if (!isNaN(dobYear)) {
+                  ageVal = new Date().getFullYear() - dobYear;
+                }
+              }
+              const isCompleted = data.onboarding_completed === true || Boolean(data.age || data.weight_kg || data.height_cm || data.fitness_goal || data.gender || data.medical_conditions);
+              setProfile((prev) => ({
+                ...(prev || {}),
+                ...data,
+                onboarding_completed: isCompleted,
+                age: ageVal,
+              } as UserProfile));
+            } else {
+              fetchSupabaseProfile(uid);
+            }
+          }
+        )
+        .subscribe();
+    };
+
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) {
         setUser(session.user);
         fetchSupabaseProfile(session.user.id);
+        setupProfileSubscription(session.user.id);
       } else {
         setLoading(false);
       }
@@ -186,15 +229,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (session?.user) {
         setUser(session.user);
         fetchSupabaseProfile(session.user.id);
+        setupProfileSubscription(session.user.id);
       } else {
         setUser(null);
         setProfile(null);
         setLoading(false);
+        if (profileChannel) {
+          supabase.removeChannel(profileChannel);
+          profileChannel = null;
+        }
       }
     });
 
     return () => {
       subscription.unsubscribe();
+      if (profileChannel) {
+        supabase.removeChannel(profileChannel);
+      }
     };
   }, []);
 
@@ -262,7 +313,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.log(`[AuthContext] Updating profile for user: ${userId}`, updates);
 
       const validDbColumns = new Set([
-        'id', 'updated_at', 'username', 'full_name', 'avatar_url', 'date_of_birth', 'gender',
+        'id', 'updated_at', 'username', 'full_name', 'avatar_url', 'date_of_birth', 'age', 'gender',
         'blood_group', 'country', 'state', 'city', 'occupation', 'height_cm', 'weight_kg', 'bmi',
         'body_fat_estimate', 'medical_conditions', 'medications', 'medication_schedule',
         'allergies', 'food_allergies', 'surgeries', 'chronic_conditions', 'family_history',
@@ -273,12 +324,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         'smoking_status', 'alcohol_status', 'stress_level_onboard', 'working_hours',
         'sleep_schedule', 'emergency_contact_name', 'emergency_contact_phone',
         'emergency_contact_relation', 'emergency_contact_relationship', 'fitness_goal',
-        'reminder_preferences', 'ai_coach_style', 'unit_system', 'active_mode',
+        'reminder_preferences', 'ai_coach_style', 'unit_system', 'active_mode', 'is_auto_assigned_mode',
         'soreness_level', 'biological_age', 'stability_score', 'onboarding_completed',
         'timezone', 'workout_duration_preference', 'preferred_workout_time',
         'home_gym_preference', 'previous_injuries', 'mobility_limitations',
         'sleep_problems', 'dietary_preferences', 'meal_timing_habits', 'caffeine_intake',
-        'wearable_synced', 'anxiety_rating', 'motivation_level', 'screen_time_hours', 'sitting_hours'
+        'wearable_synced', 'anxiety_rating', 'motivation_level', 'screen_time_hours', 'sitting_hours',
+        'xp', 'badges', 'streak_days', 'notification_settings'
       ]);
 
       const payload: Record<string, any> = {

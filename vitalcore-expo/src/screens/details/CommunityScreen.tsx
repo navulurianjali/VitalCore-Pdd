@@ -114,7 +114,11 @@ export default function CommunityScreen({ navigation }: any) {
     <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
       <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.header}>
-          <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
+          <TouchableOpacity
+            style={styles.backBtn}
+            hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+            onPress={() => (navigation.canGoBack() ? navigation.goBack() : navigation.navigate('MainTabs', { screen: 'Home' }))}
+          >
             <Text style={[styles.backBtnText, { color: colors.primary }]}>← Back</Text>
           </TouchableOpacity>
           <Text style={[styles.title, { color: colors.text }]}>👥 Community Feed</Text>

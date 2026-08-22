@@ -97,7 +97,13 @@ export default function HistoryScreen({ navigation }: any) {
     <View style={[styles.container, { backgroundColor: colors.background, paddingTop: insets.top }]}>
       {/* Top Header */}
       <View style={[styles.header, { borderBottomColor: colors.navBorder }]}>
-        <TouchableOpacity testID="history_back_btn" accessibilityLabel="history_back_btn" onPress={() => navigation.goBack()} style={styles.backButton}>
+        <TouchableOpacity
+          testID="history_back_btn"
+          accessibilityLabel="history_back_btn"
+          onPress={() => (navigation.canGoBack() ? navigation.goBack() : navigation.navigate('MainTabs', { screen: 'Home' }))}
+          style={styles.backButton}
+          hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+        >
           <ChevronLeft size={24} color={colors.text} />
         </TouchableOpacity>
         <Text style={[styles.headerTitle, { color: colors.text }]}>Health History</Text>

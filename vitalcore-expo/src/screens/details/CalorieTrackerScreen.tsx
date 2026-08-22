@@ -323,7 +323,13 @@ export default function CalorieTrackerScreen({ navigation }: any) {
 
         {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity testID="calorie_back_btn" accessibilityLabel="calorie_back_btn" style={styles.backBtn} onPress={() => navigation.goBack()}>
+          <TouchableOpacity
+            testID="calorie_back_btn"
+            accessibilityLabel="calorie_back_btn"
+            style={styles.backBtn}
+            hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+            onPress={() => (navigation.canGoBack() ? navigation.goBack() : navigation.navigate('MainTabs', { screen: 'Home' }))}
+          >
             <Text style={[styles.backBtnText, { color: colors.primary }]}>← Back</Text>
           </TouchableOpacity>
           <Text style={[styles.title, { color: colors.text, fontSize: isCareMode ? 24 : 20 }]}>

@@ -10,6 +10,8 @@ export interface BaseHealthMetrics {
   sodiumMg?: number;
   hydrationMl: number;
   hydrationTarget: number;
+  workoutMinutes?: number;
+  workoutTarget?: number;
   steps: number;
   stepsTarget: number;
   sleepHours: number;
@@ -52,6 +54,8 @@ export interface HealthDigitalTwin extends BaseHealthMetrics {
   fiberG: number;
   sugarG: number;
   sodiumMg: number;
+  workoutMinutes: number;
+  workoutTarget: number;
 }
 
 
@@ -128,14 +132,17 @@ export function computeDigitalTwin(metrics: BaseHealthMetrics, chronologicalAge:
     fiberG: metrics.fiberG || 0,
     sugarG: metrics.sugarG || 0,
     sodiumMg: metrics.sodiumMg || 0,
+    workoutMinutes: metrics.workoutMinutes || 0,
+    workoutTarget: metrics.workoutTarget || 30,
   };
 
 }
 
 export function generateEarlyWarnings(twin: HealthDigitalTwin): EarlyWarning[] {
+  if (!twin.hasTelemetry) return [];
   const warnings: EarlyWarning[] = [];
 
-  if (twin.sleepHours < 6.5) {
+  if (twin.sleepHours > 0 && twin.sleepHours < 6.5) {
     warnings.push({
       type: 'Sleep Debt Alert',
       severity: 'high',
@@ -153,7 +160,7 @@ export function generateEarlyWarnings(twin: HealthDigitalTwin): EarlyWarning[] {
     });
   }
 
-  if (twin.hydrationMl < 1500) {
+  if (twin.hydrationMl > 0 && twin.hydrationMl < 1500) {
     warnings.push({
       type: 'Dehydration Risk',
       severity: 'medium',
@@ -162,7 +169,7 @@ export function generateEarlyWarnings(twin: HealthDigitalTwin): EarlyWarning[] {
     });
   }
 
-  if (twin.recoveryPercentage < 60) {
+  if (twin.recoveryPercentage > 0 && twin.recoveryPercentage < 60) {
     warnings.push({
       type: 'Low Physical Recovery',
       severity: 'medium',
