@@ -39,8 +39,11 @@ export const Navbar: React.FC = () => {
     router.refresh();
   };
 
-  // On authenticated app/dashboard routes, DashboardLayout handles the layout & navigation
-  if (isDashboard) {
+  // Check if current route is an Auth page (Login, Signup, Forgot Password, Onboarding)
+  const isAuthPage = pathname === "/login" || pathname === "/signup" || pathname.startsWith("/auth");
+
+  // On authenticated app/dashboard routes or standalone auth pages (Login/Signup), Navbar returns null.
+  if (isDashboard || isAuthPage) {
     return null;
   }
 

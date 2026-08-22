@@ -165,6 +165,42 @@ export default function DashboardScreen({ navigation }: any) {
     hasTelemetry: hasUserActivity,
   });
 
+  // Real dynamic health insight calculations
+  const hasEnergyData = Boolean(totalCalories > 0 || stepsLogged > 0 || (metrics?.workoutMinutes || 0) > 0);
+  const targetCals = profile?.calorie_goal || 2000;
+  const targetSteps = profile?.step_goal || 10000;
+  const calRatio = Math.min(1.2, totalCalories / targetCals);
+  const actRatio = Math.min(1.2, stepsLogged / targetSteps);
+  const energyBalanceScore = hasEnergyData
+    ? Math.min(100, Math.max(15, Math.round(50 + (actRatio * 30) - (calRatio > 1.2 ? 15 : 0))))
+    : null;
+
+  const hasSleepData = Boolean(sleepHrs > 0);
+  const targetSleep = metrics?.sleepTarget || (profile?.sleep_problems ? 8.5 : 8.0);
+  const restProfileScore = hasSleepData
+    ? Math.min(100, Math.max(15, Math.round((sleepHrs / targetSleep) * 60 + ((metrics?.recoveryPercentage || metrics?.sleepQuality || 75) * 0.4))))
+    : null;
+
+  const getDynamicRecommendation = () => {
+    if (!hasUserActivity) {
+      return "Start tracking your daily health activities to receive personalized recommendations.";
+    }
+    const waterTarget = metrics?.hydrationTarget || profile?.water_goal || 2500;
+    if (waterLogged < waterTarget * 0.5) {
+      return `Hydration is at ${waterLogged}ml / ${waterTarget}ml. Drink 500ml water to maintain hydration balance.`;
+    }
+    if (hasSleepData && sleepHrs < 7) {
+      return `Logged ${sleepHrs}h sleep last night. Institute an early 10 PM wind-down tonight to rebuild cellular energy.`;
+    }
+    if (stepsLogged < 4000) {
+      return `Daily activity is at ${stepsLogged.toLocaleString()} steps. A 15-minute walk will boost circulation and alertness.`;
+    }
+    if (totalCalories > 0 && totalCalories < targetCals * 0.5) {
+      return `Logged intake is ${totalCalories} kcal. Ensure you hit your protein target for muscular recovery.`;
+    }
+    return "Great consistency! Your telemetry is well balanced across your daily targets.";
+  };
+
   return (
     <ScreenWrapper
       refreshControl={
@@ -255,7 +291,7 @@ export default function DashboardScreen({ navigation }: any) {
             </View>
           </TouchableOpacity>
 
-          {/* Sleep Card */}
+          {/* Sleep Card (Clickable to SleepDetail) */}
           <TouchableOpacity
             style={[styles.focusCard, { backgroundColor: colors.cardBg, borderColor: 'rgba(139, 92, 246, 0.3)' }]}
             onPress={() => navigation.navigate('SleepDetail')}
@@ -362,7 +398,7 @@ export default function DashboardScreen({ navigation }: any) {
         </View>
       )}
 
-      {/* 5. HEALTH INSIGHTS & PREDICTIONS (1:1 with Web) */}
+      {/* 5. HEALTH INSIGHTS & PREDICTIONS (DYNAMIC FROM REAL DATA) */}
       <View style={styles.sectionSpacing}>
         <Text style={[styles.sectionTitle, { color: colors.text }]}>Health Insights</Text>
         <View style={styles.insightsGrid}>
@@ -373,9 +409,9 @@ export default function DashboardScreen({ navigation }: any) {
             activeOpacity={0.7}
           >
             <View style={styles.insightHeader}>
-              <Zap size={18} color={colors.success} />
-              <Text style={[styles.insightScore, { color: colors.success }]}>
-                {hasUserActivity ? `${100 - predictions.burnoutRisk}%` : '--'}
+              <Zap size={18} color={energyBalanceScore !== null ? colors.success : colors.textMuted} />
+              <Text style={[styles.insightScore, { color: energyBalanceScore !== null ? colors.success : colors.textMuted }]}>
+                {energyBalanceScore !== null ? `${energyBalanceScore}%` : '--'}
               </Text>
             </View>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -383,9 +419,11 @@ export default function DashboardScreen({ navigation }: any) {
               <Text style={{ fontSize: 10, fontWeight: '800', color: colors.success }}>View Lab →</Text>
             </View>
             <Text style={[styles.insightSub, { color: colors.textMuted }]}>
-              {hasUserActivity
-                ? predictions.burnoutRisk > 60 ? 'Focus on restorative periods today.' : 'Optimal energy reservoir.'
-                : 'No telemetry data available yet.'}
+              {energyBalanceScore !== null
+                ? energyBalanceScore >= 75
+                  ? 'Optimal energy reservoir and active metabolic burn.'
+                  : 'Balance physical output with nutritious caloric intake.'
+                : 'Awaiting health data. Start logging meals or workouts to calculate energy balance.'}
             </Text>
           </TouchableOpacity>
 
@@ -396,9 +434,9 @@ export default function DashboardScreen({ navigation }: any) {
             activeOpacity={0.7}
           >
             <View style={styles.insightHeader}>
-              <Moon size={18} color="#8b5cf6" />
-              <Text style={[styles.insightScore, { color: '#8b5cf6' }]}>
-                {hasUserActivity ? `${100 - predictions.fatigueBuildup}%` : '--'}
+              <Moon size={18} color={restProfileScore !== null ? '#8b5cf6' : colors.textMuted} />
+              <Text style={[styles.insightScore, { color: restProfileScore !== null ? '#8b5cf6' : colors.textMuted }]}>
+                {restProfileScore !== null ? `${restProfileScore}%` : '--'}
               </Text>
             </View>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -406,9 +444,13 @@ export default function DashboardScreen({ navigation }: any) {
               <Text style={{ fontSize: 10, fontWeight: '800', color: '#8b5cf6' }}>Track Sleep →</Text>
             </View>
             <Text style={[styles.insightSub, { color: colors.textMuted }]}>
-              {hasUserActivity
-                ? predictions.fatigueBuildup > 65 ? 'Slight rest debt. Wind down early.' : 'Recovery battery fully charged.'
-                : 'Start logging your sleep or workouts.'}
+              {restProfileScore !== null
+                ? restProfileScore >= 80
+                  ? 'Recovery battery fully charged from last night.'
+                  : sleepHrs < 6
+                  ? 'Sleep duration was low. Prioritize an early wind-down tonight.'
+                  : 'Moderate recovery. Stay hydrated to support tissue repair.'
+                : 'Awaiting sleep data. Tap to record your nightly sleep.'}
             </Text>
           </TouchableOpacity>
 
@@ -426,9 +468,9 @@ export default function DashboardScreen({ navigation }: any) {
               <Text style={{ fontSize: 10, fontWeight: '800', color: colors.primary }}>Consult AI →</Text>
             </View>
             <Text style={[styles.insightSub, { color: colors.textMuted }]}>
-              {hasUserActivity && predictions.preventiveReminders.length > 0
-                ? predictions.preventiveReminders[0]
-                : 'No recommendations yet\nStart tracking your health activities to receive personalized recommendations.'}
+              {hasUserActivity
+                ? getDynamicRecommendation()
+                : 'Not enough data yet. Start tracking your health activity to receive personalized recommendations.'}
             </Text>
           </TouchableOpacity>
         </View>
@@ -439,51 +481,55 @@ export default function DashboardScreen({ navigation }: any) {
         <View style={styles.sectionSpacing}>
           <Text style={[styles.sectionTitle, { color: colors.text }]}>Quick Actions & Features</Text>
           <View style={styles.quickActionsGrid}>
+            {/* 1. Calorie Tracker */}
             <TouchableOpacity
               style={[styles.quickCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}
               onPress={() => navigation.navigate('CalorieTrackerDetail')}
               activeOpacity={0.7}
             >
-              <View style={[styles.actionIconCircle, { backgroundColor: 'rgba(239, 68, 68, 0.12)' }]}>
-                <Flame size={20} color="#ef4444" />
+              <View style={[styles.actionIconCircle, { backgroundColor: 'rgba(244, 63, 94, 0.12)' }]}>
+                <Flame size={20} color="#f43f5e" />
               </View>
               <View style={{ flex: 1 }}>
                 <Text style={[styles.actionTitle, { color: colors.text }]}>Calorie Tracker</Text>
-                <Text style={[styles.actionSub, { color: colors.textMuted }]}>Track daily meals and calories</Text>
+                <Text style={[styles.actionSub, { color: colors.textMuted }]}>Log meals & nutrition</Text>
               </View>
               <ArrowRight size={16} color={colors.textMuted} />
             </TouchableOpacity>
 
+            {/* 2. Log Sleep */}
             <TouchableOpacity
               style={[styles.quickCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}
               onPress={() => navigation.navigate('SleepDetail')}
               activeOpacity={0.7}
             >
               <View style={[styles.actionIconCircle, { backgroundColor: 'rgba(20, 184, 166, 0.12)' }]}>
-                <Moon size={20} color={colors.primary} />
+                <Moon size={20} color="#14b8a6" />
               </View>
               <View style={{ flex: 1 }}>
                 <Text style={[styles.actionTitle, { color: colors.text }]}>Log Sleep</Text>
-                <Text style={[styles.actionSub, { color: colors.textMuted }]}>Note last night's rest</Text>
+                <Text style={[styles.actionSub, { color: colors.textMuted }]}>Sleep tracking</Text>
               </View>
               <ArrowRight size={16} color={colors.textMuted} />
             </TouchableOpacity>
 
+            {/* 3. Wellness Chat */}
             <TouchableOpacity
               style={[styles.quickCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}
               onPress={() => navigation.navigate('AICoach')}
               activeOpacity={0.7}
             >
-              <View style={[styles.actionIconCircle, { backgroundColor: 'rgba(139, 92, 246, 0.12)' }]}>
-                <Brain size={20} color="#8b5cf6" />
+              <View style={[styles.actionIconCircle, { backgroundColor: 'rgba(99, 102, 241, 0.12)' }]}>
+                <Brain size={20} color="#6366f1" />
               </View>
               <View style={{ flex: 1 }}>
                 <Text style={[styles.actionTitle, { color: colors.text }]}>Wellness Chat</Text>
-                <Text style={[styles.actionSub, { color: colors.textMuted }]}>Speak with your AI companion</Text>
+                <Text style={[styles.actionSub, { color: colors.textMuted }]}>AI Coach</Text>
               </View>
               <ArrowRight size={16} color={colors.textMuted} />
             </TouchableOpacity>
 
+            {/* 4. Fitness */}
             <TouchableOpacity
               style={[styles.quickCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}
               onPress={() => navigation.navigate('FitnessDetail')}
@@ -494,11 +540,12 @@ export default function DashboardScreen({ navigation }: any) {
               </View>
               <View style={{ flex: 1 }}>
                 <Text style={[styles.actionTitle, { color: colors.text }]}>Fitness</Text>
-                <Text style={[styles.actionSub, { color: colors.textMuted }]}>Track and log your workouts</Text>
+                <Text style={[styles.actionSub, { color: colors.textMuted }]}>Track & log workouts</Text>
               </View>
               <ArrowRight size={16} color={colors.textMuted} />
             </TouchableOpacity>
 
+            {/* 5. Future Health Lab */}
             <TouchableOpacity
               style={[styles.quickCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}
               onPress={() => navigation.navigate('FutureLabDetail')}
@@ -509,11 +556,12 @@ export default function DashboardScreen({ navigation }: any) {
               </View>
               <View style={{ flex: 1 }}>
                 <Text style={[styles.actionTitle, { color: colors.text }]}>Future Health Lab</Text>
-                <Text style={[styles.actionSub, { color: colors.textMuted }]}>Predict future health trends</Text>
+                <Text style={[styles.actionSub, { color: colors.textMuted }]}>Future health insights</Text>
               </View>
               <ArrowRight size={16} color={colors.textMuted} />
             </TouchableOpacity>
 
+            {/* 6. Healthy Habits */}
             <TouchableOpacity
               style={[styles.quickCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}
               onPress={() => navigation.navigate('HealthyHabitsDetail')}
@@ -524,11 +572,12 @@ export default function DashboardScreen({ navigation }: any) {
               </View>
               <View style={{ flex: 1 }}>
                 <Text style={[styles.actionTitle, { color: colors.text }]}>Healthy Habits</Text>
-                <Text style={[styles.actionSub, { color: colors.textMuted }]}>Daily goals & habit quests</Text>
+                <Text style={[styles.actionSub, { color: colors.textMuted }]}>Daily goals/habits</Text>
               </View>
               <ArrowRight size={16} color={colors.textMuted} />
             </TouchableOpacity>
 
+            {/* 7. Health History */}
             <TouchableOpacity
               style={[styles.quickCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}
               onPress={() => navigation.navigate('HistoryDetail')}
@@ -539,22 +588,23 @@ export default function DashboardScreen({ navigation }: any) {
               </View>
               <View style={{ flex: 1 }}>
                 <Text style={[styles.actionTitle, { color: colors.text }]}>Health History</Text>
-                <Text style={[styles.actionSub, { color: colors.textMuted }]}>Telemetry logs & trend analytics</Text>
+                <Text style={[styles.actionSub, { color: colors.textMuted }]}>Telemetry & trends</Text>
               </View>
               <ArrowRight size={16} color={colors.textMuted} />
             </TouchableOpacity>
 
+            {/* 8. BMI & Body Metrics */}
             <TouchableOpacity
               style={[styles.quickCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}
-              onPress={() => navigation.navigate('Profile')}
+              onPress={() => navigation.navigate('Profile', { initialSection: 'body' })}
               activeOpacity={0.7}
             >
               <View style={[styles.actionIconCircle, { backgroundColor: 'rgba(14, 165, 233, 0.12)' }]}>
                 <Scale size={20} color="#0ea5e9" />
               </View>
               <View style={{ flex: 1 }}>
-                <Text style={[styles.actionTitle, { color: colors.text }]}>BMI & Health Profile</Text>
-                <Text style={[styles.actionSub, { color: colors.textMuted }]}>Biometrics, BMI & body metrics</Text>
+                <Text style={[styles.actionTitle, { color: colors.text }]}>BMI & Body Metrics</Text>
+                <Text style={[styles.actionSub, { color: colors.textMuted }]}>Biometrics & targets</Text>
               </View>
               <ArrowRight size={16} color={colors.textMuted} />
             </TouchableOpacity>

@@ -31,11 +31,17 @@ const SECTIONS: { id: SectionId; label: string; emoji: string }[] = [
 
 const BLOOD_GROUPS = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
 
-export default function ProfileScreen({ navigation }: any) {
+export default function ProfileScreen({ navigation, route }: any) {
   const { profile, updateProfile, refreshProfile, signOut } = useAuth();
   const { colors, isCareMode } = useTheme();
   const [saving, setSaving] = useState(false);
-  const [activeSection, setActiveSection] = useState<SectionId>('personal');
+  const [activeSection, setActiveSection] = useState<SectionId>(route?.params?.initialSection || 'personal');
+
+  useEffect(() => {
+    if (route?.params?.initialSection) {
+      setActiveSection(route.params.initialSection);
+    }
+  }, [route?.params?.initialSection]);
 
   // Form fields — Personal
   const [fullName, setFullName] = useState('');
@@ -236,7 +242,12 @@ export default function ProfileScreen({ navigation }: any) {
   );
 
   return (
-    <ScreenWrapper title="My Profile" subtitle="Personal health profile & biometrics">
+    <ScreenWrapper
+      showBack
+      onBack={() => (navigation.canGoBack() ? navigation.goBack() : navigation.navigate('MainTabs', { screen: 'Home' }))}
+      title={activeSection === 'body' ? 'BMI & Body Metrics' : 'My Profile'}
+      subtitle={activeSection === 'body' ? 'Biometrics, BMI calculation & targets' : 'Personal health profile & biometrics'}
+    >
       <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
 
         {/* Header */}

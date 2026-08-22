@@ -79,13 +79,13 @@ export default function SleepScreen({ navigation }: any) {
   const sleepDebt = latestLog ? Math.max(0, Math.round((targetSleep - latestDuration) * 10) / 10) : 0;
 
   const calculateConsistency = (items: SleepEntry[]) => {
-    if (items.length <= 1) return 100;
+    if (items.length <= 1) return null;
     const avg = items.reduce((acc, curr) => acc + curr.sleep_hours, 0) / items.length;
     const variance = items.reduce((acc, curr) => acc + Math.pow(curr.sleep_hours - avg, 2), 0) / items.length;
     const stdDev = Math.sqrt(variance);
     return Math.max(45, Math.round(100 - stdDev * 16));
   };
-  const consistencyIndex = history.length > 0 ? calculateConsistency(history) : 0;
+  const consistencyIndex = history.length > 1 ? calculateConsistency(history) : null;
   const recoveryScore = latestLog ? Number(latestLog.recovery_quality || 0) : 0;
 
   const handleSaveSleep = async () => {
@@ -201,8 +201,12 @@ export default function SleepScreen({ navigation }: any) {
 
           <View style={[styles.metricCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
             <Text style={[styles.metricLabel, { color: colors.textMuted }]}>Consistency</Text>
-            <Text style={[styles.metricValue, { color: colors.success }]}>{consistencyIndex}%</Text>
-            <Text style={[styles.metricSub, { color: colors.textMuted }]}>Daily Schedule Variance</Text>
+            <Text style={[styles.metricValue, { color: consistencyIndex !== null ? colors.success : colors.textMuted }]}>
+              {consistencyIndex !== null ? `${consistencyIndex}%` : history.length === 1 ? '100%' : '--'}
+            </Text>
+            <Text style={[styles.metricSub, { color: colors.textMuted }]}>
+              {history.length > 1 ? 'Daily Schedule Variance' : history.length === 1 ? '1 Day Logged' : 'Log 2+ days to calculate'}
+            </Text>
           </View>
 
           <View style={[styles.metricCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>

@@ -78,21 +78,31 @@ export default function StandaloneLoginPage() {
   };
 
   return (
-    <div className="flex-1 flex items-center justify-center bg-background px-4 py-16 relative overflow-hidden auth-page min-h-[calc(100vh-72px)]">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(139,92,246,0.05),transparent_60%)]" />
+    <div className="flex-1 flex items-center justify-center bg-background px-4 py-12 relative overflow-hidden auth-page min-h-screen">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(139,92,246,0.06),transparent_65%)]" />
       
       <div className="w-full max-w-[420px] relative z-10 space-y-6">
         
-        {/* Logo Header */}
-        <div className="text-center space-y-2">
-          <Link href="/" className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-primary text-white shadow-lg shadow-primary/20 hover:scale-105 transition-transform">
-            <Activity className="h-5 w-5" />
+        {/* VitalCore Branding & Header */}
+        <div className="text-center space-y-3">
+          <Link href="/" className="inline-flex items-center justify-center gap-2.5 group hover:opacity-95 transition-opacity">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary text-white shadow-lg shadow-primary/25 group-hover:scale-105 transition-transform">
+              <Activity className="h-5 w-5" />
+            </div>
+            <span className="text-2xl font-extrabold tracking-tight text-[var(--foreground)]">
+              VitalCore
+            </span>
           </Link>
-          <h2 className="auth-subtitle tracking-tight text-center font-bold text-2xl text-[var(--foreground)]">Welcome Back</h2>
-          <p className="auth-helper text-[12px] flex items-center gap-1 justify-center text-[var(--muted)]">
-            <ShieldCheck className="h-4 w-4 text-secondary/80" />
-            Log in to your VitalCore account
-          </p>
+
+          <div className="space-y-1">
+            <h1 className="auth-subtitle tracking-tight text-center font-bold text-2xl text-[var(--foreground)]">
+              Welcome Back
+            </h1>
+            <p className="auth-helper text-[13px] flex items-center gap-1.5 justify-center text-[var(--muted)]">
+              <ShieldCheck className="h-4 w-4 text-emerald-500" />
+              Log in to your VitalCore account
+            </p>
+          </div>
         </div>
 
         <GlassCard glowColor="violet" className="border border-foreground/10 shadow-xl p-6">
@@ -147,7 +157,7 @@ export default function StandaloneLoginPage() {
 
           <div className="mt-6 text-center text-xs text-foreground/60 font-medium">
             Don&apos;t have an account?{" "}
-            <Link href="/auth/signup" className="text-primary hover:underline font-bold">
+            <Link href="/signup" className="text-primary hover:underline font-bold">
               Sign Up
             </Link>
           </div>

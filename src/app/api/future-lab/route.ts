@@ -149,8 +149,15 @@ export async function GET(req: NextRequest) {
     (hDates || []).forEach((i: any) => { if (i.created_at) trackingDates.add(i.created_at.split('T')[0]); });
     (sDates || []).forEach((i: any) => { if (i.created_at) trackingDates.add(i.created_at.split('T')[0]); });
 
-    const trackingDaysCount = trackingDates.size;
-    const hasTelemetry = trackingDaysCount > 0;
+    const hasActivityToday = Boolean(
+      caloriesConsumed > 0 ||
+      hydrationMl > 0 ||
+      totalWorkoutDuration > 0 ||
+      Boolean(lastSleep)
+    );
+
+    const trackingDaysCount = Math.max(hasActivityToday ? 1 : 0, trackingDates.size);
+    const hasTelemetry = trackingDaysCount > 0 || hasActivityToday;
     const hasEnergyTelemetry = Boolean(lastSleep || lastRecovery || lastFatigue || lastMood);
 
     const proteinG = nutritionData?.reduce((sum, item) => sum + (Number(item.protein_g) || 0), 0) || 0;
@@ -189,7 +196,7 @@ export async function GET(req: NextRequest) {
       mentalFatigue: lastFatigue ? Number(lastFatigue.mental_fatigue || 0) : 0,
       energyLevel: lastFatigue ? Math.max(0, 100 - Number(lastFatigue.fatigue_score || 0)) : 0,
       biologicalAge: profile?.biological_age || 30,
-      stabilityScore: hasTelemetry ? (profile?.stability_score || 100) : 0,
+      stabilityScore: hasTelemetry ? (profile?.stability_score || 75) : 0,
       metabolicEfficiency: 0,
       lifestyleSustainability: 0,
       glycemicIndexLoad: "low",

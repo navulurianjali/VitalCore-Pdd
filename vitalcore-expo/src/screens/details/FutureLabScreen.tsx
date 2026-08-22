@@ -78,6 +78,19 @@ export default function FutureLabScreen({ navigation }: any) {
   const projection30Days = timeline.find((t) => t.day === 30) || timeline[0] || null;
   const projection1Year = timeline.find((t) => t.day === 365) || timeline[0] || null;
 
+  const handleWarningAction = (actionTrigger: string) => {
+    const act = (actionTrigger || '').toLowerCase();
+    if (act.includes('sleep') || act.includes('wind-down')) {
+      navigation.navigate('SleepDetail');
+    } else if (act.includes('water') || act.includes('hydration')) {
+      navigation.navigate('HistoryDetail');
+    } else if (act.includes('walk') || act.includes('rest') || act.includes('workout')) {
+      navigation.navigate('FitnessDetail');
+    } else {
+      navigation.navigate('AICoach');
+    }
+  };
+
   return (
     <ScreenWrapper
       showBack
@@ -90,7 +103,7 @@ export default function FutureLabScreen({ navigation }: any) {
         <View style={styles.heroTopRow}>
           <View style={styles.scoreCircle}>
             <Text style={[styles.scoreVal, { color: colors.primary }]}>
-              {metrics.hasTelemetry && digitalTwin.overallHealthScore > 0 ? digitalTwin.overallHealthScore : '--'}
+              {digitalTwin.overallHealthScore > 0 ? digitalTwin.overallHealthScore : '--'}
             </Text>
             <Text style={[styles.scoreLabel, { color: colors.textMuted }]}>SCORE</Text>
           </View>
@@ -100,23 +113,23 @@ export default function FutureLabScreen({ navigation }: any) {
                 style={[
                   styles.statusBadge,
                   {
-                    color: metrics.hasTelemetry ? (healthScore.direction === 'Improving' ? colors.success : colors.warning) : colors.textMuted,
-                    backgroundColor: metrics.hasTelemetry ? (healthScore.direction === 'Improving' ? 'rgba(16, 185, 129, 0.12)' : 'rgba(245, 158, 11, 0.12)') : colors.inputBg,
+                    color: digitalTwin.overallHealthScore > 0 ? (healthScore.direction === 'Improving' ? colors.success : colors.warning) : colors.textMuted,
+                    backgroundColor: digitalTwin.overallHealthScore > 0 ? (healthScore.direction === 'Improving' ? 'rgba(16, 185, 129, 0.12)' : 'rgba(245, 158, 11, 0.12)') : colors.inputBg,
                   },
                 ]}
               >
-                {metrics.hasTelemetry ? (healthScore.direction === 'Improving' ? '↗ Improving' : '→ Stable') : 'Awaiting Data'}
+                {digitalTwin.overallHealthScore > 0 ? (healthScore.direction === 'Improving' ? '↗ Improving' : '→ Stable') : 'Awaiting Data'}
               </Text>
             </View>
             <Text style={[styles.bioAgeText, { color: colors.text }]}>
               Bio Age: <Text style={{ color: colors.primary }}>
-                {metrics.hasTelemetry && digitalTwin.biologicalAge > 0 ? `${digitalTwin.biologicalAge} yrs` : 'Not enough activity data yet'}
+                {digitalTwin.biologicalAge > 0 ? `${digitalTwin.biologicalAge} yrs` : 'Building Bio Age'}
               </Text>
             </Text>
             <Text style={[styles.bioAgeSub, { color: colors.textMuted }]}>
-              {metrics.hasTelemetry && digitalTwin.biologicalAge > 0
-                ? (digitalTwin.ageDifference > 0 ? `${digitalTwin.ageDifference} yrs younger than actual age` : 'Aligned with actual age')
-                : 'Collect more health activity to build your Digital Twin.'}
+              {digitalTwin.biologicalAge > 0
+                ? (digitalTwin.ageDifference > 0 ? `${digitalTwin.ageDifference} yrs younger than actual age` : (digitalTwin.ageDifference < 0 ? `${Math.abs(digitalTwin.ageDifference)} yrs above actual age` : 'Aligned with actual age'))
+                : 'Start logging your health activities to calculate Bio Age.'}
             </Text>
           </View>
         </View>
@@ -140,7 +153,7 @@ export default function FutureLabScreen({ navigation }: any) {
               <Text style={[styles.insightMsg, { color: colors.text }]}>{warn.message}</Text>
               <TouchableOpacity
                 style={[styles.insightBtn, { backgroundColor: colors.primaryLight }]}
-                onPress={() => alert(`Action: ${warn.actionTrigger}`)}
+                onPress={() => handleWarningAction(warn.actionTrigger)}
               >
                 <Text style={[styles.insightBtnText, { color: colors.primary }]}>{warn.actionTrigger} →</Text>
               </TouchableOpacity>
@@ -150,7 +163,7 @@ export default function FutureLabScreen({ navigation }: any) {
           <View style={[styles.clearBox, { backgroundColor: 'rgba(16, 185, 129, 0.08)', borderColor: colors.success }]}>
             <ShieldCheck size={18} color={colors.success} />
             <Text style={[styles.clearText, { color: colors.success }]}>
-              {metrics.hasTelemetry ? "All primary health systems clear and optimal today!" : "Start logging sleep, workouts, or nutrition to generate real-time priority insights."}
+              {digitalTwin.overallHealthScore > 0 ? "All primary health systems clear and optimal today!" : "Start logging sleep, workouts, or nutrition to generate real-time priority insights."}
             </Text>
           </View>
         )}
@@ -164,13 +177,13 @@ export default function FutureLabScreen({ navigation }: any) {
           <View style={[styles.actionItem, { backgroundColor: colors.inputBg }]}>
             <View style={styles.actionLabelRow}>
               <Utensils size={14} color="#f59e0b" />
-              <Text style={[styles.actionLabel, { color: '#f59e0b' }]}>Meal</Text>
+              <Text style={[styles.actionLabel, { color: '#f59e0b' }]}>Meal Target</Text>
             </View>
             <Text style={[styles.actionVal, { color: colors.text }]} numberOfLines={1}>
-              {dailyPlan.recommendedMeals[0]?.name || (metrics.caloriesConsumed > 0 ? `${metrics.caloriesConsumed} kcal logged` : 'Start logging meals to generate nutrition analysis')}
+              {metrics.caloriesConsumed > 0 ? `${metrics.caloriesConsumed} kcal logged` : (dailyPlan.recommendedMeals[0]?.name || 'Log daily meals')}
             </Text>
             <Text style={[styles.actionSub, { color: colors.textMuted }]}>
-              {dailyPlan.recommendedMeals[0] ? `${dailyPlan.recommendedMeals[0].calories} kcal` : (metrics.caloriesConsumed > 0 ? `${metrics.caloriesConsumed} / ${profile?.calorie_goal || 2000} kcal` : '0 kcal logged')}
+              {metrics.caloriesConsumed > 0 ? `${metrics.caloriesConsumed} / ${profile?.calorie_goal || 2000} kcal` : `Target: ${profile?.calorie_goal || 2000} kcal`}
             </Text>
           </View>
 
@@ -178,13 +191,13 @@ export default function FutureLabScreen({ navigation }: any) {
           <View style={[styles.actionItem, { backgroundColor: colors.inputBg }]}>
             <View style={styles.actionLabelRow}>
               <Dumbbell size={14} color="#10b981" />
-              <Text style={[styles.actionLabel, { color: '#10b981' }]}>Workout</Text>
+              <Text style={[styles.actionLabel, { color: '#10b981' }]}>Workout Target</Text>
             </View>
             <Text style={[styles.actionVal, { color: colors.text }]} numberOfLines={1}>
-              {metrics.workoutMinutes > 0 ? `${metrics.workoutMinutes}m Active Logged` : (metrics.hasTelemetry ? dailyPlan.workoutRoutine.title : 'Complete workouts to build your fitness insights')}
+              {metrics.workoutMinutes > 0 ? `${metrics.workoutMinutes}m Active Workouts` : (metrics.steps > 0 ? `${metrics.steps} Steps Logged` : '30 mins active target')}
             </Text>
             <Text style={[styles.actionSub, { color: colors.textMuted }]}>
-              {metrics.workoutMinutes > 0 ? `${metrics.caloriesBurned} kcal burned` : (metrics.hasTelemetry ? `${dailyPlan.workoutRoutine.durationMin} mins • ${dailyPlan.workoutRoutine.intensity}` : '0 mins active')}
+              {metrics.workoutMinutes > 0 ? `${metrics.caloriesBurned} kcal burned` : (metrics.steps > 0 ? `${metrics.steps} / 10000 steps` : '0 mins active today')}
             </Text>
           </View>
 
@@ -192,12 +205,14 @@ export default function FutureLabScreen({ navigation }: any) {
           <View style={[styles.actionItem, { backgroundColor: colors.inputBg }]}>
             <View style={styles.actionLabelRow}>
               <Droplet size={14} color="#06b6d4" />
-              <Text style={[styles.actionLabel, { color: '#06b6d4' }]}>Hydration</Text>
+              <Text style={[styles.actionLabel, { color: '#06b6d4' }]}>Hydration Target</Text>
             </View>
             <Text style={[styles.actionVal, { color: colors.text }]}>
-              {metrics.hasTelemetry || metrics.hydrationMl > 0 ? `${dailyPlan.hydrationGoalMl} ml Target` : 'Start tracking water intake to see hydration insights'}
+              {metrics.hydrationMl > 0 ? `${metrics.hydrationMl} ml logged` : `${dailyPlan.hydrationGoalMl || 2500} ml Daily Target`}
             </Text>
-            <Text style={[styles.actionSub, { color: colors.textMuted }]}>{metrics.hydrationMl} ml logged</Text>
+            <Text style={[styles.actionSub, { color: colors.textMuted }]}>
+              {metrics.hydrationMl > 0 ? `${metrics.hydrationMl} / ${dailyPlan.hydrationGoalMl || 2500} ml` : '0 ml logged today'}
+            </Text>
           </View>
 
           {/* Sleep */}
@@ -207,10 +222,10 @@ export default function FutureLabScreen({ navigation }: any) {
               <Text style={[styles.actionLabel, { color: '#8b5cf6' }]}>Sleep Target</Text>
             </View>
             <Text style={[styles.actionVal, { color: colors.text }]}>
-              {metrics.hasTelemetry || metrics.sleepHours > 0 ? `${dailyPlan.sleepSchedule.targetHours} Hours Target` : 'Log your sleep to generate recovery insights'}
+              {metrics.sleepHours > 0 ? `${metrics.sleepHours} hrs logged` : `${dailyPlan.sleepSchedule.targetHours || 8.0} Hours Target`}
             </Text>
             <Text style={[styles.actionSub, { color: colors.textMuted }]}>
-              {metrics.sleepHours > 0 ? `${metrics.sleepHours} hrs logged` : (metrics.hasTelemetry ? `Wind down: ${dailyPlan.sleepSchedule.windDown}` : '0 hrs recorded')}
+              {metrics.sleepHours > 0 ? `Quality: ${metrics.sleepQuality || 80}%` : `Wind down at ${dailyPlan.sleepSchedule.windDown || '22:00'}`}
             </Text>
           </View>
         </View>
@@ -296,28 +311,32 @@ export default function FutureLabScreen({ navigation }: any) {
         <View style={[styles.projCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
           <Text style={[styles.projHeader, { color: colors.textMuted }]}>TODAY</Text>
           <Text style={[styles.projVal, { color: colors.text }]}>
-            {metrics.hasTelemetry && digitalTwin.overallHealthScore > 0 ? digitalTwin.overallHealthScore : '--'}
+            {digitalTwin.overallHealthScore > 0 ? digitalTwin.overallHealthScore : '--'}
           </Text>
-          <Text style={[styles.projSub, { color: colors.textMuted }]}>Baseline</Text>
+          <Text style={[styles.projSub, { color: colors.textMuted }]}>Current Baseline</Text>
         </View>
 
         <View style={[styles.projCard, { backgroundColor: colors.cardBg, borderColor: colors.primary }]}>
           <Text style={[styles.projHeader, { color: colors.primary }]}>30 DAYS</Text>
           <Text style={[styles.projVal, { color: colors.success }]}>
-            {metrics.trackingDaysCount >= 7 && projection30Days?.wellness ? projection30Days.wellness : '--'}
+            {projection30Days?.wellness && digitalTwin.overallHealthScore > 0 ? projection30Days.wellness : '--'}
           </Text>
           <Text style={[styles.projSub, { color: colors.success }]}>
-            {metrics.trackingDaysCount >= 7 && projection30Days?.vitalityAge ? `Bio: ${projection30Days.vitalityAge} yrs` : '7d tracking needed'}
+            {digitalTwin.overallHealthScore > 0
+              ? (metrics.trackingDaysCount >= 7 ? `Bio: ${projection30Days?.vitalityAge || digitalTwin.biologicalAge} yrs` : 'Early Estimate')
+              : 'Awaiting data'}
           </Text>
         </View>
 
         <View style={[styles.projCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
           <Text style={[styles.projHeader, { color: colors.textMuted }]}>1 YEAR</Text>
           <Text style={[styles.projVal, { color: colors.success }]}>
-            {metrics.trackingDaysCount >= 7 && projection1Year?.wellness ? projection1Year.wellness : '--'}
+            {projection1Year?.wellness && digitalTwin.overallHealthScore > 0 ? projection1Year.wellness : '--'}
           </Text>
           <Text style={[styles.projSub, { color: colors.success }]}>
-            {metrics.trackingDaysCount >= 7 && projection1Year?.vitalityAge ? `Bio: ${projection1Year.vitalityAge} yrs` : '7d tracking needed'}
+            {digitalTwin.overallHealthScore > 0
+              ? (metrics.trackingDaysCount >= 7 ? `Bio: ${projection1Year?.vitalityAge || digitalTwin.biologicalAge} yrs` : 'Early Estimate')
+              : 'Awaiting data'}
           </Text>
         </View>
       </View>
@@ -328,21 +347,24 @@ export default function FutureLabScreen({ navigation }: any) {
         <Text style={[styles.domainCardTitle, { color: colors.text }]}>Domain Health Scores</Text>
         {digitalTwin.domainScores.slice(0, 5).map((domain, i) => (
           <View key={i} style={styles.domainRow}>
-            <Text style={[styles.domainName, { color: colors.text }]}>{domain.name}</Text>
+            <View style={{ flex: 1, marginRight: 8 }}>
+              <Text style={[styles.domainName, { color: colors.text }]}>{domain.name}</Text>
+              <Text style={{ fontSize: 10, color: colors.textMuted, marginTop: 1 }} numberOfLines={1}>{domain.description}</Text>
+            </View>
             <View style={styles.domainRight}>
               <View style={[styles.domainBarBg, { backgroundColor: colors.inputBg }]}>
                 <View
                   style={[
                     styles.domainBarFill,
                     {
-                      width: `${metrics.hasTelemetry && domain.score > 0 ? domain.score : 0}%`,
+                      width: `${domain.score > 0 ? domain.score : 0}%`,
                       backgroundColor: domain.score >= 70 ? colors.success : colors.warning,
                     },
                   ]}
                 />
               </View>
               <Text style={[styles.domainScoreVal, { color: colors.text }]}>
-                {metrics.hasTelemetry && domain.score > 0 ? domain.score : '—'}
+                {domain.score > 0 ? domain.score : '—'}
               </Text>
             </View>
           </View>

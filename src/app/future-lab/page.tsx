@@ -122,7 +122,7 @@ export default function FutureHealthLabPage() {
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
                   <span className="text-3xl font-black text-[var(--foreground)]">
-                    {metrics.hasTelemetry && digitalTwin.overallHealthScore > 0 ? digitalTwin.overallHealthScore : "--"}
+                    {digitalTwin.overallHealthScore > 0 ? digitalTwin.overallHealthScore : "--"}
                   </span>
                   <span className="text-[8px] font-bold text-[var(--muted)] uppercase tracking-wider">Score</span>
                 </div>
@@ -135,18 +135,18 @@ export default function FutureHealthLabPage() {
                       ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' 
                       : 'bg-amber-500/10 text-amber-500 border-amber-500/20'
                   }`}>
-                    {metrics.hasTelemetry ? (healthScore.direction === 'Improving' ? '↗ Improving' : '→ Stable') : 'No Data'}
+                    {digitalTwin.overallHealthScore > 0 ? (healthScore.direction === 'Improving' ? '↗ Improving' : '→ Stable') : 'Awaiting Data'}
                   </span>
                 </div>
                 <h2 className="text-xl font-black text-[var(--foreground)]">
                   Bio Age: <span className="text-emerald-500">
-                    {metrics.hasTelemetry && digitalTwin.biologicalAge > 0 ? `${digitalTwin.biologicalAge} yrs` : "Not enough activity data yet"}
+                    {digitalTwin.biologicalAge > 0 ? `${digitalTwin.biologicalAge} yrs` : "Building Bio Age"}
                   </span>
                 </h2>
                 <p className="text-xs font-semibold text-[var(--muted)]">
-                  {metrics.hasTelemetry && digitalTwin.biologicalAge > 0
-                    ? (digitalTwin.ageDifference > 0 ? `${digitalTwin.ageDifference} yrs younger than actual age` : 'Aligned with actual age')
-                    : 'Collect more health activity to build your Digital Twin.'}
+                  {digitalTwin.biologicalAge > 0
+                    ? (digitalTwin.ageDifference > 0 ? `${digitalTwin.ageDifference} yrs younger than actual age` : (digitalTwin.ageDifference < 0 ? `${Math.abs(digitalTwin.ageDifference)} yrs above actual age` : 'Aligned with actual age'))
+                    : 'Start logging your health activities to calculate Bio Age.'}
                 </p>
               </div>
             </div>
@@ -192,7 +192,7 @@ export default function FutureHealthLabPage() {
             ) : (
               <div className="col-span-3 p-4 bg-emerald-500/5 border border-emerald-500/20 rounded-2xl text-center text-xs font-bold text-emerald-500 flex items-center justify-center gap-2">
                 <ShieldCheck className="h-4 w-4" />
-                {metrics.hasTelemetry ? "All primary health systems clear and optimal today!" : "Start logging sleep, workouts, or nutrition to generate real-time priority insights."}
+                {digitalTwin.overallHealthScore > 0 ? "All primary health systems clear and optimal today!" : "Start logging sleep, workouts, or nutrition to generate real-time priority insights."}
               </div>
             )}
           </div>
@@ -206,7 +206,7 @@ export default function FutureHealthLabPage() {
               <h2 className="text-lg font-black text-[var(--foreground)]">Today's AI Action Plan</h2>
             </div>
             <span className="text-[10px] font-bold text-[var(--muted)] bg-foreground/5 px-3 py-1 rounded-full border border-[var(--border)]">
-              {metrics.hasTelemetry ? "Auto-Generated Today" : "Awaiting Activity History"}
+              {digitalTwin.overallHealthScore > 0 ? "Auto-Generated Today" : "Awaiting Activity History"}
             </span>
           </div>
 
@@ -231,10 +231,10 @@ export default function FutureHealthLabPage() {
                 <Dumbbell className="h-4 w-4" /> Workout
               </div>
               <h4 className="text-xs font-bold text-[var(--foreground)] truncate">
-                {metrics.workoutMinutes > 0 ? `${metrics.workoutMinutes}m Active Logged` : (metrics.hasTelemetry ? dailyPlan.workoutRoutine.title : "Complete workouts to build your fitness insights")}
+                {metrics.workoutMinutes > 0 ? `${metrics.workoutMinutes}m Active Logged` : (metrics.steps > 0 ? `${metrics.steps} Steps Logged` : "Complete workouts to build your fitness insights")}
               </h4>
               <p className="text-[10px] text-[var(--muted)] font-semibold">
-                {metrics.workoutMinutes > 0 ? `${metrics.caloriesBurned} kcal burned` : (metrics.hasTelemetry ? `${dailyPlan.workoutRoutine.durationMin} mins • ${dailyPlan.workoutRoutine.intensity}` : "0 mins active")}
+                {metrics.workoutMinutes > 0 ? `${metrics.caloriesBurned} kcal burned` : (metrics.steps > 0 ? `${metrics.steps} / 10000 steps` : "0 mins active")}
               </p>
             </div>
 
@@ -244,7 +244,7 @@ export default function FutureHealthLabPage() {
                 <Droplet className="h-4 w-4" /> Hydration
               </div>
               <h4 className="text-xs font-bold text-[var(--foreground)]">
-                {metrics.hasTelemetry || metrics.hydrationMl > 0 ? `${dailyPlan.hydrationGoalMl} ml Target` : "Start tracking water intake to see hydration insights"}
+                {metrics.hydrationMl > 0 ? `${metrics.hydrationMl} ml logged` : `${dailyPlan.hydrationGoalMl || 2500} ml Target`}
               </h4>
               <p className="text-[10px] text-[var(--muted)] font-semibold">{metrics.hydrationMl} ml logged</p>
             </div>
@@ -255,7 +255,7 @@ export default function FutureHealthLabPage() {
                 <Moon className="h-4 w-4" /> Sleep Target
               </div>
               <h4 className="text-xs font-bold text-[var(--foreground)]">
-                {metrics.hasTelemetry || metrics.sleepHours > 0 ? `${dailyPlan.sleepSchedule.targetHours} Hours Target` : "Log your sleep to generate recovery insights"}
+                {metrics.sleepHours > 0 ? `${metrics.sleepHours} hrs logged` : `${dailyPlan.sleepSchedule.targetHours || 8.0} Hours Target`}
               </h4>
               <p className="text-[10px] text-[var(--muted)] font-semibold">
                 {metrics.sleepHours > 0 ? `${metrics.sleepHours} hrs logged` : (metrics.hasTelemetry ? `Wind down: ${dailyPlan.sleepSchedule.windDown}` : "0 hrs recorded")}
@@ -268,9 +268,9 @@ export default function FutureHealthLabPage() {
                 <CheckCircle2 className="h-4 w-4" /> Wellness Goal
               </div>
               <h4 className="text-xs font-bold text-[var(--foreground)] truncate">
-                {dailyPlan.wellnessGoals[0] || (metrics.hasTelemetry ? "10m Breathing" : "Log your first health activity today")}
+                {dailyPlan.wellnessGoals[0] || (digitalTwin.overallHealthScore > 0 ? "10m Breathing" : "Log your first health activity today")}
               </h4>
-              <p className="text-[10px] text-emerald-500 font-bold">{metrics.hasTelemetry ? "In Progress" : "Ready to start"}</p>
+              <p className="text-[10px] text-emerald-500 font-bold">{digitalTwin.overallHealthScore > 0 ? "In Progress" : "Ready to start"}</p>
             </div>
 
           </div>
@@ -282,13 +282,13 @@ export default function FutureHealthLabPage() {
             <h2 className="text-sm font-bold text-[var(--foreground)] flex items-center gap-2">
               <Sparkles className="h-4 w-4 text-primary" /> Future Longevity Projection
             </h2>
-            {metrics.trackingDaysCount >= 7 ? (
+            {digitalTwin.overallHealthScore > 0 ? (
               <span className="text-[10px] font-bold text-emerald-500 bg-emerald-500/10 px-2.5 py-0.5 rounded-full">
-                90% Projection Confidence
+                {metrics.trackingDaysCount >= 7 ? "90% Projection Confidence (7d+ Trend)" : "Early Trend Assessment"}
               </span>
             ) : (
               <span className="text-[10px] font-bold text-amber-500 bg-amber-500/10 px-2.5 py-0.5 rounded-full">
-                Awaiting 7 Days Activity
+                Awaiting Telemetry
               </span>
             )}
           </div>
@@ -297,28 +297,32 @@ export default function FutureHealthLabPage() {
             <div className="p-4 bg-[var(--background)] rounded-2xl border border-[var(--border)] space-y-1">
               <span className="text-[9px] font-bold text-[var(--muted)] uppercase block">Today</span>
               <p className="text-xl font-black text-[var(--foreground)]">
-                {metrics.hasTelemetry && digitalTwin.overallHealthScore > 0 ? digitalTwin.overallHealthScore : "--"}
+                {digitalTwin.overallHealthScore > 0 ? digitalTwin.overallHealthScore : "--"}
               </p>
-              <span className="text-[10px] font-semibold text-[var(--muted)]">Baseline</span>
+              <span className="text-[10px] font-semibold text-[var(--muted)]">Current Baseline</span>
             </div>
 
             <div className="p-4 bg-[var(--background)] rounded-2xl border border-primary/20 space-y-1 bg-primary/5">
               <span className="text-[9px] font-bold text-primary uppercase block">30 Days</span>
               <p className="text-xl font-black text-emerald-500">
-                {metrics.trackingDaysCount >= 7 && projection30Days?.wellness ? projection30Days.wellness : "--"}
+                {projection30Days?.wellness && digitalTwin.overallHealthScore > 0 ? projection30Days.wellness : "--"}
               </p>
               <span className="text-[10px] font-bold text-emerald-500">
-                {metrics.trackingDaysCount >= 7 && projection30Days?.vitalityAge ? `Bio Age: ${projection30Days.vitalityAge} yrs` : "7d tracking needed"}
+                {digitalTwin.overallHealthScore > 0
+                  ? (metrics.trackingDaysCount >= 7 ? `Bio Age: ${projection30Days?.vitalityAge || digitalTwin.biologicalAge} yrs` : "Early Estimate")
+                  : "Awaiting data"}
               </span>
             </div>
 
             <div className="p-4 bg-[var(--background)] rounded-2xl border border-[var(--border)] space-y-1">
-              <span className="text-[9px] font-bold text-[var(--muted)] uppercase block">1 Year</span>
+              <span className="text-[9px] font-bold text-primary uppercase block">1 Year</span>
               <p className="text-xl font-black text-emerald-500">
-                {metrics.trackingDaysCount >= 7 && projection1Year?.wellness ? projection1Year.wellness : "--"}
+                {projection1Year?.wellness && digitalTwin.overallHealthScore > 0 ? projection1Year.wellness : "--"}
               </p>
               <span className="text-[10px] font-bold text-emerald-500">
-                {metrics.trackingDaysCount >= 7 && projection1Year?.vitalityAge ? `Bio Age: ${projection1Year.vitalityAge} yrs` : "7d tracking needed"}
+                {digitalTwin.overallHealthScore > 0
+                  ? (metrics.trackingDaysCount >= 7 ? `Bio Age: ${projection1Year?.vitalityAge || digitalTwin.biologicalAge} yrs` : "Early Estimate")
+                  : "Awaiting data"}
               </span>
             </div>
           </div>
@@ -422,7 +426,7 @@ export default function FutureHealthLabPage() {
                 <div key={i} className="flex items-center justify-between text-xs font-semibold">
                   <span className="text-[var(--foreground)]">{domain.name}</span>
                   <div className="flex items-center gap-2">
-                    {metrics.hasTelemetry && domain.score > 0 ? (
+                    {domain.score > 0 ? (
                       <>
                         <div className="w-24 h-1.5 bg-foreground/10 rounded-full overflow-hidden">
                           <div className={`h-full rounded-full ${domain.score >= 75 ? 'bg-emerald-500' : 'bg-amber-500'}`} style={{ width: `${domain.score}%` }} />
@@ -430,7 +434,7 @@ export default function FutureHealthLabPage() {
                         <span className="font-bold text-[var(--foreground)] w-7 text-right">{domain.score}</span>
                       </>
                     ) : (
-                      <span className="text-[10px] font-bold text-[var(--muted)] italic">Not enough data</span>
+                      <span className="text-[10px] font-bold text-[var(--muted)] italic">No data yet</span>
                     )}
                   </div>
                 </div>

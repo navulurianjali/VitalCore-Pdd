@@ -3,8 +3,11 @@ export interface BaseHealthMetrics {
   caloriesTarget: number;
   caloriesConsumed: number;
   proteinG?: number;
+  proteinTarget?: number;
   carbsG?: number;
+  carbsTarget?: number;
   fatG?: number;
+  fatTarget?: number;
   fiberG?: number;
   sugarG?: number;
   sodiumMg?: number;
@@ -93,19 +96,21 @@ export function computeDigitalTwin(metrics: BaseHealthMetrics, chronologicalAge:
   const stepsVal = metrics.steps || 0;
   const stressVal = metrics.stressLevel || 30;
 
+  const hasTelemetry = Boolean(sleepHrs > 0 || hydroMl > 0 || ((metrics.caloriesConsumed || 0) > 0) || stepsVal > 0);
+
   // 1. Stability score (0-100)
   const hydroRatio = Math.min(1.2, hydroMl / hydroTarget);
   const sleepRatio = Math.min(1.2, sleepHrs / 8.0);
-  const stability = Math.round(
+  const rawStability = Math.round(
     sleepQual * 0.35 + hydroRatio * 30 + (stepsVal >= 8000 ? 25 : (stepsVal / 8000) * 25) + (100 - stressVal) * 0.1
   );
-  const finalStability = Math.max(0, Math.min(99, stability));
+  const finalStability = hasTelemetry ? Math.max(0, Math.min(99, rawStability)) : 0;
 
   // 2. Biological Age Shift
   let ageShift = 0.0;
-  if (finalStability > 80) ageShift = -2.5;
-  else if (finalStability > 65) ageShift = -1.0;
-  else if (finalStability < 45) ageShift = 1.5;
+  if (hasTelemetry && finalStability > 80) ageShift = -2.5;
+  else if (hasTelemetry && finalStability > 65) ageShift = -1.0;
+  else if (hasTelemetry && finalStability < 45) ageShift = 1.5;
   else ageShift = 0.0;
 
   // 3. Risk factors

@@ -47,7 +47,7 @@ const INITIAL_SUGGESTIONS = [
   'How can I improve my recovery?',
 ];
 
-export default function AICoachScreen() {
+export default function AICoachScreen({ navigation }: any) {
   const { profile, user } = useAuth();
   const { colors, isCareMode } = useTheme();
   const { metrics } = useHealthData();
@@ -424,6 +424,8 @@ export default function AICoachScreen() {
 
   return (
     <ScreenWrapper
+      showBack
+      onBack={() => (navigation?.canGoBack?.() ? navigation.goBack() : navigation?.navigate?.('MainTabs', { screen: 'Home' }))}
       title="AI Coach"
       subtitle={`Telemetry: ${metrics?.sleepHours || 0}h Sleep • ${metrics?.hydrationMl || 0}ml Water • ${metrics?.caloriesConsumed || 0} kcal`}
       scrollable={false}

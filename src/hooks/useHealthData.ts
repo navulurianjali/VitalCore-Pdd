@@ -78,17 +78,33 @@ export function useHealthData(selectedDateInput?: string) {
       const breakdown = calculateGoalBreakdown(record);
 
       // 2. Query historical telemetry count for stability score
-      const { data: rawNutrition } = await supabase.from("nutrition_logs").select("date, created_at").eq("user_id", profile.id);
-      const { data: rawWorkouts } = await supabase.from("workouts").select("created_at").eq("user_id", profile.id);
-      const { data: rawHydration } = await supabase.from("hydration_logs").select("created_at").eq("user_id", profile.id);
+      const [{ data: rawNutrition }, { data: rawWorkouts }, { data: rawHydration }, { data: rawSleep }] = await Promise.all([
+        supabase.from("nutrition_logs").select("date, created_at").eq("user_id", profile.id),
+        supabase.from("workouts").select("created_at").eq("user_id", profile.id),
+        supabase.from("hydration_logs").select("created_at").eq("user_id", profile.id),
+        supabase.from("sleep_logs").select("created_at").eq("user_id", profile.id)
+      ]);
 
       const trackingDates = new Set<string>();
       (rawNutrition || []).forEach((i: any) => { const d = i.date || i.created_at?.split('T')[0]; if (d) trackingDates.add(d); });
       (rawWorkouts || []).forEach((i: any) => { if (i.created_at) trackingDates.add(i.created_at.split('T')[0]); });
       (rawHydration || []).forEach((i: any) => { if (i.created_at) trackingDates.add(i.created_at.split('T')[0]); });
+      (rawSleep || []).forEach((i: any) => { if (i.created_at) trackingDates.add(i.created_at.split('T')[0]); });
 
-      const trackingDaysCount = trackingDates.size;
-      const hasTelemetry = record.has_data;
+      const hasActivityToday = Boolean(
+        record.calories_consumed > 0 ||
+        record.water_ml > 0 ||
+        record.workout_minutes > 0 ||
+        record.sleep_hours > 0 ||
+        record.steps > 0
+      );
+
+      if (hasActivityToday) {
+        trackingDates.add(targetDate);
+      }
+
+      const trackingDaysCount = Math.max(hasActivityToday ? 1 : 0, trackingDates.size);
+      const hasTelemetry = Boolean(hasActivityToday || trackingDaysCount > 0);
 
       const realMetrics: HealthDigitalTwin = {
         caloriesBurned: record.workout_minutes * 8, // Estimated calories burned from workout duration

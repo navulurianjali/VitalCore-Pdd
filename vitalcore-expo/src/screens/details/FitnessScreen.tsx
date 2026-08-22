@@ -65,6 +65,7 @@ export default function FitnessScreen({ navigation }: any) {
   const [timeLeft, setTimeLeft] = useState(45);
   const [isResting, setIsResting] = useState(false);
   const [completedExercises, setCompletedExercises] = useState<boolean[]>([]);
+  const [skippedExercises, setSkippedExercises] = useState<boolean[]>([]);
 
   // Post Workout Stats
   const [workoutDurationSpent, setWorkoutDurationSpent] = useState(0);
@@ -90,7 +91,7 @@ export default function FitnessScreen({ navigation }: any) {
         setWorkoutHistory(data);
       }
     } catch (e) {
-      console.error(e);
+      console.error('Error fetching workout history:', e);
     } finally {
       setFetchingHistory(false);
     }
@@ -136,7 +137,52 @@ export default function FitnessScreen({ navigation }: any) {
     return () => clearInterval(interval);
   }, [coachState]);
 
-  const handleTimeExpired = () => {
+  // Dynamic AI coaching cue generator based on active exercise and timer
+  const getCoachingCue = (exerciseName: string, timeRemaining: number, isRest: boolean) => {
+    if (isRest) {
+      return "🧘 Rest interval: Deep belly breathing to restore heart rate.";
+    }
+    const name = (exerciseName || '').toLowerCase();
+    if (name.includes('squat')) {
+      if (timeRemaining > 30) return "💡 Keep your chest upright and drive your hips back.";
+      if (timeRemaining > 15) return "💡 Drive through your heels and squeeze glutes at the top.";
+      return "💡 Final push! Keep knees tracking in line with toes.";
+    }
+    if (name.includes('plank') || name.includes('core') || name.includes('crunch')) {
+      if (timeRemaining > 30) return "💡 Engage your core and keep your spine neutral.";
+      if (timeRemaining > 15) return "💡 Don't let your lower back sag; keep glutes tight.";
+      return "💡 Hold steady through the final seconds!";
+    }
+    if (name.includes('push') || name.includes('press')) {
+      if (timeRemaining > 30) return "💡 Keep elbows at roughly 45° to protect shoulders.";
+      if (timeRemaining > 15) return "💡 Control down and press up with power.";
+      return "💡 Power through the final reps!";
+    }
+    if (name.includes('stretch') || name.includes('mobility') || name.includes('yoga')) {
+      return "💡 Relax into the stretch and maintain smooth, slow breaths.";
+    }
+    if (timeRemaining > 30) return "💡 Maintain smooth tempo and steady breathing rhythm.";
+    if (timeRemaining > 15) return "💡 Focus on mind-muscle connection and full range.";
+    return "💡 Strong finish! Keep form strict until the buzzer.";
+  };
+
+  const handleSkipExercise = () => {
+    const updatedSkipped = [...skippedExercises];
+    updatedSkipped[currentExerciseIdx] = true;
+    setSkippedExercises(updatedSkipped);
+
+    const nextIdx = currentExerciseIdx + 1;
+    if (nextIdx < generatedWorkout.length) {
+      setCurrentExerciseIdx(nextIdx);
+      setTimeLeft(generatedWorkout[nextIdx].durationSeconds);
+      setIsResting(false);
+      setTimerRunning(true);
+    } else {
+      finishWorkoutSession(updatedSkipped, completedExercises);
+    }
+  };
+
+  const handleMarkComplete = () => {
     if (isResting) {
       setIsResting(false);
       const nextIdx = currentExerciseIdx + 1;
@@ -145,22 +191,40 @@ export default function FitnessScreen({ navigation }: any) {
         setTimeLeft(generatedWorkout[nextIdx].durationSeconds);
         setTimerRunning(true);
       } else {
-        finishWorkoutSession();
+        finishWorkoutSession(skippedExercises, completedExercises);
       }
     } else {
-      const updated = [...completedExercises];
-      updated[currentExerciseIdx] = true;
-      setCompletedExercises(updated);
+      const updatedCompleted = [...completedExercises];
+      updatedCompleted[currentExerciseIdx] = true;
+      setCompletedExercises(updatedCompleted);
 
       const nextIdx = currentExerciseIdx + 1;
       if (nextIdx < generatedWorkout.length) {
         setIsResting(true);
-        setTimeLeft(generatedWorkout[currentExerciseIdx].restSeconds);
+        setTimeLeft(generatedWorkout[currentExerciseIdx].restSeconds || 30);
         setTimerRunning(true);
       } else {
-        finishWorkoutSession();
+        finishWorkoutSession(skippedExercises, updatedCompleted);
       }
     }
+  };
+
+  const handleQuitWorkout = () => {
+    Alert.alert(
+      "Quit Workout",
+      "Are you sure you want to stop this workout? Your active progress will be lost.",
+      [
+        { text: "Cancel", style: "cancel" },
+        { text: "Quit", style: "destructive", onPress: () => {
+          setTimerRunning(false);
+          setCoachState('form');
+        }}
+      ]
+    );
+  };
+
+  const handleTimeExpired = () => {
+    handleMarkComplete();
   };
 
   // Compile Adaptive Workout (using ExerciseDB API & profile-driven engine)
@@ -198,6 +262,7 @@ export default function FitnessScreen({ navigation }: any) {
       setActiveWorkoutName(`ADAPTIVE ${titleFocus} SESSION`);
       setGeneratedWorkout(finalExercises);
       setCompletedExercises(new Array(finalExercises.length).fill(false));
+      setSkippedExercises(new Array(finalExercises.length).fill(false));
       setCurrentExerciseIdx(0);
       setIsResting(false);
     } catch (e) {
@@ -215,6 +280,7 @@ export default function FitnessScreen({ navigation }: any) {
       setReadinessScore(result.readinessScore);
       setGeneratedWorkout(result.exercises);
       setCompletedExercises(new Array(result.exercises.length).fill(false));
+      setSkippedExercises(new Array(result.exercises.length).fill(false));
       setCurrentExerciseIdx(0);
       setIsResting(false);
     }
@@ -229,10 +295,13 @@ export default function FitnessScreen({ navigation }: any) {
     setIsResting(false);
   };
 
-  const finishWorkoutSession = async () => {
+  const finishWorkoutSession = async (skippedArr?: boolean[], completedArr?: boolean[]) => {
     setTimerRunning(false);
 
-    const totalSecs = generatedWorkout.reduce((acc, ex) => acc + ex.durationSeconds, 0);
+    const effectiveCompleted = completedArr || completedExercises;
+    const totalSecs = generatedWorkout.reduce((acc, ex, idx) => {
+      return acc + (effectiveCompleted[idx] ? ex.durationSeconds : Math.round(ex.durationSeconds * 0.4));
+    }, 0);
     const minsSpent = Math.max(1, Math.round(totalSecs / 60));
     const estimatedCals = Math.round(minsSpent * (intensity === 'intense' ? 9.5 : intensity === 'light' ? 5.5 : 7.5));
 
@@ -243,9 +312,10 @@ export default function FitnessScreen({ navigation }: any) {
     if (profile?.id && supabase) {
       try {
         setSavingWorkout(true);
+        const todayDate = getLocalDateString(undefined, profile?.timezone);
         await supabase.from('workouts').insert({
           user_id: profile.id,
-          date: getLocalDateString(undefined, profile?.timezone),
+          date: todayDate,
           name: activeWorkoutName,
           type: focus,
           duration_minutes: minsSpent,
@@ -602,7 +672,7 @@ export default function FitnessScreen({ navigation }: any) {
             </View>
           )}
 
-          {/* STEP 4: ACTIVE WORKOUT TIMER */}
+          {/* STEP 4: ACTIVE WORKOUT TIMER (11 REQUIRED ELEMENTS) */}
           {coachState === 'active' && currentExercise && (
             <View style={[styles.cardBox, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
               {/* Header Status */}
@@ -610,41 +680,99 @@ export default function FitnessScreen({ navigation }: any) {
                 <Text style={[styles.activeStep, { color: colors.primary }]}>
                   Exercise {currentExerciseIdx + 1} of {generatedWorkout.length}
                 </Text>
-                <Text style={[styles.activeStatus, { color: colors.textMuted }]}>
+                <Text style={[styles.activeStatus, { color: isResting ? '#f59e0b' : colors.primary }]}>
                   {isResting ? '🧘 REST INTERVAL' : '🔥 ACTIVE SET'}
                 </Text>
               </View>
 
-              {/* Countdown Display */}
-              <View style={[styles.timerCircle, { borderColor: isResting ? colors.warning : colors.primary }]}>
-                <Text style={[styles.timerNum, { color: isResting ? colors.warning : colors.primary }]}>{timeLeft}</Text>
-                <Text style={[styles.timerLabel, { color: colors.textMuted }]}>Seconds Left</Text>
+              {/* 1. Exercise Name */}
+              <Text style={[styles.currentExName, { color: colors.text }]}>
+                {isResting ? 'Rest & Transition' : currentExercise.name}
+              </Text>
+
+              {/* 2. Clear Description */}
+              <Text style={[styles.currentExDesc, { color: colors.textMuted }]}>
+                {isResting
+                  ? `Prepare for next exercise: ${generatedWorkout[Math.min(generatedWorkout.length - 1, currentExerciseIdx + 1)].name}`
+                  : currentExercise.description}
+              </Text>
+
+              {/* 3. Exercise Duration / Countdown Timer */}
+              <View style={[styles.timerCircle, { borderColor: isResting ? '#f59e0b' : colors.primary }]}>
+                <Text style={[styles.timerNum, { color: isResting ? '#f59e0b' : colors.primary }]}>{timeLeft}s</Text>
+                <Text style={[styles.timerLabel, { color: colors.textMuted }]}>{isResting ? 'Rest Left' : 'Seconds Left'}</Text>
               </View>
 
-              {/* Current Exercise Title & Purpose */}
-              <Text style={[styles.currentExName, { color: colors.text }]}>
-                {isResting ? 'Rest & Hydrate' : currentExercise.name}
-              </Text>
-              <Text style={[styles.currentExDesc, { color: colors.textMuted }]}>
-                {isResting ? 'Prepare for the next exercise set.' : currentExercise.description}
-              </Text>
+              {/* 4. Target Reps, 5. Sets, 6. Equipment */}
+              {!isResting && (
+                <View style={styles.metaGrid}>
+                  <View style={[styles.metaItem, { backgroundColor: colors.inputBg, borderColor: colors.inputBorder }]}>
+                    <Text style={[styles.metaLabel, { color: colors.textMuted }]}>TARGET</Text>
+                    <Text style={[styles.metaValue, { color: colors.text }]}>{currentExercise.reps}</Text>
+                  </View>
+                  <View style={[styles.metaItem, { backgroundColor: colors.inputBg, borderColor: colors.inputBorder }]}>
+                    <Text style={[styles.metaLabel, { color: colors.textMuted }]}>SETS</Text>
+                    <Text style={[styles.metaValue, { color: colors.text }]}>{currentExercise.sets} Sets</Text>
+                  </View>
+                  <View style={[styles.metaItem, { backgroundColor: colors.inputBg, borderColor: colors.inputBorder }]}>
+                    <Text style={[styles.metaLabel, { color: colors.textMuted }]}>EQUIPMENT</Text>
+                    <Text style={[styles.metaValue, { color: colors.primary }]} numberOfLines={1}>{currentExercise.equipment || 'None'}</Text>
+                  </View>
+                </View>
+              )}
 
-              {/* Controls */}
+              {/* 7. AI-Generated / Dynamic Coaching Cue */}
+              <View style={[styles.cueBox, { backgroundColor: colors.inputBg, borderColor: colors.primary }]}>
+                <Text style={[styles.cueText, { color: colors.primary }]}>
+                  {getCoachingCue(currentExercise.name, timeLeft, isResting)}
+                </Text>
+              </View>
+
+              {/* 8. Play/Pause, 9. Skip Set, 10. Complete Set Controls */}
               <View style={styles.controlsRow}>
+                {/* 9. Skip Set Button */}
                 <TouchableOpacity
-                  style={[styles.controlBtn, { backgroundColor: colors.primary }]}
+                  testID="fitness_skip_set_btn"
+                  accessibilityLabel="fitness_skip_set_btn"
+                  style={[styles.actionCtrlBtn, { backgroundColor: colors.inputBg, borderColor: colors.inputBorder }]}
+                  onPress={handleSkipExercise}
+                  activeOpacity={0.7}
+                >
+                  <ArrowRight size={18} color={colors.textMuted} />
+                  <Text style={[styles.actionCtrlText, { color: colors.text }]}>Skip Set →</Text>
+                </TouchableOpacity>
+
+                {/* 8. Play/Pause Timer */}
+                <TouchableOpacity
+                  testID="fitness_play_pause_btn"
+                  accessibilityLabel="fitness_play_pause_btn"
+                  style={[styles.controlBtn, { backgroundColor: timerRunning ? '#f59e0b' : colors.primary }]}
                   onPress={() => setTimerRunning(!timerRunning)}
+                  activeOpacity={0.8}
                 >
                   {timerRunning ? <Pause size={24} color="#ffffff" /> : <Play size={24} color="#ffffff" />}
                 </TouchableOpacity>
 
+                {/* 10. Complete Set Button */}
                 <TouchableOpacity
-                  style={[styles.skipBtn, { backgroundColor: colors.inputBg }]}
-                  onPress={handleTimeExpired}
+                  testID="fitness_complete_set_btn"
+                  accessibilityLabel="fitness_complete_set_btn"
+                  style={[styles.actionCtrlBtn, { backgroundColor: '#10b981', borderColor: '#10b981' }]}
+                  onPress={handleMarkComplete}
+                  activeOpacity={0.8}
                 >
-                  <Text style={[styles.skipBtnText, { color: colors.text }]}>Skip Set →</Text>
+                  <CheckCircle2 size={18} color="#ffffff" />
+                  <Text style={[styles.actionCtrlText, { color: '#ffffff', fontWeight: '800' }]}>Complete Set ✓</Text>
                 </TouchableOpacity>
               </View>
+
+              {/* 11. Quit Workout Option */}
+              <TouchableOpacity
+                style={styles.quitBtn}
+                onPress={handleQuitWorkout}
+              >
+                <Text style={[styles.quitBtnText, { color: colors.textMuted }]}>✕ Quit Active Session</Text>
+              </TouchableOpacity>
             </View>
           )}
 
@@ -755,8 +883,18 @@ const styles = StyleSheet.create({
   timerLabel: { fontSize: 11, marginTop: 2 },
   currentExName: { fontSize: 20, fontWeight: '800', textAlign: 'center', marginBottom: 4 },
   currentExDesc: { fontSize: 12, textAlign: 'center', lineHeight: 18, marginBottom: 20 },
-  controlsRow: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 16 },
-  controlBtn: { width: 56, height: 56, borderRadius: 28, justifyContent: 'center', alignItems: 'center' },
+  controlsRow: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 16, marginTop: 12 },
+  controlBtn: { width: 56, height: 56, borderRadius: 28, justifyContent: 'center', alignItems: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 3 },
+  actionCtrlBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 12, paddingHorizontal: 16, borderRadius: 14, borderWidth: 1, gap: 6 },
+  actionCtrlText: { fontSize: 13, fontWeight: '700' },
+  metaGrid: { flexDirection: 'row', gap: 8, marginVertical: 12 },
+  metaItem: { flex: 1, padding: 10, borderRadius: 12, borderWidth: 1, alignItems: 'center' },
+  metaLabel: { fontSize: 9, fontWeight: '800', letterSpacing: 0.5, marginBottom: 2 },
+  metaValue: { fontSize: 13, fontWeight: '800' },
+  cueBox: { padding: 12, borderRadius: 14, borderWidth: 1, marginVertical: 8, alignItems: 'center' },
+  cueText: { fontSize: 12, fontWeight: '700', textAlign: 'center', lineHeight: 16 },
+  quitBtn: { alignItems: 'center', marginTop: 16, paddingVertical: 6 },
+  quitBtnText: { fontSize: 11, fontWeight: '700', letterSpacing: 0.5 },
   skipBtn: { paddingVertical: 12, paddingHorizontal: 18, borderRadius: 14 },
   skipBtnText: { fontSize: 13, fontWeight: '700' },
   summaryStatsRow: { flexDirection: 'row', gap: 12, marginTop: 16 },

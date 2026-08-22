@@ -435,7 +435,7 @@ export default function CalorieTrackerScreen({ navigation }: any) {
         ) : logs.length === 0 ? (
           <View style={[styles.emptyBox, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
             <Text style={[styles.emptyText, { color: colors.textMuted }]}>
-              No food logged today. Tap &quot;+ Add Food&quot; on any meal to start!
+              No food logged today. Start logging meals to track your nutrition.
             </Text>
           </View>
         ) : (

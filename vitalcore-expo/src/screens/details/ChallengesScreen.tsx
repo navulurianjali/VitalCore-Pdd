@@ -5,11 +5,9 @@ import {
   Text,
   ScrollView,
   TouchableOpacity,
-  SafeAreaView,
   ActivityIndicator,
   Alert,
   Modal,
-  FlatList,
 } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 import { useAuth } from '../../context/AuthContext';
@@ -19,7 +17,6 @@ import { CustomTextInput } from '../../components/CustomTextInput';
 import ScreenWrapper from '../../components/ScreenWrapper';
 import {
   Target,
-  Users,
   CheckCircle,
   Activity,
   Plus,
@@ -31,14 +28,12 @@ import {
   Smile,
   Sparkles,
   Award,
-  Star,
   Clock,
-  ArrowRight,
   ChevronRight,
   Trophy,
   Flame,
-  Zap,
   ShieldCheck,
+  Check,
 } from 'lucide-react-native';
 
 export interface ChallengeItem {
@@ -50,7 +45,6 @@ export interface ChallengeItem {
   xp_reward: number;
   duration_days: number;
   participants_count?: number;
-  joined?: boolean;
 }
 
 export const PREDEFINED_CHALLENGES: ChallengeItem[] = [
@@ -84,8 +78,8 @@ export const PREDEFINED_CHALLENGES: ChallengeItem[] = [
   { id: "c-hab-2", title: "Cold Shower Energy Boost", description: "Take a 60-second cold shower ending every morning for 14 days.", category: "Healthy Habits", difficulty: "Medium", xp_reward: 300, duration_days: 14, participants_count: 225 }
 ];
 
-// SVG Circular Progress Ring
-const ProgressRing = ({ percentage = 0, size = 42, strokeWidth = 3.5, color }: { percentage: number; size?: number; strokeWidth?: number; color?: string }) => {
+// Circular SVG Progress Ring
+const ProgressRing = ({ percentage = 0, size = 44, strokeWidth = 3.5, color }: { percentage: number; size?: number; strokeWidth?: number; color?: string }) => {
   const activeColor = color || '#0d9488';
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
@@ -98,7 +92,7 @@ const ProgressRing = ({ percentage = 0, size = 42, strokeWidth = 3.5, color }: {
           cx={size / 2}
           cy={size / 2}
           r={radius}
-          stroke="rgba(0,0,0,0.08)"
+          stroke="rgba(150, 150, 150, 0.15)"
           strokeWidth={strokeWidth}
           fill="transparent"
         />
@@ -115,7 +109,7 @@ const ProgressRing = ({ percentage = 0, size = 42, strokeWidth = 3.5, color }: {
         />
       </Svg>
       <View style={{ position: 'absolute' }}>
-        <Text style={{ fontSize: 10, fontWeight: 'bold', color: activeColor }}>
+        <Text style={{ fontSize: 10, fontWeight: '800', color: activeColor }}>
           {Math.round(percentage)}%
         </Text>
       </View>
@@ -124,19 +118,19 @@ const ProgressRing = ({ percentage = 0, size = 42, strokeWidth = 3.5, color }: {
 };
 
 export default function ChallengesScreen({ navigation }: any) {
-  const { user, profile } = useAuth();
-  const { colors, isCareMode } = useTheme();
+  const { user, profile, updateProfile, refreshProfile } = useAuth();
+  const { colors } = useTheme();
 
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [challenges, setChallenges] = useState<ChallengeItem[]>(PREDEFINED_CHALLENGES);
-  const [userJoinedMap, setUserJoinedMap] = useState<Record<string, number>>({});
-  const [userChallengesRaw, setUserChallengesRaw] = useState<any[]>([]);
+  const [userChallenges, setUserChallenges] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const [actionLoadingId, setActionLoadingId] = useState<string | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [selectedChallengeModal, setSelectedChallengeModal] = useState<ChallengeItem | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
-  // Create Form state
+  // Form state
   const [newTitle, setNewTitle] = useState('');
   const [newDesc, setNewDesc] = useState('');
   const [newCategory, setNewCategory] = useState('Fitness');
@@ -178,12 +172,12 @@ export default function ChallengesScreen({ navigation }: any) {
           .eq('user_id', userId);
         successCount = Math.min(duration, Math.floor((data || []).length / 3));
       } else {
-        successCount = 2;
+        successCount = 0;
       }
 
-      return Math.min(100, Math.max(15, Math.round((successCount / duration) * 100)));
+      return Math.min(100, Math.max(0, Math.round((successCount / duration) * 100)));
     } catch {
-      return 15;
+      return 0;
     }
   };
 
@@ -192,9 +186,7 @@ export default function ChallengesScreen({ navigation }: any) {
       setLoading(true);
       const { data: dbData } = await supabase.from('challenges').select('*').order('id', { ascending: false });
 
-      const joinedProgressMap: Record<string, number> = {};
       let rawUserChalls: any[] = [];
-
       if (user?.id) {
         const { data: userChall } = await supabase
           .from('user_challenges')
@@ -203,16 +195,9 @@ export default function ChallengesScreen({ navigation }: any) {
 
         if (userChall) {
           rawUserChalls = userChall;
-          userChall.forEach((uc: any) => {
-            const chId = uc.challenge_id || uc.challenge?.id;
-            if (chId) {
-              joinedProgressMap[chId] = uc.progress_percentage || 15;
-            }
-          });
         }
       }
-      setUserJoinedMap(joinedProgressMap);
-      setUserChallengesRaw(rawUserChalls);
+      setUserChallenges(rawUserChalls);
 
       const combinedMap = new Map<string, ChallengeItem>();
 
@@ -227,7 +212,6 @@ export default function ChallengesScreen({ navigation }: any) {
             xp_reward: Number(c.xp_reward || 200),
             duration_days: Number(c.duration_days || 7),
             participants_count: Number(c.participants_count || 120),
-            joined: Boolean(joinedProgressMap[c.id]),
           };
           combinedMap.set(c.title.toLowerCase().trim(), item);
         });
@@ -236,32 +220,29 @@ export default function ChallengesScreen({ navigation }: any) {
       PREDEFINED_CHALLENGES.forEach(c => {
         const key = c.title.toLowerCase().trim();
         if (!combinedMap.has(key)) {
-          combinedMap.set(key, {
-            ...c,
-            joined: Boolean(joinedProgressMap[c.id]),
-          });
+          combinedMap.set(key, c);
         }
       });
 
       const uniqueList = Array.from(combinedMap.values());
       setChallenges(uniqueList);
 
-      // Recalculate automatic progress in background for active challenges
+      // Recalculate automatic progress in background for active uncompleted challenges
       if (user?.id && rawUserChalls.length > 0) {
         for (const uc of rawUserChalls) {
-          const chObj = uc.challenge || uniqueList.find(c => c.id === uc.challenge_id);
-          if (chObj) {
-            const autoPct = await calculateAutomaticProgress(chObj, user.id);
-            if (autoPct !== uc.progress_percentage) {
-              await supabase
-                .from('user_challenges')
-                .update({ progress_percentage: autoPct })
-                .eq('id', uc.id);
-              joinedProgressMap[chObj.id] = autoPct;
+          if (!uc.completed && (uc.progress_percentage || 0) < 100) {
+            const chObj = uc.challenge || uniqueList.find(c => c.id === uc.challenge_id);
+            if (chObj) {
+              const autoPct = await calculateAutomaticProgress(chObj, user.id);
+              if (autoPct !== uc.progress_percentage) {
+                await supabase
+                  .from('user_challenges')
+                  .update({ progress_percentage: autoPct })
+                  .eq('id', uc.id);
+              }
             }
           }
         }
-        setUserJoinedMap({ ...joinedProgressMap });
       }
     } catch (e) {
       console.error('Fetch challenges error:', e);
@@ -275,7 +256,7 @@ export default function ChallengesScreen({ navigation }: any) {
     fetchChallenges();
 
     const channel = supabase
-      .channel('public:challenges_realtime_mobile_v3')
+      .channel('public:challenges_realtime_mobile_v4')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'challenges' }, () => fetchChallenges())
       .on('postgres_changes', { event: '*', schema: 'public', table: 'user_challenges' }, () => fetchChallenges())
       .subscribe();
@@ -285,52 +266,151 @@ export default function ChallengesScreen({ navigation }: any) {
     };
   }, [user?.id]);
 
+  // Joined check
+  const getUserChallengeRecord = (challengeId: string) => {
+    return userChallenges.find(uc => uc.challenge_id === challengeId || uc.challenge?.id === challengeId);
+  };
+
+  const isChallengeActive = (challengeId: string) => {
+    const uc = getUserChallengeRecord(challengeId);
+    return Boolean(uc && !uc.completed && (uc.progress_percentage || 0) < 100);
+  };
+
+  const isChallengeCompleted = (challengeId: string) => {
+    const uc = getUserChallengeRecord(challengeId);
+    return Boolean(uc && (uc.completed === true || (uc.progress_percentage || 0) >= 100));
+  };
+
+  // Active vs Completed user challenge lists
+  const activeUserChallenges = useMemo(() => {
+    return userChallenges
+      .filter((uc: any) => !uc.completed && (uc.progress_percentage || 0) < 100)
+      .map((uc: any) => {
+        const fullCh = uc.challenge || challenges.find(c => c.id === uc.challenge_id) || {};
+        return {
+          ...fullCh,
+          userChallengeId: uc.id,
+          progress: uc.progress_percentage || 0,
+        };
+      });
+  }, [userChallenges, challenges]);
+
+  const completedUserChallenges = useMemo(() => {
+    return userChallenges
+      .filter((uc: any) => uc.completed === true || (uc.progress_percentage || 0) >= 100)
+      .map((uc: any) => {
+        const fullCh = uc.challenge || challenges.find(c => c.id === uc.challenge_id) || {};
+        return {
+          ...fullCh,
+          userChallengeId: uc.id,
+          completedAt: uc.completed_at || uc.created_at,
+        };
+      });
+  }, [userChallenges, challenges]);
+
+  // Handle Join Challenge
   const handleJoinChallenge = async (ch: ChallengeItem) => {
     if (!user?.id) {
       Alert.alert('Session Error', 'Please log in to join challenges.');
       return;
     }
     try {
+      setActionLoadingId(ch.id);
       const initialProgress = await calculateAutomaticProgress(ch, user.id);
-      setUserJoinedMap(prev => ({ ...prev, [ch.id]: initialProgress }));
 
       const { error } = await supabase.from('user_challenges').insert({
         user_id: user.id,
         challenge_id: ch.id,
         progress_percentage: initialProgress,
+        completed: false,
       });
 
       if (!error) {
-        Alert.alert('Joined Challenge ✨', `Successfully joined ${ch.title}!`);
+        Alert.alert('Joined Challenge ✨', `You joined "${ch.title}"! Track your progress in Active Challenges.`);
       }
-      fetchChallenges();
+      await fetchChallenges();
     } catch (e: any) {
       Alert.alert('Notice', 'Challenge activated.');
+    } finally {
+      setActionLoadingId(null);
     }
   };
 
-  const handleLeaveChallenge = async (challengeId: string) => {
+  // Handle Complete Challenge
+  const handleCompleteChallenge = async (ch: any) => {
     if (!user?.id) return;
     try {
-      setUserJoinedMap(prev => {
-        const copy = { ...prev };
-        delete copy[challengeId];
-        return copy;
-      });
+      setActionLoadingId(ch.id || ch.userChallengeId);
+      const xpReward = Number(ch.xp_reward || 200);
 
-      await supabase
+      const { error } = await supabase
         .from('user_challenges')
-        .delete()
+        .update({
+          completed: true,
+          progress_percentage: 100,
+        })
         .eq('user_id', user.id)
-        .eq('challenge_id', challengeId);
+        .eq('challenge_id', ch.id);
 
-      Alert.alert('Left Challenge', 'Removed challenge from your active list.');
-      fetchChallenges();
+      if (error) {
+        console.error('Update error on complete:', error);
+      }
+
+      // Update XP in profile
+      if (updateProfile) {
+        const currentXp = Number(profile?.xp || 0);
+        await updateProfile({ xp: currentXp + xpReward });
+      }
+      if (refreshProfile) {
+        await refreshProfile();
+      }
+
+      Alert.alert(
+        '🏆 Challenge Completed!',
+        `Congratulations! You completed "${ch.title}" and earned +${xpReward} Health XP!`
+      );
+
+      await fetchChallenges();
     } catch (e: any) {
-      console.error('Leave error:', e);
+      console.error('Complete error:', e);
+    } finally {
+      setActionLoadingId(null);
     }
   };
 
+  // Handle Leave Challenge
+  const handleLeaveChallenge = async (challengeId: string) => {
+    if (!user?.id) return;
+    Alert.alert(
+      'Leave Challenge',
+      'Are you sure you want to remove this challenge from your active list?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Leave',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              setActionLoadingId(challengeId);
+              await supabase
+                .from('user_challenges')
+                .delete()
+                .eq('user_id', user.id)
+                .eq('challenge_id', challengeId);
+
+              await fetchChallenges();
+            } catch (e: any) {
+              console.error('Leave error:', e);
+            } finally {
+              setActionLoadingId(null);
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  // Handle Create Challenge
   const handleCreateChallenge = async () => {
     if (!newTitle.trim() || !newDesc.trim() || !user?.id) {
       Alert.alert('Validation Error', 'Please enter a title and description.');
@@ -354,14 +434,15 @@ export default function ChallengesScreen({ navigation }: any) {
         await supabase.from('user_challenges').insert({
           user_id: user.id,
           challenge_id: data[0].id,
-          progress_percentage: 15,
+          progress_percentage: 0,
+          completed: false,
         });
 
-        Alert.alert('Challenge Created 🏆', 'Your challenge is published and synced live across Web & Mobile!');
+        Alert.alert('Challenge Created 🏆', 'Your challenge is published and added to your Active Challenges!');
         setShowCreateModal(false);
         setNewTitle('');
         setNewDesc('');
-        fetchChallenges();
+        await fetchChallenges();
       } else {
         Alert.alert('Notice', error?.message || 'Failed to create challenge.');
       }
@@ -378,15 +459,10 @@ export default function ChallengesScreen({ navigation }: any) {
     return challenges.filter(c => c.category === selectedCategory);
   }, [selectedCategory, challenges]);
 
-  // Active joined challenges list
-  const activeJoinedList = useMemo(() => {
-    return challenges.filter(c => Boolean(userJoinedMap[c.id]));
-  }, [challenges, userJoinedMap]);
-
-  // Recommended 3 personalized challenges based on profile goals
+  // Recommended personalized challenges based on profile goals
   const recommendedList = useMemo(() => {
     const goal = (profile?.fitness_goal || '').toLowerCase();
-    const unjoined = challenges.filter(c => !userJoinedMap[c.id]);
+    const unjoined = challenges.filter(c => !getUserChallengeRecord(c.id));
 
     if (goal.includes('weight') || goal.includes('fat') || goal.includes('loss')) {
       return unjoined.filter(c => c.category === 'Nutrition' || c.category === 'Fitness' || c.category === 'Hydration').slice(0, 3);
@@ -396,7 +472,7 @@ export default function ChallengesScreen({ navigation }: any) {
       return unjoined.filter(c => c.category === 'Sleep' || c.category === 'Mental Wellness' || c.category === 'Healthy Habits').slice(0, 3);
     }
     return unjoined.slice(0, 3);
-  }, [challenges, userJoinedMap, profile?.fitness_goal]);
+  }, [challenges, userChallenges, profile?.fitness_goal]);
 
   const getCategoryIcon = (cat: string) => {
     switch (cat) {
@@ -409,6 +485,11 @@ export default function ChallengesScreen({ navigation }: any) {
     }
   };
 
+  const activeCount = activeUserChallenges.length;
+  const completedCount = completedUserChallenges.length;
+  const streakCount = profile?.streak_days || 0;
+  const healthXp = profile?.xp || 0;
+
   return (
     <ScreenWrapper
       title="Health Challenges"
@@ -416,10 +497,11 @@ export default function ChallengesScreen({ navigation }: any) {
       showBack
       onBack={() => navigation.goBack()}
       headerRight={
-        <View style={{ flexDirection: 'row', gap: 6, alignItems: 'center' }}>
+        <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>
           <TouchableOpacity
             style={[styles.syncBtn, { borderColor: colors.cardBorder }]}
             onPress={fetchChallenges}
+            disabled={loading}
           >
             <RefreshCw size={14} color={colors.primary} />
           </TouchableOpacity>
@@ -434,208 +516,287 @@ export default function ChallengesScreen({ navigation }: any) {
         </View>
       }
     >
-
-        {/* METRICS STATS ROW */}
-        <View style={styles.statsRow}>
-          <View style={[styles.statBox, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
-            <View style={styles.statIconBox}>
-              <Target size={16} color={colors.primary} />
-            </View>
-            <View>
-              <Text style={styles.statLabel}>Active</Text>
-              <Text style={[styles.statValue, { color: colors.text }]}>{activeJoinedList.length}</Text>
-            </View>
+      {/* 1. 2x2 RESPONSIVE STATS GRID */}
+      <View style={styles.statsGrid}>
+        {/* Active Box */}
+        <View style={[styles.statBox, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
+          <View style={[styles.statIconBox, { backgroundColor: 'rgba(13, 148, 136, 0.12)' }]}>
+            <Target size={18} color={colors.primary} />
           </View>
-
-          <View style={[styles.statBox, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
-            <View style={styles.statIconBox}>
-              <ShieldCheck size={16} color={colors.primary} />
-            </View>
-            <View>
-              <Text style={styles.statLabel}>Completed</Text>
-              <Text style={[styles.statValue, { color: colors.text }]}>
-                {Object.values(userJoinedMap).filter(pct => pct >= 100).length}
-              </Text>
-            </View>
-          </View>
-
-          <View style={[styles.statBox, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
-            <View style={styles.statIconBox}>
-              <Flame size={16} color={colors.primary} />
-            </View>
-            <View>
-              <Text style={styles.statLabel}>Streak</Text>
-              <Text style={[styles.statValue, { color: colors.text }]}>{profile?.streak_days || 7}d</Text>
-            </View>
-          </View>
-
-          <View style={[styles.statBox, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
-            <View style={styles.statIconBox}>
-              <Trophy size={16} color={colors.primary} />
-            </View>
-            <View>
-              <Text style={styles.statLabel}>Health XP</Text>
-              <Text style={[styles.statValue, { color: colors.text }]}>{profile?.xp || 450}</Text>
-            </View>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.statLabel}>ACTIVE</Text>
+            <Text style={[styles.statValue, { color: colors.text }]}>{activeCount}</Text>
           </View>
         </View>
 
-        {/* SECTION 1: ACTIVE CHALLENGES */}
-        {activeJoinedList.length > 0 && (
-          <View style={{ marginBottom: 20 }}>
-            <Text style={[styles.sectionHeading, { color: colors.textMuted }]}>
-              ACTIVE CHALLENGES ({activeJoinedList.length})
+        {/* Completed Box */}
+        <View style={[styles.statBox, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
+          <View style={[styles.statIconBox, { backgroundColor: 'rgba(16, 185, 129, 0.12)' }]}>
+            <ShieldCheck size={18} color="#10b981" />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.statLabel}>COMPLETED</Text>
+            <Text style={[styles.statValue, { color: colors.text }]}>{completedCount}</Text>
+          </View>
+        </View>
+
+        {/* Streak Box */}
+        <View style={[styles.statBox, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
+          <View style={[styles.statIconBox, { backgroundColor: 'rgba(245, 158, 11, 0.12)' }]}>
+            <Flame size={18} color="#f59e0b" />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.statLabel}>STREAK</Text>
+            <Text style={[styles.statValue, { color: colors.text }]}>{streakCount}d</Text>
+          </View>
+        </View>
+
+        {/* Health XP Box */}
+        <View style={[styles.statBox, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
+          <View style={[styles.statIconBox, { backgroundColor: 'rgba(99, 102, 241, 0.12)' }]}>
+            <Trophy size={18} color="#6366f1" />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.statLabel}>HEALTH XP</Text>
+            <Text style={[styles.statValue, { color: colors.text }]}>{healthXp}</Text>
+          </View>
+        </View>
+      </View>
+
+      {/* 2. ACTIVE CHALLENGES SECTION */}
+      {activeUserChallenges.length > 0 && (
+        <View style={styles.sectionContainer}>
+          <View style={styles.sectionHeaderRow}>
+            <Text style={[styles.sectionHeading, { color: colors.text }]}>
+              ACTIVE CHALLENGES ({activeUserChallenges.length})
             </Text>
+          </View>
 
-            {activeJoinedList.map(ch => {
-              const pct = userJoinedMap[ch.id] || 15;
-              const IconComp = getCategoryIcon(ch.category);
+          {activeUserChallenges.map((ch: any) => {
+            const IconComp = getCategoryIcon(ch.category);
+            const isActing = actionLoadingId === ch.id;
 
-              return (
-                <View key={ch.id} style={[styles.activeWidgetCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
-                  <ProgressRing percentage={pct} size={44} strokeWidth={3.5} color={colors.primary} />
+            return (
+              <View key={ch.id} style={[styles.activeCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
+                {/* Header Row */}
+                <View style={styles.cardHeaderRow}>
+                  <View style={[styles.categoryBadge, { backgroundColor: colors.primaryLight + '22' }]}>
+                    <IconComp size={12} color={colors.primary} />
+                    <Text style={[styles.categoryText, { color: colors.primary }]}>{ch.category}</Text>
+                  </View>
+                  <Text style={[styles.xpBadgeText, { color: colors.primary }]}>🏆 +{ch.xp_reward} XP</Text>
+                </View>
 
+                {/* Title & Description */}
+                <Text style={[styles.cardTitle, { color: colors.text }]}>{ch.title}</Text>
+                <Text style={[styles.cardDesc, { color: colors.textMuted }]}>{ch.description}</Text>
+
+                {/* Progress Info */}
+                <View style={styles.progressRow}>
+                  <ProgressRing percentage={ch.progress} size={42} strokeWidth={3.5} color={colors.primary} />
                   <View style={{ flex: 1, marginLeft: 12 }}>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 2 }}>
-                      <View style={[styles.miniCategoryTag, { backgroundColor: colors.primaryLight + '22' }]}>
-                        <IconComp size={10} color={colors.primary} />
-                        <Text style={{ fontSize: 9, fontWeight: 'bold', color: colors.primary }}>{ch.category}</Text>
-                      </View>
-                      <Text style={{ fontSize: 9, color: colors.textMuted }}>{ch.duration_days}d remaining</Text>
-                    </View>
-                    <Text style={[styles.activeTitle, { color: colors.text }]} numberOfLines={1}>{ch.title}</Text>
-                    <Text style={{ fontSize: 10, color: colors.textMuted, marginTop: 1 }}>🏆 +{ch.xp_reward} XP</Text>
-                  </View>
-
-                  <View style={{ flexDirection: 'row', gap: 4, alignItems: 'center' }}>
-                    <TouchableOpacity
-                      style={[styles.smallIconBtn, { backgroundColor: colors.background }]}
-                      onPress={() => setSelectedChallengeModal(ch)}
-                    >
-                      <ChevronRight size={16} color={colors.text} />
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      style={[styles.smallIconBtn, { backgroundColor: colors.background }]}
-                      onPress={() => handleLeaveChallenge(ch.id)}
-                    >
-                      <X size={14} color="#ef4444" />
-                    </TouchableOpacity>
+                    <Text style={[styles.progressLabel, { color: colors.text }]}>
+                      {ch.progress > 0 ? `${Math.round(ch.progress)}% Progress Tracked` : '0% Progress • Start Logging Activity'}
+                    </Text>
+                    <Text style={[styles.progressSub, { color: colors.textMuted }]}>
+                      {ch.duration_days} Days Challenge Protocol
+                    </Text>
                   </View>
                 </View>
-              );
-            })}
-          </View>
-        )}
 
-        {/* SECTION 2: RECOMMENDED FOR YOU */}
-        {recommendedList.length > 0 && (
-          <View style={{ marginBottom: 20 }}>
-            <View style={styles.rowBetween}>
-              <Text style={[styles.sectionHeading, { color: colors.textMuted }]}>⭐ RECOMMENDED FOR YOU</Text>
-              <Text style={[styles.recommendedBadge, { color: colors.primary, backgroundColor: colors.primaryLight + '22' }]}>
-                Goal Match
-              </Text>
-            </View>
+                {/* Action Buttons Row */}
+                <View style={styles.cardActionsRow}>
+                  <TouchableOpacity
+                    style={[styles.completeBtn, { backgroundColor: '#10b981' }]}
+                    onPress={() => handleCompleteChallenge(ch)}
+                    disabled={isActing}
+                  >
+                    {isActing ? (
+                      <ActivityIndicator color="#ffffff" size="small" />
+                    ) : (
+                      <>
+                        <Check size={14} color="#ffffff" />
+                        <Text style={styles.completeBtnText}>✓ Complete Challenge</Text>
+                      </>
+                    )}
+                  </TouchableOpacity>
 
-            {recommendedList.map(ch => {
-              const IconComp = getCategoryIcon(ch.category);
-              return (
-                <View key={ch.id} style={[styles.recommendedCard, { backgroundColor: colors.cardBg, borderColor: colors.primary + '33' }]}>
-                  <View style={styles.rowBetween}>
-                    <View style={[styles.miniCategoryTag, { backgroundColor: colors.primaryLight + '22' }]}>
-                      <IconComp size={10} color={colors.primary} />
-                      <Text style={{ fontSize: 9, fontWeight: 'bold', color: colors.primary }}>{ch.category}</Text>
-                    </View>
-                    <Text style={{ fontSize: 10, fontWeight: 'bold', color: colors.primary }}>🏆 +{ch.xp_reward} XP</Text>
-                  </View>
-
-                  <Text style={[styles.recTitle, { color: colors.text }]}>{ch.title}</Text>
-                  <Text style={[styles.recDesc, { color: colors.textMuted }]} numberOfLines={2}>{ch.description}</Text>
-
-                  <View style={[styles.rowBetween, { marginTop: 10, paddingTop: 8, borderTopWidth: 1, borderTopColor: colors.cardBorder }]}>
-                    <Text style={{ fontSize: 10, color: colors.textMuted }}>{ch.duration_days} Days • {ch.difficulty}</Text>
-                    <TouchableOpacity
-                      style={[styles.joinBtnRec, { backgroundColor: colors.primary }]}
-                      onPress={() => handleJoinChallenge(ch)}
-                    >
-                      <Text style={{ color: '#ffffff', fontWeight: 'bold', fontSize: 11 }}>Join Challenge</Text>
-                    </TouchableOpacity>
-                  </View>
+                  <TouchableOpacity
+                    style={[styles.leaveBtn, { backgroundColor: colors.inputBg, borderColor: colors.inputBorder }]}
+                    onPress={() => handleLeaveChallenge(ch.id)}
+                    disabled={isActing}
+                  >
+                    <Text style={[styles.leaveBtnText, { color: colors.danger }]}>Leave</Text>
+                  </TouchableOpacity>
                 </View>
-              );
-            })}
-          </View>
-        )}
-
-        {/* SECTION 3: CATEGORY FILTER TABS */}
-        <View style={{ marginBottom: 14 }}>
-          <Text style={[styles.sectionHeading, { color: colors.textMuted, marginBottom: 8 }]}>
-            CHALLENGE LIBRARY ({filteredChallenges.length})
-          </Text>
-
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6 }}>
-            {CATEGORIES.map(cat => {
-              const isSelected = selectedCategory === cat;
-              return (
-                <TouchableOpacity
-                  key={cat}
-                  testID={`challenges_tab_${cat.replace(/\s+/g, '_')}`}
-                  accessibilityLabel={`challenges_tab_${cat.replace(/\s+/g, '_')}`}
-                  style={[
-                    styles.categoryPill,
-                    {
-                      backgroundColor: isSelected ? colors.primary : colors.cardBg,
-                      borderColor: isSelected ? colors.primary : colors.cardBorder,
-                    },
-                  ]}
-                  onPress={() => setSelectedCategory(cat)}
-                >
-                  <Text style={{ color: isSelected ? '#ffffff' : colors.text, fontWeight: 'bold', fontSize: 11 }}>
-                    {cat}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
-          </ScrollView>
+              </View>
+            );
+          })}
         </View>
+      )}
 
-        {/* SECTION 4: CHALLENGE LIBRARY CARDS */}
+      {/* 3. COMPLETED CHALLENGES SECTION */}
+      {completedUserChallenges.length > 0 && (
+        <View style={styles.sectionContainer}>
+          <View style={styles.sectionHeaderRow}>
+            <Text style={[styles.sectionHeading, { color: colors.text }]}>
+              COMPLETED CHALLENGES ({completedUserChallenges.length})
+            </Text>
+          </View>
+
+          {completedUserChallenges.map((ch: any) => {
+            const IconComp = getCategoryIcon(ch.category);
+            return (
+              <View key={ch.id} style={[styles.completedCard, { backgroundColor: colors.cardBg, borderColor: '#10b98144' }]}>
+                <View style={styles.cardHeaderRow}>
+                  <View style={[styles.categoryBadge, { backgroundColor: 'rgba(16, 185, 129, 0.12)' }]}>
+                    <IconComp size={12} color="#10b981" />
+                    <Text style={[styles.categoryText, { color: '#10b981' }]}>{ch.category}</Text>
+                  </View>
+                  <View style={styles.completedBadgePill}>
+                    <CheckCircle size={12} color="#10b981" />
+                    <Text style={styles.completedBadgePillText}>✓ Completed</Text>
+                  </View>
+                </View>
+
+                <Text style={[styles.cardTitle, { color: colors.text, marginTop: 6 }]}>{ch.title}</Text>
+                <Text style={[styles.completedXpText, { color: colors.primary }]}>
+                  🏆 +{ch.xp_reward} Health XP Earned
+                </Text>
+              </View>
+            );
+          })}
+        </View>
+      )}
+
+      {/* 4. RECOMMENDED FOR YOU SECTION */}
+      {recommendedList.length > 0 && (
+        <View style={styles.sectionContainer}>
+          <View style={styles.sectionHeaderRow}>
+            <Text style={[styles.sectionHeading, { color: colors.text }]}>⭐ RECOMMENDED FOR YOU</Text>
+            <View style={[styles.tagPill, { backgroundColor: colors.primaryLight + '22' }]}>
+              <Text style={[styles.tagPillText, { color: colors.primary }]}>Goal Match</Text>
+            </View>
+          </View>
+
+          {recommendedList.map(ch => {
+            const IconComp = getCategoryIcon(ch.category);
+            const isActing = actionLoadingId === ch.id;
+
+            return (
+              <View key={ch.id} style={[styles.recommendedCard, { backgroundColor: colors.cardBg, borderColor: colors.primary + '33' }]}>
+                <View style={styles.cardHeaderRow}>
+                  <View style={[styles.categoryBadge, { backgroundColor: colors.primaryLight + '22' }]}>
+                    <IconComp size={12} color={colors.primary} />
+                    <Text style={[styles.categoryText, { color: colors.primary }]}>{ch.category}</Text>
+                  </View>
+                  <Text style={[styles.xpBadgeText, { color: colors.primary }]}>🏆 +{ch.xp_reward} XP</Text>
+                </View>
+
+                <Text style={[styles.cardTitle, { color: colors.text }]}>{ch.title}</Text>
+                <Text style={[styles.cardDesc, { color: colors.textMuted }]}>{ch.description}</Text>
+
+                <View style={[styles.cardFooterRow, { borderTopColor: colors.cardBorder }]}>
+                  <Text style={[styles.metaText, { color: colors.textMuted }]}>
+                    {ch.duration_days} Days • {ch.difficulty}
+                  </Text>
+                  <TouchableOpacity
+                    style={[styles.joinBtn, { backgroundColor: colors.primary }]}
+                    onPress={() => handleJoinChallenge(ch)}
+                    disabled={isActing}
+                  >
+                    {isActing ? (
+                      <ActivityIndicator color="#ffffff" size="small" />
+                    ) : (
+                      <Text style={styles.joinBtnText}>+ Join Challenge</Text>
+                    )}
+                  </TouchableOpacity>
+                </View>
+              </View>
+            );
+          })}
+        </View>
+      )}
+
+      {/* 5. CHALLENGE LIBRARY */}
+      <View style={styles.sectionContainer}>
+        <Text style={[styles.sectionHeading, { color: colors.text, marginBottom: 10 }]}>
+          CHALLENGE LIBRARY ({filteredChallenges.length})
+        </Text>
+
+        {/* Category Pills */}
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8, paddingBottom: 10 }}>
+          {CATEGORIES.map(cat => {
+            const isSelected = selectedCategory === cat;
+            return (
+              <TouchableOpacity
+                key={cat}
+                style={[
+                  styles.categoryPill,
+                  {
+                    backgroundColor: isSelected ? colors.primary : colors.cardBg,
+                    borderColor: isSelected ? colors.primary : colors.cardBorder,
+                  },
+                ]}
+                onPress={() => setSelectedCategory(cat)}
+              >
+                <Text style={[styles.categoryPillText, { color: isSelected ? '#ffffff' : colors.text }]}>
+                  {cat}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </ScrollView>
+
+        {/* Challenge Cards List */}
         {loading ? (
           <ActivityIndicator size="large" color={colors.primary} style={{ marginVertical: 30 }} />
         ) : (
           filteredChallenges.map((c, idx) => {
-            const isJoined = Boolean(userJoinedMap[c.id]);
+            const active = isChallengeActive(c.id);
+            const completed = isChallengeCompleted(c.id);
             const IconComp = getCategoryIcon(c.category);
+            const isActing = actionLoadingId === c.id;
 
             return (
-              <View key={c.id} testID={`challenge_card_${idx}`} accessibilityLabel={`challenge_card_${idx}`} style={[styles.libraryCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
-                <View style={styles.rowBetween}>
-                  <View style={[styles.miniCategoryTag, { backgroundColor: colors.primaryLight + '22' }]}>
-                    <IconComp size={10} color={colors.primary} />
-                    <Text style={{ fontSize: 9, fontWeight: 'bold', color: colors.primary }}>{c.category}</Text>
+              <View key={c.id} style={[styles.libraryCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
+                <View style={styles.cardHeaderRow}>
+                  <View style={[styles.categoryBadge, { backgroundColor: colors.primaryLight + '22' }]}>
+                    <IconComp size={12} color={colors.primary} />
+                    <Text style={[styles.categoryText, { color: colors.primary }]}>{c.category}</Text>
                   </View>
-                  <Text style={{ fontSize: 10, fontWeight: 'bold', color: colors.textMuted }}>🏆 +{c.xp_reward} XP</Text>
+                  <Text style={[styles.xpBadgeText, { color: colors.textMuted }]}>🏆 +{c.xp_reward} XP</Text>
                 </View>
 
-                <Text style={[styles.libTitle, { color: colors.text }]}>{c.title}</Text>
-                <Text style={[styles.libDesc, { color: colors.textMuted }]} numberOfLines={2}>{c.description}</Text>
+                <Text style={[styles.cardTitle, { color: colors.text }]}>{c.title}</Text>
+                <Text style={[styles.cardDesc, { color: colors.textMuted }]}>{c.description}</Text>
 
-                <View style={[styles.rowBetween, { marginTop: 10, paddingTop: 8, borderTopWidth: 1, borderTopColor: colors.cardBorder }]}>
-                  <Text style={{ fontSize: 10, color: colors.textMuted }}>{c.duration_days} Days • {c.difficulty}</Text>
+                <View style={[styles.cardFooterRow, { borderTopColor: colors.cardBorder }]}>
+                  <Text style={[styles.metaText, { color: colors.textMuted }]}>
+                    {c.duration_days} Days • {c.difficulty}
+                  </Text>
 
-                  {isJoined ? (
-                    <View style={[styles.joinedBadge, { backgroundColor: 'rgba(13, 148, 136, 0.1)' }]}>
-                      <CheckCircle size={12} color={colors.primary} />
-                      <Text style={{ color: colors.primary, fontWeight: 'bold', fontSize: 11, marginLeft: 4 }}>Joined</Text>
+                  {completed ? (
+                    <View style={[styles.statusBadge, { backgroundColor: 'rgba(16, 185, 129, 0.12)' }]}>
+                      <CheckCircle size={12} color="#10b981" />
+                      <Text style={[styles.statusBadgeText, { color: "#10b981" }]}>Completed</Text>
+                    </View>
+                  ) : active ? (
+                    <View style={[styles.statusBadge, { backgroundColor: 'rgba(13, 148, 136, 0.12)' }]}>
+                      <Clock size={12} color={colors.primary} />
+                      <Text style={[styles.statusBadgeText, { color: colors.primary }]}>In Progress</Text>
                     </View>
                   ) : (
                     <TouchableOpacity
-                      testID={`challenge_join_btn_${idx}`}
-                      accessibilityLabel={`challenge_join_btn_${idx}`}
-                      style={[styles.joinBtnLib, { backgroundColor: colors.primary }]}
+                      style={[styles.joinBtn, { backgroundColor: colors.primary }]}
                       onPress={() => handleJoinChallenge(c)}
+                      disabled={isActing}
                     >
-                      <Text style={{ color: '#ffffff', fontWeight: 'bold', fontSize: 11 }}>Join Challenge</Text>
+                      {isActing ? (
+                        <ActivityIndicator color="#ffffff" size="small" />
+                      ) : (
+                        <Text style={styles.joinBtnText}>+ Join Challenge</Text>
+                      )}
                     </TouchableOpacity>
                   )}
                 </View>
@@ -643,16 +804,17 @@ export default function ChallengesScreen({ navigation }: any) {
             );
           })
         )}
+      </View>
 
-      {/* MODAL: CREATE CUSTOM CHALLENGE */}
+      {/* CREATE MODAL */}
       {showCreateModal && (
         <Modal visible transparent animationType="slide">
           <View style={styles.modalOverlay}>
             <View style={[styles.modalContent, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
-              <View style={styles.rowBetween}>
+              <View style={styles.modalHeaderRow}>
                 <Text style={[styles.modalTitle, { color: colors.text }]}>Create Custom Challenge</Text>
                 <TouchableOpacity onPress={() => setShowCreateModal(false)}>
-                  <X size={18} color={colors.textMuted} />
+                  <X size={20} color={colors.textMuted} />
                 </TouchableOpacity>
               </View>
 
@@ -691,12 +853,12 @@ export default function ChallengesScreen({ navigation }: any) {
                 </View>
               </View>
 
-              <View style={{ flexDirection: 'row', justifyContent: 'flex-end', gap: 8, marginTop: 16 }}>
+              <View style={styles.modalActionsRow}>
                 <TouchableOpacity
                   style={[styles.modalCancelBtn, { backgroundColor: colors.background }]}
                   onPress={() => setShowCreateModal(false)}
                 >
-                  <Text style={{ color: colors.text, fontWeight: 'bold', fontSize: 12 }}>Cancel</Text>
+                  <Text style={{ color: colors.text, fontWeight: 'bold', fontSize: 13 }}>Cancel</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
@@ -707,7 +869,7 @@ export default function ChallengesScreen({ navigation }: any) {
                   {submitting ? (
                     <ActivityIndicator color="#ffffff" size="small" />
                   ) : (
-                    <Text style={{ color: '#ffffff', fontWeight: 'bold', fontSize: 12 }}>Publish</Text>
+                    <Text style={{ color: '#ffffff', fontWeight: 'bold', fontSize: 13 }}>Publish</Text>
                   )}
                 </TouchableOpacity>
               </View>
@@ -716,88 +878,116 @@ export default function ChallengesScreen({ navigation }: any) {
         </Modal>
       )}
 
-      {/* MODAL: CHALLENGE DETAILS */}
+      {/* DETAILS MODAL */}
       {selectedChallengeModal && (
         <Modal visible transparent animationType="slide">
           <View style={styles.modalOverlay}>
             <View style={[styles.modalContent, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
-              <View style={styles.rowBetween}>
-                <View style={[styles.miniCategoryTag, { backgroundColor: colors.primaryLight + '22' }]}>
-                  <Text style={{ fontSize: 9, fontWeight: 'bold', color: colors.primary }}>
+              <View style={styles.modalHeaderRow}>
+                <View style={[styles.categoryBadge, { backgroundColor: colors.primaryLight + '22' }]}>
+                  <Text style={[styles.categoryText, { color: colors.primary }]}>
                     {selectedChallengeModal.category}
                   </Text>
                 </View>
                 <TouchableOpacity onPress={() => setSelectedChallengeModal(null)}>
-                  <X size={18} color={colors.textMuted} />
+                  <X size={20} color={colors.textMuted} />
                 </TouchableOpacity>
               </View>
 
               <Text style={[styles.modalTitle, { color: colors.text, marginTop: 10 }]}>
                 {selectedChallengeModal.title}
               </Text>
-              <Text style={[styles.modalDesc, { color: colors.textMuted, marginTop: 6 }]}>
+              <Text style={[styles.modalDesc, { color: colors.textMuted, marginTop: 8 }]}>
                 {selectedChallengeModal.description}
               </Text>
 
-              <View style={[styles.rowBetween, { marginTop: 14, paddingTop: 10, borderTopWidth: 1, borderTopColor: colors.cardBorder }]}>
-                <Text style={{ fontSize: 11, color: colors.textMuted }}>
+              <View style={[styles.cardFooterRow, { marginTop: 16, borderTopColor: colors.cardBorder }]}>
+                <Text style={{ fontSize: 12, color: colors.textMuted }}>
                   Duration: {selectedChallengeModal.duration_days} Days
                 </Text>
-                <Text style={{ fontSize: 11, fontWeight: 'bold', color: colors.primary }}>
+                <Text style={{ fontSize: 12, fontWeight: 'bold', color: colors.primary }}>
                   🏆 +{selectedChallengeModal.xp_reward} XP
                 </Text>
               </View>
 
               <TouchableOpacity
-                style={[styles.modalSubmitBtn, { backgroundColor: colors.primary, marginTop: 16 }]}
+                style={[styles.modalSubmitBtn, { backgroundColor: colors.primary, marginTop: 18 }]}
                 onPress={() => setSelectedChallengeModal(null)}
               >
-                <Text style={{ color: '#ffffff', fontWeight: 'bold', fontSize: 12 }}>Close</Text>
+                <Text style={{ color: '#ffffff', fontWeight: 'bold', fontSize: 13 }}>Close</Text>
               </TouchableOpacity>
             </View>
           </View>
         </Modal>
       )}
-
     </ScreenWrapper>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1 },
-  container: { padding: 16, paddingBottom: 30 },
-  headerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 },
-  backBtn: { paddingVertical: 4 },
   syncBtn: { padding: 8, borderRadius: 10, borderWidth: 1, alignItems: 'center', justifyContent: 'center' },
   createBtn: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 10 },
-  pageTitle: { fontWeight: 'bold' },
-  pageSubTitle: { fontSize: 12, marginTop: 2, marginBottom: 14 },
-  statsRow: { flexDirection: 'row', gap: 8, marginBottom: 18 },
-  statBox: { flex: 1, padding: 10, borderRadius: 12, borderWidth: 1, flexDirection: 'row', alignItems: 'center', gap: 8 },
-  statIconBox: { padding: 4 },
-  statLabel: { fontSize: 9, fontWeight: 'bold', color: '#64748b', textTransform: 'uppercase' },
-  statValue: { fontSize: 13, fontWeight: 'bold', marginTop: 1 },
-  sectionHeading: { fontSize: 10, fontWeight: 'bold', letterSpacing: 0.5 },
-  activeWidgetCard: { flexDirection: 'row', alignItems: 'center', padding: 12, borderRadius: 14, borderWidth: 1, marginBottom: 8 },
-  miniCategoryTag: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 6, paddingVertical: 2, borderRadius: 6 },
-  activeTitle: { fontSize: 12, fontWeight: 'bold' },
-  smallIconBtn: { padding: 6, borderRadius: 8 },
-  rowBetween: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  recommendedBadge: { fontSize: 9, fontWeight: 'bold', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 10 },
-  recommendedCard: { padding: 12, borderRadius: 14, borderWidth: 1, marginBottom: 10 },
-  recTitle: { fontSize: 13, fontWeight: 'bold', marginTop: 6 },
-  recDesc: { fontSize: 11, marginTop: 2, lineHeight: 15 },
-  joinBtnRec: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8 },
-  categoryPill: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 12, borderWidth: 1, marginRight: 6 },
-  libraryCard: { padding: 12, borderRadius: 14, borderWidth: 1, marginBottom: 8 },
-  libTitle: { fontSize: 13, fontWeight: 'bold', marginTop: 6 },
-  libDesc: { fontSize: 11, marginTop: 2, lineHeight: 15 },
-  joinedBadge: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8 },
-  joinBtnLib: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8 },
-  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', padding: 20 },
-  modalContent: { borderRadius: 16, borderWidth: 1, padding: 18 },
-  modalTitle: { fontSize: 14, fontWeight: 'bold' },
-  modalDesc: { fontSize: 12, lineHeight: 17 },
-  modalCancelBtn: { paddingHorizontal: 14, paddingVertical: 8, borderRadius: 8 },
-  modalSubmitBtn: { paddingHorizontal: 14, paddingVertical: 8, borderRadius: 8, alignItems: 'center' },
+  
+  // 2x2 Stats Grid
+  statsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 20 },
+  statBox: { width: '48%', padding: 12, borderRadius: 16, borderWidth: 1, flexDirection: 'row', alignItems: 'center', gap: 10 },
+  statIconBox: { width: 36, height: 36, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
+  statLabel: { fontSize: 10, fontWeight: '800', color: '#64748b', letterSpacing: 0.5 },
+  statValue: { fontSize: 16, fontWeight: '800', marginTop: 2 },
+
+  // Sections
+  sectionContainer: { marginBottom: 22 },
+  sectionHeaderRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 },
+  sectionHeading: { fontSize: 12, fontWeight: '800', letterSpacing: 0.5 },
+  tagPill: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8 },
+  tagPillText: { fontSize: 10, fontWeight: '800' },
+
+  // Cards
+  activeCard: { padding: 16, borderRadius: 18, borderWidth: 1, marginBottom: 12 },
+  recommendedCard: { padding: 16, borderRadius: 18, borderWidth: 1, marginBottom: 12 },
+  completedCard: { padding: 14, borderRadius: 16, borderWidth: 1, marginBottom: 10 },
+  libraryCard: { padding: 16, borderRadius: 18, borderWidth: 1, marginBottom: 12 },
+
+  cardHeaderRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
+  categoryBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8 },
+  categoryText: { fontSize: 10, fontWeight: '800' },
+  xpBadgeText: { fontSize: 11, fontWeight: '800' },
+
+  cardTitle: { fontSize: 15, fontWeight: '800', marginBottom: 4, lineHeight: 20 },
+  cardDesc: { fontSize: 12, lineHeight: 17, marginBottom: 10 },
+
+  progressRow: { flexDirection: 'row', alignItems: 'center', marginVertical: 8 },
+  progressLabel: { fontSize: 12, fontWeight: '700' },
+  progressSub: { fontSize: 11, marginTop: 2 },
+
+  cardActionsRow: { flexDirection: 'row', gap: 10, marginTop: 12 },
+  completeBtn: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 10, borderRadius: 12, gap: 6 },
+  completeBtnText: { color: '#ffffff', fontWeight: '800', fontSize: 12 },
+  leaveBtn: { paddingHorizontal: 14, paddingVertical: 10, borderRadius: 12, borderWidth: 1, alignItems: 'center', justifyContent: 'center' },
+  leaveBtnText: { fontWeight: '700', fontSize: 12 },
+
+  completedBadgePill: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8, backgroundColor: 'rgba(16, 185, 129, 0.12)' },
+  completedBadgePillText: { fontSize: 10, fontWeight: '800', color: '#10b981' },
+  completedXpText: { fontSize: 11, fontWeight: '700', marginTop: 4 },
+
+  cardFooterRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 10, paddingTop: 10, borderTopWidth: 1 },
+  metaText: { fontSize: 11, fontWeight: '600' },
+  joinBtn: { paddingHorizontal: 14, paddingVertical: 8, borderRadius: 10 },
+  joinBtnText: { color: '#ffffff', fontWeight: '800', fontSize: 11 },
+
+  statusBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 10, paddingVertical: 5, borderRadius: 8 },
+  statusBadgeText: { fontSize: 11, fontWeight: '800' },
+
+  categoryPill: { paddingHorizontal: 14, paddingVertical: 7, borderRadius: 12, borderWidth: 1 },
+  categoryPillText: { fontWeight: '700', fontSize: 12 },
+
+  // Modals
+  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'center', padding: 20 },
+  modalContent: { borderRadius: 20, borderWidth: 1, padding: 20 },
+  modalHeaderRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  modalTitle: { fontSize: 16, fontWeight: '800' },
+  modalDesc: { fontSize: 13, lineHeight: 18 },
+  modalActionsRow: { flexDirection: 'row', justifyContent: 'flex-end', gap: 10, marginTop: 18 },
+  modalCancelBtn: { paddingHorizontal: 16, paddingVertical: 10, borderRadius: 10 },
+  modalSubmitBtn: { paddingHorizontal: 18, paddingVertical: 10, borderRadius: 10, alignItems: 'center' },
 });

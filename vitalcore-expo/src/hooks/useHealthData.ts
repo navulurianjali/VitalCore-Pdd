@@ -58,33 +58,68 @@ export function useHealthData(selectedDateInput?: string): HealthDataResult {
       setHasLoggedWorkouts(record.workout_minutes > 0);
       setHasLoggedSleep(record.sleep_hours > 0);
 
+      // 2. Query historical tracking count from Supabase
+      const [{ data: rawNutrition }, { data: rawWorkouts }, { data: rawHydration }, { data: rawSleep }] = await Promise.all([
+        supabase.from("nutrition_logs").select("date, created_at").eq("user_id", profile.id),
+        supabase.from("workouts").select("created_at").eq("user_id", profile.id),
+        supabase.from("hydration_logs").select("created_at").eq("user_id", profile.id),
+        supabase.from("sleep_logs").select("created_at").eq("user_id", profile.id)
+      ]);
+
+      const trackingDates = new Set<string>();
+      (rawNutrition || []).forEach((i: any) => { const d = i.date || i.created_at?.split('T')[0]; if (d) trackingDates.add(d); });
+      (rawWorkouts || []).forEach((i: any) => { if (i.created_at) trackingDates.add(i.created_at.split('T')[0]); });
+      (rawHydration || []).forEach((i: any) => { if (i.created_at) trackingDates.add(i.created_at.split('T')[0]); });
+      (rawSleep || []).forEach((i: any) => { if (i.created_at) trackingDates.add(i.created_at.split('T')[0]); });
+
+      const hasActivityToday = Boolean(
+        record.calories_consumed > 0 ||
+        record.water_ml > 0 ||
+        record.workout_minutes > 0 ||
+        record.sleep_hours > 0 ||
+        record.steps > 0
+      );
+
+      if (hasActivityToday) {
+        trackingDates.add(targetDate);
+      }
+
+      const trackingDaysCount = Math.max(hasActivityToday ? 1 : 0, trackingDates.size);
+      const hasTelemetry = Boolean(hasActivityToday || trackingDaysCount > 0);
+
       const baseMetrics: BaseHealthMetrics = {
         caloriesBurned: record.workout_minutes * 8,
-        caloriesTarget: record.calorie_goal,
-        caloriesConsumed: record.calories_consumed,
-        hydrationMl: record.water_ml,
-        hydrationTarget: record.water_goal_ml,
-        workoutMinutes: record.workout_minutes,
-        workoutTarget: record.workout_goal_minutes,
-        steps: record.steps,
-        stepsTarget: record.steps_goal,
-        sleepHours: record.sleep_hours,
-        sleepTarget: record.sleep_goal_hours,
-        sleepQuality: record.sleep_hours > 0 ? Math.min(100, Math.round((record.sleep_hours / record.sleep_goal_hours) * 100)) : 0,
+        caloriesTarget: record.calorie_goal || 2000,
+        caloriesConsumed: record.calories_consumed || 0,
+        proteinG: record.protein_g || 0,
+        carbsG: record.carbs_g || 0,
+        fatG: record.fat_g || 0,
+        hydrationMl: record.water_ml || 0,
+        hydrationTarget: record.water_goal_ml || 2500,
+        workoutMinutes: record.workout_minutes || 0,
+        workoutTarget: record.workout_goal_minutes || 30,
+        steps: record.steps || 0,
+        stepsTarget: record.steps_goal || 10000,
+        sleepHours: record.sleep_hours || 0,
+        sleepTarget: record.sleep_goal_hours || 8.0,
+        sleepQuality: record.sleep_hours > 0 ? Math.min(100, Math.round((record.sleep_hours / (record.sleep_goal_hours || 8.0)) * 100)) : 0,
         stressLevel: record.stress_level || 0,
         mood: record.mood || 'neutral',
-        recoveryPercentage: record.recovery_percentage || 0,
+        recoveryPercentage: record.recovery_percentage || (record.sleep_hours > 0 ? Math.min(100, Math.round((record.sleep_hours / 8.0) * 85)) : 0),
         fatigueScore: 0,
         physicalFatigue: 0,
         mentalFatigue: 0,
-        energyLevel: record.recovery_percentage || 0,
-        biologicalAge: profile.biological_age ? Number(profile.biological_age) : (profile.age ? Number(profile.age) : 0),
-        stabilityScore: (record.sleep_hours > 0 || record.water_ml > 0 || record.calories_consumed > 0 || record.steps > 0) ? Number(profile.stability_score || 100) : 0,
+        energyLevel: record.recovery_percentage || (record.sleep_hours > 0 ? Math.min(100, Math.round((record.sleep_hours / 8.0) * 85)) : 0),
+        biologicalAge: profile.biological_age ? Number(profile.biological_age) : (profile.age ? Number(profile.age) : 30),
+        stabilityScore: hasTelemetry ? Number(profile.stability_score || 75) : 0,
         metabolicEfficiency: 0,
         lifestyleSustainability: 0,
         glycemicIndexLoad: 'low',
         sedentaryPostureRisk: 'low',
         micronutrientDeficiencies: [],
+        trackingDaysCount,
+        hasTelemetry,
+        hasEnergyTelemetry: Boolean(record.sleep_hours > 0 || record.water_ml > 0 || record.calories_consumed > 0),
       };
 
       const twin = computeDigitalTwin(baseMetrics, profile.biological_age || 30.0);

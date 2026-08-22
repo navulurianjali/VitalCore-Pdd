@@ -59,29 +59,39 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="flex-1 flex items-center justify-center bg-background px-4 py-16 relative overflow-hidden auth-page">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(139,92,246,0.05),transparent_60%)]" />
+    <div className="flex-1 flex items-center justify-center bg-background px-4 py-12 relative overflow-hidden auth-page min-h-screen">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(139,92,246,0.06),transparent_65%)]" />
       
       <div className="w-full max-w-[420px] relative z-10 space-y-6">
         
         {/* Back Link */}
         <div>
-          <Link href="/auth/login" className="inline-flex items-center gap-1.5 text-xs text-foreground/60 hover:text-primary font-medium transition-colors">
+          <Link href="/login" className="inline-flex items-center gap-1.5 text-xs text-foreground/60 hover:text-primary font-medium transition-colors">
             <ArrowLeft className="h-4 w-4" />
             Back to login
           </Link>
         </div>
 
-        {/* Logo Header */}
-        <div className="text-center space-y-2">
-          <div className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-primary text-white shadow-lg shadow-primary/20">
-            <Activity className="h-5 w-5" />
+        {/* VitalCore Branding & Header */}
+        <div className="text-center space-y-3">
+          <Link href="/" className="inline-flex items-center justify-center gap-2.5 group hover:opacity-95 transition-opacity">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary text-white shadow-lg shadow-primary/25 group-hover:scale-105 transition-transform">
+              <Activity className="h-5 w-5" />
+            </div>
+            <span className="text-2xl font-extrabold tracking-tight text-[var(--foreground)]">
+              VitalCore
+            </span>
+          </Link>
+
+          <div className="space-y-1">
+            <h1 className="auth-subtitle tracking-tight text-center font-bold text-2xl text-[var(--foreground)]">
+              Reset Password
+            </h1>
+            <p className="auth-helper text-[13px] flex items-center gap-1.5 justify-center text-[var(--muted)]">
+              <ShieldCheck className="h-4 w-4 text-emerald-500" />
+              VitalCore Security Subsystem
+            </p>
           </div>
-          <h2 className="auth-subtitle tracking-tight text-center font-bold">Reset Password</h2>
-          <p className="auth-helper text-[12px] flex items-center gap-1 justify-center">
-            <ShieldCheck className="h-4 w-4 text-secondary/80" />
-            VitalCore Security Subsystem
-          </p>
         </div>
 
         <GlassCard glowColor="violet" className="border border-foreground/10 shadow-xl p-6">
@@ -92,7 +102,7 @@ export default function ForgotPasswordPage() {
                 <CheckCircle className="h-4 w-4 shrink-0 mt-0.5" />
                 <span>{successMsg}</span>
               </div>
-              <Link href="/auth/login" className="block pt-2">
+              <Link href="/login" className="block pt-2">
                 <Button variant="glass" className="w-full font-semibold">
                   Return to secure log in
                 </Button>
